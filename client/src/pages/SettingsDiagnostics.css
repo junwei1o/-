@@ -1,0 +1,132 @@
+.settings-diagnostic-status {
+  margin: 1rem 0;
+  padding: 1rem;
+  border: 1px solid color-mix(in srgb, var(--primary, #0b6e8e) 18%, transparent);
+  border-radius: 1rem;
+  background: color-mix(in srgb, #f9f3e8 72%, white);
+}
+
+.settings-diagnostic-status-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.85rem;
+}
+
+.settings-diagnostic-status-heading h3 {
+  margin: 0;
+  color: #163d4e;
+  font-size: 1.05rem;
+}
+
+.diag-status-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.7rem;
+  margin: 0;
+}
+
+.diag-stat-card {
+  min-width: 0;
+  padding: 0.75rem;
+  border-radius: 0.75rem;
+  background: rgba(255, 255, 255, 0.78);
+}
+
+.diag-stat-card dt {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: #49616c;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.diag-stat-card dd {
+  margin: 0.25rem 0 0;
+  color: #163d4e;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.diag-stat-card small {
+  display: block;
+  margin-top: 0.25rem;
+  color: #63777f;
+  font-size: 0.72rem;
+  line-height: 1.45;
+}
+
+.diag-storage-meter {
+  display: block;
+  width: 100%;
+  height: 0.55rem;
+  margin-top: 0.65rem;
+  accent-color: #0b6e8e;
+}
+
+.diag-log-list {
+  max-height: 28rem;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+.settings-clear-confirm button,
+.settings-log-actions button {
+  min-height: 44px;
+}
+
+@media (max-width: 640px) {
+  .settings-diagnostic-status { padding: 0.85rem; }
+  .diag-status-grid { grid-template-columns: 1fr; gap: 0.55rem; }
+  .diag-stat-card { padding: 0.75rem; }
+  .diag-log-list { max-height: 20rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .diag-log-list { scroll-behavior: auto; }
+}
+
+.diag-log-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.diag-severity-badge,
+.diag-category-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.5rem;
+  padding: 0.15rem 0.45rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.diag-severity-badge-critical { color: #8d1d1d; background: #fde2e2; }
+.diag-severity-badge-warning { color: #805400; background: #fff0c2; }
+.diag-severity-badge-info { color: #145b86; background: #dceffb; }
+.diag-category-badge { color: #49616c; background: #edf1ee; }
+.diag-log-item small { color: #63777f; font-size: 0.75rem; }
+.diag-refresh-spinning { animation: diag-refresh-spin 0.8s linear infinite; }
+
+@keyframes diag-refresh-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 640px) {
+  .settings-log-actions {
+    gap: 0.75rem;
+  }
+  .settings-log-actions button,
+  .settings-clear-confirm button {
+    min-height: 48px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .diag-refresh-spinning { animation: none; }
+}

@@ -1,0 +1,126 @@
+.student-knowledge-island-recent {
+  margin-top: 0.85rem;
+  border-top: 1px dashed rgba(11, 110, 142, 0.18);
+  padding-top: 0.75rem;
+}
+
+.student-knowledge-island-recent > p {
+  margin: 0 0 0.44rem;
+  color: var(--tidal-deep);
+  font-size: 0.72rem;
+  font-weight: 900;
+}
+
+.student-knowledge-island-recent ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.42rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.student-knowledge-island-recent button {
+  border: 1px solid rgba(44, 110, 175, 0.25);
+  border-radius: 99px;
+  background: #eef6ff;
+  color: #24577f;
+  padding: 0.3rem 0.54rem;
+  font: inherit;
+  font-size: 0.69rem;
+  font-weight: 800;
+  line-height: 1.25;
+  transition: transform 160ms var(--ease-out), border-color 160ms var(--ease-out), background 160ms var(--ease-out);
+}
+
+.student-knowledge-island-recent button:hover {
+  border-color: #2c6eaf;
+  background: #dceeff;
+  transform: translateY(-1px);
+}
+
+.student-knowledge-island-recent button:focus-visible {
+  outline: 3px solid rgba(44, 110, 175, 0.26);
+  outline-offset: 2px;
+}
+
+.student-knowledge-island-recent button:active { transform: scale(0.98); }
+
+@media (max-width: 390px) {
+  .student-knowledge-island-recent ul { gap: 0.35rem; }
+  .student-knowledge-island-recent button { font-size: 0.66rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .student-knowledge-island-recent button { transition: none; }
+  .student-knowledge-island-recent button:hover,
+  .student-knowledge-island-recent button:active { transform: none; }
+}
+
+.student-knowledge-island-curriculum,
+.student-knowledge-island-resources {
+  margin-top: 0.9rem;
+  padding: 0.75rem;
+  border: 1px solid rgba(11, 110, 142, 0.14);
+  border-radius: 1rem;
+  background: rgba(248, 252, 250, 0.72);
+}
+
+.student-knowledge-island-curriculum > p,
+.student-knowledge-island-resources > p {
+  margin: 0 0 0.35rem;
+  color: var(--tidal-deep);
+  font-size: 0.72rem;
+  font-weight: 900;
+}
+
+.student-knowledge-island-curriculum strong {
+  display: block;
+  color: #284f54;
+  font-size: 0.78rem;
+  line-height: 1.6;
+}
+
+.student-knowledge-island-curriculum ul,
+.student-knowledge-island-resources ul {
+  display: grid;
+  gap: 0.4rem;
+  margin: 0.55rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.student-knowledge-island-curriculum li {
+  position: relative;
+  padding-left: 1rem;
+  color: #42666a;
+  font-size: 0.72rem;
+  line-height: 1.45;
+}
+
+.student-knowledge-island-curriculum li::before {
+  position: absolute;
+  left: 0;
+  content: "✦";
+  color: #d88b35;
+}
+
+.student-knowledge-island-resources a {
+  display: grid;
+  gap: 0.12rem;
+  padding: 0.48rem 0.56rem;
+  border-radius: 0.75rem;
+  color: #24577f;
+  text-decoration: none;
+  transition: background 160ms var(--ease-out), transform 160ms var(--ease-out);
+}
+
+.student-knowledge-island-resources a:hover { background: rgba(220, 238, 255, 0.72); transform: translateY(-1px); }
+.student-knowledge-island-resources a:focus-visible { outline: 3px solid rgba(44, 110, 175, 0.26); outline-offset: 2px; }
+.student-knowledge-island-resources a span { font-size: 0.75rem; font-weight: 900; }
+.student-knowledge-island-resources a small { color: #557478; font-size: 0.66rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  .student-knowledge-island-resources a { transition: none; }
+  .student-knowledge-island-resources a:hover { transform: none; }
+}

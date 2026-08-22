@@ -1,0 +1,36 @@
+{
+  "questionCount": 500,
+  "expectedQuestionCount": 500,
+  "validQuestionCount": 500,
+  "validationFailures": [],
+  "duplicatePromptCount": 0,
+  "duplicatePromptIds": [],
+  "counts": {
+    "subject": {
+      "國語": 120,
+      "數學": 130,
+      "社會": 120,
+      "自然": 130
+    },
+    "grade": {
+      "3": 150,
+      "4": 150,
+      "5": 100,
+      "6": 100
+    },
+    "difficulty": {
+      "基礎": 200,
+      "標準": 150,
+      "挑戰": 150
+    },
+    "curriculumDomain": {
+      "語文領域": 120,
+      "數學領域": 130,
+      "社會領域": 120,
+      "自然科學領域": 130
+    }
+  },
+  "files": {
+    "json": "/home/ubuntu/xue-adventure/data/taiwan_curriculum_500.json"
+  }
+}
