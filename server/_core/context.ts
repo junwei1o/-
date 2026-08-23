@@ -1,6 +1,5 @@
 import type { CreateExpressContextOptions } from "@trpc/server/adapters/express";
 import type { User } from "../../drizzle/schema";
-import { sdk } from "./sdk";
 
 export type TrpcContext = {
   req: CreateExpressContextOptions["req"];
@@ -11,18 +10,22 @@ export type TrpcContext = {
 export async function createContext(
   opts: CreateExpressContextOptions
 ): Promise<TrpcContext> {
-  let user: User | null = null;
-
-  try {
-    user = await sdk.authenticateRequest(opts.req);
-  } catch (error) {
-    // Authentication is optional for public procedures.
-    user = null;
-  }
+  // 🏴‍☠️ 訪客船長模式：繞過 Manus OAuth，強制以訪客身份登入
+  const guestUser = {
+    id: 1, 
+    openId: "guest_captain",
+    name: "訪客船長",
+    email: "guest@local",
+    loginMethod: "guest",
+    role: "user",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    lastSignedIn: new Date(),
+  } as unknown as User;
 
   return {
     req: opts.req,
     res: opts.res,
-    user,
+    user: guestUser,
   };
 }
