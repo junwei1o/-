@@ -416,9 +416,24 @@ export default function PaperExam() {
     savePaperStrategyCueEnabled(nextEnabled);
     setNotice(nextEnabled ? "已開啟下一組策略提示音。" : "已關閉下一組策略提示音。畫面與文字提示會持續保留。");
   }
+function pickPoolWithCooldown(nextScope: PaperScope): PaperQuestion[] {
+    const attempts = loadAdaptiveProfile().attempts;
+    const recentIds = new Set(
+      [...attempts]
+        .sort((a, b) => b.timestamp - a.timestamp)
+        .slice(0, 48)
+        .map((attempt) => attempt.questionId)
+    );
+    const cooled = questions.filter((question) => !recentIds.has(question.id));
+    const inScope = (list: PaperQuestion[]) =>
+      nextScope === "綜合課綱" ? list : list.filter((question) => question.subject === nextScope);
+    const allInScope = inScope(questions);
+    if (inScope(cooled).length >= Math.min(DEFAULT_PAPER_SIZE, allInScope.length)) return cooled;
+    return questions;
+  }
 
   function startPaper(nextScope = scope) {
-    const nextDeck = buildPaperDeck(questions, nextScope, DEFAULT_PAPER_SIZE);
+    const nextDeck = buildPaperDeck(pickPoolWithCooldown(nextScope), nextScope, DEFAULT_PAPER_SIZE);
     setScope(nextScope);
     setPendingPaperScope(null);
     setDeck(nextDeck);
