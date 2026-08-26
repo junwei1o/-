@@ -434,7 +434,8 @@ function pickPoolWithCooldown(nextScope: PaperScope): PaperQuestion[] {
   }
 
   function startPaper(nextScope = scope) {
-    const nextDeck = buildPaperDeck(pickPoolWithCooldown(nextScope), nextScope, DEFAULT_PAPER_SIZE);
+  const profile = loadAdaptiveProfile();
+        const nextDeck = buildPersonalizedPaperDeck(pickPoolWithCooldown(nextScope), nextScope, DEFAULT_PAPER_SIZE, profile);
     setScope(nextScope);
     setPendingPaperScope(null);
     setDeck(nextDeck);
