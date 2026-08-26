@@ -410,3 +410,80 @@ export function calculateLearningTrendReport(profile: AdaptiveProfile, questionI
 
   return { helpHabit, knowledgeMastery };
 }
+/* ========== 用戶偏好系統 ========== */
+
+export type UserGradeLevel = 3 | 4 | 5 | 6;
+export type UserDifficultyPreference = "簡單優先" | "均衡混合" | "挑戰優先";
+
+export type UserPreferences = {
+  version: 1;
+  gradeLevel: UserGradeLevel;
+  difficultyPreference: UserDifficultyPreference;
+  updatedAt: number;
+};
+
+export const USER_PREFERENCES_STORAGE_KEY = "xue-adventure-user-prefs-v1";
+
+export const defaultUserPreferences: UserPreferences = {
+  version: 1,
+  gradeLevel: 4,
+  difficultyPreference: "均衡混合",
+  updatedAt: 0, // 0 表示未設定，觸發「最難優先」模式
+};
+
+function isGradeLevel(value: unknown): value is UserGradeLevel {
+  return value === 3 || value === 4 || value === 5 || value === 6;
+}
+
+function isDifficultyPreference(value: unknown): value is UserDifficultyPreference {
+  return value === "簡單優先" || value === "均衡混合" || value === "挑戰優先";
+}
+
+export function loadUserPreferences(storage: Pick<Storage, "getItem" | "removeItem"> = localStorage): UserPreferences {
+  try {
+    const raw = storage.getItem(USER_PREFERENCES_STORAGE_KEY);
+    if (!raw) return structuredClone(defaultUserPreferences);
+    const parsed = JSON.parse(raw) as Partial<UserPreferences>;
+    if (parsed.version !== 1 || !isGradeLevel(parsed.gradeLevel) || !isDifficultyPreference(parsed.difficultyPreference)) {
+      throw new Error("invalid user preferences");
+    }
+    return {
+      version: 1,
+      gradeLevel: parsed.gradeLevel,
+      difficultyPreference: parsed.difficultyPreference,
+      updatedAt: Number.isFinite(parsed.updatedAt) ? Number(parsed.updatedAt) : Date.now(),
+    };
+  } catch {
+    storage.removeItem(USER_PREFERENCES_STORAGE_KEY);
+    return structuredClone(defaultUserPreferences);
+  }
+}
+
+export function saveUserPreferences(prefs: UserPreferences, storage: Pick<Storage, "setItem"> = localStorage) {
+  try {
+    storage.setItem(USER_PREFERENCES_STORAGE_KEY, JSON.stringify({ ...prefs, updatedAt: Date.now() }));
+  } catch { /* private browsing should not interrupt learning */ }
+}
+
+/** 根據用戶偏好取得目標難度列表 */
+export function getTargetDifficultiesFromPrefs(prefs: UserPreferences): AdaptiveDifficulty[] {
+  switch (prefs.difficultyPreference) {
+    case "簡單優先":
+      return ["基礎", "標準"];
+    case "挑戰優先":
+      return ["標準", "挑戰"];
+    case "均衡混合":
+    default:
+      return ["基礎", "標準", "挑戰"];
+  }
+}
+
+/** 根據用戶年級篩選題目（允許 ±1 年級浮動） */
+export function filterQuestionsByGrade<T extends { grade: number }>(
+  questions: readonly T[],
+  prefs: UserPreferences,
+): T[] {
+  const minGrade = Math.max(3, prefs.gradeLevel - 1);
+  const maxGrade = Math.min(6, prefs.gradeLevel + 1);
+  return questions.filter((q) => q.grade >= minGrade && q.grade <= maxGrade);
+}
