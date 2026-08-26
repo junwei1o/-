@@ -7,6 +7,7 @@ import { AiReviewPlanCard } from "@/components/AiReviewPlanCard";
 import { QuestionTransition } from "@/components/QuestionTransition";
 import {
   buildPaperDeck,
+	buildPersonalizedPaperDeck,
   buildSubjectWrongReviewDeck,
   DEFAULT_PAPER_SIZE,
   PAPER_SCOPES,
