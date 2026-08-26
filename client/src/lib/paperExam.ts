@@ -1,3 +1,4 @@
+import { loadUserPreferences, getTargetDifficultiesFromPrefs, filterQuestionsByGrade, targetDifficulties, type AdaptiveProfile } from "@/game/adaptiveLearning";
 export type PaperSubject = "數學" | "自然" | "社會" | "國語" | "英語";
 
 export type PaperQuestion = {
@@ -71,6 +72,42 @@ export function buildSubjectWrongReviewDeck(
     .map((attempt) => questionById.get(attempt.questionId))
     .filter((question): question is PaperQuestion => Boolean(question))
     .slice(0, size);
+}
+
+/** 根據用戶偏好篩選題庫（難度 + 年級），未設定則最難優先 */
+export function buildPersonalizedPaperDeck(
+  questions: readonly PaperQuestion[],
+  scope: PaperScope,
+  size = DEFAULT_PAPER_SIZE,
+  profile?: AdaptiveProfile,
+) {
+  const prefs = loadUserPreferences();
+  const hasUserPrefs = prefs.updatedAt > 0 && (prefs.gradeLevel !== 4 || prefs.difficultyPreference !== "均衡混合");
+  
+  let filteredQuestions = questions;
+  
+  if (hasUserPrefs) {
+    // 有用戶偏好：按年級 + 難度篩選
+    const userAllowedDifficulties = getTargetDifficultiesFromPrefs(prefs);
+    const adaptiveTargets = profile ? targetDifficulties(profile, questions as any) : userAllowedDifficulties;
+    const finalTargets = adaptiveTargets.filter(d => userAllowedDifficulties.includes(d));
+    const targetDifficulties = finalTargets.length > 0 ? finalTargets : userAllowedDifficulties;
+    
+    const scopeFiltered = scope === "綜合課綱" ? questions : questions.filter((q) => q.subject === scope);
+    const gradeFiltered = filterQuestionsByGrade(scopeFiltered, prefs);
+    const difficultyFiltered = gradeFiltered.filter((q) => targetDifficulties.includes(q.difficulty as any));
+    filteredQuestions = difficultyFiltered.length >= Math.min(size, gradeFiltered.length) ? difficultyFiltered : gradeFiltered;
+  } else {
+    // 無用戶偏好：最難的排最前面
+    const scopeFiltered = scope === "綜合課綱" ? questions : questions.filter((q) => q.subject === scope);
+    const difficultyOrder = { "挑戰": 3, "標準": 2, "基礎": 1 };
+    filteredQuestions = [...scopeFiltered].sort((a, b) => 
+      (difficultyOrder[b.difficulty as keyof typeof difficultyOrder] ?? 0) - 
+      (difficultyOrder[a.difficulty as keyof typeof difficultyOrder] ?? 0)
+    );
+  }
+  
+  return buildPaperDeck(filteredQuestions, scope, size);
 }
 
 function shuffled<T>(items: readonly T[]) {
