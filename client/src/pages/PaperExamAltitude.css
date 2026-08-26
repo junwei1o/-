@@ -1209,3 +1209,338 @@
     font-size: 1rem !important;
   }
 }
+/* ========== 護眼模式：低藍光琥珀色系 ========== */
+
+:root {
+  --eye-care-primary: #d97706;      /* 琥珀橙（主色） */
+  --eye-care-primary-dark: #b45309; /* 深琥珀 */
+  --eye-care-bg: #fef3c7;           /* 暖米黃（背景） */
+  --eye-care-bg-light: #fffbeb;     /* 淡米黃 */
+  --eye-care-text: #78350f;         /* 深褐（文字） */
+  --eye-care-text-muted: #92400e;   /* 中褐 */
+  --eye-care-border: rgba(180, 83, 9, 0.2); /* 暖邊框 */
+  --eye-care-shadow: rgba(180, 83, 9, 0.12); /* 暖陰影 */
+}
+
+/* 1. 試卷範圍卡片 → 護眼版 */
+.paper-scope-button {
+  border-color: var(--eye-care-border) !important;
+  color: var(--eye-care-text) !important;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), var(--eye-care-bg-light)) !important;
+  box-shadow: 0 4px 12px var(--eye-care-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+}
+
+.paper-scope-button.is-selected {
+  border-color: var(--eye-care-primary) !important;
+  background: linear-gradient(135deg, var(--eye-care-bg), #fde68a) !important;
+  box-shadow: 0 6px 16px rgba(217, 119, 6, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+}
+
+.paper-scope-button small {
+  color: var(--eye-care-text-muted) !important;
+}
+
+.paper-scope-button.is-selected small {
+  color: var(--eye-care-primary-dark) !important;
+}
+
+/* 2. 答案選項 → 護眼版 */
+.paper-option {
+  border-color: var(--eye-care-border) !important;
+  color: var(--eye-care-text) !important;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.96), var(--eye-care-bg-light)) !important;
+  box-shadow: 0 3px 10px var(--eye-care-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+}
+
+.paper-option > span:first-of-type {
+  background: var(--eye-care-primary) !important;
+}
+
+.paper-option.is-selected {
+  border-color: var(--eye-care-primary) !important;
+  background: linear-gradient(135deg, var(--eye-care-bg), #fde68a) !important;
+  box-shadow: 0 4px 14px rgba(217, 119, 6, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+}
+
+.paper-option.is-correct {
+  border-color: #059669 !important; /* 答對保留綠色（正面反饋） */
+  background: linear-gradient(135deg, #d1fae5, #a7f3d0) !important;
+}
+
+.paper-option.is-correct > span:first-of-type {
+  background: #059669 !important;
+}
+
+.paper-option.is-wrong {
+  border-color: #dc2626 !important; /* 答錯保留紅色（警示） */
+  background: linear-gradient(135deg, #fee2e2, #fecaca) !important;
+}
+
+.paper-option.is-wrong > span:first-of-type {
+  background: #dc2626 !important;
+}
+
+/* 3. 主要按鈕 → 護眼版 */
+.paper-primary-button,
+.paper-home-primary,
+.paper-question-actions .paper-primary-button,
+.paper-summary-actions .paper-primary-button,
+.paper-review-confirmation-actions .paper-primary-button,
+.paper-next-group-tip-actions .paper-primary-button {
+  color: #fff !important;
+  background: linear-gradient(135deg, var(--eye-care-primary), var(--eye-care-primary-dark)) !important;
+  box-shadow: 0 4px 14px rgba(217, 119, 6, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+}
+
+.paper-secondary-button,
+.paper-home-secondary,
+.paper-question-actions .paper-secondary-button,
+.paper-summary-actions .paper-secondary-button,
+.paper-review-confirmation-actions .paper-secondary-button,
+.paper-next-group-tip-actions .paper-secondary-button {
+  color: var(--eye-care-text) !important;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.96), var(--eye-care-bg-light)) !important;
+  border-color: var(--eye-care-border) !important;
+  box-shadow: 0 3px 10px var(--eye-care-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+}
+
+.paper-retry-unmastered-button {
+  color: #fff !important;
+  background: linear-gradient(135deg, #ea580c, #c2410c) !important; /* 深橘強調 */
+  box-shadow: 0 4px 14px rgba(234, 88, 12, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+}
+
+/* 4. 玉山高度計 → 護眼版 */
+.paper-altitude-card {
+  border-color: rgba(180, 83, 9, 0.25) !important;
+  color: var(--eye-care-text) !important;
+  background: rgba(254, 243, 199, 0.85) !important;
+  box-shadow: 0 6px 14px var(--eye-care-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.72) !important;
+}
+
+.paper-altitude-copy p,
+.paper-altitude-copy small {
+  color: var(--eye-care-text-muted) !important;
+}
+
+.paper-altitude-copy strong {
+  color: var(--eye-care-text) !important;
+}
+
+.paper-altitude-meter {
+  border-color: rgba(180, 83, 9, 0.4) !important;
+  background: linear-gradient(180deg, #fffdf4 0%, #fde68a 42%, #fbbf24 100%) !important;
+}
+
+.paper-altitude-meter-fill {
+  background: linear-gradient(0deg, #d97706 0%, #fbbf24 46%, rgba(255, 255, 255, 0.94) 100%) !important;
+}
+
+/* 5. 下一組提示卡 → 護眼版 */
+.paper-next-group-tip {
+  border-color: rgba(180, 83, 9, 0.28) !important;
+  color: var(--eye-care-text) !important;
+  background: linear-gradient(135deg, rgba(254, 243, 199, 0.94), rgba(255, 251, 235, 0.9)) !important;
+  box-shadow: 0 8px 18px var(--eye-care-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.84) !important;
+}
+
+.paper-next-group-tip > svg {
+  color: var(--eye-care-primary) !important;
+}
+
+.paper-next-group-tip-copy p {
+  color: var(--eye-care-text-muted) !important;
+}
+
+.paper-next-group-tip-copy h2,
+.paper-next-group-tip-copy strong {
+  color: var(--eye-care-text) !important;
+}
+
+.paper-next-group-tip-copy span {
+  color: var(--eye-care-text-muted) !important;
+}
+
+.paper-next-group-tip-sound-toggle {
+  border-color: rgba(180, 83, 9, 0.34) !important;
+  color: var(--eye-care-text) !important;
+  background: rgba(255, 255, 255, 0.62) !important;
+}
+
+/* 6. 登頂鼓勵卡 → 護眼版（本來就是暖色，微調） */
+.paper-summit-encouragement {
+  border-color: rgba(180, 83, 9, 0.34) !important;
+  background: linear-gradient(135deg, rgba(255, 253, 244, 0.94), rgba(253, 230, 138, 0.82)) !important;
+  box-shadow: 0 8px 18px rgba(180, 83, 9, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+}
+
+.paper-summit-encouragement > svg {
+  color: var(--eye-care-primary) !important;
+}
+
+.paper-summit-encouragement-copy p {
+  color: var(--eye-care-primary-dark) !important;
+}
+
+.paper-summit-encouragement-copy strong {
+  color: var(--eye-care-text) !important;
+}
+
+.paper-summit-encouragement-copy span {
+  color: var(--eye-care-text-muted) !important;
+}
+
+/* 7. 錯題解析卡 → 護眼版 */
+.paper-wrong-card {
+  border-color: var(--eye-care-border) !important;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.96), var(--eye-care-bg-light)) !important;
+  box-shadow: 0 4px 12px var(--eye-care-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+}
+
+.paper-wrong-card .paper-question-meta {
+  color: var(--eye-care-text-muted) !important;
+}
+
+.paper-wrong-answer-grid p {
+  background: rgba(254, 243, 199, 0.6) !important;
+}
+
+.paper-wrong-answer-grid span {
+  color: var(--eye-care-text-muted) !important;
+}
+
+/* 8. 統計數據卡 → 護眼版 */
+.paper-summary-stats > div {
+  border-color: var(--eye-care-border) !important;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.96), var(--eye-care-bg-light)) !important;
+  box-shadow: 0 4px 12px var(--eye-care-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+}
+
+.paper-summary-stats strong {
+  color: var(--eye-care-primary) !important;
+}
+
+.paper-summary-stats span {
+  color: var(--eye-care-text-muted) !important;
+}
+
+/* 9. 掌握度比較條 → 護眼版 */
+.mastery-comparison-card {
+  border-color: var(--eye-care-border) !important;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.96), var(--eye-care-bg-light)) !important;
+  box-shadow: 0 4px 12px var(--eye-care-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+}
+
+.mastery-comparison-label span {
+  color: var(--eye-care-text-muted) !important;
+}
+
+.mastery-comparison-label strong {
+  color: var(--eye-care-text) !important;
+}
+
+.mastery-comparison-track {
+  background: rgba(180, 83, 9, 0.1) !important;
+}
+
+.mastery-bar-after {
+  background: linear-gradient(90deg, var(--eye-care-primary), var(--eye-care-primary-dark)) !important;
+}
+
+/* 10. 知識點標籤 → 護眼版 */
+.paper-wrong-practice-topic-list span {
+  border-color: var(--eye-care-border) !important;
+  color: var(--eye-care-text) !important;
+  background: rgba(255, 255, 255, 0.8) !important;
+  box-shadow: 0 2px 6px var(--eye-care-shadow) !important;
+}
+
+/* 11. 篩選下拉/清除按鈕 → 護眼版 */
+.paper-wrong-filters select {
+  border-color: var(--eye-care-border) !important;
+  background: rgba(255, 255, 255, 0.9) !important;
+}
+
+.paper-wrong-filters select:focus {
+  border-color: var(--eye-care-primary) !important;
+  box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.2) !important;
+}
+
+.paper-filter-reset {
+  border-color: rgba(234, 88, 12, 0.3) !important;
+  color: #ea580c !important;
+  background: rgba(255, 247, 237, 0.8) !important;
+}
+
+/* 12. 錯誤分類按鈕 → 護眼版 */
+.paper-error-classification {
+  border-color: rgba(234, 88, 12, 0.22) !important;
+  background: rgba(255, 247, 237, 0.68) !important;
+  color: var(--eye-care-text) !important;
+}
+
+.paper-error-classification-actions button,
+.paper-explanation-toggle,
+.paper-doubt-button {
+  border-color: var(--eye-care-border) !important;
+  color: var(--eye-care-text) !important;
+  background: rgba(255, 255, 255, 0.72) !important;
+}
+
+.paper-error-classification-actions button.is-selected {
+  border-color: #ea580c !important;
+  color: #9a3412 !important;
+  background: #ffedd5 !important;
+}
+
+.paper-doubt-button.is-flagged {
+  border-color: #d97706 !important;
+  color: #92400e !important;
+  background: #fef3c7 !important;
+}
+
+/* 13. 頁面背景 → 護眼暖色 */
+.paper-exam-page {
+  background: linear-gradient(180deg, #fffbeb 0%, #fef3c7 100%) !important;
+  min-height: 100vh;
+}
+
+.paper-exam-hero,
+.paper-exam-panel,
+.paper-question-panel,
+.paper-summary-panel {
+  background: rgba(255, 255, 255, 0.6) !important;
+  border-radius: 1.5rem;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 12px var(--eye-care-shadow);
+}
+
+/* 14. 文字顏色統一 → 護眼深褐 */
+.paper-exam-kicker,
+.paper-exam-eyebrow,
+.paper-question-meta,
+.paper-explanation-stage-label,
+.paper-challenge-prompt {
+  color: var(--eye-care-text-muted) !important;
+}
+
+h1, h2, h3,
+.paper-question-prompt,
+.paper-wrong-prompt,
+.paper-explanation,
+.paper-completion-note {
+  color: var(--eye-care-text) !important;
+}
+
+/* 15. 朗讀按鈕 → 護眼版 */
+.speech-read-control {
+  border-color: var(--eye-care-border) !important;
+  color: var(--eye-care-text) !important;
+  background: rgba(255, 255, 255, 0.7) !important;
+}
+
+.speech-read-control:hover {
+  background: rgba(255, 255, 255, 0.9) !important;
+  box-shadow: 0 4px 10px var(--eye-care-shadow) !important;
+}
