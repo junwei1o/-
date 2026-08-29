@@ -132,6 +132,22 @@ export default function Home() {
   const [playerData, setPlayerData] = useState(() => getPlayerData());
   const [selectedTitle, setSelectedTitle] = useState(() => getSelectedTitle());
   const [dailySignIn, setDailySignIn] = useState(() => getDailySignIn());
+  const [userPrefs, setUserPrefs] = useState(() => loadUserPreferences());
+
+  function handleGradeChange(grade: UserGradeLevel) {
+    const next = { ...userPrefs, gradeLevel: grade };
+    setUserPrefs(next);
+    saveUserPreferences(next);
+    toast.success(`已切換為${grade}年級，試卷將優先出這個程度的題目。`);
+  }
+
+  function handleDifficultyChange(pref: UserDifficultyPreference) {
+    const next = { ...userPrefs, difficultyPreference: pref };
+    setUserPrefs(next);
+    saveUserPreferences(next);
+    toast.success(`已切換為「${pref}」模式，試卷難度會自動調整。`);
+  }
+
   const [featureQuery, setFeatureQuery] = useState("");
   const previousGoldRef = useRef(playerData.gold);
   const [isGoldPulseActive, setIsGoldPulseActive] = useState(false);
@@ -304,6 +320,48 @@ export default function Home() {
             <span><strong>{dailyAdventureSummary.accuracy === null ? "—" : `${Math.round(dailyAdventureSummary.accuracy * 100)}%`}</strong><small>正確率</small></span>
           </div>
         </section>
+
+        {/* 學習設定卡片 */}
+        <section className="home-learning-settings-card" aria-labelledby="home-learning-settings-title">
+          <div className="home-learning-settings-heading">
+            <div>
+              <p className="home-dashboard-eyebrow">LEARNING PREFERENCES</p>
+              <h2 id="home-learning-settings-title">學習設定</h2>
+              <p>調整年級與難度偏好，讓試卷更貼近你的程度。</p>
+            </div>
+          </div>
+          <div className="home-learning-settings-grid">
+            <label className="home-setting-item">
+              <span>目前年級</span>
+              <select 
+                value={userPrefs.gradeLevel} 
+                onChange={(e) => handleGradeChange(Number(e.target.value) as UserGradeLevel)}
+                className="home-setting-select"
+              >
+                <option value={3}>三年級</option>
+                <option value={4}>四年級</option>
+                <option value={5}>五年級</option>
+                <option value={6}>六年級</option>
+              </select>
+            </label>
+            <label className="home-setting-item">
+              <span>難度偏好</span>
+              <select 
+                value={userPrefs.difficultyPreference} 
+                onChange={(e) => handleDifficultyChange(e.target.value as UserDifficultyPreference)}
+                className="home-setting-select"
+              >
+                <option value="簡單優先">簡單優先（避開太難）</option>
+                <option value="均衡混合">均衡混合（推薦）</option>
+                <option value="挑戰優先">挑戰優先（避開太簡單）</option>
+              </select>
+            </label>
+          </div>
+          <p className="home-learning-settings-hint">
+            💡 設定會儲存在你的瀏覽器中，下次回來還會記得。
+          </p>
+        </section>
+
         <section className="home-mode-hub" aria-labelledby="home-mode-hub-title">
           <div className="home-mode-hub-heading">
             <div>
