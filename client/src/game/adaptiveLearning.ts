@@ -451,7 +451,8 @@ export function loadUserPreferences(storage: Pick<Storage, "getItem" | "removeIt
       version: 1,
       gradeLevel: parsed.gradeLevel,
       difficultyPreference: parsed.difficultyPreference,
-      updatedAt: Number.isFinite(parsed.updatedAt) ? Number(parsed.updatedAt) : Date.now(),
+      // 🔥 修正：若無 updatedAt 則保留 0（未設定），避免誤判為已設定
+      updatedAt: parsed.updatedAt !== undefined && Number.isFinite(parsed.updatedAt) ? Number(parsed.updatedAt) : 0,
     };
   } catch {
     storage.removeItem(USER_PREFERENCES_STORAGE_KEY);
@@ -486,89 +487,4 @@ export function filterQuestionsByGrade<T extends { grade: number }>(
   const minGrade = Math.max(3, prefs.gradeLevel - 1);
   const maxGrade = Math.min(6, prefs.gradeLevel + 1);
   return questions.filter((q) => q.grade >= minGrade && q.grade <= maxGrade);
-}
-/* ========== 學習設定卡片：護眼琥珀色 ========== */
-
-.home-learning-settings-card {
-  margin: 1.5rem 0;
-  padding: 1.25rem;
-  border: 2px solid rgba(180, 83, 9, 0.2);
-  border-radius: 1.25rem;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), #fef3c7);
-  box-shadow: 0 4px 14px rgba(180, 83, 9, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.8);
-}
-
-.home-learning-settings-heading h2 {
-  color: #78350f;
-  font-size: 1.1rem;
-  margin: 0.25rem 0 0.5rem;
-}
-
-.home-learning-settings-heading p {
-  color: #92400e;
-  font-size: 0.85rem;
-  line-height: 1.5;
-  margin: 0;
-}
-
-.home-learning-settings-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
-  margin: 1rem 0;
-}
-
-.home-setting-item {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.home-setting-item span {
-  color: #78350f;
-  font-size: 0.9rem;
-  font-weight: 700;
-}
-
-.home-setting-select {
-  min-height: 3rem;
-  padding: 0.75rem 1rem;
-  border: 2px solid rgba(180, 83, 9, 0.25);
-  border-radius: 0.85rem;
-  background: rgba(255, 255, 255, 0.9);
-  color: #78350f;
-  font: inherit;
-  font-size: 0.95rem;
-  cursor: pointer;
-  transition: border-color 160ms ease, box-shadow 160ms ease;
-}
-
-.home-setting-select:hover {
-  border-color: rgba(180, 83, 9, 0.4);
-}
-
-.home-setting-select:focus {
-  outline: none;
-  border-color: #d97706;
-  box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.2);
-}
-
-.home-learning-settings-hint {
-  color: #92400e;
-  font-size: 0.8rem;
-  line-height: 1.5;
-  margin: 0.75rem 0 0;
-  padding: 0.65rem 0.85rem;
-  border-radius: 0.75rem;
-  background: rgba(254, 243, 199, 0.6);
-}
-
-@media (max-width: 640px) {
-  .home-learning-settings-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .home-setting-select {
-    width: 100%;
-  }
 }
