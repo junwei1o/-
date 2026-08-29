@@ -1,4 +1,4 @@
-。export type AdaptiveDifficulty = "基礎" | "標準" | "挑戰";
+export type AdaptiveDifficulty = "基礎" | "標準" | "挑戰";
 
 export type AdaptiveQuestion = {
   id: string;
