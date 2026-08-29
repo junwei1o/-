@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { getMemoryAlarmCount, loadAdaptiveProfile } from "@/game/adaptiveLearning";
+import { loadUserPreferences, saveUserPreferences, type UserGradeLevel, type UserDifficultyPreference } from "@/game/adaptiveLearning";
 import { getInventory } from "@/game/inventoryService";
 import { loadCurrentWeekReinforcementJournal } from "@/game/mapReinforcementReward";
 import { consumeRandomAdventureRouteReward } from "@/game/randomAdventureRouteReward";
