@@ -105,17 +105,20 @@ export type QuestionBankFilters = {
 export async function getQuestionBank(filters: QuestionBankFilters = {}) {
   const db = await getDb();
   if (!db) throw new Error("Database is not available");
-
   const conditions = [
     filters.grade === undefined ? undefined : eq(questionBank.grade, filters.grade),
     filters.subject === undefined ? undefined : eq(questionBank.subject, filters.subject),
     filters.difficulty === undefined ? undefined : eq(questionBank.difficulty, filters.difficulty),
     filters.curriculumDomain === undefined ? undefined : eq(questionBank.curriculumDomain, filters.curriculumDomain),
   ].filter((condition): condition is NonNullable<typeof condition> => Boolean(condition));
-
-  return db
-    .select()
-    .from(questionBank)
-    .where(conditions.length > 0 ? and(...conditions) : undefined)
-    .limit(Math.min(Math.max(filters.limit ?? 500, 1), 500));
+  try {
+    return db
+      .select()
+      .from(questionBank)
+      .where(conditions.length > 0 ? and(...conditions) : undefined)
+      .limit(Math.min(Math.max(filters.limit ?? 500, 1), 500));
+  } catch (err) {
+    console.error("[DB] getQuestionBank failed:", err);
+    throw err;
+  }
 }
