@@ -8,9 +8,10 @@ describe("expedition content", () => {
       expect(questions).toHaveLength(100);
       expect(new Set(questions.map((question) => question.id)).size).toBe(100);
       questions.forEach((question) => {
-        expect(question.options).toHaveLength(4);
+        expect(question.options).toHaveLength(6);
+        expect(new Set(question.options).size).toBe(6);
         expect(question.answer).toBeGreaterThanOrEqual(0);
-        expect(question.answer).toBeLessThan(4);
+        expect(question.answer).toBeLessThan(6);
         expect(question.prompt.trim()).not.toBe("");
         expect(question.explanation.trim()).not.toBe("");
         expect(["concept", "careless", "memory"]).toContain(question.errorTag);

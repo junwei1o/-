@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Backpack, BookOpen, Coins, Compass, Heart, LockKeyhole, Sparkles, Swords, WandSparkles, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { applyBattleAction, applyBattleAnswer, beginBattleQuestion, createBattle } from "@/game/rpgBattle";
+import { hashStringToSeed, seededRandom, shuffleQuestionOptions } from "@/lib/optionRandomizer";
 import { calculateBattlePerformance } from "@/game/rpgQuestionCombat";
 import { getCombatFeedback, playCombatSfx, type CombatFeedback } from "@/game/rpgCombatFeedback";
 import { guardianCeremonyNarration, playGuardianCeremonySfx } from "@/game/guardianCeremonyFeedback";
@@ -132,17 +133,24 @@ export default function RpgAdventure({ onOpenChallenge, questionPool = [], sound
     return matching.length > 0 ? matching : questionPool;
   }, [activeRoute.subject, questionPool]);
   const reviewSummary = useMemo(() => getSpacedReviewSummary(adaptiveProfile, new Set(routeQuestions.map((item) => item.id))), [adaptiveProfile, routeQuestions]);
+  const shuffleSaltRef = useRef<number | undefined>(undefined);
+  if (shuffleSaltRef.current === undefined) shuffleSaltRef.current = Math.floor(Math.random() * 2147483646) + 1;
+  const shuffleSalt = shuffleSaltRef.current;
+  const shuffleBySeed = <T extends { id: string; options: string[]; answer: number }>(question: T | null | undefined): T | null | undefined => {
+    if (!question) return question;
+    return shuffleQuestionOptions(question, seededRandom((hashStringToSeed(question.id) ^ shuffleSalt) >>> 0));
+  };
   const bossQuestion = useMemo(() => {
     if (!boss || routeQuestions.length === 0) return null;
-    return routeQuestions.find((item) => item.difficulty === boss.questionDifficulty) ?? routeQuestions[0];
+    return shuffleBySeed(routeQuestions.find((item) => item.difficulty === boss.questionDifficulty) ?? routeQuestions[0]);
   }, [boss, routeQuestions]);
   const battleQuestion = useMemo(() => {
     if (!state.battle || questionPool.length === 0) return null;
-    return questionPool.find((item) => item.id === state.battle?.questionId) ?? questionPool[0];
+    return shuffleBySeed(questionPool.find((item) => item.id === state.battle?.questionId) ?? questionPool[0]);
   }, [questionPool, state.battle]);
   const growthQuestion = useMemo(() => {
     if (!growthPending || questionPool.length === 0) return null;
-    return questionPool.find((item) => item.id === growthPending.questionId) ?? questionPool[0];
+    return shuffleBySeed(questionPool.find((item) => item.id === growthPending.questionId) ?? questionPool[0]);
   }, [growthPending, questionPool]);
   const battleQuestionIsDueReview = Boolean(battleQuestion && (adaptiveProfile.spacedReviews ?? []).some((item) => item.questionId === battleQuestion.id && item.dueAt <= Date.now()));
 

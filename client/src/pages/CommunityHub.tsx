@@ -2,11 +2,18 @@ import React, { useEffect, useState } from "react";
 import { Compass, Trophy } from "lucide-react";
 import { useLocation, useSearch } from "wouter";
 import { ALL_CURRICULUM_QUESTIONS } from "@/game/expeditionContent";
+import { shuffleQuestionOptions } from "@/lib/optionRandomizer";
 import { getSelfChallengeBest, saveSelfChallengeBest } from "@/utils/storage";
 
 type ChallengeQuestion = (typeof ALL_CURRICULUM_QUESTIONS)[number];
 const CHALLENGE_LENGTH = 10;
 const TIMED_CHALLENGE_SECONDS = 60;
+
+/** 每次出題都重新洗牌選項順序，正確答案位置每次不同。 */
+function pickChallengeQuestion(index: number): ChallengeQuestion | null {
+  const question = ALL_CURRICULUM_QUESTIONS[index % ALL_CURRICULUM_QUESTIONS.length] ?? null;
+  return question ? shuffleQuestionOptions(question) : null;
+}
 
 export default function CommunityHub() {
   const [, setLocation] = useLocation();
@@ -14,7 +21,7 @@ export default function CommunityHub() {
   const isTimedChallenge = new URLSearchParams(search).get("mode") === "timed";
   const [challengeCount, setChallengeCount] = useState(0);
   const [correctCount, setCorrectCount] = useState(0);
-  const [currentQuestion, setCurrentQuestion] = useState<ChallengeQuestion | null>(() => ALL_CURRICULUM_QUESTIONS[0] ?? null);
+  const [currentQuestion, setCurrentQuestion] = useState<ChallengeQuestion | null>(() => pickChallengeQuestion(0));
   const [feedback, setFeedback] = useState("完成十題後，會更新你的個人最佳紀錄。");
   const [best, setBest] = useState(() => getSelfChallengeBest());
   const [secondsLeft, setSecondsLeft] = useState(TIMED_CHALLENGE_SECONDS);
@@ -47,13 +54,13 @@ export default function CommunityHub() {
       setChallengeEnded(true);
       return;
     }
-    setCurrentQuestion(ALL_CURRICULUM_QUESTIONS[(completed * 7) % ALL_CURRICULUM_QUESTIONS.length] ?? null);
+    setCurrentQuestion(pickChallengeQuestion(completed * 7));
   }
 
   function restartChallenge() {
     setChallengeCount(0);
     setCorrectCount(0);
-    setCurrentQuestion(ALL_CURRICULUM_QUESTIONS[0] ?? null);
+    setCurrentQuestion(pickChallengeQuestion(0));
     setSecondsLeft(TIMED_CHALLENGE_SECONDS);
     setChallengeEnded(false);
     setFeedback(isTimedChallenge ? "60 秒限時挑戰已開始，依自己的節奏作答。" : "新的十題自我挑戰已開始；這裡只記錄你自己的學習軌跡。");

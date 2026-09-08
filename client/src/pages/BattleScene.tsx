@@ -3,6 +3,7 @@ import { ArrowLeft, BookOpen, Eye, Gift, HeartPulse, ShieldCheck, Sparkles, Swor
 import { Button } from "@/components/ui/button";
 import { AnimatedHudValue } from "@/components/AnimatedHudValue";
 import { applyBattleAction, applyBattleAnswer, beginBattleQuestion, createBattle, healBattleHp, RAGE_SKILL_DEFINITIONS } from "@/game/rpgBattle";
+import { hashStringToSeed, seededRandom, shuffleQuestionOptions } from "@/lib/optionRandomizer";
 import { calculateBattlePerformance } from "@/game/rpgQuestionCombat";
 import { combatStyleForCompanion } from "@/game/companionCombatStyles";
 import { loadRpgState, recordRpgAnswer, saveRpgState } from "@/game/rpgStorage";
@@ -175,7 +176,15 @@ export default function BattleScene({ questionPool = [], onClose, modal = false,
   const [adaptiveProfile, setAdaptiveProfile] = useState<AdaptiveProfile>(() => loadAdaptiveProfile());
   const active = useMemo<Companion | undefined>(() => state.companions.find((item) => item.id === state.activeCompanionId) ?? state.companions[0], [state]);
   const availableQuestions = useMemo(() => questionPool.length > 0 ? questionPool : questionBankRows as unknown as BattleQuestion[], [questionBankRows, questionPool]);
-  const question = useMemo(() => availableQuestions.find((item) => item.id === battle?.questionId) ?? availableQuestions[0], [availableQuestions, battle?.questionId]);
+  const shuffleSaltRef = useRef<number | undefined>(undefined);
+  if (shuffleSaltRef.current === undefined) shuffleSaltRef.current = Math.floor(Math.random() * 2147483646) + 1;
+  const shuffleSalt = shuffleSaltRef.current;
+  const question = useMemo(() => {
+    const found = availableQuestions.find((item) => item.id === battle?.questionId) ?? availableQuestions[0];
+    if (!found) return found;
+    // 以「題目 id + 進入頁面時的亂數」當種子：同一題作答期間順序穩定，每次進入頁面／換題都重新洗牌。
+    return shuffleQuestionOptions(found, seededRandom((hashStringToSeed(found.id) ^ shuffleSalt) >>> 0));
+  }, [availableQuestions, battle?.questionId, shuffleSalt]);
   const gearBonuses = useMemo(() => academyGearBonuses(state.academyGearIds), [state.academyGearIds]);
   const habitats = useMemo(() => arenaHabitatStatuses(state), [state]);
   const habitat = useMemo(() => selectedArenaHabitat(state), [state]);

@@ -1,4 +1,5 @@
 import type { RegionKey } from "./rpgTypes";
+import { expandQuestionBankToSix } from "../lib/optionRandomizer";
 
 export type SubjectKey = "chinese" | "math" | "english" | "science";
 
@@ -330,7 +331,7 @@ export function getCorrectStreak(records: readonly { isCorrect: boolean }[]): nu
 export function getRandomSubjectMonster(subject: SubjectKey, random: () => number = Math.random, correctStreak = 0): SubjectMonster { const rare = rareMonsters[subject]; if (correctStreak >= 10 && random() < 0.18) return rare[Math.min(rare.length - 1, Math.floor(random() * rare.length))]; const list = SUBJECT_MONSTERS[subject]; return list[Math.min(list.length - 1, Math.max(0, Math.floor(random() * list.length)))]; }
 export function getRareMonsters(subject: SubjectKey): SubjectMonster[] { return rareMonsters[subject]; }
 
-export type CurriculumQuestion = { id: string; subject: SubjectKey; topic: string; difficulty: 1 | 2 | 3; prompt: string; options: [string, string, string, string]; answer: number; explanation: string; errorTag: "concept" | "careless" | "memory"; };
+export type CurriculumQuestion = { id: string; subject: SubjectKey; topic: string; difficulty: 1 | 2 | 3; prompt: string; options: string[]; answer: number; explanation: string; errorTag: "concept" | "careless" | "memory"; };
 
 const seeds: Record<SubjectKey, Array<{ topic: string; prompt: string; options: [string,string,string,string]; answer: number; explanation: string; errorTag: CurriculumQuestion["errorTag"] }>> = {
   "chinese": [
@@ -1644,5 +1645,5 @@ const seeds: Record<SubjectKey, Array<{ topic: string; prompt: string; options: 
 };
 
 function expandQuestions(subject: SubjectKey): CurriculumQuestion[] { const variants = ["請先找出題幹的核心線索。", "請把這個概念套用到新的學習情境。", "請比較各選項後再作答。", "請說明你選擇答案時最重要的判斷依據。"] as const; return seeds[subject].flatMap((seed, seedIndex) => variants.map((variant, variantIndex) => ({ id: `${subject}-expedition-${String(seedIndex * 4 + variantIndex + 1).padStart(3, "0")}`, subject, topic: seed.topic, difficulty: (variantIndex === 0 ? 1 : variantIndex === 1 ? 2 : variantIndex === 2 ? 2 : 3) as 1 | 2 | 3, prompt: `${seed.prompt} ${variant}`, options: seed.options, answer: seed.answer, explanation: seed.explanation, errorTag: seed.errorTag }))); }
-export const CURRICULUM_QUESTIONS: Record<SubjectKey, CurriculumQuestion[]> = { chinese: expandQuestions("chinese"), math: expandQuestions("math"), english: expandQuestions("english"), science: expandQuestions("science") };
+export const CURRICULUM_QUESTIONS: Record<SubjectKey, CurriculumQuestion[]> = { chinese: expandQuestionBankToSix(expandQuestions("chinese")), math: expandQuestionBankToSix(expandQuestions("math")), english: expandQuestionBankToSix(expandQuestions("english")), science: expandQuestionBankToSix(expandQuestions("science")) };
 export const ALL_CURRICULUM_QUESTIONS = Object.values(CURRICULUM_QUESTIONS).flat();

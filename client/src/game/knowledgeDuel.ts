@@ -1,4 +1,5 @@
 import type { CurriculumQuestion, SubjectKey } from "@/game/expeditionContent";
+import { shuffleQuestionOptions } from "@/lib/optionRandomizer";
 
 export const DUEL_MAX_HP = 100;
 export const DUEL_QUESTIONS_PER_ROUND = 5;
@@ -287,10 +288,11 @@ export function selectDuelQuestions(questions: CurriculumQuestion[], weakSubject
     const pick = weighted[Math.max(0, Math.min(weighted.length - 1, Math.floor(random() * weighted.length)))];
     if (!pick) break;
     selected.push(pick);
-    if (weak.has(pick.subject)) selectedWeak += 1;
+    selectedWeak += weak.has(pick.subject) ? 1 : 0;
     pool.splice(pool.findIndex((question) => question.id === pick.id), 1);
   }
-  return selected;
+  // 每場對決都重新洗牌選項順序（使用傳入的 random 以維持測試可重現性）。
+  return selected.map((question) => shuffleQuestionOptions(question, random));
 }
 
 export function strategyEffectiveness(cardUseItem: DuelCardUse) {

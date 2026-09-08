@@ -1,4 +1,5 @@
 import { loadUserPreferences, getTargetDifficultiesFromPrefs, filterQuestionsByGrade, targetDifficulties, type AdaptiveProfile } from "@/game/adaptiveLearning";
+import { shuffleQuestionOptions } from "./optionRandomizer";
 export type PaperSubject = "數學" | "自然" | "社會" | "國語" | "英語";
 
 export type PaperQuestion = {
@@ -71,7 +72,8 @@ export function buildSubjectWrongReviewDeck(
     .sort((left, right) => right.timestamp - left.timestamp)
     .map((attempt) => questionById.get(attempt.questionId))
     .filter((question): question is PaperQuestion => Boolean(question))
-    .slice(0, size);
+    .slice(0, size)
+    .map((question) => shuffleQuestionOptions(question));
 }
 
 /** 根據用戶偏好篩選題庫（難度 + 年級），未設定則最難優先 */
@@ -119,20 +121,25 @@ function shuffled<T>(items: readonly T[]) {
   return result;
 }
 
+/** 每次建卷都重新打乱選項順序，讓正確答案位置每次不同。 */
+function shuffleDeckOptions(deck: readonly PaperQuestion[]): PaperQuestion[] {
+  return deck.map((question) => shuffleQuestionOptions(question));
+}
+
 export function buildPaperDeck(
   questions: readonly PaperQuestion[],
   scope: PaperScope,
   size = DEFAULT_PAPER_SIZE,
 ) {
   const source = scope === "綜合課綱" ? questions : questions.filter((question) => question.subject === scope);
-  if (scope !== "綜合課綱") return shuffled(source).slice(0, size);
+  if (scope !== "綜合課綱") return shuffleDeckOptions(shuffled(source).slice(0, size));
 
   const anchors = (['國語', '數學', '自然', '社會'] as const)
     .map((subject) => shuffled(source.filter((question) => question.subject === subject))[0])
     .filter((question): question is PaperQuestion => Boolean(question));
   const selectedIds = new Set(anchors.map((question) => question.id));
   const remaining = shuffled(source.filter((question) => !selectedIds.has(question.id)));
-  return [...anchors, ...remaining].slice(0, size);
+  return shuffleDeckOptions([...anchors, ...remaining].slice(0, size));
 }
 
 export function scorePaper(deck: readonly PaperQuestion[], answers: Record<string, number>) {

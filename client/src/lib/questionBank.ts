@@ -1,6 +1,8 @@
+import { useMemo } from "react";
 import { trpc } from "@/lib/trpc";
 // 正式題庫 500 題隨安裝包一起發布；後端題庫無法使用時，用它作為離線後備，讓作答功能永遠可用。
 import curriculumSeed from "../../../data/taiwan_curriculum_500.json";
+import { expandQuestionBankToSix, shuffleQuestionOptions } from "./optionRandomizer";
 
 /** 與後端 question_bank 資料列一致的題目欄位（去掉僅後端使用的時間戳）。 */
 export type CurriculumQuestionRow = {
@@ -54,12 +56,19 @@ export type QuestionBankSource = "server" | "local";
 /**
  * 取得正式題庫。後端有資料時使用後端資料；後端無法連線、查詢失敗或回傳空資料時，
  * 自動改用內建的 500 題題庫，因此回傳的 isLoading 永遠不會卡住操作、error 永遠為 null。
+ *
+ * 回傳前會把每題擴充成 6 個選項並隨機打乱順序（answer 索引同步修正），
+ * 讓正確答案每次載入都出現在不同位置。
  */
 export function useQuestionBank() {
   const query = trpc.questionBank.list.useQuery({ limit: 500 });
-  const serverQuestions = (query.data?.questions ?? []) as CurriculumQuestionRow[];
-  const usingLocal = serverQuestions.length === 0;
-  const questions = usingLocal ? LOCAL_QUESTION_BANK : serverQuestions;
+  const questions = useMemo(() => {
+    const serverQuestions = (query.data?.questions ?? []) as CurriculumQuestionRow[];
+    const base = serverQuestions.length > 0 ? serverQuestions : LOCAL_QUESTION_BANK;
+    return expandQuestionBankToSix(base).map((question) => shuffleQuestionOptions(question));
+  }, [query.data]);
+  const usingLocal = (query.data?.questions ?? []).length === 0;
+  const source = (usingLocal ? "local" : "server") as QuestionBankSource;
   return {
     questions,
     total: questions.length,
@@ -67,7 +76,7 @@ export function useQuestionBank() {
     isLoading: false as const,
     error: null as null,
     refetch: query.refetch,
-    source: (usingLocal ? "local" : "server") as QuestionBankSource,
+    source,
     /** 後端查詢失敗而改用內建題庫時為 true（可用於顯示離線提示）。 */
     isFallback: usingLocal && query.isError,
   };
