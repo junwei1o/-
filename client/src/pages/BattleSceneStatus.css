@@ -558,3 +558,67 @@ html[data-animation-simplified="true"] .battle-scene-board .duel-character.enemy
 html[data-animation-simplified="true"] .battle-scene-board .battle-damage-float,
 html[data-animation-simplified="true"] .battle-scene-board .duel-character.battle-hit-flash-enemy::after,
 html[data-animation-simplified="true"] .battle-scene-board .duel-character.battle-hit-flash-ally::after { animation-duration: 1ms !important; animation-delay: 0ms !important; animation-iteration-count: 1 !important; }
+
+/* ===== 打擊感強化二部：命中擊星、答對綠光 burst、答錯紅閃震動 ===== */
+/* 命中擊星：從受擊角色頭像中心爆出、沿角度飛出消散 */
+.battle-impact-stars { position: absolute; top: 58px; left: 50%; z-index: 6; width: 0; height: 0; pointer-events: none; }
+.battle-impact-stars i { position: absolute; left: 0; top: 0; font-style: normal; font-size: 18px; line-height: 1; color: #ffe88a; text-shadow: 0 0 10px rgba(255, 184, 77, 0.95), 0 1px 2px rgba(0, 0, 0, 0.4); opacity: 0; }
+.battle-impact-stars i:nth-child(even) { font-size: 13px; color: #fff6cf; }
+.battle-impact-stars i:nth-child(3n) { font-size: 22px; }
+
+/* 答題即時回饋：答對整個操作面板綠光閃爍＋✓，答錯紅光＋左右震動＋✕ */
+.battle-scene-console { position: relative; }
+.battle-answer-burst { position: absolute; inset: 0; z-index: 7; display: grid; place-items: center; border-radius: 16px; pointer-events: none; font-size: clamp(2.6rem, 7vw, 4.4rem); font-weight: 900; opacity: 0; }
+.battle-answer-burst.is-correct { color: #7ff2b2; text-shadow: 0 0 24px rgba(86, 214, 150, 0.85), 0 4px 10px rgba(0, 0, 0, 0.35); }
+.battle-answer-burst.is-wrong { color: #ff8d86; text-shadow: 0 0 24px rgba(255, 109, 109, 0.8), 0 4px 10px rgba(0, 0, 0, 0.35); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .battle-impact-stars i { animation: battle-impact-star 0.6s cubic-bezier(0.16, 0.84, 0.3, 1) both; }
+  .battle-impact-stars i:nth-child(2) { animation-delay: 25ms; }
+  .battle-impact-stars i:nth-child(3) { animation-delay: 45ms; }
+  .battle-impact-stars i:nth-child(4) { animation-delay: 15ms; }
+  .battle-impact-stars i:nth-child(5) { animation-delay: 55ms; }
+  .battle-impact-stars i:nth-child(6) { animation-delay: 35ms; }
+  .battle-impact-stars i:nth-child(7) { animation-delay: 65ms; }
+  .battle-scene-console.is-answer-correct { animation: battle-answer-console-flash 0.62s ease-out both; }
+  .battle-scene-console.is-answer-wrong { animation: battle-answer-console-shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both; }
+  .battle-answer-burst { animation: battle-answer-mark-pop 0.62s cubic-bezier(0.2, 0.8, 0.25, 1) both; }
+}
+
+@keyframes battle-impact-star {
+  0% { opacity: 0; transform: rotate(var(--star-angle)) translateX(8px) scale(0.3); }
+  25% { opacity: 1; }
+  100% { opacity: 0; transform: rotate(var(--star-angle)) translateX(var(--star-dist)) scale(1.05); }
+}
+@keyframes battle-answer-console-flash {
+  0% { box-shadow: inset 0 0 0 0 rgba(86, 214, 150, 0); }
+  25% { box-shadow: inset 0 0 0 3px rgba(86, 214, 150, 0.55), inset 0 0 46px rgba(86, 214, 150, 0.28); }
+  100% { box-shadow: inset 0 0 0 0 rgba(86, 214, 150, 0); }
+}
+@keyframes battle-answer-console-shake {
+  0%, 100% { transform: translateX(0); box-shadow: inset 0 0 0 0 rgba(255, 109, 109, 0); }
+  20% { transform: translateX(-8px); box-shadow: inset 0 0 0 3px rgba(255, 109, 109, 0.5), inset 0 0 46px rgba(255, 90, 90, 0.3); }
+  40% { transform: translateX(7px); box-shadow: inset 0 0 0 2px rgba(255, 109, 109, 0.35); }
+  60% { transform: translateX(-5px); }
+  80% { transform: translateX(3px); }
+}
+@keyframes battle-answer-mark-pop {
+  0% { opacity: 0; transform: scale(0.4) rotate(-8deg); }
+  30% { opacity: 1; transform: scale(1.18) rotate(2deg); }
+  45% { transform: scale(0.96); }
+  65% { opacity: 1; transform: scale(1.05); }
+  100% { opacity: 0; transform: scale(1.1) translateY(-14px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .battle-impact-stars, .battle-answer-burst { display: none !important; }
+  .battle-scene-console.is-answer-correct,
+  .battle-scene-console.is-answer-wrong { animation: none !important; }
+}
+/* 低效果強度：關閉面板震動/閃光，保留文字回饋 */
+html[data-effect-intensity="low"] .battle-scene-console.is-answer-correct,
+html[data-effect-intensity="low"] .battle-scene-console.is-answer-wrong { animation: none !important; }
+html[data-animation-simplified="true"] .battle-impact-stars,
+html[data-animation-simplified="true"] .battle-answer-burst { display: none !important; }
+html[data-animation-simplified="true"] .battle-scene-console.is-answer-correct,
+html[data-animation-simplified="true"] .battle-scene-console.is-answer-wrong { animation-duration: 1ms !important; animation-delay: 0ms !important; animation-iteration-count: 1 !important; }

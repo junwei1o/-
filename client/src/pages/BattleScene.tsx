@@ -42,6 +42,7 @@ type BattleStatusFloat = { target: ImpactTarget; label: string; tone: "hit" | "g
 type HpBuffer = { value: number; key: number };
 type BattleMotion = { actor: "player" | "enemy"; target: ImpactTarget; key: number };
 type BoardShake = { kind: "hit" | "critical"; key: number };
+type AnswerBurst = { key: number; correct: boolean };
 type ReinforcementPractice = { stage: "answering" | "complete"; correct?: boolean };
 type BattleReview = { maxCombo: number; strategyUses: number; partBreakTriggered: boolean };
 
@@ -141,6 +142,7 @@ export default function BattleScene({ questionPool = [], onClose, modal = false,
   const [castHighlightSkill, setCastHighlightSkill] = useState<BattleRageSkill | null>(null);
   const [battleMotion, setBattleMotion] = useState<BattleMotion | null>(null);
   const [boardShake, setBoardShake] = useState<BoardShake | null>(null);
+  const [answerBurst, setAnswerBurst] = useState<AnswerBurst | null>(null);
   const [criticalPulse, setCriticalPulse] = useState<number | null>(null);
   const [comboMilestone, setComboMilestone] = useState<ComboMilestone | null>(null);
   const [accessibilityPrefs, setAccessibilityPrefs] = useState(() => getAccessibilityPrefs());
@@ -165,6 +167,7 @@ export default function BattleScene({ questionPool = [], onClose, modal = false,
   const feedbackTimerRef = useRef<number | null>(null);
   const castHighlightTimerRef = useRef<number | null>(null);
   const criticalPulseTimerRef = useRef<number | null>(null);
+  const answerBurstTimerRef = useRef<number | null>(null);
   const comboMilestoneTimerRef = useRef<number | null>(null);
   const comboMilestonePausedAtRef = useRef<number | null>(null);
   const battleDispatcherRef = useRef(createBattleDispatcher());
@@ -350,6 +353,7 @@ export default function BattleScene({ questionPool = [], onClose, modal = false,
     setHitFlash(null);
     setBattleMotion(null);
     setBoardShake(null);
+    setAnswerBurst(null);
     setCriticalPulse(null);
     setComboMilestone(null);
     if (comboMilestoneTimerRef.current !== null) window.clearTimeout(comboMilestoneTimerRef.current);
@@ -519,6 +523,13 @@ export default function BattleScene({ questionPool = [], onClose, modal = false,
     setAnswerLocked(true);
     const responseMs = Date.now() - startedAt;
     const correct = option === question.answer;
+    const burstKey = Date.now() + ++impactSequenceRef.current;
+    setAnswerBurst({ key: burstKey, correct });
+    if (answerBurstTimerRef.current !== null) window.clearTimeout(answerBurstTimerRef.current);
+    answerBurstTimerRef.current = window.setTimeout(() => {
+      answerBurstTimerRef.current = null;
+      setAnswerBurst((current) => current?.key === burstKey ? null : current);
+    }, 620);
     const nextWrongStreak = correct ? 0 : wrongStreak + 1;
     setWrongStreak(nextWrongStreak);
     if (!correct && nextWrongStreak >= 3 && !difficultyAssistApplied) setDifficultyAssistOffered(true);
@@ -778,7 +789,8 @@ export default function BattleScene({ questionPool = [], onClose, modal = false,
         {battle.result === "defeat" && battleMachine.phase === BattlePhase.RESULT && defeatReflection && <section className="battle-defeat-reflection" aria-labelledby="battle-defeat-reflection-title" data-testid="battle-defeat-reflection"><div className="battle-defeat-reflection-heading"><span aria-hidden="true"><BookOpen size={19} /></span><div><p className="eyebrow">NEXT STEP / 下一步</p><h3 id="battle-defeat-reflection-title">{defeatReflection.title}</h3></div></div><p>{defeatReflection.strategy}</p><div className="battle-defeat-reflection-actions"><Button type="button" variant="outline" onClick={() => speakBattleCue(defeatReflection.readout)} aria-label="朗讀策略回顧"><Volume2 size={15} aria-hidden="true" /> 朗讀策略回顧</Button>{defeatReflection.practice.status === "available" ? <Button ref={quickPracticeTriggerRef} type="button" onClick={startReinforcementPractice} aria-label={defeatReflection.practice.ariaLabel}><BookOpen size={16} aria-hidden="true" /> {defeatReflection.practice.label}</Button> : <p role="status">{defeatReflection.practice.message}</p>}</div></section>}
         {battle.result === "defeat" && reinforcementPractice && question && <section className="battle-defeat-practice" aria-labelledby="battle-defeat-practice-title" data-testid="battle-defeat-practice"><div><span className="eyebrow">ONE QUESTION RESET / 一題補強</span><h3 ref={reinforcementHeadingRef} id="battle-defeat-practice-title" tabIndex={-1}>{reinforcementPractice.stage === "complete" ? "一題補強已完成" : `練習：${question.learningTopic}`}</h3><p>{reinforcementPractice.stage === "complete" ? reinforcementPractice.correct ? "你抓住了這題的關鍵線索；航海圖也會留下這次完成的一題。" : `${question.explanation} 航海圖會留下這次完成的一題，方便你看見持續練習的足跡。` : "慢慢讀題，選出你目前最相信的答案；作答後會保留真實學習紀錄。"}</p></div>{reinforcementPractice.stage === "answering" ? <div className="battle-options" data-testid="battle-reinforcement-options" data-layout="two-columns">{question.options.map((option, index) => <Button key={option} variant="outline" onClick={() => answerReinforcementPractice(index)} disabled={isOffline}><b>{String.fromCharCode(65 + index)}</b>{option}</Button>)}</div> : <div className="battle-defeat-practice-actions"><Button type="button" onClick={() => setLocation("/map")} aria-label="查看航海圖上的一題補強記錄"><Sparkles size={16} aria-hidden="true" /> 查看航海圖獎勵</Button><Button type="button" onClick={startBattle}><Swords size={16} /> 帶著線索再挑戰</Button><Button type="button" variant="outline" onClick={closeReinforcementPractice}>回到策略回顧</Button></div>}</section>}
         {battle.result === "defeat" && !reinforcementPractice && battleMachine.phase === BattlePhase.RESULT && <Button onClick={startBattle} disabled={isOffline || battlePreparing}>重新整理線索</Button>}
-      </div> : <div className="battle-scene-console">
+      </div> : <div className={`battle-scene-console ${answerBurst ? (answerBurst.correct ? "is-answer-correct" : "is-answer-wrong") : ""}`}>
+        {answerBurst && <span key={`answer-burst-${answerBurst.key}`} className={`battle-answer-burst ${answerBurst.correct ? "is-correct" : "is-wrong"}`} aria-hidden="true">{answerBurst.correct ? "✓" : "✕"}</span>}
         <div className="battle-scene-status" role="status"><strong>{feedback}</strong><span>{battle.phase === "question" ? `限時 ${seconds} 秒` : `戰鬥能量 ${battle.energy}`}</span></div>
         {guardianCue && battle.phase === "question" && <section className="battle-guardian-cue" role="status" aria-live="polite" data-testid="guardian-rhythm-cue"><div><span>守門者節奏提示</span><strong>先抓住關鍵線索</strong><p>{guardianCue.message}</p></div><Button type="button" variant="outline" onClick={() => speakBattleCue(guardianCue.message)} aria-label="朗讀守門者節奏提示"><Volume2 size={15} aria-hidden="true" /> 朗讀提示</Button></section>}
         {difficultyAssistOffered && !difficultyAssistApplied && <section className="battle-difficulty-assist" role="status" aria-live="assertive" data-testid="battle-difficulty-assist"><div><span className="eyebrow">LEARNING SUPPORT / 學習協助</span><strong>已連續三題需要整理，要切換為循序練習嗎？</strong><p>守門者生命會降低 30%，每題多 5 秒；學習紀錄仍會如實保留。</p></div><div><Button type="button" onClick={applyDifficultyAssist} disabled={isOffline}>降低難度</Button><Button type="button" variant="outline" onClick={() => setDifficultyAssistOffered(false)} disabled={isOffline}>維持目前難度</Button></div></section>}
