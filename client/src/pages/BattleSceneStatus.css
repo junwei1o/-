@@ -455,3 +455,106 @@ html[data-animation-simplified="true"] .battle-critical-burst *,
 html[data-animation-simplified="true"] .battle-combatant,
 html[data-animation-simplified="true"] .battle-live-status-float,
 html[data-animation-simplified="true"] .battle-scene-board::before { animation-duration: 1ms !important; animation-delay: 0ms !important; animation-iteration-count: 1 !important; }
+
+/* ===== 打擊感強化：震屏、擊退、突進、傷害飄字、命中火花 =====
+   所有動畫皆為裝飾性質、不攔截答題控制，並遵守 reduced-motion / 效果強度設定。 */
+@media (prefers-reduced-motion: no-preference) {
+  /* 我方受擊 → 全場重震；暴擊命中 → 全場輕震拳感 */
+  .battle-scene-board.is-impact-hit { animation: battle-board-shake-hard 0.42s cubic-bezier(0.36, 0.07, 0.19, 0.97) both; }
+  .battle-scene-board.is-impact-critical { animation: battle-board-punch 0.34s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+
+  /* 受擊退：朝來擊方向彈開、傾斜、回穩（覆寫單純縮放的 hit-pause） */
+  .battle-scene-board .duel-character.enemy.battle-hit-flash-enemy.is-taking-hit { animation: battle-knockback-enemy 0.52s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+  .battle-scene-board .duel-character.ally.battle-hit-flash-ally.is-taking-hit { animation: battle-knockback-ally 0.52s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+
+  /* 攻擊突進：先小幅備勁、再快速撲向對手、回位 */
+  .battle-scene-board .duel-character.ally.battle-dash-forward.is-attacking { animation: battle-lunge-ally 0.48s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+  .battle-scene-board .duel-character.enemy.battle-dash-forward.is-attacking { animation: battle-lunge-enemy 0.48s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+
+  /* 傷害飄字：更大、帶彈跳與重量感 */
+  .battle-scene-board .battle-damage-float { font-size: clamp(1.4rem, 3.4vw, 2rem); animation: battle-damage-pop 0.6s cubic-bezier(0.2, 0.8, 0.25, 1) both; }
+  .battle-scene-board .battle-damage-float.is-critical { font-size: clamp(1.7rem, 4.4vw, 2.5rem); color: #ffe178; border-color: rgba(255, 213, 92, 0.92); background: rgba(125, 60, 14, 0.92); text-shadow: 0 2px 0 #5d2c06, 0 0 18px rgba(255, 190, 66, 0.75); }
+  .battle-scene-board .battle-damage-float-ally.is-critical { color: #ffd9b0; background: rgba(122, 42, 34, 0.94); }
+
+  /* 命中火花：快速爆出再擴散消散 */
+  .battle-scene-board .duel-character.battle-hit-flash-enemy::after,
+  .battle-scene-board .duel-character.battle-hit-flash-ally::after { animation: battle-impact-spark 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+}
+
+@keyframes battle-board-shake-hard {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  18% { transform: translate(-9px, 3px) rotate(-0.5deg); }
+  36% { transform: translate(8px, -4px) rotate(0.45deg); }
+  54% { transform: translate(-6px, 2px) rotate(-0.3deg); }
+  72% { transform: translate(4px, -2px) rotate(0.2deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
+}
+@keyframes battle-board-punch {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.012) translate(2px, -1px); }
+  100% { transform: scale(1); }
+}
+@keyframes battle-knockback-enemy {
+  0% { transform: translateX(0) rotate(0deg) scale(1); filter: brightness(1); }
+  22% { transform: translateX(18px) rotate(6deg) scale(0.96); filter: brightness(2.1) saturate(1.5); }
+  48% { transform: translateX(10px) rotate(-3deg) scale(1.02); filter: brightness(1.25); }
+  72% { transform: translateX(4px) rotate(1deg) scale(1); filter: brightness(1.05); }
+  100% { transform: translateX(0) rotate(0deg) scale(1); filter: brightness(1); }
+}
+@keyframes battle-knockback-ally {
+  0% { transform: translateX(0) rotate(0deg) scale(1); filter: brightness(1); }
+  22% { transform: translateX(-16px) rotate(-6deg) scale(0.96); filter: brightness(2.1) saturate(1.5); }
+  48% { transform: translateX(-9px) rotate(3deg) scale(1.02); filter: brightness(1.25); }
+  72% { transform: translateX(-3px) rotate(-1deg) scale(1); filter: brightness(1.05); }
+  100% { transform: translateX(0) rotate(0deg) scale(1); filter: brightness(1); }
+}
+@keyframes battle-lunge-ally {
+  0% { transform: translateX(0) scale(1) rotate(0deg); }
+  18% { transform: translateX(-8px) scale(0.98) rotate(-2deg); }
+  42% { transform: translateX(40px) scale(1.06) rotate(2deg); }
+  68% { transform: translateX(26px) scale(1.02) rotate(0deg); }
+  100% { transform: translateX(0) scale(1) rotate(0deg); }
+}
+@keyframes battle-lunge-enemy {
+  0% { transform: translateX(0) scale(1) rotate(0deg); }
+  18% { transform: translateX(8px) scale(0.98) rotate(2deg); }
+  42% { transform: translateX(-40px) scale(1.06) rotate(-2deg); }
+  68% { transform: translateX(-26px) scale(1.02) rotate(0deg); }
+  100% { transform: translateX(0) scale(1) rotate(0deg); }
+}
+@keyframes battle-damage-pop {
+  0% { opacity: 0; transform: translate(-50%, 14px) scale(0.5) rotate(-6deg); }
+  28% { opacity: 1; transform: translate(-50%, -10px) scale(1.28) rotate(3deg); }
+  45% { transform: translate(-50%, -16px) scale(0.96) rotate(-1deg); }
+  62% { transform: translate(-50%, -26px) scale(1.06) rotate(0deg); }
+  100% { opacity: 0; transform: translate(-50%, -48px) scale(1.02) rotate(0deg); }
+}
+@keyframes battle-impact-spark {
+  0% { opacity: 0; transform: scale(0.5); }
+  25% { opacity: 1; transform: scale(1.15); }
+  100% { opacity: 0; transform: scale(1.55); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .battle-scene-board.is-impact-hit,
+  .battle-scene-board.is-impact-critical,
+  .battle-scene-board .duel-character.enemy.battle-hit-flash-enemy.is-taking-hit,
+  .battle-scene-board .duel-character.ally.battle-hit-flash-ally.is-taking-hit,
+  .battle-scene-board .duel-character.ally.battle-dash-forward.is-attacking,
+  .battle-scene-board .duel-character.enemy.battle-dash-forward.is-attacking,
+  .battle-scene-board .battle-damage-float,
+  .battle-scene-board .duel-character.battle-hit-flash-enemy::after,
+  .battle-scene-board .duel-character.battle-hit-flash-ally::after { animation: none !important; }
+}
+/* 低效果強度：關閉震屏，保留角色與飄字回饋 */
+html[data-effect-intensity="low"] .battle-scene-board.is-impact-hit,
+html[data-effect-intensity="low"] .battle-scene-board.is-impact-critical { animation: none !important; }
+html[data-animation-simplified="true"] .battle-scene-board.is-impact-hit,
+html[data-animation-simplified="true"] .battle-scene-board.is-impact-critical,
+html[data-animation-simplified="true"] .battle-scene-board .duel-character.enemy.battle-hit-flash-enemy.is-taking-hit,
+html[data-animation-simplified="true"] .battle-scene-board .duel-character.ally.battle-hit-flash-ally.is-taking-hit,
+html[data-animation-simplified="true"] .battle-scene-board .duel-character.ally.battle-dash-forward.is-attacking,
+html[data-animation-simplified="true"] .battle-scene-board .duel-character.enemy.battle-dash-forward.is-attacking,
+html[data-animation-simplified="true"] .battle-scene-board .battle-damage-float,
+html[data-animation-simplified="true"] .battle-scene-board .duel-character.battle-hit-flash-enemy::after,
+html[data-animation-simplified="true"] .battle-scene-board .duel-character.battle-hit-flash-ally::after { animation-duration: 1ms !important; animation-delay: 0ms !important; animation-iteration-count: 1 !important; }

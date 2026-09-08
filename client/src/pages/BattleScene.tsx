@@ -37,10 +37,11 @@ type BattleQuestion = { id: string; subject: string; grade: number; prompt: stri
 type Props = { questionPool?: BattleQuestion[]; onClose?: () => void; modal?: boolean; soundEnabled?: boolean };
 type VictoryStage = "offer" | "capture-question" | "capture-result" | "settlement";
 type ImpactTarget = "ally" | "enemy";
-type BattleImpact = { target: ImpactTarget; value: number; key: number };
+type BattleImpact = { target: ImpactTarget; value: number; key: number; critical?: boolean };
 type BattleStatusFloat = { target: ImpactTarget; label: string; tone: "hit" | "guard" | "heal" | "critical"; key: number };
 type HpBuffer = { value: number; key: number };
 type BattleMotion = { actor: "player" | "enemy"; target: ImpactTarget; key: number };
+type BoardShake = { kind: "hit" | "critical"; key: number };
 type ReinforcementPractice = { stage: "answering" | "complete"; correct?: boolean };
 type BattleReview = { maxCombo: number; strategyUses: number; partBreakTriggered: boolean };
 
@@ -139,6 +140,7 @@ export default function BattleScene({ questionPool = [], onClose, modal = false,
   const [hitFlash, setHitFlash] = useState<{ target: ImpactTarget; key: number } | null>(null);
   const [castHighlightSkill, setCastHighlightSkill] = useState<BattleRageSkill | null>(null);
   const [battleMotion, setBattleMotion] = useState<BattleMotion | null>(null);
+  const [boardShake, setBoardShake] = useState<BoardShake | null>(null);
   const [criticalPulse, setCriticalPulse] = useState<number | null>(null);
   const [comboMilestone, setComboMilestone] = useState<ComboMilestone | null>(null);
   const [accessibilityPrefs, setAccessibilityPrefs] = useState(() => getAccessibilityPrefs());
@@ -347,6 +349,7 @@ export default function BattleScene({ questionPool = [], onClose, modal = false,
     setDamageFloat(null);
     setHitFlash(null);
     setBattleMotion(null);
+    setBoardShake(null);
     setCriticalPulse(null);
     setComboMilestone(null);
     if (comboMilestoneTimerRef.current !== null) window.clearTimeout(comboMilestoneTimerRef.current);
@@ -388,19 +391,22 @@ export default function BattleScene({ questionPool = [], onClose, modal = false,
   const triggerImpact = (target: ImpactTarget, value: number, actor: "player" | "enemy") => {
     if (value <= 0) return;
     const key = Date.now() + ++impactSequenceRef.current;
-    setDamageFloat({ target, value, key });
     const isCritical = actor === "player" && Boolean(battle?.performance?.criticalHit || comboCritical.isCritical);
-    setStatusFloat({ target, key, tone: isCritical ? "critical" : "hit", label: isCritical ? `暴擊！-${value}` : `傷害 -${value}` });
+    setDamageFloat({ target, value, key, critical: isCritical });
+    const isCriticalStatus = isCritical;
+    setStatusFloat({ target, key, tone: isCriticalStatus ? "critical" : "hit", label: isCriticalStatus ? `暴擊！-${value}` : `傷害 -${value}` });
     if (typeof navigator !== "undefined" && typeof navigator.vibrate === "function") {
       try { navigator.vibrate(isCritical ? [18, 42, 24] : 18); } catch { /* 裝置不支援震動時維持視覺回饋 */ }
     }
     setHitFlash({ target, key });
     setBattleMotion({ actor, target, key });
+    if (target === "ally" || isCritical) setBoardShake({ kind: target === "ally" ? "hit" : "critical", key });
     window.setTimeout(() => {
       setDamageFloat((current) => current?.key === key ? null : current);
       setHitFlash((current) => current?.key === key ? null : current);
       setBattleMotion((current) => current?.key === key ? null : current);
       setStatusFloat((current) => current?.key === key ? null : current);
+      setBoardShake((current) => current?.key === key ? null : current);
     }, 620);
   };
 
@@ -733,7 +739,7 @@ export default function BattleScene({ questionPool = [], onClose, modal = false,
   const seconds = Math.max(0, Math.ceil((questionTimeLimitMs - (now - startedAt)) / 1000));
   const content = <main className={`standalone-battle ${modal ? "standalone-battle-modal" : ""} battle-environment-${worldState.period} ${worldState.rainy ? "battle-environment-rainy" : ""}`} data-environment-period={worldState.period} data-environment-rainy={worldState.rainy ? "true" : "false"} aria-label="獨立對戰場景">
     <div className="battle-scene-topbar"><Button variant="ghost" onClick={close}><ArrowLeft size={17} /> 返回探險地圖</Button><span className="battle-scene-label"><Swords size={15} /> ISLAND DUEL / 學習對戰場</span><span className="battle-scene-resources"><Zap size={15} /> {state.energy} 能量 <Button type="button" variant="ghost" className="battle-sound-toggle" onClick={() => setSoundEnabled((enabled) => !enabled)} aria-pressed={soundEnabled} aria-label={soundEnabled ? "關閉戰鬥音效" : "開啟戰鬥音效"} title={soundEnabled ? "關閉戰鬥音效" : "開啟戰鬥音效"}>{soundEnabled ? <Volume2 size={15} aria-hidden="true" /> : <VolumeX size={15} aria-hidden="true" />}<span className="sr-only">{soundEnabled ? "戰鬥音效已開啟" : "戰鬥音效已關閉"}</span></Button></span></div>
-    <section className={`battle-scene-board battle-scene-board-art habitat-${habitat.id}`} style={arenaBackground ? ({ "--battle-arena-art": `url("${arenaBackground}")` } as React.CSSProperties) : undefined}>
+    <section className={`battle-scene-board battle-scene-board-art habitat-${habitat.id} ${boardShake ? `is-impact-${boardShake.kind}` : ""}`} style={arenaBackground ? ({ "--battle-arena-art": `url("${arenaBackground}")` } as React.CSSProperties) : undefined}>
       <div className="battle-environment-light" aria-hidden="true"><span className="battle-environment-sun" /><span className="battle-environment-moon" /><span className="battle-environment-rain" /></div>
       <div className="battle-environment-chip" aria-label={`目前環境：${environmentLabel}`}>{worldState.period === "night" ? "☾" : worldState.rainy ? "雨" : "☀"} {environmentLabel}</div>
       {criticalPulse !== null && <div key={criticalPulse} className="battle-critical-burst" role="status" aria-live="assertive" data-testid="critical-visual-feedback"><span className="battle-critical-rays" aria-hidden="true" /><strong>🔥 暴擊！</strong><small>答題增幅 ×1.5</small></div>}
@@ -747,7 +753,7 @@ export default function BattleScene({ questionPool = [], onClose, modal = false,
           </span>
           <strong>{active?.name ?? "學習夥伴"}</strong><small>Lv.{active?.level ?? 1} · 夥伴</small>
           <HpBar value={battle?.playerHp ?? active?.hp ?? 1} max={battle?.playerMaxHp ?? active?.maxHp ?? 1} tone="ally" crisis={crisisLevel} buffer={hpBuffers.ally?.value} />
-          {damageFloat?.target === "ally" && <span key={`damage-${damageFloat.key}`} className="battle-damage-float battle-damage-float-ally" aria-hidden="true">-{damageFloat.value} HP!</span>}
+          {damageFloat?.target === "ally" && <span key={`damage-${damageFloat.key}`} className={`battle-damage-float battle-damage-float-ally ${damageFloat.critical ? "is-critical" : ""}`} aria-hidden="true">-{damageFloat.value} HP!</span>}
           {statusFloat?.target === "ally" && <span key={`status-${statusFloat.key}`} className={`battle-status-float battle-status-float-ally battle-live-status-float is-player is-${statusFloat.tone}`} role="status" aria-live="polite">{statusFloat.label}</span>}
         </div>
         <div className="duel-vs">VS<span>✦</span></div>
@@ -757,7 +763,7 @@ export default function BattleScene({ questionPool = [], onClose, modal = false,
           </span>
           <strong>{encounter.name}</strong><small>學習守門者</small>
           <HpBar value={battle?.enemyHp ?? encounter.maxHp} max={battle?.enemyMaxHp ?? encounter.maxHp} tone="enemy" buffer={hpBuffers.enemy?.value} />
-          {damageFloat?.target === "enemy" && <span key={`damage-${damageFloat.key}`} className="battle-damage-float battle-damage-float-enemy" aria-hidden="true">-{damageFloat.value} HP!</span>}
+          {damageFloat?.target === "enemy" && <span key={`damage-${damageFloat.key}`} className={`battle-damage-float battle-damage-float-enemy ${damageFloat.critical ? "is-critical" : ""}`} aria-hidden="true">-{damageFloat.value} HP!</span>}
           {statusFloat?.target === "enemy" && <span key={`status-${statusFloat.key}`} className={`battle-status-float battle-status-float-enemy battle-live-status-float is-enemy is-${statusFloat.tone}`} role="status" aria-live="polite">{statusFloat.label}</span>}
         </div>
       </div>
