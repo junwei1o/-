@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { BookOpen, BrainCircuit, ChevronLeft, Compass, Headphones, ShieldCheck, Sparkles, Target } from "lucide-react";
 import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
+import { useQuestionBank } from "@/lib/questionBank";
 import { calculateAdaptiveReport, calculateKnowledgeHeatmap, calculateLearningTrendReport, loadAdaptiveProfile } from "@/game/adaptiveLearning";
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 type QuestionIdentity = { id: string };
@@ -76,10 +77,10 @@ const STATUS_LABEL = {
 
 export default function LearningInsights() {
   const [, setLocation] = useLocation();
-  const { data, isLoading, error } = trpc.questionBank.list.useQuery({ limit: 500 });
+  const { questions: questionBankRows } = useQuestionBank();
   const progressSummaryMutation = trpc.aiTutor.progressSummary.useMutation();
   const [profile] = useState(() => loadAdaptiveProfile());
-  const questionIds = useMemo(() => new Set(((data?.questions ?? []) as QuestionIdentity[]).map((question) => question.id)), [data]);
+  const questionIds = useMemo(() => new Set((questionBankRows as QuestionIdentity[]).map((question) => question.id)), [questionBankRows]);
   const report = useMemo(() => calculateAdaptiveReport(profile, questionIds), [profile, questionIds]);
   const heatmap = useMemo(() => calculateKnowledgeHeatmap(profile, questionIds), [profile, questionIds]);
   const trends = useMemo(() => calculateLearningTrendReport(profile, questionIds), [profile, questionIds]);
@@ -113,11 +114,7 @@ export default function LearningInsights() {
         <div className="learning-insights-privacy"><ShieldCheck size={18} /><span>資料只留在此裝置</span></div>
       </header>
 
-      {isLoading ? (
-        <section className="learning-insights-empty"><Compass size={26} aria-hidden="true" /><p>正在整理你的學習航線……</p></section>
-      ) : error ? (
-        <section className="learning-insights-empty"><p>題庫暫時無法載入；本機紀錄仍會保留。請稍後重新開啟此頁。</p></section>
-      ) : report.attempts === 0 ? (
+      {report.attempts === 0 ? (
         <section className="learning-insights-empty"><BookOpen size={26} aria-hidden="true" /><h2>先完成幾個觀測點</h2><p>完成題目後，這裡會依實際答題顯示知識熱點與複習方向。</p><button className="learning-insights-action" onClick={() => setLocation("/practice")}>前往今日挑戰</button></section>
       ) : (
         <>

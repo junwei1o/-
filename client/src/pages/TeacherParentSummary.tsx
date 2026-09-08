@@ -8,7 +8,7 @@ import { buildSupporterLearningTimeline, buildSupporterTimelineReadout, formatSu
 import { buildTimelineQuestionReview, type TimelineQuestionBankRow, type TimelineQuestionReview } from "@/lib/teacherParentQuestionReview";
 import { buildKnowledgePracticeRecommendation } from "@/lib/teacherParentPracticeRecommendation";
 import { buildCurrentVsPreviousReinforcementJournalComparison, buildRecentReinforcementJournalTopicDistribution, getRecentReinforcementJournalWeekRange, loadRecentReinforcementJournalWeek, RECENT_REINFORCEMENT_WEEK_COUNT, type MapReinforcementJournalEntry, type ReinforcementJournalTopicDistributionItem } from "@/game/mapReinforcementReward";
-import { trpc } from "@/lib/trpc";
+import { useQuestionBank } from "@/lib/questionBank";
 import { readStoredValue, writeStoredValue } from "@/utils/storage";
 import "./TeacherParentSummary.css";
 
@@ -186,8 +186,8 @@ export default function TeacherParentSummary() {
   const summary = useMemo(() => buildTeacherParentSummary(filteredProfile), [filteredProfile]);
   const timeline = useMemo(() => buildSupporterLearningTimeline(filteredProfile), [filteredProfile]);
   const islandTitleBySubject = useMemo(() => new Map(summary.islands.map(({ island }) => [island.subject, island.title])), [summary.islands]);
-  const questionBankQuery = trpc.questionBank.list.useQuery({ limit: 500 });
-  const questionBank = (questionBankQuery.data ?? []) as TimelineQuestionBankRow[];
+  const { questions: questionBankRows } = useQuestionBank();
+  const questionBank = questionBankRows as unknown as TimelineQuestionBankRow[];
   const [spoken, setSpoken] = useState(false);
   const [reviewEventId, setReviewEventId] = useState<string | null>(null);
   const reviewCloseRef = useRef<HTMLButtonElement | null>(null);
@@ -232,7 +232,7 @@ export default function TeacherParentSummary() {
       <section className="supporter-timeline-panel" aria-labelledby="supporter-timeline-title">
         <div className="supporter-timeline-heading"><div><p className="eyebrow">LEARNING VOYAGE</p><h2 id="supporter-timeline-title"><Waypoints size={20} aria-hidden="true" /> 跨島學習時間軸</h2><p>依真實作答時間串起不同知識島的探索歷程，方便一起回顧走過的主題。</p></div>{timeline.islandsRepresented.length > 0 && <div className="supporter-timeline-legend" aria-label="時間軸中的知識島">{timeline.islandsRepresented.map((subject) => <span key={subject} data-island={subject}>{subject}島</span>)}</div>}</div>
         {timeline.events.length > 0 ? <ol className="supporter-timeline" aria-label="跨島學習足跡時間軸">{timeline.events.map((event) => <li key={event.id} className="supporter-timeline-event" data-island={event.subject}><span className="supporter-timeline-node" aria-hidden="true" /><article aria-label={`${formatSupporterTimelineTimestamp(event.timestamp)}，${event.subject}島，${event.knowledge}，${event.activityLabel}`}><time dateTime={new Date(event.timestamp).toISOString()}>{formatSupporterTimelineTimestamp(event.timestamp)}</time><span className="supporter-timeline-subject">{event.subject}島</span><h3>{event.knowledge}</h3><p>{event.activityLabel}</p><button type="button" className="supporter-timeline-review-button" ref={reviewEventId === event.id ? reviewTriggerRef : undefined} onClick={() => { reviewTriggerRef.current = document.activeElement as HTMLButtonElement; setReviewEventId(event.id); }}>查看相關題目</button></article></li>)}</ol> : <p className="supporter-timeline-empty" aria-live="polite">目前範圍內還沒有學習足跡。完成下一題後，這裡會依真實紀錄畫出跨島航線。</p>}
-        {questionReview && <QuestionReviewDialog review={questionReview} isLoading={questionBankQuery.isLoading} closeRef={reviewCloseRef} onClose={closeQuestionReview} onOpenPractice={setLocation} />}
+        {questionReview && <QuestionReviewDialog review={questionReview} isLoading={false} closeRef={reviewCloseRef} onClose={closeQuestionReview} onOpenPractice={setLocation} />}
       </section>
 
       <section className="supporter-topics-panel" aria-labelledby="supporter-topics-title"><div><p className="eyebrow">OBSERVED TOPICS</p><h2 id="supporter-topics-title">最近看見的學習線索</h2></div>{summary.visitedTopics.length > 0 ? <div className="supporter-topic-cloud">{summary.visitedTopics.map((topic) => <span key={topic}><Sparkles size={13} aria-hidden="true" />{topic}</span>)}</div> : <p>完成題目後，實際出現的知識點會在這裡留下線索。</p>}</section>

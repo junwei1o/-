@@ -26,7 +26,7 @@ import { advanceBattleRageSkillCooldowns, BATTLE_RAGE_SKILL_CAST_HIGHLIGHT_MS, c
 import { useLocation } from "wouter";
 import { useNetworkStatus } from "@/hooks/useNetworkStatus";
 import { applyAccessibilityPrefs, getAccessibilityPrefs, readStoredValue, recordRareMonsterDefeat, saveBattleRecap, unlockLimitedTitle, writeStoredValue } from "@/utils/storage";
-import { trpc } from "@/lib/trpc";
+import { useQuestionBank } from "@/lib/questionBank";
 import { BattlePhase, createBattleDispatcher, type BattleAction, type BattleMachineState, type BattleResolution } from "@/game-engine/battleState";
 import { DEFAULT_QUESTION_TIME_LIMIT_MS, calculateCritical, calculateEnemyDamage, rollEnemyDisrupt, type EnemyDisruptAction } from "@/game-engine/battleCalculator";
 import "./BattleSceneStatus.css";
@@ -117,7 +117,7 @@ function islandIdForSubject(subject?: string): "language" | "math" | "social" | 
 
 export default function BattleScene({ questionPool = [], onClose, modal = false, soundEnabled: soundEnabledProp }: Props) {
   const [, setLocation] = useLocation();
-  const { data: questionBankData, isLoading: questionBankLoading, error: questionBankError } = trpc.questionBank.list.useQuery({ limit: 500 });
+  const { questions: questionBankRows } = useQuestionBank();
   const [state, setState] = useState(() => loadRpgState());
   const [battle, setBattle] = useState<BattleState | null>(null);
   const [encounter, setEncounter] = useState<Encounter>(() => encounterForArenaHabitat(state).encounter);
@@ -174,7 +174,7 @@ export default function BattleScene({ questionPool = [], onClose, modal = false,
   const offlineSinceRef = useRef<number | null>(null);
   const [adaptiveProfile, setAdaptiveProfile] = useState<AdaptiveProfile>(() => loadAdaptiveProfile());
   const active = useMemo<Companion | undefined>(() => state.companions.find((item) => item.id === state.activeCompanionId) ?? state.companions[0], [state]);
-  const availableQuestions = useMemo(() => questionPool.length > 0 ? questionPool : (questionBankData?.questions ?? []) as BattleQuestion[], [questionBankData?.questions, questionPool]);
+  const availableQuestions = useMemo(() => questionPool.length > 0 ? questionPool : questionBankRows as unknown as BattleQuestion[], [questionBankRows, questionPool]);
   const question = useMemo(() => availableQuestions.find((item) => item.id === battle?.questionId) ?? availableQuestions[0], [availableQuestions, battle?.questionId]);
   const gearBonuses = useMemo(() => academyGearBonuses(state.academyGearIds), [state.academyGearIds]);
   const habitats = useMemo(() => arenaHabitatStatuses(state), [state]);
@@ -720,9 +720,7 @@ export default function BattleScene({ questionPool = [], onClose, modal = false,
     dispatchBattle({ type: "RESET" });
     onClose ? onClose() : setLocation("/");
   };
-  if (!modal && questionBankLoading && questionPool.length === 0) return <main className="standalone-battle battle-scene-state"><span className="eyebrow accent">CURRICULUM COMBAT / LOADING</span><h1>正在整理對戰題庫</h1><p>正在載入正式課綱題目，準備你的下一回合。</p></main>;
-  if (!modal && questionBankError && questionPool.length === 0) return <main className="standalone-battle battle-scene-state"><span className="eyebrow accent">CURRICULUM COMBAT / OFFLINE</span><h1>題庫暫時無法載入</h1><p>請返回探險地圖，確認網路後再重新進入戰鬥場。</p><Button onClick={close}><ArrowLeft size={16} /> 返回探險地圖</Button></main>;
-  if (!question && !questionBankLoading) return <main className="standalone-battle battle-scene-state"><span className="eyebrow accent">CURRICULUM COMBAT / EMPTY</span><h1>目前沒有可用題目</h1><p>正式題庫尚未提供可用的戰鬥題目，請稍後再試。</p><Button onClick={close}><ArrowLeft size={16} /> 返回探險地圖</Button></main>;
+  if (!question) return <main className="standalone-battle battle-scene-state"><span className="eyebrow accent">CURRICULUM COMBAT / EMPTY</span><h1>目前沒有可用題目</h1><p>正式題庫尚未提供可用的戰鬥題目，請稍後再試。</p><Button onClick={close}><ArrowLeft size={16} /> 返回探險地圖</Button></main>;
   const seconds = Math.max(0, Math.ceil((questionTimeLimitMs - (now - startedAt)) / 1000));
   const content = <main className={`standalone-battle ${modal ? "standalone-battle-modal" : ""} battle-environment-${worldState.period} ${worldState.rainy ? "battle-environment-rainy" : ""}`} data-environment-period={worldState.period} data-environment-rainy={worldState.rainy ? "true" : "false"} aria-label="獨立對戰場景">
     <div className="battle-scene-topbar"><Button variant="ghost" onClick={close}><ArrowLeft size={17} /> 返回探險地圖</Button><span className="battle-scene-label"><Swords size={15} /> ISLAND DUEL / 學習對戰場</span><span className="battle-scene-resources"><Zap size={15} /> {state.energy} 能量 <Button type="button" variant="ghost" className="battle-sound-toggle" onClick={() => setSoundEnabled((enabled) => !enabled)} aria-pressed={soundEnabled} aria-label={soundEnabled ? "關閉戰鬥音效" : "開啟戰鬥音效"} title={soundEnabled ? "關閉戰鬥音效" : "開啟戰鬥音效"}>{soundEnabled ? <Volume2 size={15} aria-hidden="true" /> : <VolumeX size={15} aria-hidden="true" />}<span className="sr-only">{soundEnabled ? "戰鬥音效已開啟" : "戰鬥音效已關閉"}</span></Button></span></div>

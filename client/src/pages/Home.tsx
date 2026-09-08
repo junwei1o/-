@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { AlarmClock, Backpack, BarChart3, BookOpenCheck, BrainCircuit, Bug, CalendarDays, ChevronDown, ChevronUp, Coins, Crosshair, Crown, Dices, RotateCcw, ScrollText, Settings as SettingsIcon, ShieldAlert, Sparkles, Swords, Telescope, Timer, type LucideIcon, X } from "lucide-react";
 import { toast } from "sonner";
 import { useLocation } from "wouter";
-import { trpc } from "@/lib/trpc";
+import { useQuestionBank } from "@/lib/questionBank";
 import { getMemoryAlarmCount, loadAdaptiveProfile } from "@/game/adaptiveLearning";
 import { loadUserPreferences, saveUserPreferences, type UserGradeLevel, type UserDifficultyPreference } from "@/game/adaptiveLearning";
 import { getInventory } from "@/game/inventoryService";
@@ -16,12 +16,7 @@ import { QuizModal } from "@/components/QuizModal";
 import { claimDailySignIn, consumeStorageNotice, getDailySignIn, getLearningRecord, getPlayerData, getPlayerName, getSelectedTitle, hasSignedInToday, type LearningRecord } from "@/utils/storage";
 import { buildKnowledgeIslandSnapshots, type KnowledgeIslandSubject } from "@/lib/studentKnowledgeIslands";
 import type { PaperQuestion } from "@/lib/paperExam";
-import { LOCAL_CURRICULUM_PAPER_QUESTIONS } from "@/game/expeditionPaperAdapter";
 import "./HomeDashboard.css";
-
-function toLocalPaperQuestions(): PaperQuestion[] {
-  return LOCAL_CURRICULUM_PAPER_QUESTIONS;
-}
 
 function rankFromAnswers(answerCount: number) {
   if (answerCount >= 32) return "穩健領航員";
@@ -123,7 +118,7 @@ export function buildWeeklySuggestion(records: LearningRecord[], now = Date.now(
 
 export default function Home() {
   const [, setLocation] = useLocation();
-  const { data, isLoading } = trpc.questionBank.list.useQuery({ limit: 500 });
+  const { questions: questionBankRows } = useQuestionBank();
   const [rpgState, setRpgState] = useState(() => loadRpgState());
   const [profile, setProfile] = useState(() => loadAdaptiveProfile());
   const [inventory, setInventory] = useState(() => getInventory());
@@ -163,8 +158,7 @@ export default function Home() {
   const firstUse = answerCount === 0 && profile.attempts.length === 0;
   const availableIslands = islands.filter((island) => island.unlocked);
   const nextIsland = availableIslands.find((island) => island.attemptCount > 0 && island.attemptCount < 4) ?? availableIslands[0] ?? islands[0];
-  const localQuestions = useMemo(() => toLocalPaperQuestions(), []);
-  const questions = localQuestions.length >= 400 ? localQuestions : ((data?.questions ?? []) as PaperQuestion[]);
+  const questions = questionBankRows as PaperQuestion[];
   const memoryAlarmCount = useMemo(() => getMemoryAlarmCount(profile), [profile]);
   const weeklySuggestion = useMemo(() => buildWeeklySuggestion(learningRecords), [learningRecords]);
   const dailyAdventureSummary = useMemo(() => generateDailyAdventureSummary({ date: Date.now(), entries: getJournalEntries() }), [learningRecords.length, rpgState.correctAnswerCount]);
@@ -445,7 +439,7 @@ export default function Home() {
               <button ref={firstActionRef} tabIndex={isActionsOpen ? 0 : -1} type="button" className="home-dashboard-action primary" onClick={() => openSubject(firstUse ? islands[0].subject : nextIsland.subject)}><BookOpenCheck size={19} aria-hidden="true" /> {firstUse ? "開始探險" : "繼續探險"}<small>{firstUse ? "從國文島・台北啟航" : `前往${nextIsland.shortTitle}`}</small></button>
               <button tabIndex={isActionsOpen ? 0 : -1} type="button" className="home-dashboard-action" onClick={() => setLocation("/wrong-answers")}><RotateCcw size={18} aria-hidden="true" /> 錯題重練<small>整理真實作答線索</small></button>
               <button tabIndex={isActionsOpen ? 0 : -1} type="button" className={`home-dashboard-action home-dashboard-memory-alarm ${memoryAlarmCount > 0 ? "has-due" : ""}`} onClick={() => setLocation("/practice?reviewDue=1&source=memory-alarm")} aria-label={memoryAlarmCount > 0 ? `記憶警報，今日有 ${memoryAlarmCount} 題到期複習` : "記憶警報，目前沒有到期複習"}><AlarmClock size={18} aria-hidden="true" /> 記憶警報<small>{memoryAlarmCount > 0 ? `今日有 ${memoryAlarmCount} 題線索回來了` : "目前沒有到期題目"}</small>{memoryAlarmCount > 0 && <strong aria-hidden="true">{memoryAlarmCount}</strong>}</button>
-              <button tabIndex={isActionsOpen ? 0 : -1} type="button" className="home-dashboard-action" disabled={isLoading || questions.length === 0} onClick={startRandomAdventure}><Dices size={18} aria-hidden="true" /> 隨機冒險<small>{isLoading ? "正在準備題庫" : "答對可獲雙倍金幣"}</small></button>
+              <button tabIndex={isActionsOpen ? 0 : -1} type="button" className="home-dashboard-action" disabled={questions.length === 0} onClick={startRandomAdventure}><Dices size={18} aria-hidden="true" /> 隨機冒險<small>答對可獲雙倍金幣</small></button>
             </nav>
             {isActionsOpen ? <button type="button" className="home-dashboard-actions-close" onClick={closeActions}><X size={15} aria-hidden="true" /> 關閉</button> : null}
           </section>

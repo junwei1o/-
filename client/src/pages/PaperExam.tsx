@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { BookOpenCheck, ChevronLeft, ChevronRight, CircleAlert, ClipboardList, Flag, MapPinned, Mountain, Orbit, RotateCcw, Volume2, VolumeX, X } from "lucide-react";
 import { trpc } from "@/lib/trpc";
+import { useQuestionBank } from "@/lib/questionBank";
 import { SpeechReadableText } from "@/components/SpeechReadableText";
 import { SpeechReadButton } from "@/components/SpeechReadButton";
 import { AiReviewPlanCard } from "@/components/AiReviewPlanCard";
@@ -70,8 +71,8 @@ function errorTypeLabel(errorType: AdaptiveErrorType) {
 
 export default function PaperExam() {
   const [location, setLocation] = useLocation();
-  const { data, isLoading, error, refetch } = trpc.questionBank.list.useQuery({ limit: 500 });
-  const questions = (data?.questions ?? []) as PaperQuestion[];
+  const { questions: questionBankRows, refetch: refetchQuestionBank, isFallback: questionBankFallback } = useQuestionBank();
+  const questions = questionBankRows as PaperQuestion[];
   const [scope, setScope] = useState<PaperScope>("綜合課綱");
   const [deck, setDeck] = useState<PaperQuestion[]>([]);
   const [answers, setAnswers] = useState<Record<string, number>>({});
@@ -592,7 +593,7 @@ function pickPoolWithCooldown(nextScope: PaperScope): PaperQuestion[] {
         <p>選擇試卷範圍後逐題作答。點選選項就會立即顯示正誤與解析，不需要交卷，也不會在作答中跳轉或重排。</p>
         {!paperReady && (
           <nav className="paper-home-launchpad" aria-label="學習快速入口">
-            <button type="button" className="paper-home-primary" onClick={() => requestPaperStart()} disabled={isLoading || Boolean(error)}>
+            <button type="button" className="paper-home-primary" onClick={() => requestPaperStart()} disabled={questions.length === 0}>
               <BookOpenCheck size={20} aria-hidden="true" />
               <span><strong>開始今日試卷</strong><small>依目前選擇建立固定題組</small></span>
             </button>
@@ -632,11 +633,11 @@ function pickPoolWithCooldown(nextScope: PaperScope): PaperQuestion[] {
           ))}
         </div>
         {!paperReady && (
-          <button type="button" className="paper-primary-button" onClick={() => requestPaperStart()} disabled={isLoading || Boolean(error)}>
-            <BookOpenCheck size={19} aria-hidden="true" /> {isLoading ? "題庫載入中…" : "建立試卷"}
+          <button type="button" className="paper-primary-button" onClick={() => requestPaperStart()} disabled={questions.length === 0}>
+            <BookOpenCheck size={19} aria-hidden="true" /> 建立試卷
           </button>
         )}
-        {error && <p className="paper-error" role="alert"><CircleAlert size={17} aria-hidden="true" /> 題庫暫時無法載入。<button type="button" onClick={() => refetch()}>重新載入</button></p>}
+        {questionBankFallback && <p className="paper-error" role="status"><CircleAlert size={17} aria-hidden="true" /> 線上題庫暫時無法連線，已改用內建題庫（{questions.length} 題），可直接離線作答。<button type="button" onClick={() => refetchQuestionBank()}>重新連線</button></p>}
         <p className="sr-only" aria-live="polite">{notice}</p>
       </section>
 

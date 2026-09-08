@@ -91,11 +91,11 @@ export function buildPersonalizedPaperDeck(
     const userAllowedDifficulties = getTargetDifficultiesFromPrefs(prefs);
     const adaptiveTargets = profile ? targetDifficulties(profile, questions as any) : userAllowedDifficulties;
     const finalTargets = adaptiveTargets.filter(d => userAllowedDifficulties.includes(d));
-    const targetDifficulties = finalTargets.length > 0 ? finalTargets : userAllowedDifficulties;
-    
+    const effectiveDifficulties = finalTargets.length > 0 ? finalTargets : userAllowedDifficulties;
+
     const scopeFiltered = scope === "綜合課綱" ? questions : questions.filter((q) => q.subject === scope);
     const gradeFiltered = filterQuestionsByGrade(scopeFiltered, prefs);
-    const difficultyFiltered = gradeFiltered.filter((q) => targetDifficulties.includes(q.difficulty as any));
+    const difficultyFiltered = gradeFiltered.filter((q) => effectiveDifficulties.includes(q.difficulty as any));
     filteredQuestions = difficultyFiltered.length >= Math.min(size, gradeFiltered.length) ? difficultyFiltered : gradeFiltered;
   } else {
     // 無用戶偏好：最難的排最前面

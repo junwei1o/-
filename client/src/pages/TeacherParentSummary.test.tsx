@@ -16,16 +16,19 @@ vi.mock("@/lib/trpc", () => ({
     questionBank: {
       list: {
         useQuery: () => ({
-          data: [
-            {
-              id: "review-math",
-              prompt: "一張地圖分成八等份，小芸走了其中三份。她走了全程的幾分之幾？",
-              options: ["3/8", "5/8", "8/3"],
-              answer: "3/8",
-              explanation: "已走的三份除以全部八份，所以是 3/8。",
-            },
-          ],
+          data: {
+            questions: [
+              {
+                id: "review-math",
+                prompt: "一張地圖分成八等份，小芸走了其中三份。她走了全程的幾分之幾？",
+                options: ["3/8", "5/8", "8/3", "1/8"],
+                answer: 0,
+                explanation: "已走的三份除以全部八份，所以是 3/8。",
+              },
+            ],
+          },
           isLoading: false,
+          isError: false,
         }),
       },
     },

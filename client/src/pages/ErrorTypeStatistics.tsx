@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { BarChart3, BookOpen, ChevronLeft, Headphones, ShieldCheck, Sparkles, Target } from "lucide-react";
 import { useLocation } from "wouter";
-import { trpc } from "@/lib/trpc";
+import { useQuestionBank } from "@/lib/questionBank";
 import { calculateErrorTypeAnalytics, ERROR_TYPE_COLORS, ERROR_TYPE_LABELS, getErrorTypeLearningMessage } from "@/game/errorAnalytics";
 import { loadAdaptiveProfile } from "@/game/adaptiveLearning";
 
@@ -9,9 +9,9 @@ type QuestionIdentity = { id: string };
 
 export default function ErrorTypeStatistics() {
   const [, setLocation] = useLocation();
-  const { data, isLoading, error } = trpc.questionBank.list.useQuery({ limit: 500 });
+  const { questions: questionBankRows } = useQuestionBank();
   const [profile] = useState(() => loadAdaptiveProfile());
-  const questionIds = useMemo(() => new Set(((data?.questions ?? []) as QuestionIdentity[]).map((question) => question.id)), [data]);
+  const questionIds = useMemo(() => new Set((questionBankRows as QuestionIdentity[]).map((question) => question.id)), [questionBankRows]);
   const analytics = useMemo(() => calculateErrorTypeAnalytics(profile, questionIds.size ? questionIds : undefined), [profile, questionIds]);
   const [isSpeaking, setIsSpeaking] = useState(false);
 
@@ -36,11 +36,7 @@ export default function ErrorTypeStatistics() {
         <div className="learning-insights-privacy"><ShieldCheck size={18} aria-hidden="true" /><span>資料只留在此裝置</span></div>
       </header>
 
-      {isLoading ? (
-        <section className="learning-insights-empty"><BarChart3 size={26} aria-hidden="true" /><p>正在整理你的錯誤線索……</p></section>
-      ) : error ? (
-        <section className="learning-insights-empty"><p>題庫暫時無法載入；本機紀錄仍保留。請稍後重新開啟此頁。</p></section>
-      ) : analytics.attempts === 0 ? (
+      {analytics.attempts === 0 ? (
         <section className="learning-insights-empty"><BookOpen size={26} aria-hidden="true" /><h2>先完成幾個觀測點</h2><p>完成題目並在需要時分類錯誤後，這裡會顯示你的弱點分佈與變化。</p><button className="learning-insights-action" onClick={() => setLocation("/practice")}>前往今日挑戰</button></section>
       ) : (
         <>

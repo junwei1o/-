@@ -45,7 +45,9 @@ export function buildTimelineQuestionReview(event: SupporterTimelineEvent, quest
   const options = normalizeOptions(question.options);
   const responseNote = event.correct ? "本次作答結果：完成一次練習。" : "本次作答結果：已留下這次練習足跡。";
   const selectionNote = "學生實際選項：這份既有本機紀錄未保存選項內容，因此不推測或補寫答案。";
-  const answer = typeof question.answer === "string" && question.answer.trim() ? question.answer : null;
+  const answer = typeof question.answer === "number"
+    ? (options[question.answer] ?? null)
+    : typeof question.answer === "string" && question.answer.trim() ? question.answer : null;
   const explanation = typeof question.explanation === "string" && question.explanation.trim() ? question.explanation : null;
   return {
     status: "available",
