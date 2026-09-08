@@ -40,12 +40,13 @@ describe("TopNavigation", () => {
 
     expect(screen.getByRole("navigation", { name: "主要功能選單" })).toBeInTheDocument();
     expect(screen.getByRole("navigation", { name: "手機版核心入口" })).toBeInTheDocument();
-    expect(screen.getAllByRole("button")).toHaveLength(15);
+    expect(screen.getAllByRole("button")).toHaveLength(16);
     expect(screen.getByText("台灣學習航海儀表板")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "搜尋功能" })).toHaveTextContent("搜尋功能");
     expect(screen.getByRole("button", { name: "知識決鬥" })).toBeInTheDocument();
     expect(screen.getAllByRole("button", { name: "航海儀表板" })).toHaveLength(1);
     expect(screen.getAllByRole("button", { name: "試卷" })).toHaveLength(2);
+    expect(screen.getAllByRole("button", { name: "讀書技巧" })).toHaveLength(1);
     expect(screen.getAllByRole("button", { name: "陪讀摘要" })).toHaveLength(1);
     expect(screen.getAllByRole("button", { name: "探險日誌" })).toHaveLength(1);
     expect(screen.getAllByRole("button", { name: "設定" })).toHaveLength(1);
@@ -79,6 +80,13 @@ describe("TopNavigation", () => {
 
     fireEvent.click(screen.getAllByRole("button", { name: "天文館" })[0]);
     expect(setLocation).toHaveBeenCalledWith("/astronomy");
+  });
+
+  it("routes the study tips entry to the exam strategy page", () => {
+    render(<TopNavigation />);
+
+    fireEvent.click(screen.getByRole("button", { name: "讀書技巧" }));
+    expect(setLocation).toHaveBeenCalledWith("/study-tips");
   });
 
   it("opens the student-centered relationship map from the primary navigation", () => {

@@ -1544,3 +1544,94 @@ h1, h2, h3,
   background: rgba(255, 255, 255, 0.9) !important;
   box-shadow: 0 4px 10px var(--eye-care-shadow) !important;
 }
+
+/* 16. 結果頁備考小提醒（讀書技巧卡片） */
+.paper-summary-tips {
+  margin: 0 0 1.75rem;
+  padding: 1.1rem 1.2rem 1.25rem;
+  border: 1px solid rgba(217, 160, 45, 0.35);
+  border-left: 4px solid var(--yellow);
+  border-radius: 1rem;
+  background: linear-gradient(135deg, rgba(255, 250, 235, 0.96) 0%, rgba(255, 255, 255, 0.94) 100%);
+  box-shadow: 0 4px 12px rgba(39, 80, 72, 0.06);
+}
+
+.paper-summary-tips-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.85rem;
+}
+
+.paper-summary-tips-title {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0;
+  font-size: 1.02rem;
+  font-weight: 800;
+  color: var(--eye-care-text);
+}
+
+.paper-summary-tips-title svg {
+  color: #c28a12;
+  flex-shrink: 0;
+}
+
+.paper-summary-tips-link {
+  border: none;
+  background: none;
+  padding: 0;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #b07d10;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.paper-summary-tips-link:hover {
+  color: #8a6108;
+}
+
+.paper-summary-tips-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 0.5rem 1.5rem;
+}
+
+.paper-summary-tips-subject {
+  margin: 0 0 0.4rem;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--eye-care-text);
+}
+
+.paper-summary-tips-group ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.paper-summary-tips-group li {
+  position: relative;
+  padding-left: 1rem;
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: var(--eye-care-text-muted);
+}
+
+.paper-summary-tips-group li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.68em;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #d9a02d;
+}

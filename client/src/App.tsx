@@ -29,6 +29,7 @@ import AdventureJournal from "@/pages/AdventureJournal";
 import Home from "@/pages/Home";
 import WrongAnswers from "@/pages/WrongAnswers";
 import Settings from "@/pages/Settings";
+import StudyTips from "@/pages/StudyTips";
 import GuardianExpedition from "@/pages/GuardianExpedition";
 import { initGameData } from "@/utils/storage";
 import { OfflineBanner } from "@/components/OfflineBanner";
@@ -62,6 +63,7 @@ function Router() {
       <Route path={"/error-statistics"} component={ErrorTypeStatistics} />
       <Route path={"/learning-summary"} component={TeacherParentSummary} />
       <Route path={"/settings"} component={Settings} />
+      <Route path={"/study-tips"} component={StudyTips} />
       <Route path={"/adventure-journal"} component={AdventureJournal} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}

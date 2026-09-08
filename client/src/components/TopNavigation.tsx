@@ -1,12 +1,12 @@
 import * as React from "react";
-import { BarChart3, BookOpenText, BrainCircuit, ClipboardList, Compass, Orbit, Search, Settings, Swords, Telescope, UsersRound, type LucideIcon } from "lucide-react";
+import { BarChart3, BookOpenText, BrainCircuit, ClipboardList, Compass, Lightbulb, Orbit, Search, Settings, Swords, Telescope, UsersRound, type LucideIcon } from "lucide-react";
 import { useLocation } from "wouter";
 import { Command, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { findFeatureSearchResults } from "@/lib/featureSearch";
 
 type TopNavItem = {
-  id: "home" | "paper" | "map" | "journal" | "astronomy" | "principles" | "insights" | "errorStats" | "support" | "settings";
+  id: "home" | "paper" | "map" | "journal" | "astronomy" | "principles" | "insights" | "errorStats" | "support" | "settings" | "tips";
   label: string;
   icon: LucideIcon;
   href: string;
@@ -15,6 +15,7 @@ type TopNavItem = {
 const ITEMS: TopNavItem[] = [
   { id: "home", label: "航海儀表板", icon: Compass, href: "/" },
   { id: "paper", label: "試卷", icon: ClipboardList, href: "/practice" },
+  { id: "tips", label: "讀書技巧", icon: Lightbulb, href: "/study-tips" },
   { id: "map", label: "我的地圖", icon: Compass, href: "/map" },
   { id: "journal", label: "探險日誌", icon: BookOpenText, href: "/adventure-journal" },
   { id: "astronomy", label: "天文館", icon: Orbit, href: "/astronomy" },
@@ -44,6 +45,7 @@ function getActiveItem(location: string): TopNavItem["id"] {
   if (pathname === "/astronomy" || pathname.startsWith("/astronomy/")) return "astronomy";
   if (pathname === "/principles" || pathname.startsWith("/principles/")) return "principles";
   if (pathname === "/learning-insights") return "insights";
+  if (pathname === "/study-tips") return "tips";
   if (pathname === "/error-statistics") return "errorStats";
   if (pathname === "/learning-summary") return "support";
   if (pathname === "/settings") return "settings";

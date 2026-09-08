@@ -1,7 +1,7 @@
-import { BookOpenCheck, BrainCircuit, Crown, Swords, type LucideIcon } from "lucide-react";
+import { BookOpenCheck, BrainCircuit, Crown, Lightbulb, Swords, type LucideIcon } from "lucide-react";
 
 export type FeatureSearchItem = {
-  id: "battle" | "duel" | "guardian" | "wrongAnswers";
+  id: "battle" | "duel" | "guardian" | "wrongAnswers" | "studyTips";
   label: string;
   description: string;
   href: string;
@@ -41,6 +41,14 @@ export const FEATURE_SEARCH_ITEMS: FeatureSearchItem[] = [
     href: "/wrong-answers",
     keywords: ["錯題", "錯題魔王", "錯題複習", "補強", "複習", "錯誤"],
     icon: BookOpenCheck,
+  },
+  {
+    id: "studyTips",
+    label: "讀書技巧與應試策略",
+    description: "通用答題原則、各科答題眉角、素養題與考場心態調適。",
+    href: "/study-tips",
+    keywords: ["讀書技巧", "應試技巧", "考試技巧", "答題技巧", "備考", "會考", "讀書方法", "時間管理", "讀書"],
+    icon: Lightbulb,
   },
 ];
 

@@ -1,7 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { BookOpenCheck, ChevronLeft, ChevronRight, CircleAlert, ClipboardList, Flag, MapPinned, Mountain, Orbit, RotateCcw, Volume2, VolumeX, X } from "lucide-react";
+import { BookOpenCheck, ChevronLeft, ChevronRight, CircleAlert, ClipboardList, Flag, Lightbulb, MapPinned, Mountain, Orbit, RotateCcw, Volume2, VolumeX, X } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { useQuestionBank } from "@/lib/questionBank";
+import { getSubjectStudyTips, GENERAL_STUDY_TIPS } from "@/lib/studyTips";
 import { SpeechReadableText } from "@/components/SpeechReadableText";
 import { SpeechReadButton } from "@/components/SpeechReadButton";
 import { AiReviewPlanCard } from "@/components/AiReviewPlanCard";
@@ -192,6 +193,17 @@ export default function PaperExam() {
     () => filterWrongPaperQuestions(wrongQuestions, { subject: wrongSubjectFilter, reason: wrongReasonFilter }),
     [wrongQuestions, wrongReasonFilter, wrongSubjectFilter],
   );
+  const summaryTipGroups = useMemo(() => {
+    if (!deck.length) return [] as Array<{ subject: string; tips: string[] }>;
+    const uniqueSubjects = Array.from(new Set(deck.map((question) => question.subject)));
+    if (uniqueSubjects.length >= 3) {
+      return [{ subject: "綜合答題", tips: GENERAL_STUDY_TIPS.slice(0, 3) }];
+    }
+    return uniqueSubjects.map((subject) => ({
+      subject,
+      tips: getSubjectStudyTips(subject).slice(0, uniqueSubjects.length === 1 ? 3 : 2),
+    }));
+  }, [deck]);
   const reviewPlan = trpc.aiTutor.reviewPlan.useMutation();
   const reviewAdaptation = useMemo(() => getReviewSelfCheckAdaptation(filteredWrongQuestions), [filteredWrongQuestions]);
   const knowledgeMastery = useMemo(() => getKnowledgeMasterySummary(filteredWrongQuestions), [filteredWrongQuestions]);
@@ -689,6 +701,26 @@ function pickPoolWithCooldown(nextScope: PaperScope): PaperQuestion[] {
             <div><strong>{result.correct} / {result.total}</strong><span>答對題數</span></div>
             <div><strong>{wrongQuestions.length}</strong><span>需要複習</span></div>
           </div>
+          {summaryTipGroups.length > 0 && (
+            <section className="paper-summary-tips" aria-labelledby="paper-tips-title">
+              <div className="paper-summary-tips-heading">
+                <h3 className="paper-summary-tips-title" id="paper-tips-title"><Lightbulb size={17} aria-hidden="true" /> 下次進步的備考小提醒</h3>
+                <button type="button" className="paper-summary-tips-link" onClick={() => setLocation("/study-tips")}>看完整讀書技巧 →</button>
+              </div>
+              <div className="paper-summary-tips-grid">
+                {summaryTipGroups.map((group) => (
+                  <div key={group.subject} className="paper-summary-tips-group">
+                    <p className="paper-summary-tips-subject">{group.subject}</p>
+                    <ul>
+                      {group.tips.map((tip) => (
+                        <li key={tip}>{tip}</li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
           {isQuickQuiz && (
             <section className="mastery-comparison-card" aria-labelledby="mastery-comparison-title">
               <div className="mastery-comparison-heading">
