@@ -1,4 +1,11 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
+
+// ENV is captured when ./env is first imported, so the dummy Forge API key
+// must exist before ./routers is evaluated. vi.hoisted runs before imports.
+vi.hoisted(() => {
+  process.env.BUILT_IN_FORGE_API_KEY ??= "test-forge-key";
+});
+
 import { appRouter } from "./routers";
 import type { TrpcContext } from "./_core/context";
 
