@@ -54,8 +54,9 @@ function PageLoader() {
 function Router() {
   // make sure to consider if you need authentication for certain routes
   return (
-    <Suspense fallback={<PageLoader />}>
-      <Switch>
+    <main id="main-content">
+      <Suspense fallback={<PageLoader />}>
+        <Switch>
         <Route path={"/map"} component={StudentMap} />
         <Route path={"/"} component={Home} />
         <Route path={"/camp"} component={DailyCamp} />
@@ -89,8 +90,9 @@ function Router() {
         <Route path={"/404"} component={NotFound} />
         {/* Final fallback route */}
         <Route component={NotFound} />
-      </Switch>
-    </Suspense>
+        </Switch>
+      </Suspense>
+    </main>
   );
 }
 
@@ -114,6 +116,7 @@ function App() {
           <Toaster />
           <OfflineBanner />
           <BxEnhance />
+          <a className="skip-link" href="#main-content">跳到主要內容</a>
           <div className="app-route-shell">
             <TopNavigation />
             <Router />
