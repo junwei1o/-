@@ -596,7 +596,7 @@ export function TaiwanMainNavigationMap({ islands, onOpenSubject, onStartIslandQ
                 {activeIsland.learningDirections.map((direction) => <li key={direction}>{direction}</li>)}
               </ul>
             </section>
-            <p className={`taiwan-map-panel-status island-visual-${islandVisualState(activeIsland)}`}><Sparkles size={15} aria-hidden="true" /> {islandStatus(activeIsland)}</p>
+            <p className={`taiwan-map-panel-status island-visual-${islandVisualState(activeIsland)}`}><Sparkles size={15} aria-hidden="true" /> {islandStatus(activeIsland)}{islandStarRating(activeIsland) > 0 ? <span className="taiwan-map-panel-stars" aria-label={`目前星級 ${islandStarRating(activeIsland)} 星，滿級 3 星`}>{Array.from({ length: 3 }).map((_, index) => <span key={index} className={index < islandStarRating(activeIsland) ? "is-star-filled" : "is-star-empty"} aria-hidden="true">★</span>)}</span> : null}</p>
             <section className="taiwan-map-panel-progress" aria-label="這座島的練習足跡" data-testid={`taiwan-island-progress-${activeIsland.id}`}>
               <span>練習足跡</span>
               <strong>{activeIsland.attemptCount > 0 ? `已累積 ${activeIsland.attemptCount} 次練習` : "下一次練習會從這裡開始"}</strong>

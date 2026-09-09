@@ -1647,7 +1647,7 @@ nav { display:grid; gap:7px; }
 .global-top-nav-more-item.is-active { background:rgba(11,110,142,.14); color:var(--tidal-deep); box-shadow:inset 0 -2px var(--coral); }
 .global-top-nav-more-item:focus-visible { outline:3px solid var(--env-focus,#F6CD6D); outline-offset:1px; }
 .global-mobile-menu-trigger { display:none; }
-.global-mobile-menu-dialog { position:fixed; top:12px; bottom:auto; left:12px; right:12px; width:auto; max-width:480px; margin:0 auto; max-height:86vh; overflow:auto; padding:18px; border-radius:18px; gap:10px; }
+.global-mobile-menu-dialog { position:fixed; top:12px; bottom:auto; left:12px; right:12px; width:auto; max-width:480px; margin:0 auto; max-height:86vh; overflow:auto; padding:18px; border-radius:18px; gap:10px; translate:none; }
 .global-mobile-menu-close { position:absolute; top:10px; right:10px; display:grid; place-items:center; width:36px; height:36px; border:1px solid rgba(18,62,74,.16); border-radius:10px; background:rgba(255,253,248,.9); color:var(--tidal-deep); cursor:pointer; }
 .global-mobile-menu-close:focus-visible { outline:3px solid var(--env-focus,#F6CD6D); outline-offset:2px; }
 .global-mobile-menu-groups { display:grid; gap:14px; }
@@ -1662,6 +1662,10 @@ nav { display:grid; gap:7px; }
   .global-mobile-menu-trigger:focus-visible { outline:3px solid var(--env-focus,#F6CD6D); outline-offset:2px; }
 }
 @media (prefers-reduced-motion:reduce) { .global-top-nav-more-panel { animation:none; } .global-mobile-menu-item { transition:none; } .global-mobile-menu-item:active { transform:none; } }
+
+/* 戰鬥內能量不足 → 每日營地商店導引連結 */
+.battle-energy-camp-link { color:var(--coral); font-weight:900; text-decoration:underline; text-underline-offset:3px; }
+.battle-energy-camp-link:focus-visible { outline:3px solid var(--coral); outline-offset:2px; border-radius:4px; }
 
 /* Consecutive knowledge-point tutor: quiet, optional, non-blocking feedback. */
 .wrong-streak-tutor { margin-top:.75rem; padding:.85rem 1rem; border:1px solid rgba(103,83,154,.22); border-radius:14px; background:linear-gradient(135deg,rgba(246,243,255,.92),rgba(255,250,238,.94)); color:#394165; box-shadow:0 6px 16px rgba(67,59,105,.07); }.wrong-streak-tutor-heading { display:flex; align-items:flex-start; gap:.65rem; }.wrong-streak-tutor-mark { display:grid; width:28px; height:28px; flex:none; place-items:center; border-radius:50%; background:#e7ddff; color:#65529a; font-size:1rem; }.wrong-streak-tutor-heading > div { min-width:0; flex:1; }.wrong-streak-tutor-heading strong { display:block; margin-top:.12rem; color:#403d70; font-size:.9rem; }.wrong-streak-tutor p:not(.eyebrow) { margin:.55rem 0 .45rem 2.35rem; color:#59627b; font-size:.8rem; line-height:1.7; }.wrong-streak-tutor-progress { display:block; margin-left:2.35rem; color:#756e8c; font-size:.68rem; }.wrong-streak-tutor-dismiss { min-height:36px; flex:none; border:1px solid rgba(103,83,154,.22); border-radius:9px; padding:.38rem .55rem; background:rgba(255,255,255,.7); color:#5d5580; font:inherit; font-size:.7rem; cursor:pointer; }.wrong-streak-tutor-dismiss:hover,.wrong-streak-tutor-dismiss:focus-visible { background:#fff; border-color:#7460a5; }.wrong-streak-tutor-dismiss:focus-visible { outline:3px solid var(--coral); outline-offset:2px; }.wrong-streak-tutor-dismiss:active { transform:scale(.97); }

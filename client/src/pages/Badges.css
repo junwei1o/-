@@ -17,6 +17,9 @@
 .badge-card p { margin:0; color:var(--muted); font-size:12px; line-height:1.55; }
 .badge-card small { font-size:11px; font-weight:900; letter-spacing:.08em; color:#9aa6a3; }
 .badge-card.is-earned small { color:var(--coral); }
+.badge-hint-link { display:inline-block; margin-top:2px; padding:6px 12px; border:1px solid rgba(11,110,142,.25); border-radius:999px; background:rgba(11,110,142,.07); color:var(--tidal,#0B6E8E); font-size:11px; font-weight:900; text-decoration:none; transition:background .15s var(--ease,cubic-bezier(.23,1,.32,1)),transform .15s var(--ease,cubic-bezier(.23,1,.32,1)); }
+.badge-hint-link:hover { background:rgba(11,110,142,.14); transform:translateY(-1px); }
+.badge-hint-link:focus-visible { outline:3px solid var(--coral); outline-offset:2px; }
 
 @media (max-width:520px) {
   .badges-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:9px; }
@@ -24,6 +27,6 @@
   .badge-icon { width:48px; height:48px; font-size:24px; }
 }
 @media (prefers-reduced-motion:reduce) {
-  .badge-card { transition:none; }
-  .badge-card.is-earned:hover { transform:none; }
+  .badge-card, .badge-hint-link { transition:none; }
+  .badge-card.is-earned:hover, .badge-hint-link:hover { transform:none; }
 }

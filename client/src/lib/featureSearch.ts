@@ -1,7 +1,7 @@
-import { BookOpenCheck, BrainCircuit, Crown, Lightbulb, Medal, Swords, Tent, type LucideIcon } from "lucide-react";
+import { BookOpenCheck, BrainCircuit, Crown, Lightbulb, Map as MapIcon, Medal, Swords, Tent, type LucideIcon } from "lucide-react";
 
 export type FeatureSearchItem = {
-  id: "battle" | "duel" | "guardian" | "wrongAnswers" | "studyTips" | "dailyCamp" | "badges";
+  id: "map" | "battle" | "duel" | "guardian" | "wrongAnswers" | "studyTips" | "dailyCamp" | "badges";
   label: string;
   description: string;
   href: string;
@@ -10,6 +10,14 @@ export type FeatureSearchItem = {
 };
 
 export const FEATURE_SEARCH_ITEMS: FeatureSearchItem[] = [
+  {
+    id: "map",
+    label: "航海圖／學習地圖",
+    description: "瀏覽知識島嶼、學習航線與每座島的星級成績。",
+    href: "/map",
+    keywords: ["地圖", "航海圖", "學習地圖", "島嶼", "航線", "星級", "星星"],
+    icon: MapIcon,
+  },
   {
     id: "battle",
     label: "戰鬥系統",

@@ -272,8 +272,8 @@ export default function Home() {
       return;
     }
     toast.success(result.unlockedWeeklyTitle
-      ? `簽到成功，已連續 ${result.signIn.streak} 天並獲得「一週探險家」稱號！`
-      : `簽到成功，已連續 ${result.signIn.streak} 天。`);
+      ? `簽到成功，已連續 ${result.signIn.streak} 天並獲得「一週探險家」稱號！到每日營地可領任務金幣。`
+      : `簽到成功，已連續 ${result.signIn.streak} 天。到每日營地可領簽到任務金幣。`);
   }
 
   return (

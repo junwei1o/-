@@ -299,7 +299,7 @@ export default function TopNavigation() {
         </DialogContent>
       </Dialog>
       <Dialog open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-        <DialogContent className="global-mobile-menu-dialog" aria-describedby={undefined}>
+        <DialogContent className="global-mobile-menu-dialog" showCloseButton={false} aria-describedby={undefined}>
           <DialogHeader>
             <DialogTitle>功能選單</DialogTitle>
             <DialogDescription className="sr-only">選擇要前往的學習或探險功能。</DialogDescription>
