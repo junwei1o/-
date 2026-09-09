@@ -167,6 +167,24 @@ export default defineConfig({
   build: {
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
+    // 程式碼分包：大型第三方庫拆成獨立快取檔，換頁不重複下載。
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          "react-vendor": ["react", "react-dom", "react-hook-form", "@tanstack/react-query"],
+          "trpc-vendor": ["@trpc/client", "@trpc/react-query", "@trpc/server", "superjson", "zod"],
+          "ui-vendor": [
+            "class-variance-authority",
+            "clsx",
+            "tailwind-merge",
+            "framer-motion",
+            "lucide-react",
+            "sonner",
+          ],
+          "charts-vendor": ["recharts"],
+        },
+      },
+    },
   },
   server: {
     host: true,

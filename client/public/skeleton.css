@@ -1,0 +1,82 @@
+/* 首屏骨架屏：JS/React 下載期間顯示，品牌色系（米色 / 海藍 / 珊瑚）。
+   HTML 掛在 index.html，React 轉譯出第一個畫面後由 inline script 移除。 */
+
+#app-skeleton {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 32px 20px;
+  background:
+    radial-gradient(120% 90% at 50% -10%, rgba(255, 250, 235, 0.95) 0%, rgba(231, 240, 236, 0.98) 62%, rgba(214, 232, 229, 1) 100%),
+    #f9f3e8;
+  text-align: center;
+  transition: opacity 0.4s ease;
+}
+
+#app-skeleton.skeleton-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.skeleton-ship {
+  font-size: 3.4rem;
+  line-height: 1;
+  animation: skeletonBob 2.2s ease-in-out infinite;
+}
+
+.skeleton-title {
+  font-family: "Fraunces", "Noto Sans TC", serif;
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #0b6e8e;
+  letter-spacing: 0.08em;
+}
+
+.skeleton-subtitle {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #8a7a5d;
+}
+
+.skeleton-progress {
+  width: min(220px, 62vw);
+  height: 8px;
+  margin-top: 6px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(11, 110, 142, 0.14);
+}
+
+.skeleton-progress-bar {
+  width: 40%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #0b6e8e, #2a9d8f, #e76f51);
+  animation: skeletonProgress 1.5s ease-in-out infinite;
+}
+
+@keyframes skeletonBob {
+  0%, 100% { transform: translateY(0) rotate(-4deg); }
+  50%      { transform: translateY(-10px) rotate(4deg); }
+}
+
+@keyframes skeletonProgress {
+  0%   { transform: translateX(-130%); }
+  60%  { transform: translateX(180%); }
+  100% { transform: translateX(180%); }
+}
+
+/* 低動效偏好：停止所有動畫，改為靜態進度條 */
+@media (prefers-reduced-motion: reduce) {
+  #app-skeleton { transition: none; }
+  .skeleton-ship { animation: none; }
+  .skeleton-progress-bar {
+    width: 70%;
+    animation: none;
+  }
+}

@@ -6,6 +6,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#F9F3E8" />
     <title>寶島探險家｜互動學習航線</title>
+
+    <!-- SEO -->
+    <meta name="description" content="寶島探險家是專為國小 3~6 年級設計的互動學習平台，融合 RPG 航海冒險與 108 課綱題庫，涵蓋國語、數學、自然、社會四大領域，邊玩邊有效學習。" />
+    <meta name="keywords" content="寶島探險家, 國小題庫, 互動學習, 學習平台, 課綱題目, 國語, 數學, 自然, 社會, RPG學習, 遊戲化學習, 台灣課綱" />
+    <meta name="author" content="寶島探險家" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://xue-gr3a.onrender.com/" />
+
+    <!-- Open Graph（Line / FB 分享預覽） -->
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="zh_TW" />
+    <meta property="og:site_name" content="寶島探險家" />
+    <meta property="og:title" content="寶島探險家｜互動學習航線" />
+    <meta property="og:description" content="專為國小 3~6 年級設計的 RPG 學習冒險，涵蓋國語、數學、自然、社會四大課綱領域，邊玩邊有效學習。" />
+    <meta property="og:url" content="https://xue-gr3a.onrender.com/" />
+    <meta property="og:image" content="https://xue-gr3a.onrender.com/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="寶島探險家｜互動學習航線" />
+    <meta name="twitter:description" content="專為國小 3~6 年級設計的 RPG 學習冒險，涵蓋國語、數學、自然、社會四大課綱領域，邊玩邊有效學習。" />
+    <meta name="twitter:image" content="https://xue-gr3a.onrender.com/og-image.jpg" />
+
+    <!-- 行動裝置書籤列 -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="寶島探險家" />
+    <meta name="mobile-web-app-capable" content="yes" />
+
+    <!-- 首屏骨架屏（JS 載入完成前顯示，不用等 React） -->
+    <link rel="stylesheet" href="/skeleton.css" />
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800&family=Noto+Sans+TC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -13,6 +47,40 @@
 
   <body>
     <div id="root"></div>
+
+    <!-- 首屏骨架屏：React 掛載後自動隱藏 -->
+    <div id="app-skeleton" aria-hidden="true">
+      <div class="skeleton-ship">⛵️</div>
+      <div class="skeleton-title">寶島探險家</div>
+      <div class="skeleton-subtitle">正在啟航…</div>
+      <div class="skeleton-progress">
+        <div class="skeleton-progress-bar"></div>
+      </div>
+    </div>
+    <script>
+      (function () {
+        function hideSkeleton() {
+          var el = document.getElementById("app-skeleton");
+          if (el) {
+            el.classList.add("skeleton-hidden");
+            setTimeout(function () { el.remove(); }, 450);
+          }
+        }
+        var root = document.getElementById("root");
+        if (root) {
+          var observer = new MutationObserver(function () {
+            if (root.children.length > 0) {
+              hideSkeleton();
+              observer.disconnect();
+            }
+          });
+          observer.observe(root, { childList: true, subtree: true });
+        }
+        // 保險：4 秒後強制隱藏
+        setTimeout(hideSkeleton, 4000);
+      })();
+    </script>
+
     <script type="module" src="/src/main.tsx"></script>
     <script
       defer

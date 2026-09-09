@@ -32,12 +32,13 @@ describe("App routing", () => {
     window.history.replaceState({}, "", "/");
   });
 
-  it("renders the standalone battle scene at /battle instead of the paper exam", () => {
+  it("renders the standalone battle scene at /battle instead of the paper exam", async () => {
     window.history.replaceState({}, "", "/battle");
 
     render(<App />);
 
-    expect(screen.getByRole("main", { name: "獨立對戰場景" })).toBeInTheDocument();
+    // 路由改為懶加載：等待 Suspense 內的動態模組解析完成。
+    expect(await screen.findByRole("main", { name: "獨立對戰場景" })).toBeInTheDocument();
     expect(screen.queryByText("試卷頁")).not.toBeInTheDocument();
   });
 });
