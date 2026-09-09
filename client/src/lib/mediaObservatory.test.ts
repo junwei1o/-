@@ -2,9 +2,9 @@ import { describe, expect, it } from "vitest";
 import { OBSERVATORY_CATEGORIES, OBSERVATORY_ENTRIES, getObservatoryEntry } from "./mediaObservatory";
 
 describe("media observatory metadata", () => {
-  it("contains three copyright-safe worldview entries with complete learning fields", () => {
+  it("contains ten copyright-safe worldview entries with complete learning fields", () => {
     const titles = OBSERVATORY_ENTRIES.map((entry) => entry.title);
-    expect(titles).toEqual(["我是奶龍", "奧特曼", "假面騎士"]);
+    expect(titles).toEqual(["我是奶龍", "奧特曼", "假面騎士", "哆啦A夢", "寶可夢", "麵包超人", "櫻桃小丸子", "蠟筆小新", "超級戰隊", "光之美少女"]);
     expect(OBSERVATORY_ENTRIES.every((entry) => entry.shortDescription.length > 10 && entry.observation.length > 10 && entry.learning.length > 5 && entry.worldview.length > 30 && entry.learningPaths.length === 3 && entry.officialSourceUrl.startsWith("https://"))).toBe(true);
   });
 

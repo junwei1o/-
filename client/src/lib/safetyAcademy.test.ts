@@ -10,11 +10,11 @@ import {
 } from "./safetyAcademy";
 
 describe("生活安全學院資料", () => {
-  it("共有 16 張卡，四個主題館各 4 張", () => {
-    expect(SAFETY_CARDS).toHaveLength(16);
-    expect(SAFETY_CARD_KEYS).toHaveLength(16);
+  it("共有 20 張卡，四個主題館各 5 張", () => {
+    expect(SAFETY_CARDS).toHaveLength(20);
+    expect(SAFETY_CARD_KEYS).toHaveLength(20);
     for (const hall of SAFETY_HALLS) {
-      expect(getSafetyCardsByHall(hall.key)).toHaveLength(4);
+      expect(getSafetyCardsByHall(hall.key)).toHaveLength(5);
     }
   });
 
@@ -58,6 +58,6 @@ describe("生活安全學院資料", () => {
 
   it("金幣獎勵為正數且全部完成獎勵量級合理", () => {
     expect(SAFETY_QUIZ_REWARD_COINS).toBeGreaterThan(0);
-    expect(SAFETY_QUIZ_REWARD_COINS * SAFETY_CARDS.length).toBe(32);
+    expect(SAFETY_QUIZ_REWARD_COINS * SAFETY_CARDS.length).toBe(40);
   });
 });

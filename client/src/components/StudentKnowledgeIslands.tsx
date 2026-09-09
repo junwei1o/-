@@ -113,7 +113,7 @@ export function StudentKnowledgeIslands({ islands, onOpenSubject, onOpenTopic }:
               <ul>
                 {activeIsland.resources.map((resource) => (
                   <li key={resource.url}>
-                    <a href={resource.url} target="_blank" rel="noreferrer" aria-label={`${resource.title}，${resource.provider}，開啟外部資源`}>
+                    <a href={resource.url} target="_blank" rel="noopener noreferrer" aria-label={`${resource.title}，${resource.provider}，開啟外部資源`}>
                       <span>{resource.title}</span><small>{resource.provider} · {resource.kind}</small>
                     </a>
                   </li>

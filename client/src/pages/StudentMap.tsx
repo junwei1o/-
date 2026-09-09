@@ -81,7 +81,7 @@ export default function StudentMap() {
           <div>
             <p className="eyebrow">FIELD MEDIA PROGRESS</p>
             <h2 id="observatory-progress-title">動漫觀測探索</h2>
-            <p>完成一站 5 題小測驗，就會在這裡留下實際最佳分數；重玩只更新較高分，不會重置已完成紀錄。</p>
+            <p>完成一站 8 題小測驗，就會在這裡留下實際最佳分數；重玩只更新較高分，不會重置已完成紀錄。</p>
           </div>
           <button type="button" className="student-map-observatory-open" onClick={() => setLocation("/observatory")}>前往觀測站</button>
         </div>
@@ -90,7 +90,7 @@ export default function StudentMap() {
         <ul className="student-map-observatory-list">
           {observatoryProgress.stations.map((station) => {
             const entry = OBSERVATORY_ENTRIES.find((item) => item.key === station.key);
-            return <li key={station.key}><button type="button" onClick={() => setLocation(`/observatory/${station.key}`)} aria-label={`${entry?.title ?? station.key}：${station.completed ? `最佳 ${station.bestCorrect}／${station.total} 題，已完成` : "尚未完成小測驗"}`}><span>{entry?.title ?? station.key}</span><strong>{station.completed ? `最佳 ${station.bestCorrect}／${station.total} 題` : "尚未完成"}</strong><small>{station.completed ? `已挑戰 ${station.attempts} 次` : "開始 5 題小測驗"}</small></button></li>;
+            return <li key={station.key}><button type="button" onClick={() => setLocation(`/observatory/${station.key}`)} aria-label={`${entry?.title ?? station.key}：${station.completed ? `最佳 ${station.bestCorrect}／${station.total} 題，已完成` : "尚未完成小測驗"}`}><span>{entry?.title ?? station.key}</span><strong>{station.completed ? `最佳 ${station.bestCorrect}／${station.total} 題` : "尚未完成"}</strong><small>{station.completed ? `已挑戰 ${station.attempts} 次` : "開始 8 題小測驗"}</small></button></li>;
           })}
         </ul>
       </section>

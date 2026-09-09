@@ -47,7 +47,7 @@ describe("StudentMap", () => {
     expect(screen.getByRole("main")).toHaveTextContent("先從「我」出發");
     expect(screen.getByLabelText("我的學習中心，目前第 1 級，已完成 2 題，整體進度 10%")).toBeInTheDocument();
     expect(screen.getByText("這張地圖只呈現此裝置上的學習進度；不會公開個人資料。")).toBeInTheDocument();
-    expect(screen.getByLabelText("動漫觀測探索進度，已完成 1 / 3 站，整體完成度 33%")).toBeInTheDocument();
+    expect(screen.getByLabelText("動漫觀測探索進度，已完成 1 / 10 站，整體完成度 10%")).toBeInTheDocument();
     expect(screen.getByText("最佳 4／5 題")).toBeInTheDocument();
   });
 

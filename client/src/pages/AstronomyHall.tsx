@@ -1,10 +1,21 @@
 import React, { useState } from "react";
-import { ArrowLeft, ArrowUpRight, Binoculars, CircleDot, Compass, Telescope } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, Binoculars, CircleDot, Compass, Rainbow, Sparkles, Telescope, type LucideIcon } from "lucide-react";
 import { Link, useLocation } from "wouter";
-import { ASTRONOMY_EXHIBITS } from "@/lib/astronomy";
+import { ASTRONOMY_EXHIBITS, type AstronomyKey } from "@/lib/astronomy";
 import AstronomyQuiz from "@/components/AstronomyQuiz";
 
-const icons = [CircleDot, Compass, CircleDot, Telescope, CircleDot, Binoculars, Telescope, CircleDot];
+const EXHIBIT_ICONS: Record<AstronomyKey, LucideIcon> = {
+  "cosmic-scale": CircleDot,
+  "solar-system": Compass,
+  "earth-moon": CircleDot,
+  "stars": Telescope,
+  "galaxies-black-holes": CircleDot,
+  "skywatching": Binoculars,
+  "space-exploration": Telescope,
+  "life-in-universe": CircleDot,
+  "meteors": Sparkles,
+  "auroras": Rainbow,
+};
 
 export default function AstronomyHall() {
   const [, setLocation] = useLocation();
@@ -38,9 +49,9 @@ export default function AstronomyHall() {
         <div className="principles-section-head"><div><p className="eyebrow">OBSERVATORY INDEX / 展區索引</p><h2 id="astronomy-index-heading">選一站，開始觀測</h2></div><span>{ASTRONOMY_EXHIBITS.length} 個展區</span></div>
         <div className="astronomy-grid">
           {ASTRONOMY_EXHIBITS.map((item, index) => {
-            const Icon = icons[index];
+            const Icon = EXHIBIT_ICONS[item.key];
             return <button key={item.key} type="button" className={`astronomy-card astronomy-${item.color}`} onClick={() => setLocation(`/astronomy/${item.key}`)} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); setLocation(`/astronomy/${item.key}`); } }}>
-              <span className="astronomy-card-number">0{index + 1}</span><span className="astronomy-card-icon"><Icon size={20} /></span><p className="eyebrow">{item.eyebrow}</p><h3>{item.name}</h3><span className="astronomy-card-english">{item.english}</span><p>{item.short}</p><span className="principle-link">進入展區 <ArrowUpRight size={15} /></span>
+              <span className="astronomy-card-number">{String(index + 1).padStart(2, "0")}</span><span className="astronomy-card-icon"><Icon size={20} /></span><p className="eyebrow">{item.eyebrow}</p><h3>{item.name}</h3><span className="astronomy-card-english">{item.english}</span><p>{item.short}</p><span className="principle-link">進入展區 <ArrowUpRight size={15} /></span>
             </button>;
           })}
         </div>

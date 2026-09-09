@@ -25,10 +25,10 @@ describe("astronomy hall", () => {
     expect(screen.getByRole("link", { name: /進入天文館/ })).toHaveAttribute("href", "/astronomy");
   });
 
-  it("renders all eight exhibits and routes with click, Enter, and Space", () => {
+  it("renders all ten exhibits and routes with click, Enter, and Space", () => {
     render(<AstronomyHall />);
     expect(screen.getByRole("heading", { name: /把夜空變成問題/ })).toBeInTheDocument();
-    expect(screen.getAllByRole("button")).toHaveLength(9);
+    expect(screen.getAllByRole("button")).toHaveLength(11);
     const solar = screen.getAllByRole("button").find((button) => button.querySelector("h3")?.textContent === "太陽系");
     if (!solar) throw new Error("太陽系展區按鈕不存在");
     fireEvent.click(solar);

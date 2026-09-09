@@ -190,7 +190,7 @@ export default function SafetyAcademyDetail() {
 
       <footer className="safety-detail-footer">
         <p>資料依據：{card.sourceLabel}公開衛教素材原創改寫</p>
-        <a className="safety-source" href={card.sourceUrl} target="_blank" rel="noreferrer">
+        <a className="safety-source" href={card.sourceUrl} target="_blank" rel="noopener noreferrer">
           閱讀原始資料 <ExternalLink size={13} aria-hidden="true" />
         </a>
         <button type="button" className="safety-next-btn" onClick={() => setLocation(`/safety/${next.key}`)}>

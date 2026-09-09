@@ -10,6 +10,7 @@ const setLocation = vi.fn();
 let route = "/observatory";
 
 vi.mock("wouter", () => ({
+  Link: ({ href, children, ...props }: { href: string; children: React.ReactNode }) => <a href={href} {...props}>{children}</a>,
   useLocation: () => [route, setLocation],
   useRoute: (pattern: string) => [pattern === "/observatory/:entryKey" && route.startsWith("/observatory/") , { entryKey: "kamen-rider" }],
 }));

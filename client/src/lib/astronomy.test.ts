@@ -12,10 +12,10 @@ import {
 
 describe("astronomy exhibits", () => {
   it("contains a rich eight-zone observatory collection", () => {
-    expect(ASTRONOMY_EXHIBITS).toHaveLength(8);
-    expect(new Set(ASTRONOMY_EXHIBITS.map((item) => item.key)).size).toBe(8);
+    expect(ASTRONOMY_EXHIBITS).toHaveLength(10);
+    expect(new Set(ASTRONOMY_EXHIBITS.map((item) => item.key)).size).toBe(10);
     expect(ASTRONOMY_EXHIBITS.map((item) => item.name)).toEqual([
-      "宇宙尺度", "太陽系", "地球與月球", "恆星生命", "星系與黑洞", "觀星實驗室", "太空探索", "宇宙中的生命",
+      "宇宙尺度", "太陽系", "地球與月球", "恆星生命", "星系與黑洞", "觀星實驗室", "太空探索", "宇宙中的生命", "流星雨與隕石", "極光與太陽風",
     ]);
   });
 

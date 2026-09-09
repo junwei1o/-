@@ -1,6 +1,8 @@
 import type { AnimeWorldviewKey } from "@/lib/animeWorldviewQuiz";
+import { ANIME_WORLDVIEW_QUIZZES } from "@/lib/animeWorldviewQuiz";
 
-export const ANIME_WORLDVIEW_KEYS: AnimeWorldviewKey[] = ["nailong", "ultraman", "kamen-rider"];
+/** 站點清單從題庫自動派生，新增觀測作品並補齊題目後會自動列入進度。 */
+export const ANIME_WORLDVIEW_KEYS: AnimeWorldviewKey[] = Object.keys(ANIME_WORLDVIEW_QUIZZES) as AnimeWorldviewKey[];
 
 export type AnimeWorldviewProgressEntry = {
   attempts: number;

@@ -7,7 +7,7 @@ import {
 } from "./animeWorldviewQuiz";
 
 describe("動漫世界觀主題小測驗", () => {
-  it("奶龍、奧特曼與假面騎士各有八題、四選一與完整解析", () => {
+  it("十部觀測作品各有八題、四選一與完整解析", () => {
     Object.values(ANIME_WORLDVIEW_QUIZZES).forEach((questions) => {
       expect(questions).toHaveLength(8);
       expect(questions.every((question) => question.options)).toBe(true);

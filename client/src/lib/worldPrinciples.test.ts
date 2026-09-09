@@ -3,7 +3,7 @@ import { WORLD_PRINCIPLES, getWorldPrinciple, getWormholeQuestionGuidance, WORMH
 
 describe("world principles wormhole content", () => {
   it("contains the seven requested world principles", () => {
-    expect(WORLD_PRINCIPLES).toHaveLength(7);
+    expect(WORLD_PRINCIPLES).toHaveLength(13);
     expect(WORLD_PRINCIPLES.map((item) => item.name)).toEqual([
       "相對論",
       "第一性原理",
@@ -12,6 +12,12 @@ describe("world principles wormhole content", () => {
       "電磁學",
       "宇宙四大力",
       "不可能三角",
+      "槓桿與力矩",
+      "浮力",
+      "慣性與運動定律",
+      "光的折射",
+      "機率與期望值",
+      "回授與平衡",
     ]);
   });
 

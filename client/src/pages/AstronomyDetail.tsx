@@ -28,7 +28,7 @@ export default function AstronomyDetail() {
         <article className="astronomy-content-card astronomy-mission-card"><div className="card-kicker"><Telescope size={16} /> 今日觀測任務</div><h2>帶著問題離開</h2><p>{item.mission}</p><div className="mission-question">{item.question}</div></article>
         <article className="astronomy-content-card"><div className="card-kicker"><ArrowRight size={16} /> 關鍵概念</div><h2>三個記憶錨點</h2><ul>{item.keyIdeas.map((idea) => <li key={idea}>{idea}</li>)}</ul></article>
       </section>
-      <section className="astronomy-detail-footer"><p>資料校對：{item.sourceLabel}</p><a href={item.sourceUrl} target="_blank" rel="noreferrer">閱讀原始資料 <ExternalLink size={14} /></a>{next && <button type="button" onClick={() => setLocation(`/astronomy/${next.key}`)} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); setLocation(`/astronomy/${next.key}`); } }}>下一站：{next.name} <ArrowRight size={16} /></button>}</section>
+      <section className="astronomy-detail-footer"><p>資料校對：{item.sourceLabel}</p><a href={item.sourceUrl} target="_blank" rel="noopener noreferrer">閱讀原始資料 <ExternalLink size={14} /></a>{next && <button type="button" onClick={() => setLocation(`/astronomy/${next.key}`)} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); setLocation(`/astronomy/${next.key}`); } }}>下一站：{next.name} <ArrowRight size={16} /></button>}</section>
     </main>
   );
 }

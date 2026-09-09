@@ -36,12 +36,12 @@ describe("生活安全學院答題進度", () => {
     run = recordSafetyCardAnswer(run.progress, { cardKey: "fire-evacuation", correct: true }, 2);
     const summary = getSafetyAcademySummary(run.progress);
     expect(summary.completedCards).toBe(2);
-    expect(summary.totalCards).toBe(16);
-    expect(summary.completionPercentage).toBe(13);
+    expect(summary.totalCards).toBe(20);
+    expect(summary.completionPercentage).toBe(10);
     const medical = summary.halls.find((hall) => hall.hall === "medical");
     const fire = summary.halls.find((hall) => hall.hall === "fire");
-    expect(medical).toMatchObject({ completed: 1, total: 4 });
-    expect(fire).toMatchObject({ completed: 1, total: 4 });
+    expect(medical).toMatchObject({ completed: 1, total: 5 });
+    expect(fire).toMatchObject({ completed: 1, total: 5 });
   });
 
   it("忽略損毀或未知卡片資料，保留舊存檔可讀性", () => {

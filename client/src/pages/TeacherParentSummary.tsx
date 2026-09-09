@@ -29,7 +29,7 @@ function IslandCard({ item, onOpenMap }: { item: SupporterIslandSummary; onOpenM
       <div className="supporter-island-stats" aria-label={`${island.title}學習紀錄`}><span><strong>{island.attemptCount}</strong>次作答足跡</span><span><strong>{item.recentAttemptCount}</strong>最近觀測</span><span><strong>{formatSupporterActivity(item.latestActivityAt)}</strong>最近活動</span></div>
       <div className="supporter-island-directions"><strong>可觀察的學習方向</strong><ul>{island.learningDirections.map((direction) => <li key={direction}>{direction}</li>)}</ul></div>
       {island.observedKnowledge.length > 0 ? <div className="supporter-topic-list" aria-label={`${island.title}已觀察主題`}><strong>最近出現的主題</strong><div>{island.observedKnowledge.map((topic) => <span key={topic}># {topic}</span>)}</div></div> : <p className="supporter-island-empty">完成一題後，這裡會顯示實際出現的學習主題。</p>}
-      <div className="supporter-island-actions"><button type="button" className="supporter-secondary-button" onClick={() => onOpenMap(island.subject)}><Compass size={15} /> 查看島嶼</button>{island.resources[0] && <a className="supporter-resource-link" href={island.resources[0].url} target="_blank" rel="noreferrer">延伸資源</a>}</div>
+      <div className="supporter-island-actions"><button type="button" className="supporter-secondary-button" onClick={() => onOpenMap(island.subject)}><Compass size={15} /> 查看島嶼</button>{island.resources[0] && <a className="supporter-resource-link" href={island.resources[0].url} target="_blank" rel="noopener noreferrer">延伸資源</a>}</div>
     </article>
   );
 }

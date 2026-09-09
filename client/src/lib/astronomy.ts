@@ -6,7 +6,9 @@ export type AstronomyKey =
   | "galaxies-black-holes"
   | "skywatching"
   | "space-exploration"
-  | "life-in-universe";
+  | "life-in-universe"
+  | "meteors"
+  | "auroras";
 
 export type AstronomyExhibit = {
   key: AstronomyKey;
@@ -61,6 +63,8 @@ const EXHIBIT_TIER: Record<AstronomyKey, AstronomyQuizTier> = {
   skywatching: "tools",
   "space-exploration": "mission",
   "life-in-universe": "galaxy",
+  "meteors": "planet",
+  "auroras": "mission",
 };
 
 export const getAstronomyQuestionTier = (question: AstronomyQuizQuestion): AstronomyQuizTier => question.tier ?? EXHIBIT_TIER[question.exhibitKey];
@@ -187,6 +191,36 @@ export const ASTRONOMY_EXHIBITS: AstronomyExhibit[] = [
     question: "如果一顆行星有水，是否就能直接證明那裡有生命？還缺少哪些證據？",
     sourceLabel: "NASA／Exoplanets and Astrobiology",
     sourceUrl: "https://science.nasa.gov/exoplanets/",
+  },
+  {
+    key: "meteors",
+    name: "流星雨與隕石",
+    english: "METEORS & METEORITES",
+    eyebrow: "第九展廳／星塵",
+    color: "orange",
+    short: "流星是闖入大氣的星塵發光，隕石則是少數成功落地的碎片。",
+    explanation: "太空中的塵埃或小石塊受地球引力吸引，高速衝入大氣時與空氣摩擦發光，形成我們看到的流星；同一時段大量流星似乎從同一方向出現，就稱為流星雨。多數流星體在大氣中燒盡，只有較大、未完全燒毀而落到地面的碎片，才稱為隕石。",
+    lifeConnection: "流星雨大多來自彗星留下的塵埃帶，每年固定時段地球穿過這些塵埃帶；觀賞流星雨要找光害少、視野遼闊的地方，夜間保暖與結伴同行也要注意。",
+    mission: "查一個即將到來的流星雨日期，記錄最佳觀賞方向、時間，以及夜間觀測需要準備的安全物品。",
+    keyIdeas: ["流星是星塊衝入大氣發光", "多數流星在大氣中燒盡", "落到地面的碎片才叫隕石"],
+    question: "流星和隕石最大的差別是什麼？",
+    sourceLabel: "NASA／Meteors & Meteorites",
+    sourceUrl: "https://science.nasa.gov/solar-system/meteors-meteorites/",
+  },
+  {
+    key: "auroras",
+    name: "極光與太陽風",
+    english: "AURORAS",
+    eyebrow: "第十展廳／太陽風",
+    color: "cyan",
+    short: "極光是太陽風粒子與大氣碰撞的彩色發光，主要出現在高緯度。",
+    explanation: "太陽不斷發出帶電粒子形成的太陽風；當這些粒子沿著地球磁場進入南北極附近的高層大氣，與氧、氮等氣體碰撞時，氣體會發出綠色、紫色或紅色的光，這就是極光。極光活躍程度與太陽活動有關，太空天氣預報會持續觀測太陽風與地磁變化。",
+    lifeConnection: "強烈太陽風也可能影響衛星通訊、導航與電力系統；台灣緯度較低，平時不易看見極光，但太陽活動很強時，附近國家曾有罕見可見的紀錄。",
+    mission: "查一查太空天氣預報如何描述太陽風，並用磁場的概念，說明極光為什麼大多出現在南北極附近。",
+    keyIdeas: ["極光來自太陽風粒子與大氣碰撞", "地球磁場把粒子帶向兩極", "太陽風也會影響通訊與電力"],
+    question: "為什麼極光通常出現在高緯度，而不是赤道上方？",
+    sourceLabel: "NASA／Auroras and Space Weather",
+    sourceUrl: "https://science.nasa.gov/earth/auroras/",
   },
 ];
 

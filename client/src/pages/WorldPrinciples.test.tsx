@@ -39,13 +39,15 @@ describe("human spark wormhole", () => {
     expect(setLocation).toHaveBeenCalledWith("/principles");
   });
 
-  it("renders the principles index with all seven observation points and the wormhole guide", () => {
+  it("renders the principles index with all thirteen observation points and the wormhole guide", () => {
     render(<WorldPrinciples />);
     expect(screen.getByRole("heading", { name: /人類火種/ })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: /選一個原理/ })).toBeInTheDocument();
     expect(screen.getAllByRole("button").length).toBeGreaterThanOrEqual(12);
     expect(screen.getByRole("button", { name: /相對論/ })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /不可能三角/ })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /槓桿與力矩/ })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /回授與平衡/ })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: /先抓住一條可驗證的線索/ })).toBeInTheDocument();
   });
 
