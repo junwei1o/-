@@ -15,7 +15,10 @@ vi.stubGlobal("localStorage", {
   clear: () => storage.clear(),
 });
 
-vi.mock("wouter", () => ({ useLocation: () => ["/", setLocation] }));
+vi.mock("wouter", () => ({
+  Link: ({ href, children, ...props }: { href: string; children: React.ReactNode }) => <a href={href} {...props}>{children}</a>,
+  useLocation: () => ["/", setLocation],
+}));
 vi.mock("@/lib/trpc", () => ({
   trpc: {
     questionBank: {

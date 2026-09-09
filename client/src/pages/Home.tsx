@@ -16,6 +16,8 @@ import { QuizModal } from "@/components/QuizModal";
 import { claimDailySignIn, consumeStorageNotice, getDailySignIn, getLearningRecord, getPlayerData, getPlayerName, getSelectedTitle, hasSignedInToday, type LearningRecord } from "@/utils/storage";
 import { buildKnowledgeIslandSnapshots, type KnowledgeIslandSubject } from "@/lib/studentKnowledgeIslands";
 import type { PaperQuestion } from "@/lib/paperExam";
+import FirstLightQuest from "@/components/bx/FirstLightQuest";
+import { BxEmptyState } from "@/components/bx/EmptyState";
 import "./HomeDashboard.css";
 
 function rankFromAnswers(answerCount: number) {
@@ -294,6 +296,7 @@ export default function Home() {
           />
       </div>
       <div className="home-dashboard-hud">
+        <FirstLightQuest />
         <header className="home-dashboard-status">
           <div>
             <p className="home-dashboard-eyebrow">TAIWAN EXPEDITION STATUS</p>
@@ -302,21 +305,26 @@ export default function Home() {
             <div className="home-dashboard-progress" role="progressbar" aria-label="目前等級經驗值" aria-valuemin={0} aria-valuemax={100} aria-valuenow={progress}><span style={{ width: `${progress}%` }} /></div>
           </div>
           <div className="home-dashboard-status-side">
-            <p className={`home-dashboard-coins${isGoldPulseActive ? " is-gold-pulse" : ""}`} role="status" aria-live="polite" aria-atomic="true"><Coins size={17} aria-hidden="true" /> {playerData.gold} 金幣</p>
+            <p className={`home-dashboard-coins${isGoldPulseActive ? " is-gold-pulse" : ""}`} data-tour="coins" role="status" aria-live="polite" aria-atomic="true"><Coins size={17} aria-hidden="true" /> {playerData.gold} 金幣</p>
             <button type="button" className="home-dashboard-backpack" aria-expanded={showBackpack} onClick={() => setShowBackpack((open) => !open)}><Backpack size={17} aria-hidden="true" /> 背包 {inventory.length}</button>
           </div>
         </header>
-        <section className="home-adventure-journal-card" aria-label="昨日探險日誌">
-          <div>
-            <p className="home-dashboard-eyebrow">DAILY ADVENTURE LOG · {dailyAdventureSummary.dayKey}</p>
-            <h2>昨日的航海足跡</h2>
-            <p>{dailyAdventureSummary.summary}</p>
-          </div>
-          <div className="home-adventure-journal-stats" aria-label="昨日學習統計">
-            <span><strong>{dailyAdventureSummary.answered}</strong><small>題目</small></span>
-            <span><strong>{dailyAdventureSummary.accuracy === null ? "—" : `${Math.round(dailyAdventureSummary.accuracy * 100)}%`}</strong><small>正確率</small></span>
-          </div>
-        </section>
+        <BxEmptyState
+          slot="footprint"
+          filled={
+            <section className="home-adventure-journal-card" aria-label="昨日探險日誌">
+              <div>
+                <p className="home-dashboard-eyebrow">DAILY ADVENTURE LOG · {dailyAdventureSummary.dayKey}</p>
+                <h2>昨日的航海足跡</h2>
+                <p>{dailyAdventureSummary.summary}</p>
+              </div>
+              <div className="home-adventure-journal-stats" aria-label="昨日學習統計">
+                <span><strong>{dailyAdventureSummary.answered}</strong><small>題目</small></span>
+                <span><strong>{dailyAdventureSummary.accuracy === null ? "—" : `${Math.round(dailyAdventureSummary.accuracy * 100)}%`}</strong><small>正確率</small></span>
+              </div>
+            </section>
+          }
+        />
 
         {/* 學習設定卡片 */}
         <section className="home-learning-settings-card" aria-labelledby="home-learning-settings-title">

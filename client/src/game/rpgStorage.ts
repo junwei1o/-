@@ -10,6 +10,16 @@ import { applyRegionMissionAnswer, claimRegionMissionReward, defaultRegionMissio
 import { defaultHabitatDailyProgress, normalizeHabitatDailyProgress, recordHabitatDailyAnswer } from "./habitatDailyMissions";
 import { normalizeAnimeWorldviewProgress, recordAnimeWorldviewQuizResult as updateAnimeWorldviewProgress } from "./animeWorldviewProgress";
 import { normalizeSafetyAcademyProgress, recordSafetyCardAnswer } from "./safetyAcademyProgress";
+import { bxStore, type BxSubjectKey } from "./bxStore";
+
+/** 將站內中文科名對應到 BX 強化層的科目鍵。 */
+function toBxSubject(subject?: string): BxSubjectKey {
+  const s = subject ?? "";
+  if (s.includes("國") || s.includes("語") || s.includes("中文")) return "chinese";
+  if (s.includes("數")) return "math";
+  if (s.includes("社")) return "social";
+  return "science";
+}
 import { normalizeMapVictoryProgress } from "./mapVictoryProgress";
 import { tryDropSpecialty } from "./inventoryService";
 import type { AnimeWorldviewKey } from "@/lib/animeWorldviewQuiz";
@@ -179,6 +189,18 @@ export function recordRpgAnswer(input: { eventId: string; correct: boolean; seco
     notice: storyResult.completed.length ? `故事完成：${storyResult.completed.map((item) => item.title).join("、")}，可在遠征指揮桌領取獎勵。` : onboardingResult.justCompleted ? "初始定位完成！四科學習星圖已點亮，獲得 2 能量與 2 金幣。" : dailyJustCompleted && habitatDailyResult.completed ? `今日遠征與「${habitatDailyResult.completed.title}」都完成了！獲得額外學習補給。` : dailyJustCompleted ? "今日遠征完成！獲得 2 能量與 3 金幣。" : habitatDailyResult.completed ? `棲息地微任務「${habitatDailyResult.completed.title}」完成！獲得 ${habitatDailyResult.completed.rewardEnergy} 能量與 ${habitatDailyResult.completed.rewardCoins} 金幣。` : achievementResult?.unlocked.length ? `解鎖成就：${achievementResult.unlocked.map((item) => item.title).join("、")}` : missionResult.completed.length ? `區域任務完成：${missionResult.completed.map((item) => item.title).join("、")}` : reward.label };
   const next = missionResult.completed.reduce((state, mission) => claimRegionMissionReward(state, mission), nextBase);
   saveRpgState(next, storage);
+  // BX 強化層：記錄答題（連勝、第一盞燈、海難遺物、每日金幣上限、里程碑）。
+  // 以 try/catch 包住，強化層任何例外都不得影響主遊戲存檔。
+  try {
+    bxStore.logAnswer({
+      subject: toBxSubject(input.subject),
+      topic: input.curriculumDomain || input.subject || "綜合",
+      correct: !!input.correct,
+      coinReward: reward.coins,
+    });
+  } catch {
+    // 強化層失敗時靜默略過。
+  }
   if (input.correct && correctAnswerCount > 0 && correctAnswerCount % 10 === 0) {
     tryDropSpecialty({
       source: "correct-answer-milestone",

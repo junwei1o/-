@@ -8,6 +8,7 @@ import StudentMap from "@/pages/StudentMap";
 const setLocation = vi.fn();
 
 vi.mock("wouter", () => ({
+  Link: ({ href, children, ...props }: { href: string; children: React.ReactNode }) => <a href={href} {...props}>{children}</a>,
   useLocation: () => ["/map", setLocation],
 }));
 

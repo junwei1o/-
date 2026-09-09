@@ -92,7 +92,7 @@ export default function DailyCamp() {
         </div>
       </header>
 
-      <section className="daily-camp-signin" aria-labelledby="daily-camp-signin-title">
+      <section className="daily-camp-signin" data-tour="checkin" aria-labelledby="daily-camp-signin-title">
         <div>
           <h2 id="daily-camp-signin-title"><CalendarCheck size={20} aria-hidden="true" /> 每日簽到</h2>
           <p>已連續簽到 <strong>{getDailySignIn().streak}</strong> 天。今天{stats.signedIn ? "已經簽到，記得去領任務獎勵" : "還沒簽到，快打卡"}。</p>

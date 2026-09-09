@@ -30,6 +30,8 @@ import { getRareMonsters } from "@/game/expeditionContent";
 import { getJournalEntries } from "@/game/adventureJournal";
 import ParentLearningView from "@/components/ParentLearningView";
 import { FontSizeController } from "@/components/FontSizeController";
+import BackupPanel from "@/components/bx/BackupPanel";
+import PrefsPanel from "@/components/bx/PrefsPanel";
 import "./SettingsDiagnostics.css";
 
 const RARE_CODEX = (["chinese", "math", "english", "science"] as const).flatMap((subject) => getRareMonsters(subject));
@@ -392,6 +394,9 @@ export default function Settings() {
           <label className="settings-analytics-toggle"><span><strong>允許匿名記錄</strong><small>{analyticsConsent === "accepted" ? "目前已開啟本機記錄" : analyticsConsent === "declined" ? "目前已關閉本機記錄" : "尚未選擇"}</small></span><input type="checkbox" role="switch" checked={analyticsConsent === "accepted"} onChange={(event) => { const next = event.target.checked ? "accepted" : "declined"; saveAnalyticsConsent(next); setAnalyticsConsent(next); setAnalyticsSummary(getAnalyticsSummary()); }} /></label>
           <div className="settings-analytics-summary" aria-label="匿名學習數據摘要"><span>活躍天數 <strong>{analyticsSummary.activeDays}</strong></span><span>平均遊玩 <strong>{Math.round(analyticsSummary.averagePlayMs / 60000)} 分鐘</strong></span><span>低血量用藥 <strong>{analyticsSummary.lowHpPotionUseRate}%</strong></span></div>
         </section>
+
+        <BackupPanel />
+        <PrefsPanel />
 
         <section className="settings-audio-card settings-report-link-card" aria-labelledby="learning-report-link-title">
           <div className="settings-audio-heading"><span className="settings-page-icon" aria-hidden="true"><BarChart3 size={20} /></span><div><p className="settings-eyebrow">學習成效</p><h2 id="learning-report-link-title">學習分析報告</h2></div></div>

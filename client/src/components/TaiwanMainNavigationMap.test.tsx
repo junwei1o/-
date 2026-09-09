@@ -109,7 +109,7 @@ describe("TaiwanMainNavigationMap", () => {
     expect(mapReinforcementJournalReadout([{ questionId: "q-water", subject: "自然", knowledge: "水循環", completedAt: 1 }])).toContain("自然的水循環");
 
     rerender(<TaiwanMainNavigationMap islands={islands} onOpenSubject={vi.fn()} onOpenTopic={vi.fn()} reinforcementJournal={[]} />);
-    expect(screen.getByTestId("taiwan-map-reinforcement-journal")).toHaveTextContent("本週尚未留下補強紀錄");
+    expect(screen.getByTestId("taiwan-map-reinforcement-journal")).toHaveTextContent("日誌還是空白的");
   });
 
   it("shows the real local specialty inventory in a non-modal backpack that Escape can close", () => {

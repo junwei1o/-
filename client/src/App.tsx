@@ -6,11 +6,10 @@ import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import TopNavigation from "@/components/TopNavigation";
-import OnboardingGuide from "@/components/OnboardingGuide";
+import BxEnhance from "@/components/bx/BxEnhance";
 import Home from "@/pages/Home";
 import { initGameData } from "@/utils/storage";
 import { OfflineBanner } from "@/components/OfflineBanner";
-import { AnalyticsConsentPrompt } from "@/components/AnalyticsConsentPrompt";
 
 // 路由懶加載：首頁與導覽保持直接載入（首屏最快），其餘頁面進入時才下載。
 const PaperExam = React.lazy(() => import("./pages/PaperExam"));
@@ -114,10 +113,9 @@ function App() {
         <TooltipProvider>
           <Toaster />
           <OfflineBanner />
-          <AnalyticsConsentPrompt />
+          <BxEnhance />
           <div className="app-route-shell">
             <TopNavigation />
-            <OnboardingGuide />
             <Router />
           </div>
         </TooltipProvider>

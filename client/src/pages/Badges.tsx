@@ -3,6 +3,7 @@ import { Link } from "wouter";
 import { getDailySignIn, getLimitedTitles, getPlayerData, getRareMonsterDefeats, readStoredJson } from "@/utils/storage";
 import { loadRpgState } from "@/game/rpgStorage";
 import { WEEKLY_BOSS_STORAGE_KEY } from "@/game/dailyCamp";
+import { BxEmptyState } from "@/components/bx/EmptyState";
 import "./Badges.css";
 
 interface BadgeDef {
@@ -149,29 +150,34 @@ export default function Badges() {
         </p>
       </header>
 
-      <ul className="badges-grid">
-        {badges.map((badge) => (
-          <li key={badge.id} className={`badge-card${badge.earned ? " is-earned" : " is-locked"}`}>
-            <span className="badge-icon" aria-hidden="true">
-              {badge.earned ? badge.icon : <Lock size={22} />}
-            </span>
-            <strong>{badge.title}</strong>
-            <p>{badge.description}</p>
-            {badge.earned ? (
-              <small>已獲得</small>
-            ) : (
-              <>
-                <small>尚未獲得</small>
-                {badge.hint ? (
-                  <Link className="badge-hint-link" href={badge.hint.href}>
-                    {badge.hint.label}
-                  </Link>
-                ) : null}
-              </>
-            )}
-          </li>
-        ))}
-      </ul>
+      <BxEmptyState
+        slot="badges"
+        filled={
+          <ul className="badges-grid">
+            {badges.map((badge) => (
+              <li key={badge.id} className={`badge-card${badge.earned ? " is-earned" : " is-locked"}`}>
+                <span className="badge-icon" aria-hidden="true">
+                  {badge.earned ? badge.icon : <Lock size={22} />}
+                </span>
+                <strong>{badge.title}</strong>
+                <p>{badge.description}</p>
+                {badge.earned ? (
+                  <small>已獲得</small>
+                ) : (
+                  <>
+                    <small>尚未獲得</small>
+                    {badge.hint ? (
+                      <Link className="badge-hint-link" href={badge.hint.href}>
+                        {badge.hint.label}
+                      </Link>
+                    ) : null}
+                  </>
+                )}
+              </li>
+            ))}
+          </ul>
+        }
+      />
     </main>
   );
 }

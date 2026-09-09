@@ -10,6 +10,7 @@ import { routeIdForRegion, supplyMarkerIdForRegion } from "@/game/mapVictoryProg
 import type { MapReinforcementJournalEntry, MapReinforcementReward } from "@/game/mapReinforcementReward";
 import { getInventory, tryDropSpecialty, type InventoryItem } from "@/game/inventoryService";
 import type { RandomAdventureRouteReward } from "@/game/randomAdventureRouteReward";
+import { BxEmptyState } from "@/components/bx/EmptyState";
 import "./TaiwanMainNavigationMap.css";
 
 type TaiwanMainNavigationMapProps = {
@@ -367,6 +368,7 @@ export function TaiwanMainNavigationMap({ islands, onOpenSubject, onStartIslandQ
       className="taiwan-navigation-map"
       aria-labelledby="taiwan-navigation-map-title"
       data-testid="taiwan-navigation-map"
+      data-tour="map"
       onKeyDown={(event) => {
         if (event.key === "Escape" && showRandomAdventureRouteReward) {
           event.preventDefault();
@@ -432,13 +434,13 @@ export function TaiwanMainNavigationMap({ islands, onOpenSubject, onStartIslandQ
               <ul aria-label="本週真實完成的補強主題">
                 {reinforcementJournal.map((entry) => <li key={`${entry.questionId}-${entry.completedAt}`}><span className="taiwan-map-reinforcement-journal-subject">{entry.subject}</span><span><strong>{entry.knowledge}</strong><small>{formatMapReinforcementJournalTime(entry.completedAt)} 完成</small></span></li>)}
               </ul>
-              ) : <p className="taiwan-map-reinforcement-journal-empty">本週尚未留下補強紀錄；完成一題後，主題會在這裡成為新的航行足跡。</p>}
+              ) : <BxEmptyState slot="weekly" />}
             {reinforcementSuggestion ? <p className="taiwan-map-reinforcement-suggestion" role="status" data-testid="taiwan-map-reinforcement-suggestion">{reinforcementSuggestion}</p> : null}
           </section>
         </div>
       </header>
 
-      <div className="taiwan-map-canvas" aria-label="台灣學習航海圖">
+      <div className="taiwan-map-canvas" aria-label="台灣學習航海圖" data-tour="islands">
         <div className="taiwan-map-extras" aria-label="探險小工具">
           <button
             type="button"
@@ -461,7 +463,7 @@ export function TaiwanMainNavigationMap({ islands, onOpenSubject, onStartIslandQ
                 <ul aria-label="已收集的台灣特產">
                   {inventoryItems.map((item) => <li key={item.id}><span aria-hidden="true">{item.emoji}</span><span>{item.name}</span></li>)}
                 </ul>
-              ) : <p>完成真實學習里程碑或發現地圖故事後，台灣特產會收進這裡。</p>}
+              ) : <BxEmptyState slot="backpack" />}
             </aside>
           ) : null}
         </div>
@@ -545,6 +547,9 @@ export function TaiwanMainNavigationMap({ islands, onOpenSubject, onStartIslandQ
               aria-label={`${island.shortTitle}，${position.region}，${islandStatus(island)}`}
               data-visual-state={visualState}
               data-testid={`taiwan-map-island-${island.id}`}
+              data-island={island.id}
+              data-subject={island.id === "language" ? "chinese" : island.id}
+              data-region={region}
               data-reinforcement-rewarded={showReinforcementReward && reinforcementRewardIslandId === island.id ? "true" : "false"}
               data-island-unlocking={recentlyUnlockedIslandIds.includes(island.id) ? "true" : "false"}
               onClick={() => onStartIslandQuiz ? onStartIslandQuiz(island.subject) : toggleIsland(island.id)}
