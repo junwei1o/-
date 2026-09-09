@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { AlarmClock, Backpack, BarChart3, BookOpenCheck, BrainCircuit, Bug, CalendarDays, ChevronDown, ChevronUp, Coins, Crosshair, Crown, Dices, Medal, RotateCcw, ScrollText, Settings as SettingsIcon, ShieldAlert, Sparkles, Swords, Telescope, Tent, Timer, type LucideIcon, X } from "lucide-react";
+import { AlarmClock, Backpack, BarChart3, BookOpenCheck, BrainCircuit, Bug, CalendarDays, ChevronDown, ChevronUp, Coins, Crosshair, Crown, Dices, LifeBuoy, Medal, RotateCcw, ScrollText, Settings as SettingsIcon, ShieldAlert, Sparkles, Swords, Telescope, Tent, Timer, type LucideIcon, X } from "lucide-react";
 import { toast } from "sonner";
 import { useLocation } from "wouter";
 import { useQuestionBank } from "@/lib/questionBank";
@@ -75,6 +75,7 @@ const HOME_FEATURE_GROUPS: HomeFeatureGroup[] = [
     label: "知識探索館",
     description: "用不同主題延伸好奇心與閱讀。",
     items: [
+      { id: "safety", label: "生活安全學院", description: "消防、醫療、食物與身體自保知識", href: "/safety", icon: LifeBuoy },
       { id: "astronomy", label: "天文館", description: "探索星空、行星與太空任務", href: "/astronomy", icon: Telescope },
       { id: "wisdom", label: "智慧故事館", description: "閱讀故事並發現知識線索", href: "/wisdom", icon: Sparkles },
       { id: "principles", label: "世界原理站", description: "以互動方式理解科學原理", href: "/principles", icon: Dices },

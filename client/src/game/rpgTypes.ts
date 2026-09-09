@@ -1,4 +1,5 @@
 import type { AnimeWorldviewProgress } from "./animeWorldviewProgress";
+import type { SafetyAcademyProgress } from "./safetyAcademyProgress";
 
 export type RegionKey = "north" | "central" | "east" | "south";
 export type ArenaHabitatKey = "tidal-grove" | "cloud-shelf" | "star-current" | "coral-shallows";
@@ -193,6 +194,8 @@ export type RpgState = {
   arenaHabitatId?: ArenaHabitatKey;
   /** Best scores from completed original worldview quizzes; optional for legacy saves. */
   animeWorldviewProgress?: AnimeWorldviewProgress;
+  /** Life-safety academy card completion; optional so earlier local saves remain usable. */
+  safetyAcademyProgress?: SafetyAcademyProgress;
   /** Victory-driven map links; optional so earlier local saves remain compatible. */
   mapVictoryProgress?: {
     unlockedRouteIds: string[];

@@ -23,6 +23,8 @@ const AstronomyHall = React.lazy(() => import("./pages/AstronomyHall"));
 const AstronomyDetail = React.lazy(() => import("./pages/AstronomyDetail"));
 const WisdomHall = React.lazy(() => import("./pages/WisdomHall"));
 const WisdomStoryDetail = React.lazy(() => import("./pages/WisdomStoryDetail"));
+const SafetyAcademy = React.lazy(() => import("./pages/SafetyAcademy"));
+const SafetyAcademyDetail = React.lazy(() => import("./pages/SafetyAcademyDetail"));
 const CommunityHub = React.lazy(() => import("@/pages/CommunityHub"));
 const KnowledgeDuel = React.lazy(() => import("@/pages/KnowledgeDuel"));
 const LearningInsights = React.lazy(() => import("@/pages/LearningInsights"));
@@ -70,6 +72,8 @@ function Router() {
         <Route path={"/astronomy/:key"} component={AstronomyDetail} />
         <Route path={"/wisdom"} component={WisdomHall} />
         <Route path={"/wisdom/:key"} component={WisdomStoryDetail} />
+        <Route path={"/safety"} component={SafetyAcademy} />
+        <Route path={"/safety/:key"} component={SafetyAcademyDetail} />
         <Route path={"/battle"} component={() => <BattleScene />} />
         <Route path={"/guardian"} component={GuardianExpedition} />
         <Route path={"/guardian-expedition"} component={GuardianExpedition} />

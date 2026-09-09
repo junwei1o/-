@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Award, BarChart3, BookOpenCheck, BookOpenText, CalendarDays, Clapperboard, Compass, Crown, Crosshair, Lightbulb, Map as MapIcon, Menu, Orbit, ScrollText, Search, Settings, Sparkles, Swords, Telescope, Timer, UsersRound, X, type LucideIcon } from "lucide-react";
+import { Award, BarChart3, BookOpenCheck, BookOpenText, CalendarDays, Clapperboard, Compass, Crown, Crosshair, LifeBuoy, Lightbulb, Map as MapIcon, Menu, Orbit, ScrollText, Search, Settings, Sparkles, Swords, Telescope, Timer, UsersRound, X, type LucideIcon } from "lucide-react";
 import { useLocation } from "wouter";
 import { Command, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -36,6 +36,7 @@ const MORE_ITEMS: NavItem[] = [
   { id: "wisdom", label: "智慧故事館", icon: Sparkles, href: "/wisdom", activePrefixes: ["/wisdom"] },
   { id: "principles", label: "世界原理站", icon: Telescope, href: "/principles", activePrefixes: ["/principles"] },
   { id: "observatory", label: "影視觀測站", icon: Clapperboard, href: "/observatory", activePrefixes: ["/observatory"] },
+  { id: "safety", label: "生活安全學院", icon: LifeBuoy, href: "/safety", activePrefixes: ["/safety"] },
   { id: "wrong-answers", label: "錯題複習", icon: ScrollText, href: "/wrong-answers", activePrefixes: ["/wrong-answers"] },
   { id: "tips", label: "讀書技巧", icon: Lightbulb, href: "/study-tips", activePrefixes: ["/study-tips"] },
   { id: "insights", label: "學習洞察", icon: BarChart3, href: "/learning-insights", activePrefixes: ["/learning-insights", "/learning-report"] },
@@ -75,6 +76,7 @@ const MOBILE_GROUPS: NavGroup[] = [
     id: "discovery",
     label: "知識探索館",
     items: [
+      MORE_ITEMS.find((item) => item.id === "safety")!,
       MORE_ITEMS.find((item) => item.id === "astronomy")!,
       MORE_ITEMS.find((item) => item.id === "wisdom")!,
       MORE_ITEMS.find((item) => item.id === "principles")!,

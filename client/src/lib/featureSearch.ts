@@ -1,7 +1,7 @@
-import { BookOpenCheck, BrainCircuit, Crown, Lightbulb, Map as MapIcon, Medal, Swords, Tent, type LucideIcon } from "lucide-react";
+import { BookOpenCheck, BrainCircuit, Crown, LifeBuoy, Lightbulb, Map as MapIcon, Medal, Swords, Tent, type LucideIcon } from "lucide-react";
 
 export type FeatureSearchItem = {
-  id: "map" | "battle" | "duel" | "guardian" | "wrongAnswers" | "studyTips" | "dailyCamp" | "badges";
+  id: "map" | "battle" | "duel" | "guardian" | "wrongAnswers" | "studyTips" | "dailyCamp" | "badges" | "safetyAcademy";
   label: string;
   description: string;
   href: string;
@@ -73,6 +73,14 @@ export const FEATURE_SEARCH_ITEMS: FeatureSearchItem[] = [
     href: "/badges",
     keywords: ["徽章", "徽章牆", "成就", "勳章", "稱號", "收集"],
     icon: Medal,
+  },
+  {
+    id: "safetyAcademy",
+    label: "生活安全學院",
+    description: "消防逃生、燒燙傷、急救 119、用藥、洗手、食物與交通安全、視力睡眠保健等生活自保知識。",
+    href: "/safety",
+    keywords: ["安全", "生活安全", "消防", "火災", "火場逃生", "119", "急救", "燒燙傷", "沖脫泡蓋送", "醫療", "生病", "發燒", "藥物", "用藥安全", "洗手", "食物保存", "保存期限", "交通", "過馬路", "網路安全", "個資", "颱風", "雷擊", "視力", "3010", "牙齒", "睡眠", "中暑", "運動傷害", "身體", "常識"],
+    icon: LifeBuoy,
   },
 ];
 

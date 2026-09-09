@@ -9,9 +9,11 @@ import { defaultStoryProgress, normalizeStoryProgress, recordStoryAnswer } from 
 import { applyRegionMissionAnswer, claimRegionMissionReward, defaultRegionMissionProgress, normalizeRegionMissionProgress } from "./regionMissionRewards";
 import { defaultHabitatDailyProgress, normalizeHabitatDailyProgress, recordHabitatDailyAnswer } from "./habitatDailyMissions";
 import { normalizeAnimeWorldviewProgress, recordAnimeWorldviewQuizResult as updateAnimeWorldviewProgress } from "./animeWorldviewProgress";
+import { normalizeSafetyAcademyProgress, recordSafetyCardAnswer } from "./safetyAcademyProgress";
 import { normalizeMapVictoryProgress } from "./mapVictoryProgress";
 import { tryDropSpecialty } from "./inventoryService";
 import type { AnimeWorldviewKey } from "@/lib/animeWorldviewQuiz";
+import { SAFETY_QUIZ_REWARD_COINS, type SafetyCardKey } from "@/lib/safetyAcademy";
 import type { PlayerExpansionProgress, RegionKey, RpgState } from "./rpgTypes";
 
 export const RPG_STORAGE_KEY = "xue-adventure-rpg-v1";
@@ -47,6 +49,7 @@ export const defaultRpgState: RpgState = {
   regionMissionProgress: defaultRegionMissionProgress(),
   habitatDailyProgress: defaultHabitatDailyProgress(),
   animeWorldviewProgress: {},
+  safetyAcademyProgress: {},
   mapVictoryProgress: { unlockedRouteIds: [], supplyMarkerIds: [] },
   expansionProgress: structuredClone(defaultExpansionProgress),
   notice: "完成題目，就能把學習能量帶進島嶼冒險。",
@@ -77,6 +80,7 @@ export function loadRpgState(storage: Storage | Pick<Storage, "getItem"> = local
       regionMissionProgress: normalizeRegionMissionProgress(parsed.regionMissionProgress),
       habitatDailyProgress: normalizeHabitatDailyProgress(parsed.habitatDailyProgress),
       animeWorldviewProgress: normalizeAnimeWorldviewProgress(parsed.animeWorldviewProgress),
+      safetyAcademyProgress: normalizeSafetyAcademyProgress(parsed.safetyAcademyProgress),
       mapVictoryProgress: normalizeMapVictoryProgress(parsed.mapVictoryProgress),
       expansionProgress: {
         ...structuredClone(defaultExpansionProgress),
@@ -112,6 +116,29 @@ export function recordAnimeWorldviewQuizResult(
   };
   saveRpgState(next, storage);
   return next;
+}
+
+/**
+ * 生活安全學院作答：每張卡首次答對發放 SAFETY_QUIZ_REWARD_COINS 金幣，
+ * 答錯可重試但不重複給幣。回傳最新狀態與本次是否發放獎勵，方便頁面顯示回饋。
+ */
+export function recordSafetyAcademyAnswer(
+  result: { cardKey: SafetyCardKey; correct: boolean },
+  storage: Storage | Pick<Storage, "getItem" | "setItem"> = localStorage,
+): { state: RpgState; rewarded: boolean; rewardCoins: number } {
+  const current = loadRpgState(storage);
+  const { progress, justCompleted } = recordSafetyCardAnswer(current.safetyAcademyProgress, result);
+  const rewardCoins = justCompleted ? SAFETY_QUIZ_REWARD_COINS : 0;
+  const next: RpgState = {
+    ...current,
+    safetyAcademyProgress: progress,
+    coins: current.coins + rewardCoins,
+    notice: justCompleted
+      ? `安全知識過關！獲得 ${rewardCoins} 金幣，可到每日營地商店運用。`
+      : current.notice,
+  };
+  saveRpgState(next, storage);
+  return { state: next, rewarded: justCompleted, rewardCoins };
 }
 
 export function companionById(id: string) {
