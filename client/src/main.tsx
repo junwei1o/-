@@ -6,7 +6,11 @@ import { createRoot } from "react-dom/client";
 import superjson from "superjson";
 import App from "./App";
 import { startLogin } from "./const";
+import { initFontSize } from "./components/FontSizeController";
 import "./index.css";
+
+// 在 React 掛載前套用儲存的字級，避免大字級使用者看到字級閃爍。
+initFontSize();
 
 const queryClient = new QueryClient();
 
