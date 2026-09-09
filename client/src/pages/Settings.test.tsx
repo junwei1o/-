@@ -3,7 +3,8 @@
 import React from "react";
 import "@testing-library/jest-dom/vitest";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { bxStore } from "@/game/bxStore";
 import Settings, { buildDiagnosticSummary } from "./Settings";
 
 const setLocation = vi.fn();
@@ -20,6 +21,12 @@ vi.mock("wouter", () => ({ useLocation: () => ["/settings", setLocation] }));
 vi.mock("sonner", () => ({ toast: { success: vi.fn(), error: vi.fn() } }));
 
 describe("設定頁錯誤日誌", () => {
+  beforeEach(() => {
+    // 既有測試都針對解鎖後的船長室內容：先重置閘門狀態再標記此裝置已解鎖。
+    bxStore.reset();
+    storage.set("xue-debug-unlocked-v1", "1");
+  });
+
   afterEach(() => {
     cleanup();
     storage.clear();
@@ -33,7 +40,7 @@ describe("設定頁錯誤日誌", () => {
 
     render(<Settings />);
 
-    expect(screen.getByRole("heading", { name: "儲存錯誤日誌" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "船長室（調試模式）" })).toBeInTheDocument();
     expect(screen.getByText("保存學習紀錄")).toBeInTheDocument();
     expect(screen.getByText(`${"x".repeat(180)}…`)).toBeInTheDocument();
     expect(screen.getByText("1 筆")).toBeInTheDocument();
@@ -199,5 +206,70 @@ describe("設定頁錯誤日誌", () => {
 
     await vi.waitFor(() => expect(screen.getByRole("button", { name: /清除日誌/ })).toHaveFocus());
     expect(storage.has("errorLogs")).toBe(true);
+  });
+});
+
+describe("船長室密語閘門", () => {
+  beforeEach(() => {
+    bxStore.reset();
+  });
+
+  afterEach(() => {
+    cleanup();
+    storage.clear();
+    setLocation.mockClear();
+  });
+
+  it("未解鎖時只顯示密語閘門，不顯示錯誤日誌與筆數", () => {
+    storage.set("errorLogs", JSON.stringify([
+      { context: "保存學習紀錄", message: "讀寫失敗", timestamp: Date.now() },
+    ]));
+
+    render(<Settings />);
+
+    expect(screen.getByLabelText("家長密語")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /進入船長室/ })).toBeInTheDocument();
+    expect(screen.queryByText("保存學習紀錄")).not.toBeInTheDocument();
+    expect(screen.queryByText("1 筆")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /複製診斷摘要/ })).not.toBeInTheDocument();
+  });
+
+  it("輸入錯誤密語時顯示剩餘次數，且維持上鎖", () => {
+    render(<Settings />);
+
+    fireEvent.change(screen.getByLabelText("家長密語"), { target: { value: "0000" } });
+    fireEvent.click(screen.getByRole("button", { name: /進入船長室/ }));
+
+    expect(screen.getByRole("alert")).toHaveTextContent("密語不對，再試一次（還有 4 次機會）。");
+    expect(screen.getByLabelText("家長密語")).toBeInTheDocument();
+  });
+
+  it("輸入正確密語後解鎖，並可用「重新上鎖」回到閘門", () => {
+    storage.set("errorLogs", JSON.stringify([
+      { context: "保存學習紀錄", message: "讀寫失敗", timestamp: Date.now() },
+    ]));
+
+    render(<Settings />);
+    fireEvent.change(screen.getByLabelText("家長密語"), { target: { value: "2676" } });
+    fireEvent.click(screen.getByRole("button", { name: /進入船長室/ }));
+
+    expect(screen.getByText("保存學習紀錄")).toBeInTheDocument();
+    expect(screen.queryByLabelText("家長密語")).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: /重新上鎖/ }));
+    expect(screen.getByLabelText("家長密語")).toBeInTheDocument();
+    expect(screen.queryByText("保存學習紀錄")).not.toBeInTheDocument();
+  });
+
+  it("連續錯 5 次後閘門顯示鎖定訊息並隱藏輸入框", () => {
+    render(<Settings />);
+
+    for (let i = 0; i < 5; i += 1) {
+      fireEvent.change(screen.getByLabelText("家長密語"), { target: { value: `wrong-${i}` } });
+      fireEvent.click(screen.getByRole("button", { name: /進入船長室/ }));
+    }
+
+    expect(screen.getAllByRole("alert").some((element) => element.textContent?.includes("船長室暫時鎖上了"))).toBe(true);
+    expect(screen.queryByLabelText("家長密語")).not.toBeInTheDocument();
   });
 });

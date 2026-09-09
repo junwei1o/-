@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Accessibility, AlertTriangle, BarChart3, BookMarked, Clipboard, Crown, Download, Palette, RefreshCw, Settings as SettingsIcon, Sparkles, Trash2, UserRound, Volume2 } from "lucide-react";
+import { Accessibility, AlertTriangle, BarChart3, BookMarked, Clipboard, Crown, Download, Lock, LockOpen, Palette, RefreshCw, Settings as SettingsIcon, Ship, Sparkles, Trash2, UserRound, Volume2 } from "lucide-react";
 import { toast } from "sonner";
 import { useLocation } from "wouter";
 import {
@@ -33,6 +33,9 @@ import { FontSizeController } from "@/components/FontSizeController";
 import BackupPanel from "@/components/bx/BackupPanel";
 import { CloudSyncSettings } from "@/components/CloudModePrompt";
 import PrefsPanel from "@/components/bx/PrefsPanel";
+import { cloudApi, getCloudMode, getLastSyncAt } from "@/game/cloudSync";
+import { isDebugUnlocked, lockDebug, tryUnlockDebug } from "@/game/debugGate";
+import { bxStore } from "@/game/bxStore";
 import "./SettingsDiagnostics.css";
 
 const RARE_CODEX = (["chinese", "math", "english", "science"] as const).flatMap((subject) => getRareMonsters(subject));
@@ -154,11 +157,26 @@ function getBrowserLabel() {
 
 function getDiagnosticSnapshot() {
   const player = getPlayerData();
+  const cloud = getCloudMode();
+  const bxStats = bxStore.get<{ total_answers?: unknown; streak_current?: unknown }>("stats", {}) ?? {};
+  const bxCheckin = bxStore.get<{ dates?: unknown }>("checkin", { dates: [] }) ?? { dates: [] };
   return {
     browser: getBrowserLabel(),
+    network: typeof navigator !== "undefined" && navigator.onLine === false ? "離線" : "連線中",
+    screenWidth: typeof window !== "undefined" ? window.innerWidth : null,
     storage: getStorageUsageSummary(),
     learningRecordCount: getLearningRecord().length,
     player: { level: player.level, gold: player.gold, exp: player.exp },
+    cloud: {
+      mode: cloud.mode,
+      name: cloud.mode === "cloud" ? cloud.name ?? null : null,
+      lastSyncAt: getLastSyncAt(),
+    },
+    bx: {
+      totalAnswers: typeof bxStats.total_answers === "number" ? bxStats.total_answers : 0,
+      streakCurrent: typeof bxStats.streak_current === "number" ? bxStats.streak_current : 0,
+      checkinDays: Array.isArray(bxCheckin.dates) ? bxCheckin.dates.length : 0,
+    },
   };
 }
 
@@ -189,6 +207,11 @@ export function buildDiagnosticSummary(logs: StorageErrorLog[], snapshot: Diagno
     `金幣：${snapshot.player.gold}`,
     `經驗值：${snapshot.player.exp}`,
     `等級：${snapshot.player.level}`,
+    "",
+    "=== 雲端船籍 ===",
+    `模式：${snapshot.cloud.mode === "cloud" ? `雲端（船籍 ${snapshot.cloud.name ?? "未知"}）` : "本機"}`,
+    `本次工作階段上次同步：${snapshot.cloud.lastSyncAt ? new Date(snapshot.cloud.lastSyncAt).toISOString() : "尚未同步"}`,
+    `網路：${snapshot.network}`,
     "",
     "=== 錯誤日誌（已遮蔽） ===",
     `錯誤筆數：${logs.length}（摘要含最近 ${visibleLogs.length} 筆）`,
@@ -232,6 +255,10 @@ export default function Settings() {
   const [journalEntries] = useState(() => getJournalEntries().filter((entry) => entry.date >= Date.now() - 30 * 24 * 60 * 60 * 1000));
   const [diagnosticSnapshot, setDiagnosticSnapshot] = useState(() => getDiagnosticSnapshot());
   const [lastRefreshAt, setLastRefreshAt] = useState(() => Date.now());
+  const [diagUnlocked, setDiagUnlocked] = useState(() => isDebugUnlocked());
+  const [gateInput, setGateInput] = useState("");
+  const [gateError, setGateError] = useState<string | null>(null);
+  const [cloudExams, setCloudExams] = useState<Array<{ id: number; subject: string; difficulty: string | null; totalQuestions: number; correctCount: number; createdAt: number }>>([]);
   const clearTriggerRef = useRef<HTMLButtonElement>(null);
   const confirmClearRef = useRef<HTMLButtonElement>(null);
 
@@ -254,6 +281,39 @@ export default function Settings() {
     setLimitedTitles(getLimitedTitles());
     setSelectedTitle(getSelectedTitle());
   }, []);
+
+  const handleGateSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+    const result = tryUnlockDebug(gateInput);
+    if (result.ok) {
+      setDiagUnlocked(true);
+      setGateInput("");
+      setGateError(null);
+      return;
+    }
+    setGateError(result.reason === "locked"
+      ? `嘗試太多次，船長室暫時鎖上了，請約 ${result.retryAfterMin} 分鐘後再試。`
+      : `密語不對，再試一次（還有 ${result.remaining} 次機會）。`);
+  };
+
+  const handleRelock = () => {
+    lockDebug();
+    setDiagUnlocked(false);
+    setGateInput("");
+    setGateError(null);
+  };
+
+  // 解鎖且為雲端模式時，拉取最近 5 筆航行紀錄供家長核對。
+  useEffect(() => {
+    if (!diagUnlocked) return;
+    const mode = getCloudMode();
+    if (mode.mode !== "cloud" || !mode.name) return;
+    let cancelled = false;
+    cloudApi.listExams({ name: mode.name, limit: 5 })
+      .then((result) => { if (!cancelled) setCloudExams(result.records); })
+      .catch(() => { /* 離線時靜默 */ });
+    return () => { cancelled = true; };
+  }, [diagUnlocked]);
 
   useEffect(() => {
     refreshLogs();
@@ -454,10 +514,40 @@ export default function Settings() {
           <div className="settings-log-card-header">
             <div>
               <p className="settings-eyebrow">除錯工具</p>
-              <h2 id="storage-log-title">儲存錯誤日誌</h2>
+              <h2 id="storage-log-title">船長室（調試模式）</h2>
             </div>
-            <span className="settings-log-count" aria-label={`目前有 ${logs.length} 筆錯誤日誌`}>{logs.length} 筆</span>
+            {diagUnlocked ? <span className="settings-log-count" aria-label={`目前有 ${logs.length} 筆錯誤日誌`}>{logs.length} 筆</span> : null}
           </div>
+
+          {!diagUnlocked ? (
+            <div className="diag-gate">
+              <span className="diag-gate-icon" aria-hidden="true"><Lock size={26} /></span>
+              <p className="diag-gate-copy"><strong>這裡是給家長／老師使用的船長室。</strong>裡面有系統狀態與航行紀錄等除錯資訊，需要輸入家長密語（驗證碼或指令）才能進入。</p>
+              {(() => {
+                const lockUntil = bxStore.get<number | null>("guardian.lock_until", null) ?? 0;
+                const lockedMin = Math.ceil((lockUntil - Date.now()) / 60_000);
+                if (lockUntil > Date.now()) {
+                  return <p className="diag-gate-error" role="alert">嘗試太多次，船長室暫時鎖上了，請約 {lockedMin} 分鐘後再試。</p>;
+                }
+                return (
+                  <form className="diag-gate-form" onSubmit={handleGateSubmit}>
+                    <label className="sr-only" htmlFor="debug-gate-input">家長密語</label>
+                    <input
+                      id="debug-gate-input"
+                      className="diag-gate-input"
+                      value={gateInput}
+                      onChange={(event) => { setGateInput(event.target.value); setGateError(null); }}
+                      placeholder="輸入驗證碼或指令"
+                      autoComplete="off"
+                    />
+                    <button type="submit" className="settings-primary-button diag-gate-submit"><LockOpen size={16} aria-hidden="true" /> 進入船長室</button>
+                  </form>
+                );
+              })()}
+              {gateError && <p className="diag-gate-error" role="alert">{gateError}</p>}
+            </div>
+          ) : (
+          <>
           <p className="settings-log-description">日誌只會記錄儲存讀寫、資料格式或配額問題的摘要，不會顯示題目答案、個人資料或帳號密碼。</p>
 
           <section className="settings-diagnostic-status" aria-labelledby="diagnostic-summary-title">
@@ -469,13 +559,44 @@ export default function Settings() {
             </div>
             <dl className="diag-status-grid">
               <div className="diag-stat-card"><dt>瀏覽器</dt><dd>{diagnosticSnapshot.browser}</dd><small>僅辨識產品名稱，不收集完整裝置資訊。</small></div>
+              <div className="diag-stat-card"><dt>網路狀態</dt><dd>{diagnosticSnapshot.network}</dd><small>{diagnosticSnapshot.screenWidth === null ? "" : `目前視窗寬度 ${diagnosticSnapshot.screenWidth}px。`}</small></div>
               <div className="diag-stat-card"><dt>localStorage</dt><dd>{diagnosticSnapshot.storage.available ? formatBytes(diagnosticSnapshot.storage.usedBytes) : "目前無法使用"}</dd><small>{diagnosticSnapshot.storage.keyCount === null ? "無法估算資料項目數" : `${diagnosticSnapshot.storage.keyCount} 個資料項目；容量以 5 MB 估算。`}</small>{diagnosticSnapshot.storage.available && diagnosticSnapshot.storage.usedBytes !== null ? <meter className="diag-storage-meter" min="0" max={STORAGE_ESTIMATE_BYTES} value={Math.min(diagnosticSnapshot.storage.usedBytes, STORAGE_ESTIMATE_BYTES)} aria-label={`localStorage 使用量 ${formatBytes(diagnosticSnapshot.storage.usedBytes)}`} /> : null}</div>
               <div className="diag-stat-card"><dt>學習紀錄</dt><dd>{diagnosticSnapshot.learningRecordCount}</dd><small>只顯示筆數，不顯示題目或作答內容。</small></div>
               <div className="diag-stat-card"><dt>金幣</dt><dd>{diagnosticSnapshot.player.gold}</dd><small>本機遊戲成長數值。</small></div>
               <div className="diag-stat-card"><dt>經驗值</dt><dd>{diagnosticSnapshot.player.exp}</dd><small>目前等級中的經驗值。</small></div>
               <div className="diag-stat-card"><dt>等級</dt><dd>Lv. {diagnosticSnapshot.player.level}</dd><small>依已答對題數計算。</small></div>
+              <div className="diag-stat-card"><dt>累計作答</dt><dd>{diagnosticSnapshot.bx.totalAnswers}</dd><small>全部裝置模式下的作答總數。</small></div>
+              <div className="diag-stat-card"><dt>連勝紀錄</dt><dd>{diagnosticSnapshot.bx.streakCurrent}</dd><small>目前連續答對題數。</small></div>
+              <div className="diag-stat-card"><dt>簽到天數</dt><dd>{diagnosticSnapshot.bx.checkinDays}</dd><small>累計每日簽到天數。</small></div>
+              <div className="diag-stat-card"><dt>雲端船籍</dt><dd>{diagnosticSnapshot.cloud.mode === "cloud" ? diagnosticSnapshot.cloud.name ?? "雲端" : "本機模式"}</dd><small>{diagnosticSnapshot.cloud.mode === "cloud" ? `上次同步：${diagnosticSnapshot.cloud.lastSyncAt ? formatTimestamp(diagnosticSnapshot.cloud.lastSyncAt) : "本次工作階段尚未同步"}` : "未開啟雲端同步。"}</small></div>
             </dl>
           </section>
+
+          {diagnosticSnapshot.cloud.mode === "cloud" && (
+            <section className="settings-diagnostic-status" aria-labelledby="cloud-exam-records-title">
+              <div className="settings-diagnostic-status-heading">
+                <div>
+                  <p className="settings-eyebrow">雲端航行紀錄</p>
+                  <h3 id="cloud-exam-records-title">最近試卷紀錄</h3>
+                </div>
+              </div>
+              {cloudExams.length === 0 ? (
+                <p className="settings-log-description">雲端尚無試卷紀錄（或目前離線）。完成一份試卷後會自動記在這裡。</p>
+              ) : (
+                <ol className="diag-exam-list" aria-label="最近五筆雲端試卷紀錄">
+                  {cloudExams.map((record) => (
+                    <li key={record.id} className="diag-exam-item">
+                      <Ship size={15} aria-hidden="true" />
+                      <span className="diag-exam-subject">{record.subject}</span>
+                      <span className="diag-exam-score">{record.correctCount} / {record.totalQuestions} 題</span>
+                      {record.difficulty ? <span className="diag-exam-difficulty">{record.difficulty}</span> : null}
+                      <time dateTime={new Date(record.createdAt).toISOString()}>{formatTimestamp(record.createdAt)}</time>
+                    </li>
+                  ))}
+                </ol>
+              )}
+            </section>
+          )}
 
           {isLoading ? (
             <p className="settings-log-empty" role="status">正在讀取本機日誌…</p>
@@ -524,6 +645,9 @@ export default function Settings() {
                 <Trash2 size={16} aria-hidden="true" /> 清除日誌
               </button>
             )}
+            <button type="button" className="settings-secondary-button" onClick={handleRelock} aria-label="離開船長室並重新上鎖">
+              <Lock size={16} aria-hidden="true" /> 重新上鎖
+            </button>
           </div>
           <p id="diagnostic-copy-help" className="settings-log-description">摘要會遮蔽網址、電子郵件、令牌與識別碼，只複製必要的除錯資訊。上次更新：{formatTimestamp(lastRefreshAt)}</p>
           <p className="sr-only" role="status" aria-live="polite" aria-atomic="true">
@@ -539,6 +663,8 @@ export default function Settings() {
                 <button ref={confirmClearRef} type="button" className="settings-danger-button" onClick={handleClear} onKeyDown={(event) => { if (event.key === "Enter") { event.preventDefault(); handleClear(); } }}>確認清除</button>
               </div>
             </div>
+          )}
+          </>
           )}
         </section>
       </div>
