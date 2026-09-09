@@ -75,7 +75,7 @@ export const SAFETY_HALLS: SafetyHall[] = [
   },
   {
     key: "fire",
-    name: "消防安全館",
+    name: "消防常識館",
     nauticalName: "消防救生艇",
     tagline: "防火、逃生與燒燙傷",
     description: "火場上正確的每一秒都很重要：平時預防、災時冷靜、事後正確處理。",
