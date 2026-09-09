@@ -219,8 +219,8 @@ export const ASTRONOMY_EXHIBITS: AstronomyExhibit[] = [
     mission: "查一查太空天氣預報如何描述太陽風，並用磁場的概念，說明極光為什麼大多出現在南北極附近。",
     keyIdeas: ["極光來自太陽風粒子與大氣碰撞", "地球磁場把粒子帶向兩極", "太陽風也會影響通訊與電力"],
     question: "為什麼極光通常出現在高緯度，而不是赤道上方？",
-    sourceLabel: "NASA／Auroras and Space Weather",
-    sourceUrl: "https://science.nasa.gov/earth/auroras/",
+    sourceLabel: "NASA Space Place／Auroras",
+    sourceUrl: "https://spaceplace.nasa.gov/aurora/en/",
   },
 ];
 
