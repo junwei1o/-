@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { AlarmClock, Backpack, BarChart3, BookOpenCheck, BrainCircuit, Bug, CalendarDays, ChevronDown, ChevronUp, Coins, Crosshair, Crown, Dices, RotateCcw, ScrollText, Settings as SettingsIcon, ShieldAlert, Sparkles, Swords, Telescope, Timer, type LucideIcon, X } from "lucide-react";
+import { AlarmClock, Backpack, BarChart3, BookOpenCheck, BrainCircuit, Bug, CalendarDays, ChevronDown, ChevronUp, Coins, Crosshair, Crown, Dices, Medal, RotateCcw, ScrollText, Settings as SettingsIcon, ShieldAlert, Sparkles, Swords, Telescope, Tent, Timer, type LucideIcon, X } from "lucide-react";
 import { toast } from "sonner";
 import { useLocation } from "wouter";
 import { useQuestionBank } from "@/lib/questionBank";
@@ -65,6 +65,8 @@ const HOME_FEATURE_GROUPS: HomeFeatureGroup[] = [
       { id: "guardian", label: "守護者遠征", description: "挑戰四位區域守護者", href: "/guardian", icon: Crown },
       { id: "knowledge-duel", label: "知識決鬥", description: "單機 AI 策略卡牌對戰", href: "/duel", icon: Crosshair },
       { id: "self-challenge", label: "自我挑戰", description: "限時答題與個人最佳紀錄", href: "/community", icon: Timer },
+      { id: "daily-camp", label: "每日營地", description: "簽到、每日任務、金幣商店與每週王", href: "/camp", icon: Tent },
+      { id: "badges", label: "徽章牆", description: "收集探險徽章，點亮成就", href: "/badges", icon: Medal },
       { id: "adventure-journal", label: "探險日誌", description: "查看每日與歷史航海足跡", href: "/adventure-journal", icon: CalendarDays },
     ],
   },

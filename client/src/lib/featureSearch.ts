@@ -1,7 +1,7 @@
-import { BookOpenCheck, BrainCircuit, Crown, Lightbulb, Swords, type LucideIcon } from "lucide-react";
+import { BookOpenCheck, BrainCircuit, Crown, Lightbulb, Medal, Swords, Tent, type LucideIcon } from "lucide-react";
 
 export type FeatureSearchItem = {
-  id: "battle" | "duel" | "guardian" | "wrongAnswers" | "studyTips";
+  id: "battle" | "duel" | "guardian" | "wrongAnswers" | "studyTips" | "dailyCamp" | "badges";
   label: string;
   description: string;
   href: string;
@@ -49,6 +49,22 @@ export const FEATURE_SEARCH_ITEMS: FeatureSearchItem[] = [
     href: "/study-tips",
     keywords: ["讀書技巧", "應試技巧", "考試技巧", "答題技巧", "備考", "會考", "讀書方法", "時間管理", "讀書"],
     icon: Lightbulb,
+  },
+  {
+    id: "dailyCamp",
+    label: "每日營地：簽到、任務與商店",
+    description: "每日簽到、解任務賺金幣、在商店買體力與護身符，還能挑戰每週王。",
+    href: "/camp",
+    keywords: ["每日營地", "營地", "簽到", "每日任務", "任務", "金幣", "商店", "買東西", "體力", "護身符", "每週王", "boss"],
+    icon: Tent,
+  },
+  {
+    id: "badges",
+    label: "徽章牆與成就",
+    description: "收集探險徽章，回顧答題、簽到與戰鬥達成的各種成就。",
+    href: "/badges",
+    keywords: ["徽章", "徽章牆", "成就", "勳章", "稱號", "收集"],
+    icon: Medal,
   },
 ];
 

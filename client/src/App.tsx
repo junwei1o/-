@@ -27,6 +27,8 @@ import StudentMap from "@/pages/StudentMap";
 import BattleScene from "@/pages/BattleScene";
 import AdventureJournal from "@/pages/AdventureJournal";
 import Home from "@/pages/Home";
+import DailyCamp from "@/pages/DailyCamp";
+import Badges from "@/pages/Badges";
 import WrongAnswers from "@/pages/WrongAnswers";
 import Settings from "@/pages/Settings";
 import StudyTips from "@/pages/StudyTips";
@@ -41,6 +43,8 @@ function Router() {
     <Switch>
       <Route path={"/map"} component={StudentMap} />
       <Route path={"/"} component={Home} />
+      <Route path={"/camp"} component={DailyCamp} />
+      <Route path={"/badges"} component={Badges} />
       <Route path={"/practice"} component={PaperExam} />
       <Route path={"/wrong-answers"} component={WrongAnswers} />
       <Route path={"/regions/:regionKey"} component={RegionDetail} />

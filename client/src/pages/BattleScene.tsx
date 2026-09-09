@@ -7,6 +7,8 @@ import { hashStringToSeed, seededRandom, shuffleQuestionOptions } from "@/lib/op
 import { calculateBattlePerformance } from "@/game/rpgQuestionCombat";
 import { combatStyleForCompanion } from "@/game/companionCombatStyles";
 import { loadRpgState, recordRpgAnswer, saveRpgState } from "@/game/rpgStorage";
+import { consumeLuckyCharm } from "@/game/dailyCamp";
+import { toast } from "sonner";
 import { academyGearBonuses } from "@/game/academyQuestData";
 import { resolveArenaCapture, settleArenaLoot, type ArenaCaptureOutcome, type ArenaLoot } from "@/game/arenaRewards";
 import { arenaHabitatStatuses, encounterForArenaHabitat, selectArenaHabitat, selectedArenaHabitat } from "@/game/arenaHabitats";
@@ -337,6 +339,10 @@ export default function BattleScene({ questionPool = [], onClose, modal = false,
     setEncounter(nextEncounter);
     setRareEncounter(rolled.rare);
     setRage(0);
+    if (consumeLuckyCharm()) {
+      setRage(30);
+      toast.success("幸運護身符生效！開戰怒氣直接 30 點");
+    }
     setActiveRageSkill(null);
     setCastHighlightSkill(null);
     if (castHighlightTimerRef.current !== null) window.clearTimeout(castHighlightTimerRef.current);

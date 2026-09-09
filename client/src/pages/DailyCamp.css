@@ -1,0 +1,60 @@
+/* 每日營地：簽到、任務、每週王、金幣商店 */
+.daily-camp { max-width:880px; margin:0 auto; padding:28px 20px 96px; display:grid; gap:18px; color:var(--ink,#17384a); }
+.daily-camp-header h1 { margin:4px 0 6px; color:var(--tidal-deep); font-family:Fraunces,serif; font-size:clamp(26px,4vw,34px); font-weight:900; letter-spacing:-.03em; }
+.daily-camp-header p { margin:0; color:var(--muted); font-size:14px; line-height:1.7; }
+.daily-camp-eyebrow { color:var(--coral); font-size:11px; font-weight:900; letter-spacing:.14em; }
+.daily-camp-wallet { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+.daily-camp-wallet-item { display:inline-flex; align-items:center; gap:6px; padding:7px 12px; border:1px solid rgba(18,62,74,.12); border-radius:999px; background:rgba(255,253,248,.9); font-size:13px; font-weight:800; color:var(--tidal-deep); }
+.daily-camp-wallet-item.is-charm { border-color:rgba(103,83,154,.35); background:rgba(246,243,255,.9); color:#5d5580; }
+
+.daily-camp-signin, .daily-camp-section { border:1px solid rgba(18,62,74,.1); border-radius:18px; background:linear-gradient(135deg,rgba(255,253,248,.96),rgba(238,247,244,.9)); padding:18px; box-shadow:0 10px 26px rgba(18,62,74,.07); }
+.daily-camp-signin { display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap; border-color:rgba(232,124,91,.3); }
+.daily-camp-signin h2, .daily-camp-section h2 { margin:0; display:flex; align-items:center; gap:8px; color:var(--tidal-deep); font-size:17px; font-weight:900; }
+.daily-camp-signin p { margin:6px 0 0; color:var(--muted); font-size:13px; }
+.daily-camp-signin p strong { color:var(--coral); font-size:16px; }
+.daily-camp-primary-action { flex:none; min-height:44px; padding:0 20px; border:0; border-radius:12px; background:linear-gradient(135deg,var(--coral,#E87C5B),#d9603f); color:#fff; font:inherit; font-size:14px; font-weight:900; cursor:pointer; box-shadow:0 8px 18px rgba(217,96,63,.28); transition:transform .15s var(--ease,cubic-bezier(.23,1,.32,1)),box-shadow .15s var(--ease,cubic-bezier(.23,1,.32,1)),opacity .15s; }
+.daily-camp-primary-action:hover:not(:disabled) { transform:translateY(-1px); box-shadow:0 11px 22px rgba(217,96,63,.34); }
+.daily-camp-primary-action:active:not(:disabled) { transform:scale(.97); }
+.daily-camp-primary-action:disabled { background:#c9d2cf; box-shadow:none; cursor:default; }
+
+.daily-camp-section-heading { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:12px; }
+.daily-camp-section-heading span { display:inline-flex; align-items:center; gap:5px; color:var(--muted); font-size:12px; font-weight:800; }
+.daily-camp-task-list, .daily-camp-shop-list { list-style:none; margin:0; padding:0; display:grid; gap:10px; }
+.daily-camp-task, .daily-camp-shop-item { display:flex; align-items:center; gap:12px; padding:13px 14px; border:1px solid rgba(18,62,74,.09); border-radius:14px; background:rgba(255,255,255,.72); }
+.daily-camp-task.is-complete { border-color:rgba(11,110,142,.28); background:rgba(231,240,236,.6); }
+.daily-camp-task.is-claimed { opacity:.72; }
+.daily-camp-task-icon { display:grid; place-items:center; flex:none; width:42px; height:42px; border-radius:12px; background:rgba(11,110,142,.09); font-size:22px; }
+.daily-camp-task-copy { flex:1; min-width:0; display:grid; gap:3px; }
+.daily-camp-task-copy strong { color:var(--tidal-deep); font-size:14px; }
+.daily-camp-task-copy p { margin:0; color:var(--muted); font-size:12px; line-height:1.5; }
+.daily-camp-task-copy small { color:var(--muted); font-size:11px; font-weight:700; }
+.daily-camp-task-progress { height:8px; border-radius:999px; background:rgba(18,62,74,.08); overflow:hidden; margin-top:2px; }
+.daily-camp-task-progress span { display:block; height:100%; border-radius:inherit; background:linear-gradient(90deg,var(--tidal,#0B6E8E),#3aa7c4); transition:width .35s var(--ease,cubic-bezier(.23,1,.32,1)); }
+.daily-camp-task.is-complete .daily-camp-task-progress span { background:linear-gradient(90deg,#3fa66f,#7fce8a); }
+.daily-camp-claim, .daily-camp-buy { flex:none; min-height:40px; padding:0 16px; border:1px solid rgba(11,110,142,.3); border-radius:11px; background:var(--tidal,#0B6E8E); color:#fff; font:inherit; font-size:13px; font-weight:900; cursor:pointer; transition:transform .15s var(--ease,cubic-bezier(.23,1,.32,1)),background .15s,opacity .15s; }
+.daily-camp-claim:hover:not(:disabled), .daily-camp-buy:hover:not(:disabled) { transform:translateY(-1px); }
+.daily-camp-claim:active:not(:disabled), .daily-camp-buy:active:not(:disabled) { transform:scale(.96); }
+.daily-camp-claim:disabled, .daily-camp-buy:disabled { background:#d7dddb; border-color:transparent; color:#7d8a87; cursor:default; }
+.daily-camp-buy { background:#fff; color:var(--tidal-deep); }
+.daily-camp-buy:hover:not(:disabled) { background:rgba(11,110,142,.08); }
+
+.daily-camp-boss { border-color:rgba(103,83,154,.28); background:linear-gradient(135deg,rgba(246,243,255,.95),rgba(255,253,248,.95)); }
+.daily-camp-boss p { margin:0 0 10px; color:var(--muted); font-size:13px; line-height:1.7; }
+.daily-camp-boss p a { color:var(--tidal,#0B6E8E); font-weight:800; text-decoration:underline; text-underline-offset:3px; }
+.daily-camp-boss-bar { height:16px; border-radius:999px; background:rgba(103,83,154,.14); overflow:hidden; border:1px solid rgba(103,83,154,.2); }
+.daily-camp-boss-bar span { display:block; height:100%; border-radius:inherit; background:linear-gradient(90deg,#7a5fc0,#a98ce0); transition:width .4s var(--ease,cubic-bezier(.23,1,.32,1)); }
+.daily-camp-boss-bar span.is-defeated { background:linear-gradient(90deg,#3fa66f,#7fce8a); }
+.daily-camp-boss-footer { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-top:12px; }
+.daily-camp-boss-footer small { color:#5d5580; font-weight:800; font-size:12px; }
+.daily-camp-shop-note { margin:10px 2px 0; color:var(--muted); font-size:11px; }
+
+@media (max-width:600px) {
+  .daily-camp { padding:22px 14px 96px; }
+  .daily-camp-task, .daily-camp-shop-item { flex-wrap:wrap; }
+  .daily-camp-claim, .daily-camp-buy { width:100%; }
+}
+@media (prefers-reduced-motion:reduce) {
+  .daily-camp-primary-action, .daily-camp-claim, .daily-camp-buy, .daily-camp-task-progress span, .daily-camp-boss-bar span { transition:none; }
+  .daily-camp-primary-action:hover:not(:disabled), .daily-camp-claim:hover:not(:disabled), .daily-camp-buy:hover:not(:disabled) { transform:none; }
+  .daily-camp-primary-action:active:not(:disabled), .daily-camp-claim:active:not(:disabled), .daily-camp-buy:active:not(:disabled) { transform:none; }
+}
