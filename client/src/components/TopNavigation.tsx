@@ -1,69 +1,118 @@
 import * as React from "react";
-import { BarChart3, BookOpenText, BrainCircuit, ClipboardList, Compass, Lightbulb, Orbit, Search, Settings, Swords, Telescope, UsersRound, type LucideIcon } from "lucide-react";
+import { Award, BarChart3, BookOpenCheck, BookOpenText, CalendarDays, Clapperboard, Compass, Crown, Crosshair, Lightbulb, Map as MapIcon, Menu, Orbit, ScrollText, Search, Settings, Sparkles, Swords, Telescope, Timer, UsersRound, X, type LucideIcon } from "lucide-react";
 import { useLocation } from "wouter";
 import { Command, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { findFeatureSearchResults } from "@/lib/featureSearch";
 
-type TopNavItem = {
-  id: "home" | "paper" | "map" | "journal" | "astronomy" | "principles" | "insights" | "errorStats" | "support" | "settings" | "tips";
+type NavItem = {
+  id: string;
   label: string;
   icon: LucideIcon;
   href: string;
+  /** Path prefixes that should mark this entry as the active destination. */
+  activePrefixes?: string[];
 };
 
-const ITEMS: TopNavItem[] = [
-  { id: "home", label: "航海儀表板", icon: Compass, href: "/" },
-  { id: "paper", label: "試卷", icon: ClipboardList, href: "/practice" },
-  { id: "tips", label: "讀書技巧", icon: Lightbulb, href: "/study-tips" },
-  { id: "map", label: "我的地圖", icon: Compass, href: "/map" },
-  { id: "journal", label: "探險日誌", icon: BookOpenText, href: "/adventure-journal" },
-  { id: "astronomy", label: "天文館", icon: Orbit, href: "/astronomy" },
-  { id: "principles", label: "原理引導", icon: Telescope, href: "/principles" },
-  { id: "insights", label: "洞察", icon: BrainCircuit, href: "/learning-insights" },
-  { id: "errorStats", label: "錯誤統計", icon: BarChart3, href: "/error-statistics" },
-  { id: "support", label: "陪讀摘要", icon: UsersRound, href: "/learning-summary" },
-  { id: "settings", label: "設定", icon: Settings, href: "/settings" },
+type NavGroup = { id: string; label: string; items: NavItem[] };
+
+/** Desktop primary bar: the six destinations children use every day. */
+const PRIMARY_ITEMS: NavItem[] = [
+  { id: "home", label: "首頁", icon: Compass, href: "/", activePrefixes: ["/"] },
+  { id: "practice", label: "課綱練習", icon: BookOpenCheck, href: "/practice", activePrefixes: ["/practice"] },
+  { id: "map", label: "航海圖", icon: MapIcon, href: "/map", activePrefixes: ["/map", "/regions/"] },
+  { id: "battle", label: "答題戰鬥", icon: Swords, href: "/battle", activePrefixes: ["/battle"] },
+  { id: "camp", label: "每日營地", icon: CalendarDays, href: "/camp", activePrefixes: ["/camp"] },
+  { id: "badges", label: "徽章牆", icon: Award, href: "/badges", activePrefixes: ["/badges"] },
 ];
 
-const MOBILE_PRIORITY_ITEMS: Array<{
-  id: TopNavItem["id"] | "duel";
-  label: string;
-  icon: LucideIcon;
-  href: string;
-}> = [
-  { id: "home", label: "首頁", icon: Compass, href: "/" },
-  { id: "paper", label: "試卷", icon: ClipboardList, href: "/practice" },
-  { id: "duel", label: "知識決鬥", icon: Swords, href: "/knowledge-duel" },
-  { id: "map", label: "地圖", icon: Compass, href: "/map" },
+/** Everything else lives behind「更多」on desktop and the hamburger on mobile. */
+const MORE_ITEMS: NavItem[] = [
+  { id: "duel", label: "知識決鬥", icon: Crosshair, href: "/knowledge-duel", activePrefixes: ["/knowledge-duel", "/duel"] },
+  { id: "guardian", label: "守護者遠征", icon: Crown, href: "/guardian", activePrefixes: ["/guardian"] },
+  { id: "challenge", label: "自我挑戰", icon: Timer, href: "/community", activePrefixes: ["/community"] },
+  { id: "journal", label: "探險日誌", icon: BookOpenText, href: "/adventure-journal", activePrefixes: ["/adventure-journal"] },
+  { id: "astronomy", label: "天文館", icon: Orbit, href: "/astronomy", activePrefixes: ["/astronomy"] },
+  { id: "wisdom", label: "智慧故事館", icon: Sparkles, href: "/wisdom", activePrefixes: ["/wisdom"] },
+  { id: "principles", label: "世界原理站", icon: Telescope, href: "/principles", activePrefixes: ["/principles"] },
+  { id: "observatory", label: "影視觀測站", icon: Clapperboard, href: "/observatory", activePrefixes: ["/observatory"] },
+  { id: "wrong-answers", label: "錯題複習", icon: ScrollText, href: "/wrong-answers", activePrefixes: ["/wrong-answers"] },
+  { id: "tips", label: "讀書技巧", icon: Lightbulb, href: "/study-tips", activePrefixes: ["/study-tips"] },
+  { id: "insights", label: "學習洞察", icon: BarChart3, href: "/learning-insights", activePrefixes: ["/learning-insights", "/learning-report"] },
+  { id: "errorStats", label: "錯題統計", icon: BarChart3, href: "/error-statistics", activePrefixes: ["/error-statistics"] },
+  { id: "support", label: "陪讀專區", icon: UsersRound, href: "/learning-summary", activePrefixes: ["/learning-summary"] },
+  { id: "settings", label: "設定", icon: Settings, href: "/settings", activePrefixes: ["/settings"] },
 ];
 
-function getActiveItem(location: string): TopNavItem["id"] {
-  const [pathname, search = ""] = location.split("?");
-  const screen = new URLSearchParams(search).get("screen");
+/** Mobile hamburger groups every destination so small screens never lose an entry. */
+const MOBILE_GROUPS: NavGroup[] = [
+  {
+    id: "learning",
+    label: "學習練習",
+    items: [
+      PRIMARY_ITEMS[1],
+      MORE_ITEMS.find((item) => item.id === "wrong-answers")!,
+      MORE_ITEMS.find((item) => item.id === "tips")!,
+      MORE_ITEMS.find((item) => item.id === "insights")!,
+      MORE_ITEMS.find((item) => item.id === "errorStats")!,
+    ],
+  },
+  {
+    id: "expedition",
+    label: "探險對戰",
+    items: [
+      PRIMARY_ITEMS[2],
+      PRIMARY_ITEMS[3],
+      PRIMARY_ITEMS[4],
+      PRIMARY_ITEMS[5],
+      MORE_ITEMS.find((item) => item.id === "duel")!,
+      MORE_ITEMS.find((item) => item.id === "guardian")!,
+      MORE_ITEMS.find((item) => item.id === "challenge")!,
+      MORE_ITEMS.find((item) => item.id === "journal")!,
+    ],
+  },
+  {
+    id: "discovery",
+    label: "知識探索館",
+    items: [
+      MORE_ITEMS.find((item) => item.id === "astronomy")!,
+      MORE_ITEMS.find((item) => item.id === "wisdom")!,
+      MORE_ITEMS.find((item) => item.id === "principles")!,
+      MORE_ITEMS.find((item) => item.id === "observatory")!,
+    ],
+  },
+  {
+    id: "support",
+    label: "支援與設定",
+    items: [
+      MORE_ITEMS.find((item) => item.id === "support")!,
+      MORE_ITEMS.find((item) => item.id === "settings")!,
+    ],
+  },
+];
 
-  if (pathname === "/astronomy" || pathname.startsWith("/astronomy/")) return "astronomy";
-  if (pathname === "/principles" || pathname.startsWith("/principles/")) return "principles";
-  if (pathname === "/learning-insights") return "insights";
-  if (pathname === "/study-tips") return "tips";
-  if (pathname === "/error-statistics") return "errorStats";
-  if (pathname === "/learning-summary") return "support";
-  if (pathname === "/settings") return "settings";
-  if (pathname === "/adventure-journal") return "journal";
-  if (pathname === "/guardian") return "map";
-  if (pathname === "/map") return "map";
-  if (pathname === "/" || pathname === "") return "home";
-  if (pathname === "/practice") return "paper";
-  void screen;
-  return "paper";
+/** Fixed bottom quick entries on phones; the hamburger still reaches every feature. */
+const MOBILE_PRIORITY_ITEMS: NavItem[] = [PRIMARY_ITEMS[0], PRIMARY_ITEMS[1], PRIMARY_ITEMS[2], PRIMARY_ITEMS[3]];
+
+function isItemActive(item: NavItem, pathname: string) {
+  if (item.href === "/") return pathname === "/" || pathname === "";
+  return (item.activePrefixes ?? [item.href]).some((prefix) => pathname === prefix || pathname.startsWith(prefix.endsWith("/") ? prefix : `${prefix}/`) || pathname.startsWith(prefix));
+}
+
+function findActiveItem(pathname: string): NavItem | null {
+  const all = [...PRIMARY_ITEMS, ...MORE_ITEMS];
+  return all.find((item) => isItemActive(item, pathname)) ?? null;
 }
 
 export default function TopNavigation() {
   const [location, setLocation] = useLocation();
-  const activeItem = getActiveItem(location);
-  const activePath = location.split("?")[0];
+  const pathname = location.split("?")[0];
+  const activeItem = findActiveItem(pathname);
   const [searchOpen, setSearchOpen] = React.useState(false);
   const [searchQuery, setSearchQuery] = React.useState("");
+  const [moreOpen, setMoreOpen] = React.useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
+  const morePanelRef = React.useRef<HTMLDivElement>(null);
   const searchResults = React.useMemo(() => findFeatureSearchResults(searchQuery), [searchQuery]);
 
   React.useEffect(() => {
@@ -77,32 +126,50 @@ export default function TopNavigation() {
     return () => window.removeEventListener("keydown", handleShortcut);
   }, []);
 
+  React.useEffect(() => {
+    if (!moreOpen) return;
+    function handlePointerDown(event: MouseEvent) {
+      if (morePanelRef.current && !morePanelRef.current.contains(event.target as Node)) setMoreOpen(false);
+    }
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") setMoreOpen(false);
+    }
+    document.addEventListener("mousedown", handlePointerDown);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", handlePointerDown);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [moreOpen]);
+
+  function go(href: string) {
+    setMoreOpen(false);
+    setMobileMenuOpen(false);
+    setLocation(href);
+  }
+
   function openFeatureSearch() {
     setSearchQuery("");
     setSearchOpen(true);
   }
 
-  function navigateToFeature(href: string) {
-    setSearchOpen(false);
-    setSearchQuery("");
-    setLocation(href);
-  }
+  const moreActive = Boolean(activeItem && !PRIMARY_ITEMS.some((item) => item.id === activeItem.id));
 
   return (
     <header className="global-top-nav">
       <div className="global-top-nav-inner">
-        <div className="global-top-brand" aria-label="寶島探險家：台灣學習航海儀表板">
+        <button type="button" className="global-top-brand" aria-label="寶島探險家：回首頁" onClick={() => go("/")}>
           <span className="global-top-brand-mark" aria-hidden="true">
             <Compass size={20} strokeWidth={2.3} />
           </span>
           <span className="global-top-brand-copy">
             <b>寶島探險家</b>
-            <small>台灣學習航海儀表板</small>
+            <small>台灣學習航海日誌</small>
           </span>
-        </div>
-        <nav className="global-top-nav-links" aria-label="主要功能選單" data-active-route={activeItem}>
-          {ITEMS.map(({ id, label, icon: Icon, href }) => {
-            const active = activeItem === id;
+        </button>
+        <nav className="global-top-nav-links" aria-label="主要功能選單" data-active-route={activeItem?.id ?? ""}>
+          {PRIMARY_ITEMS.map(({ id, label, icon: Icon, href }) => {
+            const active = activeItem?.id === id;
             return (
               <button
                 key={id}
@@ -110,13 +177,46 @@ export default function TopNavigation() {
                 className={`global-top-nav-item ${active ? "is-active" : ""}`}
                 aria-current={active ? "page" : undefined}
                 title={label}
-                onClick={() => setLocation(href)}
+                onClick={() => go(href)}
               >
                 <Icon size={17} strokeWidth={active ? 2.5 : 1.9} aria-hidden="true" />
                 <span>{label}</span>
               </button>
             );
           })}
+          <div className="global-top-nav-more" ref={morePanelRef}>
+            <button
+              type="button"
+              className={`global-top-nav-item global-top-nav-more-trigger ${moreActive ? "is-active" : ""}`}
+              aria-label="更多功能"
+              aria-expanded={moreOpen}
+              aria-haspopup="menu"
+              onClick={() => setMoreOpen((open) => !open)}
+            >
+              <Menu size={17} strokeWidth={1.9} aria-hidden="true" />
+              <span>更多</span>
+            </button>
+            {moreOpen ? (
+              <div className="global-top-nav-more-panel" role="menu" aria-label="更多功能選單">
+                {MORE_ITEMS.map(({ id, label, icon: Icon, href }) => {
+                  const active = activeItem?.id === id;
+                  return (
+                    <button
+                      key={id}
+                      type="button"
+                      role="menuitem"
+                      className={`global-top-nav-more-item ${active ? "is-active" : ""}`}
+                      aria-current={active ? "page" : undefined}
+                      onClick={() => go(href)}
+                    >
+                      <Icon size={16} aria-hidden="true" />
+                      <span>{label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            ) : null}
+          </div>
         </nav>
         <button
           type="button"
@@ -128,16 +228,25 @@ export default function TopNavigation() {
           <Search size={17} aria-hidden="true" />
           <span>搜尋功能</span>
         </button>
+        <button
+          type="button"
+          className="global-mobile-menu-trigger"
+          aria-label="開啟功能選單"
+          aria-expanded={mobileMenuOpen}
+          onClick={() => setMobileMenuOpen(true)}
+        >
+          <Menu size={22} aria-hidden="true" />
+        </button>
         <nav className="global-mobile-priority-nav" aria-label="手機版核心入口">
           {MOBILE_PRIORITY_ITEMS.map(({ id, label, icon: Icon, href }) => {
-            const active = activePath === href;
+            const active = activeItem?.id === id;
             return (
               <button
                 key={id}
                 type="button"
                 className={`global-mobile-priority-item ${active ? "is-active" : ""}`}
                 aria-current={active ? "page" : undefined}
-                onClick={() => setLocation(href)}
+                onClick={() => go(href)}
               >
                 <Icon size={18} strokeWidth={active ? 2.5 : 1.9} aria-hidden="true" />
                 <span>{label}</span>
@@ -169,7 +278,11 @@ export default function TopNavigation() {
                       <CommandItem
                         key={item.id}
                         value={item.id}
-                        onSelect={() => navigateToFeature(item.href)}
+                        onSelect={() => {
+                          setSearchOpen(false);
+                          setSearchQuery("");
+                          setLocation(item.href);
+                        }}
                         className="global-feature-search-item"
                       >
                         <span className="global-feature-search-icon"><Icon size={19} aria-hidden="true" /></span>
@@ -183,6 +296,41 @@ export default function TopNavigation() {
               )}
             </CommandList>
           </Command>
+        </DialogContent>
+      </Dialog>
+      <Dialog open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+        <DialogContent className="global-mobile-menu-dialog" aria-describedby={undefined}>
+          <DialogHeader>
+            <DialogTitle>功能選單</DialogTitle>
+            <DialogDescription className="sr-only">選擇要前往的學習或探險功能。</DialogDescription>
+          </DialogHeader>
+          <button type="button" className="global-mobile-menu-close" aria-label="關閉功能選單" onClick={() => setMobileMenuOpen(false)}>
+            <X size={18} aria-hidden="true" />
+          </button>
+          <nav className="global-mobile-menu-groups" aria-label="全部功能">
+            {MOBILE_GROUPS.map((group) => (
+              <section key={group.id} className="global-mobile-menu-group">
+                <h2>{group.label}</h2>
+                <div className="global-mobile-menu-items">
+                  {group.items.map(({ id, label, icon: Icon, href }) => {
+                    const active = activeItem?.id === id;
+                    return (
+                      <button
+                        key={id}
+                        type="button"
+                        className={`global-mobile-menu-item ${active ? "is-active" : ""}`}
+                        aria-current={active ? "page" : undefined}
+                        onClick={() => go(href)}
+                      >
+                        <Icon size={18} aria-hidden="true" />
+                        <span>{label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </section>
+            ))}
+          </nav>
         </DialogContent>
       </Dialog>
     </header>

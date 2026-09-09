@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import React from "react";
 import "@testing-library/jest-dom/vitest";
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterAll, afterEach, describe, expect, it, vi } from "vitest";
 import TopNavigation from "@/components/TopNavigation";
 
@@ -35,26 +35,53 @@ describe("TopNavigation", () => {
     delete (HTMLElement.prototype as Partial<HTMLElement>).scrollIntoView;
   });
 
-  it("places the dashboard, regular paper, self-centered map and specialist destinations in an accessible top-level menu", () => {
+  it("keeps the daily kid destinations in a slim primary bar and marks the home entry active", () => {
     render(<TopNavigation />);
 
-    expect(screen.getByRole("navigation", { name: "主要功能選單" })).toBeInTheDocument();
+    const primary = screen.getByRole("navigation", { name: "主要功能選單" });
     expect(screen.getByRole("navigation", { name: "手機版核心入口" })).toBeInTheDocument();
-    expect(screen.getAllByRole("button")).toHaveLength(16);
-    expect(screen.getByText("台灣學習航海儀表板")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "搜尋功能" })).toHaveTextContent("搜尋功能");
-    expect(screen.getByRole("button", { name: "知識決鬥" })).toBeInTheDocument();
-    expect(screen.getAllByRole("button", { name: "航海儀表板" })).toHaveLength(1);
-    expect(screen.getAllByRole("button", { name: "試卷" })).toHaveLength(2);
-    expect(screen.getAllByRole("button", { name: "讀書技巧" })).toHaveLength(1);
-    expect(screen.getAllByRole("button", { name: "陪讀摘要" })).toHaveLength(1);
-    expect(screen.getAllByRole("button", { name: "探險日誌" })).toHaveLength(1);
-    expect(screen.getAllByRole("button", { name: "設定" })).toHaveLength(1);
-    expect(screen.getAllByRole("button", { name: "航海儀表板" })[0]).toHaveAttribute("aria-current", "page");
-    expect(screen.queryByRole("button", { name: "探險" })).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "學習" })).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "戰鬥" })).not.toBeInTheDocument();
-    expect(screen.getAllByRole("button", { name: "陪讀摘要" })[0]).not.toHaveAttribute("aria-current");
+    expect(within(primary).getByRole("button", { name: "首頁" })).toHaveAttribute("aria-current", "page");
+    expect(within(primary).getByRole("button", { name: "課綱練習" })).toBeInTheDocument();
+    expect(within(primary).getByRole("button", { name: "航海圖" })).toBeInTheDocument();
+    expect(within(primary).getByRole("button", { name: "答題戰鬥" })).toBeInTheDocument();
+    expect(within(primary).getByRole("button", { name: "每日營地" })).toBeInTheDocument();
+    expect(within(primary).getByRole("button", { name: "徽章牆" })).toBeInTheDocument();
+  });
+
+  it("tucks specialist destinations behind the desktop more menu and routes them", () => {
+    render(<TopNavigation />);
+
+    // Hidden until the more menu opens.
+    expect(screen.queryByRole("menuitem", { name: "天文館" })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "更多功能" }));
+    fireEvent.click(screen.getByRole("menuitem", { name: "天文館" }));
+    expect(setLocation).toHaveBeenCalledWith("/astronomy");
+  });
+
+  it("routes primary destinations straight from the bar", () => {
+    render(<TopNavigation />);
+
+    const primary = screen.getByRole("navigation", { name: "主要功能選單" });
+    fireEvent.click(within(primary).getByRole("button", { name: "答題戰鬥" }));
+    expect(setLocation).toHaveBeenCalledWith("/battle");
+    setLocation.mockClear();
+
+    fireEvent.click(within(primary).getByRole("button", { name: "每日營地" }));
+    expect(setLocation).toHaveBeenCalledWith("/camp");
+    setLocation.mockClear();
+
+    fireEvent.click(within(primary).getByRole("button", { name: "徽章牆" }));
+    expect(setLocation).toHaveBeenCalledWith("/badges");
+  });
+
+  it("offers a hamburger menu on mobile that reaches every destination, including the self-challenge page", () => {
+    render(<TopNavigation />);
+
+    fireEvent.click(screen.getByRole("button", { name: "開啟功能選單" }));
+    const all = screen.getByRole("navigation", { name: "全部功能" });
+    expect(all).toBeInTheDocument();
+    fireEvent.click(within(all).getByRole("button", { name: "自我挑戰" }));
+    expect(setLocation).toHaveBeenCalledWith("/community");
   });
 
   it("exposes a feature search that routes card-play queries to knowledge duel", () => {
@@ -67,32 +94,11 @@ describe("TopNavigation", () => {
     expect(setLocation).toHaveBeenCalledWith("/knowledge-duel");
   });
 
-  it("routes the mobile priority knowledge duel entry to the duel mode", () => {
+  it("routes the mobile priority entries to their modes", () => {
     render(<TopNavigation />);
 
-    fireEvent.click(screen.getByRole("button", { name: "知識決鬥" }));
-
-    expect(setLocation).toHaveBeenCalledWith("/knowledge-duel");
-  });
-
-  it("routes specialist menu items to their dedicated knowledge pages", () => {
-    render(<TopNavigation />);
-
-    fireEvent.click(screen.getAllByRole("button", { name: "天文館" })[0]);
-    expect(setLocation).toHaveBeenCalledWith("/astronomy");
-  });
-
-  it("routes the study tips entry to the exam strategy page", () => {
-    render(<TopNavigation />);
-
-    fireEvent.click(screen.getByRole("button", { name: "讀書技巧" }));
-    expect(setLocation).toHaveBeenCalledWith("/study-tips");
-  });
-
-  it("opens the student-centered relationship map from the primary navigation", () => {
-    render(<TopNavigation />);
-
-    fireEvent.click(screen.getAllByRole("button", { name: "我的地圖" })[0]);
-    expect(setLocation).toHaveBeenCalledWith("/map");
+    const mobile = screen.getByRole("navigation", { name: "手機版核心入口" });
+    fireEvent.click(within(mobile).getByRole("button", { name: "課綱練習" }));
+    expect(setLocation).toHaveBeenCalledWith("/practice");
   });
 });
