@@ -11,6 +11,7 @@ import { defaultHabitatDailyProgress, normalizeHabitatDailyProgress, recordHabit
 import { normalizeAnimeWorldviewProgress, recordAnimeWorldviewQuizResult as updateAnimeWorldviewProgress } from "./animeWorldviewProgress";
 import { normalizeSafetyAcademyProgress, recordSafetyCardAnswer } from "./safetyAcademyProgress";
 import { bxStore, type BxSubjectKey } from "./bxStore";
+import { markDirty } from "./cloudSync";
 
 /** 將站內中文科名對應到 BX 強化層的科目鍵。 */
 function toBxSubject(subject?: string): BxSubjectKey {
@@ -200,6 +201,12 @@ export function recordRpgAnswer(input: { eventId: string; correct: boolean; seco
     });
   } catch {
     // 強化層失敗時靜默略過。
+  }
+  // 雲端船籍：雲端模式下標記進度已變更（5 秒防抖上傳）；非雲端模式為 no-op。
+  try {
+    markDirty();
+  } catch {
+    // 雲端同步失敗不得影響主遊戲存檔。
   }
   if (input.correct && correctAnswerCount > 0 && correctAnswerCount % 10 === 0) {
     tryDropSpecialty({

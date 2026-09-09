@@ -31,6 +31,7 @@ import { getJournalEntries } from "@/game/adventureJournal";
 import ParentLearningView from "@/components/ParentLearningView";
 import { FontSizeController } from "@/components/FontSizeController";
 import BackupPanel from "@/components/bx/BackupPanel";
+import { CloudSyncSettings } from "@/components/CloudModePrompt";
 import PrefsPanel from "@/components/bx/PrefsPanel";
 import "./SettingsDiagnostics.css";
 
@@ -396,6 +397,7 @@ export default function Settings() {
         </section>
 
         <BackupPanel />
+        <CloudSyncSettings />
         <PrefsPanel />
 
         <section className="settings-audio-card settings-report-link-card" aria-labelledby="learning-report-link-title">

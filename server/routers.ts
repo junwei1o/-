@@ -1,10 +1,27 @@
 import { COOKIE_NAME } from "@shared/const";
 import { z } from "zod";
 import { invokeLLM } from "./_core/llm";
-import { getQuestionBank } from "./db";
+import { createCloudSave, getCloudSave, getQuestionBank, insertExamRecord, listExamRecords, updateCloudSave } from "./db";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router } from "./_core/trpc";
+
+/** 雲端船籍名字：2–6 個中文字或英數字（如「張三」「小航海士02」）。 */
+const cloudNameSchema = z.string().trim().min(2, "名字至少 2 個字").max(6, "名字最多 6 個字").regex(/^[一-鿿A-Za-z0-9]+$/, "名字請用中文字或英數字");
+
+/** 雲端存檔內容：rpg/bx 原始 JSON 字串＋版本號，大小由 express 50mb 上限把關。 */
+const cloudPayloadSchema = z.object({
+  v: z.literal(1),
+  rpg: z.string().nullable(),
+  bx: z.string().nullable(),
+  savedAt: z.number().int().positive(),
+});
+
+const cloudMetricsSchema = z.object({
+  coins: z.number().int().min(0).max(10_000_000),
+  totalAnswers: z.number().int().min(0).max(10_000_000),
+  badges: z.number().int().min(0).max(100_000),
+});
 
 export const appRouter = router({
     // if you need to use socket.io, read and register route in server/_core/index.ts, all api should start with '/api/' so that the gateway can route correctly
@@ -245,6 +262,89 @@ export const appRouter = router({
       .query(async ({ input }) => {
         const questions = await getQuestionBank(input ?? {});
         return { questions, total: questions.length };
+      }),
+  }),
+  // 雲端船籍：以孩子自選名字（2–6 字，無密碼）為鍵的免註冊雲端存檔。
+  // 內容僅學習進度（金幣/島嶼/徽章/作答統計），不含個資；名字即身分，認船畫面以防誤登。
+  cloud: router({
+    register: publicProcedure
+      .input(z.object({
+        name: cloudNameSchema,
+        payload: cloudPayloadSchema,
+        metrics: cloudMetricsSchema,
+      }))
+      .mutation(async ({ input }) => {
+        const created = await createCloudSave({ name: input.name, payload: input.payload, ...input.metrics });
+        if (!created) return { ok: false as const, reason: "taken" as const };
+        return { ok: true as const };
+      }),
+    load: publicProcedure
+      .input(z.object({ name: cloudNameSchema }))
+      .query(async ({ input }) => {
+        const row = await getCloudSave(input.name);
+        if (!row) return { ok: false as const, reason: "notFound" as const };
+        return {
+          ok: true as const,
+          save: {
+            name: row.name,
+            payload: row.payload,
+            coins: row.coins,
+            totalAnswers: row.totalAnswers,
+            badges: row.badges,
+            updatedAt: row.updatedAt instanceof Date ? row.updatedAt.getTime() : Date.now(),
+          },
+        };
+      }),
+    save: publicProcedure
+      .input(z.object({
+        name: cloudNameSchema,
+        payload: cloudPayloadSchema,
+        metrics: cloudMetricsSchema,
+      }))
+      .mutation(async ({ input }) => {
+        const updated = await updateCloudSave(input.name, input.payload, input.metrics);
+        if (!updated) {
+          // 船籍不存在（例如換裝置初次同步）：直接建立，讓同步不中斷。
+          await createCloudSave({ name: input.name, payload: input.payload, ...input.metrics });
+        }
+        return { ok: true as const };
+      }),
+    recordExam: publicProcedure
+      .input(z.object({
+        name: cloudNameSchema,
+        subject: z.string().trim().min(1).max(32),
+        grade: z.number().int().min(1).max(12).optional(),
+        difficulty: z.string().trim().min(1).max(16).optional(),
+        totalQuestions: z.number().int().min(1).max(100),
+        correctCount: z.number().int().min(0).max(100),
+        detail: z.unknown().optional(),
+      }).refine((v) => v.correctCount <= v.totalQuestions, { message: "correctCount exceeds totalQuestions" }))
+      .mutation(async ({ input }) => {
+        await insertExamRecord({
+          name: input.name,
+          subject: input.subject,
+          grade: input.grade ?? null,
+          difficulty: input.difficulty ?? null,
+          totalQuestions: input.totalQuestions,
+          correctCount: input.correctCount,
+          detail: input.detail ?? null,
+        });
+        return { ok: true as const };
+      }),
+    listExams: publicProcedure
+      .input(z.object({ name: cloudNameSchema, limit: z.number().int().min(1).max(50).optional() }))
+      .query(async ({ input }) => {
+        const rows = await listExamRecords(input.name, input.limit ?? 10);
+        return {
+          records: rows.map((row) => ({
+            id: row.id,
+            subject: row.subject,
+            difficulty: row.difficulty,
+            totalQuestions: row.totalQuestions,
+            correctCount: row.correctCount,
+            createdAt: row.createdAt instanceof Date ? row.createdAt.getTime() : Date.now(),
+          })),
+        };
       }),
   }),
   auth: router({

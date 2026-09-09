@@ -52,3 +52,38 @@ export const questionBank = mysqlTable("question_bank", {
 
 export type Question = typeof questionBank.$inferSelect;
 export type InsertQuestion = typeof questionBank.$inferInsert;
+
+/**
+ * 雲端船籍：以孩子自選的「名字」（2–6 字，無密碼）作為主鍵的整包進度存檔。
+ * metrics 欄位（coins/totalAnswers/badges）用於「認船」確認畫面與合併判斷。
+ */
+export const cloudSaves = mysqlTable("cloud_saves", {
+  name: varchar("name", { length: 24 }).primaryKey(),
+  payload: json("payload").$type<unknown>().notNull(),
+  coins: int("coins").notNull().default(0),
+  totalAnswers: int("totalAnswers").notNull().default(0),
+  badges: int("badges").notNull().default(0),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type CloudSave = typeof cloudSaves.$inferSelect;
+export type InsertCloudSave = typeof cloudSaves.$inferInsert;
+
+/** 每份試卷完成後寫入一筆的航行紀錄。 */
+export const examRecords = mysqlTable("exam_records", {
+  id: int("id").autoincrement().primaryKey(),
+  name: varchar("name", { length: 24 }).notNull(),
+  subject: varchar("subject", { length: 32 }).notNull(),
+  grade: int("grade"),
+  difficulty: varchar("difficulty", { length: 16 }),
+  totalQuestions: int("totalQuestions").notNull(),
+  correctCount: int("correctCount").notNull(),
+  detail: json("detail").$type<unknown>(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+}, (table) => ({
+  nameIdx: index("exam_records_name_idx").on(table.name),
+}));
+
+export type ExamRecord = typeof examRecords.$inferSelect;
+export type InsertExamRecord = typeof examRecords.$inferInsert;

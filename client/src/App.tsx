@@ -7,6 +7,7 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import TopNavigation from "@/components/TopNavigation";
 import BxEnhance from "@/components/bx/BxEnhance";
+import CloudModePrompt from "@/components/CloudModePrompt";
 import Home from "@/pages/Home";
 import { initGameData } from "@/utils/storage";
 import { OfflineBanner } from "@/components/OfflineBanner";
@@ -116,6 +117,7 @@ function App() {
           <Toaster />
           <OfflineBanner />
           <BxEnhance />
+          <CloudModePrompt />
           <a className="skip-link" href="#main-content">跳到主要內容</a>
           <div className="app-route-shell">
             <TopNavigation />

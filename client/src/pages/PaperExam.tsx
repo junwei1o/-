@@ -28,6 +28,7 @@ import {
 } from "@/lib/paperExam";
 import { getDueReviewQuestionIds, loadAdaptiveProfile, recordAdaptiveAttempt, saveAdaptiveProfile, updateLatestAdaptiveAttempt, type AdaptiveErrorType } from "@/game/adaptiveLearning";
 import { recordRpgAnswer } from "@/game/rpgStorage";
+import { recordExamCloud } from "@/game/cloudSync";
 import { claimRandomAdventureBonus } from "@/game/randomAdventureBonus";
 import { queueRandomAdventureRouteReward } from "@/game/randomAdventureRouteReward";
 import { rewardForAnswer } from "@/game/rpgRewards";
@@ -263,6 +264,24 @@ export default function PaperExam() {
       islandId: subjectScope ?? null,
     };
     saveJournalEntry({ ...journalBase, summary: formatJournalSummary(journalBase) });
+    // 雲端船籍：試卷完成即時寫一筆航行紀錄（非雲端模式為 no-op）。
+    try {
+      recordExamCloud({
+        subject,
+        grade: deck[0]?.grade,
+        difficulty: deck[0]?.difficulty,
+        totalQuestions: deck.length,
+        correctCount: result.correct,
+        detail: {
+          scope,
+          islandId: journalBase.islandId,
+          startedAt: startedAtRef.current,
+          topicCount: journalBase.topicCount,
+        },
+      });
+    } catch {
+      // 雲端記錄失敗不影響作答流程。
+    }
   }, [allAnswered, deck, result.correct, scope, subjectScope]);
 
   useEffect(() => {

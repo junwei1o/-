@@ -1,7 +1,7 @@
-import { and, count, eq } from "drizzle-orm";
+import { and, count, desc, eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import mysql from "mysql2/promise";
-import { InsertQuestion, InsertUser, questionBank, users } from "../drizzle/schema";
+import { cloudSaves, examRecords, InsertCloudSave, InsertExamRecord, InsertQuestion, InsertUser, questionBank, users } from "../drizzle/schema";
 import questionSeed from "../data/taiwan_curriculum_500.json";
 import { ENV } from './_core/env';
 
@@ -173,6 +173,29 @@ const ENSURE_TABLE_STATEMENTS = [
     PRIMARY KEY (\`id\`),
     UNIQUE KEY \`users_openId_unique\` (\`openId\`)
   )`,
+  `CREATE TABLE IF NOT EXISTS \`cloud_saves\` (
+    \`name\` varchar(24) NOT NULL,
+    \`payload\` json NOT NULL,
+    \`coins\` int NOT NULL DEFAULT 0,
+    \`totalAnswers\` int NOT NULL DEFAULT 0,
+    \`badges\` int NOT NULL DEFAULT 0,
+    \`createdAt\` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    \`updatedAt\` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (\`name\`)
+  )`,
+  `CREATE TABLE IF NOT EXISTS \`exam_records\` (
+    \`id\` int AUTO_INCREMENT NOT NULL,
+    \`name\` varchar(24) NOT NULL,
+    \`subject\` varchar(32) NOT NULL,
+    \`grade\` int,
+    \`difficulty\` varchar(16),
+    \`totalQuestions\` int NOT NULL,
+    \`correctCount\` int NOT NULL,
+    \`detail\` json,
+    \`createdAt\` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (\`id\`),
+    KEY \`exam_records_name_idx\` (\`name\`)
+  )`,
 ];
 
 const ENSURE_COLUMN_STATEMENTS = [
@@ -246,4 +269,54 @@ export async function ensureQuestionBankReady(): Promise<void> {
   } catch (err) {
     console.error("[Database] 題庫自動匯入失敗（前端仍可使用內建題庫）：", err);
   }
+}
+
+/* ---------- 雲端船籍（以名字為鍵的免註冊雲端存檔） ---------- */
+
+/** 建立新船籍；名字已被使用時回傳 null。 */
+export async function createCloudSave(row: InsertCloudSave) {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  const existing = await db.select({ name: cloudSaves.name }).from(cloudSaves).where(eq(cloudSaves.name, row.name)).limit(1);
+  if (existing.length > 0) return null;
+  await db.insert(cloudSaves).values(row);
+  return { name: row.name };
+}
+
+/** 讀取船籍（認船／載入進度用）；不存在回傳 null。 */
+export async function getCloudSave(name: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  const rows = await db.select().from(cloudSaves).where(eq(cloudSaves.name, name)).limit(1);
+  return rows[0] ?? null;
+}
+
+/** 覆寫船籍進度（僅在已存在時更新；不存在回傳 false 讓呼叫端走建立流程）。 */
+export async function updateCloudSave(name: string, payload: unknown, metrics: { coins: number; totalAnswers: number; badges: number }) {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  const result = await db
+    .update(cloudSaves)
+    .set({ payload, coins: metrics.coins, totalAnswers: metrics.totalAnswers, badges: metrics.badges })
+    .where(eq(cloudSaves.name, name));
+  const affected = (result as unknown as [{ affectedRows?: number }])[0]?.affectedRows ?? 0;
+  return affected > 0;
+}
+
+export async function insertExamRecord(row: InsertExamRecord) {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  await db.insert(examRecords).values(row);
+}
+
+/** 依名字取最近 N 筆航行紀錄（新的在前）。 */
+export async function listExamRecords(name: string, limit = 10) {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  return db
+    .select()
+    .from(examRecords)
+    .where(eq(examRecords.name, name))
+    .orderBy(desc(examRecords.id))
+    .limit(Math.min(Math.max(limit, 1), 50));
 }
