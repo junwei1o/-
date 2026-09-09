@@ -124,6 +124,18 @@ export function islandVisualState(island: KnowledgeIslandSnapshot): IslandVisual
   return "orange";
 }
 
+/**
+ * 島嶼星級：依作答量與正確率給 0-3 星，作為「還可以再挑戰」的進步提示。
+ * 0 星代表尚未留下足夠足跡，不顯示星列；星級會隨練習自然提升。
+ */
+export function islandStarRating(island: KnowledgeIslandSnapshot): number {
+  if (island.accuracy === null || island.attemptCount === 0) return 0;
+  if (island.accuracy >= 0.85 && island.attemptCount >= 5) return 3;
+  if (island.accuracy >= 0.65 && island.attemptCount >= 3) return 2;
+  if (island.accuracy >= 0.4) return 1;
+  return 0;
+}
+
 /** 航線只反映學生已完成的真實作答足跡；尚未練習的島嶼不預先繪製路徑。 */
 export function learningRouteSegments(islands: KnowledgeIslandSnapshot[], unlockedRouteIds: string[] = []): LearningRouteSegment[] {
   return islands
@@ -515,6 +527,7 @@ export function TaiwanMainNavigationMap({ islands, onOpenSubject, onStartIslandQ
           const landscape = ISLAND_LANDSCAPES[island.id];
           const isActive = island.id === activeIslandId;
           const visualState = islandVisualState(island);
+          const starRating = islandStarRating(island);
           const style = {
             "--island-left": position.left,
             "--island-top": position.top,
@@ -540,6 +553,13 @@ export function TaiwanMainNavigationMap({ islands, onOpenSubject, onStartIslandQ
               <span className="taiwan-map-island-region">{position.region}</span>
               <strong>{island.shortTitle}</strong>
               <small>{islandStatus(island)}</small>
+              {starRating > 0 ? (
+                <span className="taiwan-map-island-stars" aria-label={`${island.shortTitle}目前獲得 ${starRating} 星，再練習可以提升星級`}>
+                  {[0, 1, 2].map((index) => (
+                    <span key={index} className={index < starRating ? "is-star-filled" : "is-star-empty"} aria-hidden="true">★</span>
+                  ))}
+                </span>
+              ) : null}
               <span className="taiwan-map-island-landscape" aria-hidden="true">{landscape.icons.map((icon) => icon.symbol).join(" ")}</span>
               {island.unlocked ? <span className="taiwan-map-island-flag" aria-hidden="true" /> : null}
               {hasSupplyMarker ? <span
