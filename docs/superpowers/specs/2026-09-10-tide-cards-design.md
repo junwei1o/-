@@ -1,82 +1,110 @@
-# 潮汐牌局（Tide Cards）設計稿
+# 潮汐牌局（Tide Cards）— 頂級王牌版設計稿
 
-> 單人卡牌對戰（vs AI），結合答題加成與現有金幣/稱號/商店系統。
+> 單人卡牌對戰（vs AI），採 Top Trumps「比數值、贏走對方的卡」玩法，結合答題加成與現有金幣/稱號/商店系統。
 > 日期：2026-09-10 ｜ 狀態：待實作
 
-## 1. 目標與定位
+## 0. 定位：與現有系統的差異
 
-為網站新增一個輕策略的單人卡牌對戰遊戲。核心精神是「玩卡牌也在學習」：每回合出牌後接一道學科題，答對給該回合戰力加成。全部在前端完成（單人 vs AI），不需要後端或即時同步。
+網站已有三種對戰體驗，本遊戲刻意錯開，避免自我重複：
+
+| 現有系統 | 玩法 | 與本作的關係 |
+|----------|------|--------------|
+| `BattleScene` | RPG 答題戰鬥（HP/技能/怒氣/連擊） | 不同：本作無 HP、靠卡牌數值 |
+| `knowledgeDuel` 知識決鬥 | HP 制 + 角色職業 + 策略卡 | 不同：本作是**收集 + 比數值**，非 HP 對戰 |
+| `GuardianExpedition` | 遠征怪物答題 | 不同：本作是可收集卡牌 |
+
+本作的獨特價值：**卡牌本身承載學科知識**（每張卡多屬性）、**收集驅動**（贏走對方的卡）、**規則極簡**（選屬性比大小，國小孩童秒懂）。全部在前端完成（單人 vs AI），不需要後端或即時同步。
 
 **設計決策（已與使用者確認）**
 
 | 面向 | 定案 | 說明 |
 |------|------|------|
-| 玩法核心 | 答題定勝負加成 | 每回合比大小，答對給加成 |
-| 回合結構 | 固定 5 回合 | 贏較多回合者勝，節奏快 |
-| 卡牌維度 | 戰力值 + 稀有度 | 輕策略，主題美術撐收集感 |
-| 收集循環 | 雙軌並行 | 初始牌組 + 贏對戰得卡 + 金幣買卡包 + 稱號串聯 |
-| 答對加成 | 戰力 ×1.5 | UI 顯示「+50%」；答錯無加成（不扣分） |
+| 玩法核心 | Top Trumps 比數值 | 選屬性比大小，贏走對方的卡 |
+| 卡牌維度 | 多屬性 + 稀有度 | 四個屬性承載學科知識 |
 | 收集系列 | 四大學科 | 國語 / 數學 / 社會 / 自然 |
+| 答題加成 | 情報 或 屬性加成 | 答對二選一（見 §4.2） |
+| 收集循環 | 雙軌並行 | 初始牌組 + 贏對戰得卡 + 金幣買卡包 + 稱號串聯 |
 
-## 2. 核心循環
+## 1. 核心規則（Top Trumps 標準玩法）
 
-1. 進入 `/cards` 主頁，檢視收藏、組牌、選 AI 對手
-2. 帶著牌組進場，進行固定 5 回合比大小
-3. 每回合：選牌 → 答題（科目由出牌主題決定）→ AI 出牌 → 比戰力定勝負
-4. 5 回合結束結算，贏家領獎勵（金幣 + 機率掉新卡）
-5. 用金幣買卡包擴充收藏；集滿系列或達勝場里程碑解鎖限定稱號
+1. 雙方各持一疊牌（牌堆），從各自收藏中各抽 **8 張**作為本局牌堆，頂牌朝上
+2. 每回合由**主動方**（首回合隨機）看自己的頂牌，**選擇一個屬性**
+3. 雙方比較頂牌的該屬性數值，**高者贏走對方的頂牌**，兩張牌放到自己牌堆底部，並**繼續當主動方**
+4. **平手**：兩張頂牌進入「公共池」，同一主動方再選屬性比下一張，贏家**全拿公共池 + 本回合兩張**
+5. 一方**牌堆清空** → 對方獲勝
 
-## 3. 資料結構
+**防拖長**：最多 40 回合；達上限時比雙方牌堆剩餘牌數，多者獲勝，相同則為 draw（公共池中的牌不計入）。
 
-### 3.1 卡牌目錄（靜態資料）
+## 2. 卡牌資料結構
+
 ```ts
 import type { Rarity } from "./rpgTypes"; // common | rare | legendary
 
 export type CardTheme = "國語" | "數學" | "社會" | "自然";
 
+export type CardStat = "power" | "wisdom" | "speed" | "charm";
+export const STAT_LABELS: Record<CardStat, string> = {
+  power: "威力", wisdom: "知識", speed: "速度", charm: "稀有",
+};
+
 export type CardDef = {
-  id: string;            // 唯一 id，如 "math-01"
-  name: string;          // 主題名，如「黑面琵鷺」「圓周率」「鄭成功艦隊」
-  power: number;         // 戰力 1–10
+  id: string;                 // 唯一 id，如 "math-01"
+  name: string;               // 主題名，如「黑面琵鷺」「圓周率」「鄭成功艦隊」
+  theme: CardTheme;           // 收集系列；也決定答題科目
   rarity: Rarity;
-  theme: CardTheme;      // 決定該卡收集系列，也決定出牌時答題科目
-  flavor: string;        // 一句知識/故事
-  emoji: string;         // MVP 以 emoji + 稀有度配色呈現，不生成點陣圖
+  stats: Record<CardStat, number>; // 四屬性各 1–10
+  emoji: string;              // MVP 視覺以 emoji + 稀有度配色呈現
+  flavor: string;             // 一句知識/故事
 };
 ```
-- 主題採四大學科，與題庫科目一致，便於「出牌科目 → 答題科目」連動
-- 稀有度分布：普通為主、稀有次之、傳說少量；戰力普通 1–6、稀有 5–8、傳說 7–10
-- MVP 視覺用 emoji + 稀有度邊框；點陣圖生成（text_to_image API）列為後續可選，不在首版範圍
+- 稀有度影響屬性總量：普通總和較低且偏重單一強項、傳說四維均衡且高
+- MVP 用 emoji + 稀有度邊框配色；點陣圖卡面（text_to_image API）列為後續可選，不在首版
 
-### 3.2 對局狀態機（純邏輯）
+## 3. 對局狀態機（純邏輯）
+
 ```ts
-export type DuelPhase = "pick" | "answer" | "reveal" | "finished";
-export type DuelResult = "active" | "victory" | "defeat" | "draw";
+export type TrumpPhase = "choose-stat" | "answer" | "reveal" | "finished";
+export type TrumpResult = "active" | "victory" | "defeat" | "draw";
 
-export type RoundOutcome = {
+export type TrumpState = {
+  playerDeck: CardDef[];   // 牌堆；頂牌為索引 0
+  aiDeck: CardDef[];
+  pot: CardDef[];          // 平手公共池
+  turnLeader: "player" | "ai"; // 本回合主動方
   round: number;
-  playerCard: CardDef;
-  aiCard: CardDef;
-  answeredCorrectly: boolean;
-  playerPower: number;   // 含加成
-  aiPower: number;
-  winner: "player" | "ai" | "draw";
-};
-
-export type DuelState = {
-  round: number;          // 1–5
-  playerWins: number;
-  aiWins: number;
-  draws: number;
-  playerHand: CardDef[];  // 本局可用手牌
-  aiDeck: CardDef[];      // AI 出牌佇列
-  phase: DuelPhase;
-  history: RoundOutcome[];
-  result: DuelResult;
+  phase: TrumpPhase;
+  pendingStat: CardStat | null; // 主動方本回合選的屬性
+  peekRevealed: boolean;   // 玩家是否用了「偷看」
+  result: TrumpResult;
 };
 ```
+- 頂牌：`deck[0]`；贏牌 → 雙方頂牌移到贏家牌堆底；平手 → 雙方頂牌入 pot
+- 所有數值操作為純函數，便於單元測試
 
-### 3.3 收藏進度（localStorage）
+## 4. 對戰流程與答題加成
+
+### 4.1 單回合流程
+1. **choose-stat**：主動方看頂牌並選一個屬性
+2. **answer**：抽一道題（科目 = 主動方頂牌的 `theme`），答題後進入結算
+3. **reveal**：依所選屬性比較雙方頂牌（含加成），判定贏家、移動卡牌、更新 pot 與主動方
+4. 回到 choose-stat，直到一方牌堆清空或達回合上限
+
+### 4.2 答題加成（玩家主動時）
+主動方選完屬性後，可選擇作答一道題換取優勢：
+- **答對 → 二選一**：
+  - (a) **情報**：偷看對方頂牌的四個屬性（下回合選屬性更有把握）
+  - (b) **強化**：本回合所選屬性 **+2**
+- **答錯**：無加成（不扣分）
+- 玩家也可選擇「不作答」直接比大小
+
+### 4.3 AI 行為
+- **主動選屬性**：取自己頂牌最強屬性（貪心），並加少量隨機避免死板
+- **AI 答題**：依題目難度的固定機率答對（複用 `knowledgeDuel` 的 `aiWillAnswerCorrect` 概念），透明可預測
+- 首版單一普通難度；預留 `difficulty` 參數，easy/hard 列入後續
+
+## 5. 收藏進度與獎勵串接
+
+### 5.1 收藏進度（localStorage）
 ```ts
 export type CardCollection = {
   ownedCardIds: string[];
@@ -88,28 +116,9 @@ export type CardCollection = {
 };
 ```
 - 儲存 key：`xue-card-collection-v1`
-- 遵循現有 localStorage 存取慣例（`readStoredJson`/`writeStoredJson` 風格）
+- 遵循現有 `readStoredJson`/`writeStoredJson` 存取慣例
 
-## 4. 對戰規則
-
-### 4.1 單回合流程
-1. **pick**：玩家從手牌選一張牌
-2. **answer**：依該卡 `theme` 抽一道對應學科題（複用 `useQuestionBank`）
-   - 答對 → 該回合玩家戰力 = `round(power × 1.5)`，UI 標示「+50%」
-   - 答錯 → 戰力維持 `power`，無加成也不扣分
-3. AI 依策略出牌
-4. **reveal**：比較雙方戰力，高者贏該回合（平手各記一次 draw）
-5. 進入下一回合，重複至第 5 回合
-
-### 4.2 勝負判定
-- 5 回合結束，`playerWins > aiWins` → victory；反之 defeat
-- 回合勝場相同 → 比 5 回合總戰力（含加成），高者勝；再平手 → draw
-
-### 4.3 AI 策略（MVP 普通難度）
-- 貪心 + 隨機：前半場出中低牌保留強牌，落後時提高出強牌機率
-- 預留 `difficulty: "easy" | "normal" | "hard"` 參數，首版僅實作 `normal`，其餘列入後續
-
-## 5. 獎勵與系統串接（全部複用現有機制）
+### 5.2 獎勵與系統串接（全部複用現有機制）
 
 | 觸發 | 動作 | 複用 |
 |------|------|------|
@@ -121,25 +130,25 @@ export type CardCollection = {
 ## 6. 檔案結構
 
 ```
-client/src/game/cardData.ts         卡牌目錄（主題/稀有度/戰力/emoji）
-client/src/game/cardDuel.ts         對局狀態機 + AI + 計分（純函數，重點單測）
-client/src/game/cardCollection.ts   收藏進度存取（localStorage）
-client/src/pages/CardArena.tsx      主頁：收藏 / 組牌 / 開戰 / 卡包
-client/src/pages/CardArena.css      主頁樣式
-client/src/components/CardDuelBoard.tsx  對戰面板（5 回合流程 + 答題）
+client/src/game/trumpCardData.ts      卡牌目錄（四學科 / 稀有度 / 四屬性 / emoji）
+client/src/game/trumpDuel.ts          對局狀態機 + AI + 比數值結算（純函數，重點單測）
+client/src/game/cardCollection.ts     收藏進度存取（localStorage）
+client/src/pages/CardArena.tsx        主頁：收藏 / 組牌 / 開戰 / 卡包
+client/src/pages/CardArena.css        主頁樣式
+client/src/components/TrumpDuelBoard.tsx  對戰面板（選屬性 → 答題 → 揭曉）
 ```
 - `App.tsx` 新增路由 `/cards`
 - 導航入口加入主選單（依現有 TopNavigation/featureSearch 慣例）
 
 ## 7. 測試策略
 
-- `cardDuel.test.ts`（核心）：回合勝負、×1.5 加成計算（含四捨五入）、AI 選牌行為、5 回合勝負與總戰力平手判定、draw 情境
+- `trumpDuel.test.ts`（核心）：比數值勝負、平手公共池累積與全拿、贏家續當主動方、牌堆清空勝負、40 回合上限與牌數判定、答對「情報/強化」二選一效果
 - `cardCollection.test.ts`：進度存取、勝場累計、卡包開啟計數
-- `cardData.test.ts`：稀有度分布、戰力範圍、四主題皆有足量卡牌、id 唯一
-- 頁面層以 testing-library 驗證關鍵流程（選牌→答題→揭曉）
+- `trumpCardData.test.ts`：四主題皆有足量卡牌、id 唯一、屬性值落於 1–10、稀有度分布合理
+- 頁面層以 testing-library 驗證關鍵流程（選屬性 → 答題 → 揭曉 → 贏牌）
 
 ## 8. 範圍界線（YAGNI）
 
-**首版包含**：5 回合比大小對戰、答題 ×1.5 加成、單一 AI 難度、金幣/卡包/稱號串接、emoji 卡牌視覺。
+**首版包含**：Top Trumps 比數值對戰（8 張牌堆、40 回合上限）、答題「情報/強化」加成、單一 AI 難度、金幣/卡包/稱號串接、emoji 卡牌視覺。
 
 **首版不做**（列為後續）：多人連線、easy/hard AI 難度、卡牌特殊技能、點陣圖卡面生成、卡牌交易/分解。
