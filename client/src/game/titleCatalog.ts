@@ -4,7 +4,7 @@ import { getRareMonsters, type SubjectKey } from "./expeditionContent";
 // 稀有遠征稱號直接從 expeditionContent 的稀有怪物資料派生，避免兩邊不同步。
 // 擁有狀態與 utils/storage.ts 的 getLimitedTitles() 回傳字串比對（id 即實際儲存值）。
 
-export type TitleCategory = "簽到成長" | "連擊挑戰" | "稀有遠征";
+export type TitleCategory = "簽到成長" | "連擊挑戰" | "稀有遠征" | "潮汐牌局" | "文字冒險";
 
 export type TitleDefinition = {
   /** 與 getLimitedTitles() 實際儲存的字串一致，做為比對 id */
@@ -57,6 +57,34 @@ export const TITLE_CATALOG: readonly TitleDefinition[] = [
     category: "連擊挑戰",
     condition: "在答題戰鬥中達成 15 連續答對",
     hint: { label: "去答題戰鬥", href: "/battle" },
+  },
+  {
+    id: "牌局好手",
+    displayTitle: "牌局好手",
+    category: "潮汐牌局",
+    condition: "在潮汐牌局累計獲勝 10 場",
+    hint: { label: "去潮汐牌局", href: "/tavern/cards" },
+  },
+  {
+    id: "潮汐牌王",
+    displayTitle: "潮汐牌王",
+    category: "潮汐牌局",
+    condition: "在潮汐牌局累計獲勝 50 場",
+    hint: { label: "去潮汐牌局", href: "/tavern/cards" },
+  },
+  {
+    id: "燈塔嚮導",
+    displayTitle: "燈塔嚮導",
+    category: "文字冒險",
+    condition: "完成冒險《燈塔的呼喚》的美滿結局",
+    hint: { label: "去文字冒險", href: "/tavern/adventure" },
+  },
+  {
+    id: "古籍尋跡者",
+    displayTitle: "古籍尋跡者",
+    category: "文字冒險",
+    condition: "完成冒險《失落的古籍》的美滿結局",
+    hint: { label: "去文字冒險", href: "/tavern/adventure" },
   },
   ...rareExpeditionTitles,
 ];
