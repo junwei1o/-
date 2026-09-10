@@ -1,0 +1,10 @@
+.tavern-page { max-width: 720px; margin: 0 auto; padding: 24px 16px; }
+.tavern-hero h1 { font-family: Fraunces, serif; font-size: clamp(26px, 4vw, 36px); }
+.tavern-gold { font-weight: 700; }
+.tavern-entries { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 20px 0; }
+.tavern-entry { display: flex; flex-direction: column; gap: 6px; padding: 16px; border-radius: 14px; border: 1px solid rgba(0,0,0,.08); background: #fff; text-align: left; cursor: pointer; transition: transform .15s; }
+.tavern-entry:hover { transform: translateY(-2px); }
+.tavern-companion-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
+.tavern-companion-card { display: flex; flex-direction: column; gap: 4px; padding: 12px; border-radius: 12px; background: #f7f9fb; }
+.tavern-companion-avatar { font-size: 36px; }
+.tavern-empty { color: var(--muted, #666); padding: 24px; text-align: center; }
