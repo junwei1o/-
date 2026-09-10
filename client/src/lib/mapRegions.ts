@@ -12,6 +12,8 @@ export type MapRegion = {
   observationPoints: string[];
   curriculumFocus: string[];
   fieldQuestion: string;
+  landmarks: string[];
+  seasonalGuide: string[];
 };
 
 export const MAP_REGIONS: MapRegion[] = [
@@ -27,6 +29,8 @@ export const MAP_REGIONS: MapRegion[] = [
     observationPoints: ["河口與港灣的交通功能", "火山地形與溫泉景觀", "都市化與海岸環境的關係"],
     curriculumFocus: ["社會領域：人與環境互動", "自然科學領域：地表與地形變化", "語文領域：從觀察記錄整理重點"],
     fieldQuestion: "如果一座港口附近人口變多，生活與環境可能會出現哪些變化？",
+    landmarks: ["淡水河口與紅毛城：閱讀河口港灣的開發歷史", "大屯火山群：觀察火山地形與溫泉地熱", "野柳海岸：記錄蜂窩岩、豆腐岩的風化與侵蝕"],
+    seasonalGuide: ["秋冬季節東北季風強烈，可比較迎風面與背風面的降雨、植被差異", "春季港口附近常見海霧，適合連續記錄能見度與天氣資料"],
   },
   {
     key: "central",
@@ -40,6 +44,8 @@ export const MAP_REGIONS: MapRegion[] = [
     observationPoints: ["平原與丘陵的地形差異", "河川灌溉與農業聚落", "山地高度與氣候變化"],
     curriculumFocus: ["自然科學領域：地形與水循環", "社會領域：聚落與產業分布", "數學領域：讀圖與比較資料"],
     fieldQuestion: "為什麼平原地區通常較容易形成大型聚落與農業活動？",
+    landmarks: ["濁水溪沖積扇：看河流搬運與堆積出的肥沃平原", "日月潭與水力發電設施：理解水資源與能源利用", "合歡山：觀察高山林相、溫度隨高度的變化"],
+    seasonalGuide: ["夏季午後多對流雨，可記錄山區河川水量的快速變化", "秋冬季節高海拔山區可能降雪，適合比較高山與平地的溫差"],
   },
   {
     key: "east",
@@ -53,6 +59,8 @@ export const MAP_REGIONS: MapRegion[] = [
     observationPoints: ["縱谷平原與山脈排列", "河流侵蝕與堆積作用", "海岸地形與地震活動"],
     curriculumFocus: ["自然科學領域：地球內部與地表變化", "語文領域：根據證據說明現象", "社會領域：地方環境與生活文化"],
     fieldQuestion: "從河流兩側的地形與岩石，可以推測哪些自然作用？",
+    landmarks: ["花東縱谷：站在板塊縫合帶上觀察兩側山脈", "太魯閣峽谷：看河流長年下切與岩層紋理", "三仙台：認識海蝕、岩頸與離岸島的形成"],
+    seasonalGuide: ["夏季颱風過後，可觀察河流搬運的砂石與海岸堆積變化", "秋冬東北季風盛行時，東海岸的浪蝕作用最容易觀察"],
   },
   {
     key: "south",
@@ -66,6 +74,8 @@ export const MAP_REGIONS: MapRegion[] = [
     observationPoints: ["珊瑚礁與海岸生態", "濕地的水鳥與棲地功能", "氣候條件與農漁生活"],
     curriculumFocus: ["自然科學領域：生物與環境", "社會領域：地方產業與環境保護", "數學領域：觀察紀錄與趨勢比較"],
     fieldQuestion: "濕地為生物和人類提供了哪些重要功能？",
+    landmarks: ["墾丁海域：觀察珊瑚礁海岸與熱帶林相", "曾文溪口濕地：記錄黑面琵鷺等過境候鳥", "柴山：走讀隆起的珊瑚礁岩與石灰岩地形"],
+    seasonalGuide: ["秋冬季節候鳥過境，是濕地賞鳥與數量調查的最佳時機", "春季水溫回升，適合在安全區域觀察潮間帶與珊瑚生態"],
   },
 ];
 

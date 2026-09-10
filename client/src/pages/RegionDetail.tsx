@@ -1,4 +1,4 @@
-import { ArrowLeft, ArrowUpRight, Compass, Leaf, MapPinned, Sparkles } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, CalendarDays, Compass, Landmark, Leaf, MapPinned, Sparkles } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useRoute } from "wouter";
 import { MAP_REGIONS, type RegionKey } from "@/lib/mapRegions";
@@ -51,6 +51,8 @@ export default function RegionDetail() {
         <div className="region-detail-grid">
           <article className="region-detail-card observation-card"><div className="region-card-heading"><span className="region-card-icon"><MapPinned size={17} /></span><div><p className="eyebrow">FIELD OBSERVATIONS</p><h2>沿線觀測點</h2></div></div><div className="observation-list">{region.observationPoints.map((point, index) => <div key={point}><b>0{index + 1}</b><span>{point}</span></div>)}</div></article>
           <article className="region-detail-card curriculum-card"><div className="region-card-heading"><span className="region-card-icon coral"><Sparkles size={17} /></span><div><p className="eyebrow">CURRICULUM COMPASS</p><h2>課綱學習重點</h2></div></div><ul>{region.curriculumFocus.map((item) => <li key={item}>{item}</li>)}</ul></article>
+          <article className="region-detail-card observation-card"><div className="region-card-heading"><span className="region-card-icon"><Landmark size={17} /></span><div><p className="eyebrow">LANDMARKS</p><h2>在地地標</h2></div></div><div className="observation-list">{region.landmarks.map((point, index) => <div key={point}><b>0{index + 1}</b><span>{point}</span></div>)}</div></article>
+          <article className="region-detail-card curriculum-card"><div className="region-card-heading"><span className="region-card-icon coral"><CalendarDays size={17} /></span><div><p className="eyebrow">SEASONAL GUIDE</p><h2>季節觀察建議</h2></div></div><ul>{region.seasonalGuide.map((item) => <li key={item}>{item}</li>)}</ul></article>
         </div>
         <article className="region-question-card"><div><p className="eyebrow accent">FIELD QUESTION / 想一想</p><h2>{region.fieldQuestion}</h2><p>先記下你的觀察，再進入今日挑戰，把線索變成答案。</p></div><button className="text-btn" onClick={goToChallenge}>前往今日挑戰 <ArrowUpRight size={16} /></button></article>
       </section>

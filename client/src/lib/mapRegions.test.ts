@@ -13,6 +13,10 @@ describe("map regions", () => {
       expect(region.observationPoints).toHaveLength(3);
       expect(region.curriculumFocus.length).toBeGreaterThanOrEqual(2);
       expect(region.fieldQuestion).toMatch(/[？?]/);
+      expect(region.landmarks).toHaveLength(3);
+      region.landmarks.forEach((landmark) => expect(landmark.length).toBeGreaterThan(8));
+      expect(region.seasonalGuide.length).toBeGreaterThanOrEqual(2);
+      region.seasonalGuide.forEach((guide) => expect(guide.length).toBeGreaterThan(8));
     });
   });
 
