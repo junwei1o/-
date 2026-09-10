@@ -45,16 +45,14 @@ export default function TrumpDuelBoard() {
 
   // AI 自動選屬性（輪到 AI 主動時）
   useEffect(() => {
-    if (!state || state.phase !== "choose-stat" || state.turnLeader !== "player") return;
-    if (state.turnLeader === "ai") {
-      const stat = aiChooseStat(state.aiDeck);
-      setAiThinking(true);
-      const timer = setTimeout(() => {
-        setState((prev) => (prev ? chooseTrumpStat(prev, stat) : prev));
-        setAiThinking(false);
-      }, 600);
-      return () => clearTimeout(timer);
-    }
+    if (!state || state.phase !== "choose-stat" || state.turnLeader !== "ai") return;
+    const stat = aiChooseStat(state.aiDeck);
+    setAiThinking(true);
+    const timer = setTimeout(() => {
+      setState((prev) => (prev ? chooseTrumpStat(prev, stat) : prev));
+      setAiThinking(false);
+    }, 600);
+    return () => clearTimeout(timer);
   }, [state]);
 
   function drawQuestion(theme: string) {
