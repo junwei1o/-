@@ -40,6 +40,9 @@ const WrongAnswers = React.lazy(() => import("@/pages/WrongAnswers"));
 const Settings = React.lazy(() => import("@/pages/Settings"));
 const StudyTips = React.lazy(() => import("@/pages/StudyTips"));
 const GuardianExpedition = React.lazy(() => import("@/pages/GuardianExpedition"));
+const Tavern = React.lazy(() => import("@/pages/Tavern"));
+const TrumpDuelBoard = React.lazy(() => import("@/components/TrumpDuelBoard"));
+const AdventureViewer = React.lazy(() => import("@/components/AdventureViewer"));
 
 // 懶加載時的輕量佔位：品牌色系的帆船載入提示。
 function PageLoader() {
@@ -83,6 +86,9 @@ function Router() {
         <Route path={"/community"} component={CommunityHub} />
         <Route path={"/knowledge-duel"} component={KnowledgeDuel} />
         <Route path={"/duel"} component={KnowledgeDuel} />
+        <Route path={"/tavern"} component={Tavern} />
+        <Route path={"/tavern/cards"} component={() => <TrumpDuelBoard />} />
+        <Route path={"/tavern/adventure"} component={() => <AdventureViewer />} />
         <Route path={"/error-statistics"} component={ErrorTypeStatistics} />
         <Route path={"/learning-summary"} component={TeacherParentSummary} />
         <Route path={"/settings"} component={Settings} />

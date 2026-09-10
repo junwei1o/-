@@ -6,11 +6,11 @@ const css = readFileSync(new URL("./HomeDashboard.css", import.meta.url), "utf8"
 
 describe("首頁遊戲模式入口", () => {
   it("提供四個真實單機入口與統一儲存的每日簽到", () => {
-    expect(source).toContain("知識決鬥");
+    expect(source).toContain("燈塔酒館");
     expect(source).toContain("錯題魔王");
     expect(source).toContain("限時挑戰");
     expect(source).toContain("每日簽到");
-    expect(source).toContain('setLocation("/duel")');
+    expect(source).toContain('setLocation("/tavern")');
     expect(source).toContain('setLocation("/community?mode=timed")');
     expect(source).toContain("claimDailySignIn()");
     expect(source).not.toContain("localStorage.getItem('xueSignIn')");

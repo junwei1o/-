@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { AlarmClock, Backpack, BarChart3, BookOpenCheck, BrainCircuit, Bug, CalendarDays, ChevronDown, ChevronUp, Coins, Crosshair, Crown, Dices, LifeBuoy, Medal, RotateCcw, ScrollText, Settings as SettingsIcon, ShieldAlert, Sparkles, Swords, Telescope, Tent, Timer, type LucideIcon, X } from "lucide-react";
+import { AlarmClock, Backpack, BarChart3, Beer, BookOpenCheck, BrainCircuit, Bug, CalendarDays, ChevronDown, ChevronUp, Coins, Crosshair, Crown, Dices, LifeBuoy, Medal, RotateCcw, ScrollText, Settings as SettingsIcon, ShieldAlert, Sparkles, Swords, Telescope, Tent, Timer, type LucideIcon, X } from "lucide-react";
 import { toast } from "sonner";
 import { useLocation } from "wouter";
 import { useQuestionBank } from "@/lib/questionBank";
@@ -65,7 +65,7 @@ const HOME_FEATURE_GROUPS: HomeFeatureGroup[] = [
       { id: "map", label: "主航海圖", description: "瀏覽島嶼與學習路線", href: "/map", icon: ScrollText },
       { id: "battle", label: "答題戰鬥", description: "運用技能迎戰知識怪物", href: "/battle", icon: Swords },
       { id: "guardian", label: "守護者遠征", description: "挑戰四位區域守護者", href: "/guardian", icon: Crown },
-      { id: "knowledge-duel", label: "知識決鬥", description: "單機 AI 策略卡牌對戰", href: "/duel", icon: Crosshair },
+      { id: "tavern", label: "燈塔酒館", description: "學完進來玩：卡牌、冒險、夥伴", href: "/tavern", icon: Beer },
       { id: "self-challenge", label: "自我挑戰", description: "限時答題與個人最佳紀錄", href: "/community", icon: Timer },
       { id: "daily-camp", label: "每日營地", description: "簽到、每日任務、金幣商店與每週王", href: "/camp", icon: Tent },
       { id: "badges", label: "徽章牆", description: "收集探險徽章，點亮成就", href: "/badges", icon: Medal },
@@ -376,10 +376,10 @@ export default function Home() {
             <p>四種單機模式都會保留在你的本機學習軌跡中。</p>
           </div>
           <div className="home-mode-grid">
-            <button type="button" className="home-mode-card is-duel" onClick={() => setLocation("/duel")}>
-              <Swords size={25} aria-hidden="true" />
-              <strong>知識決鬥</strong>
-              <span>策略卡牌 · 三局兩勝</span>
+            <button type="button" className="home-mode-card is-tavern" onClick={() => setLocation("/tavern")}>
+              <Beer size={25} aria-hidden="true" />
+              <strong>燈塔酒館</strong>
+              <span>卡牌 · 冒險 · 夥伴</span>
             </button>
             <button type="button" className="home-mode-card is-wrong-answer" onClick={() => setLocation("/wrong-answers")}>
               <ShieldAlert size={25} aria-hidden="true" />

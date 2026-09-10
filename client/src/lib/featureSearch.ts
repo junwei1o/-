@@ -1,7 +1,7 @@
-import { BookOpen, BookOpenCheck, BrainCircuit, Crown, LifeBuoy, Lightbulb, Map as MapIcon, Medal, Orbit, Radar, Swords, Telescope, Tent, type LucideIcon } from "lucide-react";
+import { Beer, BookOpen, BookOpenCheck, BrainCircuit, Crown, LifeBuoy, Lightbulb, Map as MapIcon, Medal, Orbit, Radar, Swords, Telescope, Tent, type LucideIcon } from "lucide-react";
 
 export type FeatureSearchItem = {
-  id: "map" | "battle" | "duel" | "guardian" | "wrongAnswers" | "studyTips" | "dailyCamp" | "badges" | "safetyAcademy" | "worldPrinciples" | "mediaObservatory" | "astronomy" | "wisdomStories";
+  id: "map" | "battle" | "duel" | "tavern" | "guardian" | "wrongAnswers" | "studyTips" | "dailyCamp" | "badges" | "safetyAcademy" | "worldPrinciples" | "mediaObservatory" | "astronomy" | "wisdomStories";
   label: string;
   description: string;
   href: string;
@@ -33,6 +33,14 @@ export const FEATURE_SEARCH_ITEMS: FeatureSearchItem[] = [
     href: "/knowledge-duel",
     keywords: ["知識決鬥", "決鬥", "卡牌", "卡牌對戰", "策略卡", "狼人殺", "AI 對手"],
     icon: BrainCircuit,
+  },
+  {
+    id: "tavern",
+    label: "燈塔酒館／卡牌／冒險",
+    description: "學完進酒館玩：潮汐牌局卡牌對戰、文字冒險章節、夥伴小屋。",
+    href: "/tavern",
+    keywords: ["酒館", "卡牌", "潮汐牌局", "文字冒險", "夥伴", "Top Trumps", "燈塔"],
+    icon: Beer,
   },
   {
     id: "guardian",

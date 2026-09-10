@@ -13,4 +13,10 @@ describe("App 守護者路由相容性", () => {
     expect(appSource).toContain('path={"/knowledge-duel"}');
     expect(appSource).toContain('path={"/duel"} component={KnowledgeDuel}');
   });
+
+  it("新增燈塔酒館與其子頁面路由", () => {
+    expect(appSource).toContain('path={"/tavern"}');
+    expect(appSource).toContain('path={"/tavern/cards"}');
+    expect(appSource).toContain('path={"/tavern/adventure"}');
+  });
 });
