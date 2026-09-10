@@ -6,6 +6,7 @@ const SUBJECT_LABELS: Record<SubjectKey, PaperSubject> = {
   math: "數學",
   english: "英語",
   science: "自然",
+  social: "社會",
 };
 
 const DIFFICULTY_LABELS: Record<CurriculumQuestion["difficulty"], PaperQuestion["difficulty"]> = {
@@ -36,5 +37,6 @@ export function paperSubjectToSubjectKey(subject: PaperSubject): SubjectKey | nu
   if (subject === "數學") return "math";
   if (subject === "英語") return "english";
   if (subject === "自然") return "science";
+  if (subject === "社會") return "social";
   return null;
 }

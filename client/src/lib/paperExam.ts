@@ -6,6 +6,7 @@ export type PaperQuestion = {
   id: string;
   grade: number;
   subject: PaperSubject;
+  questionType?: "選擇題" | "是非題";
   difficulty: string;
   learningTopic: string;
   prompt: string;

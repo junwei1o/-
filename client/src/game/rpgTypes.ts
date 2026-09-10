@@ -143,7 +143,7 @@ export type AdventureJournalSummary = {
 
 export type PlayerExpansionProgress = {
   talentPoints: number;
-  talents: Partial<Record<"precision" | "resilience" | "knowledge-drain" | "lucky-star", number>>;
+  talents: Partial<Record<"precision" | "resilience" | "knowledge-drain" | "lucky-star" | "endurance" | "swiftness" | "scholar" | "guardian-spirit" | "battle-sage" | "treasure-hunter" | "critical-thinking" | "guardian-ward", number>>;
   equippedGearIds: string[];
   fragments: Record<string, number>;
   journalSummaries: AdventureJournalSummary[];

@@ -1,7 +1,7 @@
 import type { RegionKey } from "./rpgTypes";
 import { expandQuestionBankToSix } from "../lib/optionRandomizer";
 
-export type SubjectKey = "chinese" | "math" | "english" | "science";
+export type SubjectKey = "chinese" | "math" | "english" | "science" | "social";
 
 export type SubjectMonster = { id: string; subject: SubjectKey; name: string; emoji: string; region: RegionKey; maxHp: number; attack: number; defense: number; description: string; isRare?: boolean; requiredStreak?: number; title?: string; };
 
@@ -144,6 +144,41 @@ export const SUBJECT_MONSTERS: Record<SubjectKey, SubjectMonster[]> = {
       "attack": 12,
       "defense": 16,
       "description": "把力與能量凝成岩石護盾。"
+    }
+  ],
+  "social": [
+    {
+      "id": "social-history",
+      "subject": "social",
+      "name": "歷史幽靈",
+      "emoji": "🏛️",
+      "region": "south",
+      "maxHp": 140,
+      "attack": 15,
+      "defense": 7,
+      "description": "守著台灣歷史記憶的古老幽靈。"
+    },
+    {
+      "id": "social-geo",
+      "subject": "social",
+      "name": "地圖精靈",
+      "emoji": "🗺️",
+      "region": "south",
+      "maxHp": 150,
+      "attack": 17,
+      "defense": 6,
+      "description": "穿梭於山川之間的地理精靈。"
+    },
+    {
+      "id": "social-civic",
+      "subject": "social",
+      "name": "公民守者",
+      "emoji": "⚖️",
+      "region": "south",
+      "maxHp": 145,
+      "attack": 16,
+      "defense": 8,
+      "description": "守護民主與法治的公正守護者。"
     }
   ]
 };
@@ -323,6 +358,50 @@ const rareMonsters: Record<SubjectKey, SubjectMonster[]> = {
       "isRare": true,
       "requiredStreak": 10,
       "title": "擊敗後獲得限定稱號：能量極光獸"
+    }
+  ],
+  "social": [
+    {
+      "id": "social-rare-1",
+      "subject": "social",
+      "name": "時光守護者",
+      "emoji": "⏳",
+      "region": "south",
+      "maxHp": 250,
+      "attack": 22,
+      "defense": 12,
+      "description": "掌握歷史與地理奧秘的傳說守護者。",
+      "isRare": true,
+      "requiredStreak": 10,
+      "title": "擊敗後獲得限定稱號：時光旅者"
+    },
+    {
+      "id": "social-rare-2",
+      "subject": "social",
+      "name": "地理大發現者",
+      "emoji": "🗺️",
+      "region": "south",
+      "maxHp": 280,
+      "attack": 26,
+      "defense": 14,
+      "description": "踏遍未知大陸、繪製世界輪廓的航海傳奇。",
+      "isRare": true,
+      "requiredStreak": 10,
+      "title": "擊敗後獲得限定稱號：地理探險家"
+    },
+    {
+      "id": "social-rare-3",
+      "subject": "social",
+      "name": "民主燈塔守護者",
+      "emoji": "🏛️",
+      "region": "south",
+      "maxHp": 320,
+      "attack": 30,
+      "defense": 16,
+      "description": "守護民主制度與公民權利的永恆燈塔。",
+      "isRare": true,
+      "requiredStreak": 10,
+      "title": "擊敗後獲得限定稱號：民主守護者"
     }
   ]
 };
@@ -1641,9 +1720,336 @@ const seeds: Record<SubjectKey, Array<{ topic: string; prompt: string; options: 
       "explanation": "根部從土壤吸收水分與無機鹽，供植物利用。",
       "errorTag": "concept"
     }
+  ],
+  "social": [
+    {
+      "topic": "台灣地理",
+      "prompt": "台灣海峽將台灣本島與哪個省份隔開？",
+      "options": [
+        "福建",
+        "廣東",
+        "浙江",
+        "海南"
+      ],
+      "answer": 0,
+      "explanation": "台灣海峽位於台灣與中國大陸福建省之間，是重要的海上通道。",
+      "errorTag": "concept"
+    },
+    {
+      "topic": "台灣地理",
+      "prompt": "台灣本島的面積以哪種地形佔比最高？",
+      "options": [
+        "平原",
+        "山地",
+        "盆地",
+        "台地"
+      ],
+      "answer": 1,
+      "explanation": "台灣本島地形以山地為主，山地面積約佔全島三分之二以上。",
+      "errorTag": "careless"
+    },
+    {
+      "topic": "台灣氣候",
+      "prompt": "台灣夏秋兩季最常出現哪種天然災害？",
+      "options": [
+        "地震",
+        "土石流",
+        "颱風",
+        "寒害"
+      ],
+      "answer": 2,
+      "explanation": "台灣夏秋兩季常受颱風侵襲，帶來強風豪雨，是重要天然災害。",
+      "errorTag": "memory"
+    },
+    {
+      "topic": "台灣地理",
+      "prompt": "北回歸線通過台灣本島的哪一個縣市？",
+      "options": [
+        "台北",
+        "台中",
+        "台南",
+        "嘉義"
+      ],
+      "answer": 3,
+      "explanation": "北回歸線（約北緯23.5度）通過嘉義縣水上鄉等地，是熱帶與副熱帶分界。",
+      "errorTag": "concept"
+    },
+    {
+      "topic": "台灣地理",
+      "prompt": "台灣最高的山是哪一座？",
+      "options": [
+        "玉山",
+        "雪山",
+        "阿里山",
+        "合歡山"
+      ],
+      "answer": 0,
+      "explanation": "玉山主峰海拔3952公尺，是台灣也是東亞第一高峰。",
+      "errorTag": "careless"
+    },
+    {
+      "topic": "台灣地理",
+      "prompt": "台灣東部主要面臨哪個海洋？",
+      "options": [
+        "台灣海峽",
+        "太平洋",
+        "巴士海峽",
+        "東海"
+      ],
+      "answer": 1,
+      "explanation": "台灣東部瀕臨太平洋，西側則隔台灣海峽與大陸相望。",
+      "errorTag": "memory"
+    },
+    {
+      "topic": "台灣氣候",
+      "prompt": "台灣的氣候類型主要分為哪兩種？",
+      "options": [
+        "寒帶與溫帶氣候",
+        "沙漠與草原氣候",
+        "副熱帶與熱帶氣候",
+        "高山與極地氣候"
+      ],
+      "answer": 2,
+      "explanation": "台灣北部為副熱帶氣候，南部為熱帶氣候，北回歸線為分界。",
+      "errorTag": "concept"
+    },
+    {
+      "topic": "台灣歷史",
+      "prompt": "鄭成功從哪個國家手中收復台灣？",
+      "options": [
+        "英國",
+        "葡萄牙",
+        "西班牙",
+        "荷蘭"
+      ],
+      "answer": 3,
+      "explanation": "1662年鄭成功驅逐荷蘭人，結束荷蘭在台灣38年的統治。",
+      "errorTag": "careless"
+    },
+    {
+      "topic": "台灣歷史",
+      "prompt": "台灣建省後的第一任巡撫是誰？",
+      "options": [
+        "劉銘傳",
+        "沈葆楨",
+        "唐景崧",
+        "丘逢甲"
+      ],
+      "answer": 0,
+      "explanation": "劉銘傳是台灣建省後首任巡撫，積極推動現代化建設。",
+      "errorTag": "memory"
+    },
+    {
+      "topic": "台灣歷史",
+      "prompt": "日本統治台灣始於哪一年簽訂的條約？",
+      "options": [
+        "1894",
+        "1895",
+        "1945",
+        "1911"
+      ],
+      "answer": 1,
+      "explanation": "1895年甲午戰後簽訂馬關條約，台灣被割讓給日本。",
+      "errorTag": "concept"
+    },
+    {
+      "topic": "台灣歷史",
+      "prompt": "孫中山先生領導的革命創建了哪個國家？",
+      "options": [
+        "明朝",
+        "清朝",
+        "中華民國",
+        "中華人民共和國"
+      ],
+      "answer": 2,
+      "explanation": "孫中山領導辛亥革命，於1912年建立中華民國。",
+      "errorTag": "careless"
+    },
+    {
+      "topic": "台灣歷史",
+      "prompt": "莫那·魯道是哪個原住民族的領袖？",
+      "options": [
+        "阿美族",
+        "排灣族",
+        "布農族",
+        "賽德克族"
+      ],
+      "answer": 3,
+      "explanation": "莫那·魯道是賽德克族領袖，領導1930年的霧社事件。",
+      "errorTag": "memory"
+    },
+    {
+      "topic": "台灣歷史",
+      "prompt": "二二八事件發生於哪一年？",
+      "options": [
+        "1947",
+        "1949",
+        "1965",
+        "1979"
+      ],
+      "answer": 0,
+      "explanation": "二二八事件發生於1947年，是台灣戰後重要的歷史事件。",
+      "errorTag": "concept"
+    },
+    {
+      "topic": "節慶習俗",
+      "prompt": "阿美族最著名的傳統祭典是？",
+      "options": [
+        "播種祭",
+        "豐年祭",
+        "狩獵祭",
+        "矮靈祭"
+      ],
+      "answer": 1,
+      "explanation": "豐年祭是阿美族最盛大祭典，慶祝豐收並傳承文化。",
+      "errorTag": "careless"
+    },
+    {
+      "topic": "節慶習俗",
+      "prompt": "漢人傳統中，春節貼春聯主要象徵什麼？",
+      "options": [
+        "祭祀祖先",
+        "驅逐邪靈",
+        "祈求新年吉祥",
+        "紀念先人"
+      ],
+      "answer": 2,
+      "explanation": "春聯用吉祥字句祈求新年平安順利，是春節重要習俗。",
+      "errorTag": "memory"
+    },
+    {
+      "topic": "節慶習俗",
+      "prompt": "賽夏族兩年舉行一次的重要祭典是？",
+      "options": [
+        "豐年祭",
+        "播種祭",
+        "祖靈祭",
+        "矮靈祭"
+      ],
+      "answer": 3,
+      "explanation": "矮靈祭是賽夏族獨特祭典，每兩年舉行一次、十年一大祭。",
+      "errorTag": "concept"
+    },
+    {
+      "topic": "節慶習俗",
+      "prompt": "端午節划龍舟主要是紀念哪位歷史人物？",
+      "options": [
+        "屈原",
+        "李白",
+        "杜甫",
+        "孔子"
+      ],
+      "answer": 0,
+      "explanation": "端午節划龍舟、吃粽子，紀念投江的愛國詩人屈原。",
+      "errorTag": "careless"
+    },
+    {
+      "topic": "節慶習俗",
+      "prompt": "原住民族中，以「紋面」為重要文化標誌的是哪一族？",
+      "options": [
+        "阿美族",
+        "泰雅族",
+        "排灣族",
+        "魯凱族"
+      ],
+      "answer": 1,
+      "explanation": "泰雅族以紋面為成年與榮譽象徵，是重要的文化識別。",
+      "errorTag": "memory"
+    },
+    {
+      "topic": "民主制度",
+      "prompt": "台灣中央政府最高的行政機關是？",
+      "options": [
+        "立法院",
+        "司法院",
+        "行政院",
+        "監察院"
+      ],
+      "answer": 2,
+      "explanation": "行政院是最高行政機關，負責國家各項政務的執行。",
+      "errorTag": "concept"
+    },
+    {
+      "topic": "民主制度",
+      "prompt": "台灣總統的任期為幾年？",
+      "options": [
+        "三年",
+        "五年",
+        "六年",
+        "四年"
+      ],
+      "answer": 3,
+      "explanation": "中華民國總統任期為四年，連選得連任一次。",
+      "errorTag": "careless"
+    },
+    {
+      "topic": "民主制度",
+      "prompt": "台灣人民滿幾歲可以投票選總統？",
+      "options": [
+        "20歲",
+        "16歲",
+        "18歲",
+        "21歲"
+      ],
+      "answer": 0,
+      "explanation": "目前總統選舉投票年齡為20歲，是行使公民權的重要依據。",
+      "errorTag": "memory"
+    },
+    {
+      "topic": "民主制度",
+      "prompt": "立法委員最主要的職權是什麼？",
+      "options": [
+        "執行法律",
+        "制定法律",
+        "審判案件",
+        "監督考試"
+      ],
+      "answer": 1,
+      "explanation": "立法院負責制定與修改法律，並監督行政部門運作。",
+      "errorTag": "concept"
+    },
+    {
+      "topic": "經濟活動",
+      "prompt": "台灣早期的經濟以哪種產業為主？",
+      "options": [
+        "服務業",
+        "高科技工業",
+        "農業",
+        "觀光業"
+      ],
+      "answer": 2,
+      "explanation": "台灣早期以農業為主，稻米與蔗糖是重要農產品。",
+      "errorTag": "careless"
+    },
+    {
+      "topic": "經濟活動",
+      "prompt": "台灣近年來哪種產業占國內生產毛額比例最高？",
+      "options": [
+        "農業",
+        "漁業",
+        "礦業",
+        "服務業"
+      ],
+      "answer": 3,
+      "explanation": "台灣服務業發達，占國內生產毛額比例超過六成。",
+      "errorTag": "memory"
+    },
+    {
+      "topic": "經濟活動",
+      "prompt": "台灣被稱為「科技之島」，主要發展哪類工業？",
+      "options": [
+        "電子資訊工業",
+        "紡織工業",
+        "食品加工",
+        "木材加工"
+      ],
+      "answer": 0,
+      "explanation": "台灣以電子資訊工業聞名全球，半導體與資訊產品產量領先。",
+      "errorTag": "concept"
+    }
   ]
 };
 
 function expandQuestions(subject: SubjectKey): CurriculumQuestion[] { const variants = ["請先找出題幹的核心線索。", "請把這個概念套用到新的學習情境。", "請比較各選項後再作答。", "請說明你選擇答案時最重要的判斷依據。"] as const; return seeds[subject].flatMap((seed, seedIndex) => variants.map((variant, variantIndex) => ({ id: `${subject}-expedition-${String(seedIndex * 4 + variantIndex + 1).padStart(3, "0")}`, subject, topic: seed.topic, difficulty: (variantIndex === 0 ? 1 : variantIndex === 1 ? 2 : variantIndex === 2 ? 2 : 3) as 1 | 2 | 3, prompt: `${seed.prompt} ${variant}`, options: seed.options, answer: seed.answer, explanation: seed.explanation, errorTag: seed.errorTag }))); }
-export const CURRICULUM_QUESTIONS: Record<SubjectKey, CurriculumQuestion[]> = { chinese: expandQuestionBankToSix(expandQuestions("chinese")), math: expandQuestionBankToSix(expandQuestions("math")), english: expandQuestionBankToSix(expandQuestions("english")), science: expandQuestionBankToSix(expandQuestions("science")) };
+export const CURRICULUM_QUESTIONS: Record<SubjectKey, CurriculumQuestion[]> = { chinese: expandQuestionBankToSix(expandQuestions("chinese")), math: expandQuestionBankToSix(expandQuestions("math")), english: expandQuestionBankToSix(expandQuestions("english")), science: expandQuestionBankToSix(expandQuestions("science")), social: expandQuestionBankToSix(expandQuestions("social")) };
 export const ALL_CURRICULUM_QUESTIONS = Object.values(CURRICULUM_QUESTIONS).flat();

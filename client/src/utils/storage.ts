@@ -591,7 +591,7 @@ export function saveWeeklyLearningGoal(goal: WeeklyLearningGoal, storage: Storag
 }
 
 export type MainlineProgress = {
-  regularDefeatsBySubject: Partial<Record<"chinese" | "math" | "english" | "science", number>>;
+  regularDefeatsBySubject: Partial<Record<"chinese" | "math" | "english" | "science" | "social", number>>;
   defeatedGuardians: string[];
   liberatedSubjects: string[];
   unlockedOutfits: string[];
@@ -616,14 +616,14 @@ export function getMainlineProgress(storage: StorageLike | null = browserStorage
   };
 }
 
-export function recordRegularMonsterDefeat(subject: "chinese" | "math" | "english" | "science", storage: StorageLike | null = browserStorage()): MainlineProgress {
+export function recordRegularMonsterDefeat(subject: "chinese" | "math" | "english" | "science" | "social", storage: StorageLike | null = browserStorage()): MainlineProgress {
   const current = getMainlineProgress(storage);
   const next = { ...current, regularDefeatsBySubject: { ...current.regularDefeatsBySubject, [subject]: (current.regularDefeatsBySubject[subject] ?? 0) + 1 } };
   writeStoredJson(MAINLINE_PROGRESS_KEY, next, storage);
   return next;
 }
 
-export function recordGuardianDefeat(guardianId: string, subject: "chinese" | "math" | "english" | "science", outfitId: string, storage: StorageLike | null = browserStorage()): MainlineProgress {
+export function recordGuardianDefeat(guardianId: string, subject: "chinese" | "math" | "english" | "science" | "social", outfitId: string, storage: StorageLike | null = browserStorage()): MainlineProgress {
   const current = getMainlineProgress(storage);
   const next: MainlineProgress = { ...current, defeatedGuardians: Array.from(new Set([...current.defeatedGuardians, guardianId])), liberatedSubjects: Array.from(new Set([...current.liberatedSubjects, subject])), unlockedOutfits: Array.from(new Set([...current.unlockedOutfits, outfitId])) };
   writeStoredJson(MAINLINE_PROGRESS_KEY, next, storage);

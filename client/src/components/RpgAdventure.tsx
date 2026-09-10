@@ -37,7 +37,7 @@ type Props = { onOpenChallenge?: (subject?: "數學" | "自然" | "社會" | "�
 const regionKeys: RegionKey[] = ["north", "central", "east", "south"];
 const MAINLINE_SUBJECT_BY_REGION: Record<RegionKey, SubjectKey> = { north: "chinese", central: "math", east: "science", south: "english" };
 const BATTLE_TIME_LIMIT_MS = 25_000;
-const GUARDIAN_REGION_COLORS: Record<SubjectKey, GuardianCeremony["regionColor"]> = { chinese: "gold", math: "silver", english: "blue", science: "green" };
+const GUARDIAN_REGION_COLORS: Record<SubjectKey, GuardianCeremony["regionColor"]> = { chinese: "gold", math: "silver", english: "blue", science: "green", social: "green" };
 const GUARDIAN_ENTRANCE_DURATION_MS = 2_500;
 const GUARDIAN_VICTORY_DURATION_MS = 2_100;
 

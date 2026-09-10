@@ -942,7 +942,7 @@ function pickPoolWithCooldown(nextScope: PaperScope): PaperQuestion[] {
 	            const summitStrategySpeechText = `${summitStrategyRecap.title}。${summitStrategyRecap.summary} ${summitStrategyRecap.strategies.join(" ")}${summitStrategyRecap.knowledgeTopics.length ? ` 本組知識點：${summitStrategyRecap.knowledgeTopics.join("、")}。` : ""}`;
             return (
               <div className="paper-question-journey">
-                <div className="paper-progress-row"><span>第 {currentIndex + 1} / {deck.length} 題</span><span>{scope} · {current.subject} · {current.learningTopic}</span></div>
+                <div className="paper-progress-row"><span>第 {currentIndex + 1} / {deck.length} 題</span><span>{scope} · {current.subject} · {current.learningTopic}{current.questionType === "是非題" ? " · 是非題" : ""}</span></div>
                 <aside className="paper-altitude-card" aria-label="玉山高度計">
                   <div
                     className="paper-altitude-meter"
@@ -1019,10 +1019,12 @@ function pickPoolWithCooldown(nextScope: PaperScope): PaperQuestion[] {
             {current.options.map((option, index) => {
               const isSelected = currentAnswer === index;
               const isCorrectOption = currentAnswered && index === current.answer;
+              const isTrueFalse = current.questionType === "是非題";
+              const label = isTrueFalse ? (index === 0 ? "○" : "✕") : String.fromCharCode(65 + index);
               return (
-                <label key={`${current.id}-${index}`} className={`paper-option ${isSelected ? "is-selected" : ""} ${isCorrectOption ? "is-correct" : ""} ${currentAnswered && isSelected && !currentCorrect ? "is-wrong" : ""}`}>
+                <label key={`${current.id}-${index}`} className={`paper-option ${isSelected ? "is-selected" : ""} ${isCorrectOption ? "is-correct" : ""} ${currentAnswered && isSelected && !currentCorrect ? "is-wrong" : ""} ${isTrueFalse ? "is-true-false" : ""}`}>
                   <input type="radio" name={`question-${current.id}`} checked={isSelected} disabled={currentAnswered} onChange={() => answerQuestion(current, index)} />
-                  <span aria-hidden="true">{String.fromCharCode(65 + index)}</span><SpeechReadableText as="b" text={option} label={`選項 ${String.fromCharCode(65 + index)}`} className="paper-option-copy" compact />
+                  <span aria-hidden="true">{label}</span><SpeechReadableText as="b" text={option} label={`選項 ${label}`} className="paper-option-copy" compact />
                 </label>
               );
             })}

@@ -27,6 +27,10 @@ const GUARDIAN_SOUND_PROFILES: Record<SubjectKey, Record<GuardianCeremonyPhase, 
     entrance: { waveform: "sine", notes: [174, 261, 392], noteDuration: 0.24, gap: 0.12 },
     victory: { waveform: "sine", notes: [294, 440, 587, 784], noteDuration: 0.19, gap: 0.1 },
   },
+  social: {
+    entrance: { waveform: "triangle", notes: [165, 220, 330], noteDuration: 0.2, gap: 0.12 },
+    victory: { waveform: "sine", notes: [262, 392, 523, 659], noteDuration: 0.17, gap: 0.1 },
+  },
 };
 
 const GUARDIAN_NARRATION: Record<SubjectKey, Record<GuardianCeremonyPhase, string>> = {
@@ -45,6 +49,10 @@ const GUARDIAN_NARRATION: Record<SubjectKey, Record<GuardianCeremonyPhase, strin
   science: {
     entrance: "玉山星穹巨人喚醒群峰。自然山的探索試煉，即將展開。",
     victory: "玉山星穹巨人的封印已解除。自然山的觀察之光，照亮前方。",
+  },
+  social: {
+    entrance: "時光守護者從史冊中甦醒。社會領域的歷史、地理與公民試煉，現在開始。",
+    victory: "時光守護者的封印已解除。社會領域的人文之光，再次照亮來時路。",
   },
 };
 

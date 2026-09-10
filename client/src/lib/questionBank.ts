@@ -9,6 +9,7 @@ export type CurriculumQuestionRow = {
   id: string;
   grade: number;
   subject: "數學" | "自然" | "社會" | "國語";
+  questionType: "選擇題" | "是非題";
   difficulty: "基礎" | "標準" | "挑戰";
   curriculumDomain: "語文領域" | "數學領域" | "自然科學領域" | "社會領域";
   learningTopic: string;
@@ -26,10 +27,14 @@ export type CurriculumQuestionRow = {
 function isValidQuestion(value: unknown): value is CurriculumQuestionRow {
   if (!value || typeof value !== "object") return false;
   const question = value as Record<string, unknown>;
+  const questionType = question.questionType;
+  const isTrueFalse = questionType === "是非題";
+  const expectedOptionCount = isTrueFalse ? 2 : 4;
   return (
     typeof question.id === "string" &&
     Number.isInteger(question.grade) &&
     typeof question.subject === "string" &&
+    (questionType === undefined || typeof questionType === "string") &&
     typeof question.difficulty === "string" &&
     typeof question.curriculumDomain === "string" &&
     typeof question.learningTopic === "string" &&
@@ -37,18 +42,18 @@ function isValidQuestion(value: unknown): value is CurriculumQuestionRow {
     typeof question.explanation === "string" &&
     Number.isInteger(question.answer) &&
     Array.isArray(question.options) &&
-    question.options.length === 4 &&
+    question.options.length === expectedOptionCount &&
     question.options.every((option) => typeof option === "string") &&
     Array.isArray(question.knowledge) &&
     question.knowledge.length > 0
   );
 }
 
-/** 內建題庫（與 data/taiwan_curriculum_500.json 同步，共 500 題）。 */
+/** 內建題庫（與 data/taiwan_curriculum_500.json 同步）。 */
 export const LOCAL_QUESTION_BANK: CurriculumQuestionRow[] = (() => {
   const seed = curriculumSeed as { questions?: unknown };
   const questions = Array.isArray(seed.questions) ? seed.questions.filter(isValidQuestion) : [];
-  return questions;
+  return questions.map((q) => ({ ...q, questionType: q.questionType ?? "選擇題" as const }));
 })();
 
 export type QuestionBankSource = "server" | "local";

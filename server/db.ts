@@ -201,6 +201,8 @@ const ENSURE_TABLE_STATEMENTS = [
 const ENSURE_COLUMN_STATEMENTS = [
   // 對應遷移 0001：早期資料表的 area 為 NOT NULL，改為可空。
   "ALTER TABLE `question_bank` MODIFY COLUMN `area` varchar(64)",
+  // 對應遷移 0002：新增 questionType 欄位。
+  "ALTER TABLE `question_bank` ADD COLUMN `questionType` enum('選擇題','是非題') NOT NULL DEFAULT '選擇題'",
 ];
 
 const ENSURE_INDEX_STATEMENTS = [
@@ -220,7 +222,7 @@ const SEED_QUESTIONS: InsertQuestion[] = (() => {
       Number.isInteger(row.grade) &&
       typeof row.prompt === "string" &&
       Array.isArray(row.options) &&
-      row.options.length === 4 &&
+      (row.options.length === 2 || row.options.length === 4) &&
       Number.isInteger(row.answer),
   );
 })();

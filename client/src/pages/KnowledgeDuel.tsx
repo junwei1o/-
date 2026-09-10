@@ -26,7 +26,7 @@ import { getKnowledgeDuelRecords, getLearningRecord, saveKnowledgeDuelRecord } f
 type DuelScreen = "setup" | "question" | "round-summary" | "match-summary";
 type DuelQuestion = (typeof ALL_CURRICULUM_QUESTIONS)[number];
 
-const SUBJECT_LABELS: Record<SubjectKey, string> = { chinese: "國文", math: "數學", english: "英文", science: "自然" };
+const SUBJECT_LABELS: Record<SubjectKey, string> = { chinese: "國文", math: "數學", english: "英文", science: "自然", social: "社會" };
 const AI_LOADOUT: StrategyCardId[] = ["lightning-chain", "insight", "shield"];
 
 function subjectKeyForRecord(subject: string): SubjectKey | null {

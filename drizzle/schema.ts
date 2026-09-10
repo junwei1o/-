@@ -30,6 +30,7 @@ export const questionBank = mysqlTable("question_bank", {
   area: varchar("area", { length: 64 }),
   grade: int("grade").notNull(),
   subject: mysqlEnum("subject", ["數學", "自然", "社會", "國語"]).notNull(),
+  questionType: mysqlEnum("questionType", ["選擇題", "是非題"]).default("選擇題").notNull(),
   difficulty: mysqlEnum("difficulty", ["基礎", "標準", "挑戰"]).notNull(),
   curriculumDomain: mysqlEnum("curriculumDomain", ["語文領域", "數學領域", "自然科學領域", "社會領域"]).notNull(),
   learningTopic: varchar("learningTopic", { length: 255 }).notNull(),

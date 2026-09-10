@@ -573,6 +573,29 @@
   margin: 1.25rem 0;
 }
 
+/* 是非題：兩欄並排 */
+.paper-options:has(.paper-option.is-true-false) {
+  grid-template-columns: 1fr 1fr;
+  max-width: 32rem;
+}
+
+.paper-option.is-true-false {
+  justify-content: center;
+  text-align: center;
+}
+
+.paper-option.is-true-false > span:first-of-type {
+  width: 2.4rem;
+  height: 2.4rem;
+  font-size: 1.3rem;
+}
+
+@media (max-width: 480px) {
+  .paper-options:has(.paper-option.is-true-false) {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
 /* 答案選項 → 大圓角卡片 */
 .paper-option {
   display: flex;

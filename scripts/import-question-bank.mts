@@ -18,8 +18,11 @@ function assertQuestion(value: SourceQuestion, index: number): InsertQuestion {
   if (typeof value.subject !== "string" || !REQUIRED_SUBJECTS.has(value.subject)) throw new Error(`${value.id} 科目無效`);
   if (typeof value.difficulty !== "string" || !REQUIRED_DIFFICULTIES.has(value.difficulty)) throw new Error(`${value.id} 難度無效`);
   if (typeof value.curriculumDomain !== "string" || !REQUIRED_DOMAINS.has(value.curriculumDomain)) throw new Error(`${value.id} 課綱領域無效`);
-  if (!Array.isArray(value.options) || value.options.length !== 4 || value.options.some((item) => typeof item !== "string")) throw new Error(`${value.id} 必須有四個文字選項`);
-  if (!Number.isInteger(value.answer) || value.answer < 0 || value.answer > 3) throw new Error(`${value.id} 答案索引無效`);
+  const questionType = (value as { questionType?: string }).questionType ?? "選擇題";
+  const isTrueFalse = questionType === "是非題";
+  const expectedOptions = isTrueFalse ? 2 : 4;
+  if (!Array.isArray(value.options) || value.options.length !== expectedOptions || value.options.some((item) => typeof item !== "string")) throw new Error(`${value.id} 必須有 ${expectedOptions} 個文字選項`);
+  if (!Number.isInteger(value.answer) || value.answer < 0 || value.answer >= expectedOptions) throw new Error(`${value.id} 答案索引無效`);
   for (const field of ["learningTopic", "learningPerformance", "learningContent", "competency", "prompt", "explanation"] as const) {
     if (typeof value[field] !== "string" || value[field].trim().length === 0) throw new Error(`${value.id} 缺少 ${field}`);
   }
@@ -29,6 +32,7 @@ function assertQuestion(value: SourceQuestion, index: number): InsertQuestion {
     area: value.area ?? null,
     grade: value.grade,
     subject: value.subject as InsertQuestion["subject"],
+    questionType: questionType as InsertQuestion["questionType"],
     difficulty: value.difficulty as InsertQuestion["difficulty"],
     curriculumDomain: value.curriculumDomain as InsertQuestion["curriculumDomain"],
     learningTopic: value.learningTopic,
@@ -48,7 +52,7 @@ if (!databaseUrl) throw new Error("DATABASE_URL 未設定，停止匯入以避�
 
 const sourcePath = new URL("../data/taiwan_curriculum_500.json", import.meta.url);
 const source = JSON.parse(await readFile(sourcePath, "utf8")) as SourceFile;
-if (!Array.isArray(source.questions) || source.questions.length !== 500 || source.questionCount !== 500) {
+if (!Array.isArray(source.questions) || source.questions.length !== source.questionCount) {
   throw new Error(`題庫數量驗證失敗：宣告 ${source.questionCount}，實際 ${source.questions?.length ?? 0}`);
 }
 

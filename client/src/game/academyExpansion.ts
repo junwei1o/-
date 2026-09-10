@@ -97,7 +97,7 @@ export function generateDailyAdventureSummary(input: DailyAdventureSummaryInput)
   return { dayKey: targetKey, summary, answered, correct, accuracy, subject };
 }
 
-export type TalentId = "precision" | "resilience" | "knowledge-drain" | "lucky-star";
+export type TalentId = "precision" | "resilience" | "knowledge-drain" | "lucky-star" | "endurance" | "swiftness" | "scholar" | "guardian-spirit" | "battle-sage" | "treasure-hunter" | "critical-thinking" | "guardian-ward";
 export type TalentLevels = Partial<Record<TalentId, number>>;
 
 export type PlayerGrowth = {
@@ -112,6 +112,14 @@ export const TALENT_CATALOG: readonly { id: TalentId; label: string; description
   { id: "resilience", label: "韌性", description: "每級降低答錯傷害 2 點。", maxLevel: 5 },
   { id: "knowledge-drain", label: "知識汲取", description: "每級答對額外獲得 2 經驗。", maxLevel: 5 },
   { id: "lucky-star", label: "幸運星", description: "每級提高藥水掉落率 2%。", maxLevel: 5 },
+  { id: "endurance", label: "體力", description: "每級增加最大生命值 10 點。", maxLevel: 5 },
+  { id: "swiftness", label: "敏捷", description: "每級減少答題思考時間計算的懲罰 5%。", maxLevel: 5 },
+  { id: "scholar", label: "學者", description: "每級答對時有 3% 機率額外獲得裝備碎片。", maxLevel: 5 },
+  { id: "guardian-spirit", label: "守護精靈", description: "每級降低稀有怪物的傷害 5%。", maxLevel: 5 },
+  { id: "battle-sage", label: "戰鬥賢者", description: "每級答對時有 2% 機率回復 5 點生命。", maxLevel: 5 },
+  { id: "treasure-hunter", label: "尋寶者", description: "每級提高台灣特產掉落率 3%。", maxLevel: 5 },
+  { id: "critical-thinking", label: "批判思考", description: "每級答對時額外獲得 1 經驗。", maxLevel: 5 },
+  { id: "guardian-ward", label: "守護結界", description: "每級降低守護者詛咒模式傷害 10%。", maxLevel: 3 },
 ] as const;
 
 export type GearDefinition = { id: string; label: string; fragmentLabel: string; description: string; attack: number; defense: number; criticalRate: number; rareEncounterRate: number };
@@ -120,6 +128,14 @@ export const GEAR_CATALOG: readonly GearDefinition[] = [
   { id: "gear-math-compass", label: "數學羅盤", fragmentLabel: "數學羅盤碎片", description: "指向正確推理路徑。", attack: 0, defense: 0, criticalRate: 0.05, rareEncounterRate: 0 },
   { id: "gear-sailor-scope", label: "航海望遠鏡", fragmentLabel: "航海望遠鏡碎片", description: "看見隱藏在霧中的稀有航線。", attack: 0, defense: 0, criticalRate: 0, rareEncounterRate: 0.1 },
   { id: "gear-mountain-cloak", label: "山林披風", fragmentLabel: "山林披風碎片", description: "以山風抵禦錯答的衝擊。", attack: 0, defense: 2, criticalRate: 0, rareEncounterRate: 0 },
+  { id: "gear-social-compass", label: "社會羅盤", fragmentLabel: "社會羅盤碎片", description: "引領方向，看見歷史的脈絡。", attack: 2, defense: 0, criticalRate: 0, rareEncounterRate: 0 },
+  { id: "gear-nature-lens", label: "自然透鏡", fragmentLabel: "自然透鏡碎片", description: "觀察微觀世界的窗戶。", attack: 1, defense: 1, criticalRate: 0, rareEncounterRate: 0 },
+  { id: "gear-language-quill", label: "國語羽毛筆", fragmentLabel: "國語羽毛筆碎片", description: "以文字為劍，刻畫思想的痕跡。", attack: 2, defense: 0, criticalRate: 0.03, rareEncounterRate: 0 },
+  { id: "gear-time-hourglass", label: "時光沙漏", fragmentLabel: "時光沙漏碎片", description: "讓時間成為探索的夥伴。", attack: 0, defense: 1, criticalRate: 0, rareEncounterRate: 0.05 },
+  { id: "gear-wisdom-crown", label: "智慧之冠", fragmentLabel: "智慧之冠碎片", description: "智慧凝成的冠冕，提升暴擊與攻擊。", attack: 2, defense: 1, criticalRate: 0.08, rareEncounterRate: 0 },
+  { id: "gear-tide-amulet", label: "潮汐護符", fragmentLabel: "潮汐護符碎片", description: "海潮帶來的護身符，守護穩固。", attack: 0, defense: 3, criticalRate: 0, rareEncounterRate: 0.05 },
+  { id: "gear-star-blade", label: "星光之刃", fragmentLabel: "星光之刃碎片", description: "以星芒鍛造的刃，鋒利而精準。", attack: 4, defense: 0, criticalRate: 0.05, rareEncounterRate: 0 },
+  { id: "gear-ancient-tome", label: "古卷軸", fragmentLabel: "古卷軸碎片", description: "記載古老知識的卷軸，兼顧攻守。", attack: 1, defense: 2, criticalRate: 0.02, rareEncounterRate: 0.03 },
 ] as const;
 
 export function baseAttributes(level: number): { attack: number; defense: number; luck: number } {

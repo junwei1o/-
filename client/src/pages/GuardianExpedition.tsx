@@ -8,6 +8,7 @@ const SUBJECT_LABELS: Record<SubjectKey, string> = {
   math: "數學城",
   english: "英文港",
   science: "自然山",
+  social: "社會領域",
 };
 
 const DIFFICULTY_LABELS = { 1: "基礎", 2: "標準", 3: "挑戰" } as const;
