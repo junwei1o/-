@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useLocation } from "wouter";
-import { ClipboardList, Copy, School, Target, UserRound, Users } from "lucide-react";
+import { ClipboardList, Copy, School, Target, Trash2, UserRound, Users } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import "@/pages/TeacherDashboard.css";
 
@@ -12,10 +12,13 @@ function StudentCard({
   studentName,
   assignmentCount,
   onAssign,
+  onRemove,
 }: {
   studentName: string;
   assignmentCount: number;
-  onAssign: (studentName: string) => void;
+  onRemove: (studentName: string) => void;
+  /** 帶上預設知識點時，出作業表單會直接鎖定那個知識點。 */
+  onAssign: (studentName: string, preset?: { subject: string; topic: string }) => void;
 }) {
   const insights = trpc.teacher.studentInsights.useQuery(
     { studentName, days: 30 },
@@ -46,9 +49,16 @@ function StudentCard({
         {weak.length > 0 ? (
           <ul className="mentor-tag-list">
             {weak.slice(0, 3).map((item) => (
-              <li key={`${item.subject}/${item.topic}`} className="mentor-tag">
-                {item.subject} · {item.topic}
-                <small>{item.wrong}/{item.total} 錯</small>
+              <li key={`${item.subject}/${item.topic}`}>
+                <button
+                  type="button"
+                  className="mentor-tag"
+                  onClick={() => onAssign(studentName, { subject: item.subject, topic: item.topic })}
+                  title={`直接針對「${item.topic}」出作業`}
+                >
+                  {item.subject} · {item.topic}
+                  <small>{item.wrong}/{item.total} 錯</small>
+                </button>
               </li>
             ))}
           </ul>
@@ -59,9 +69,19 @@ function StudentCard({
         )}
       </div>
 
-      <button type="button" className="settings-secondary-button" onClick={() => onAssign(studentName)}>
-        <ClipboardList size={15} aria-hidden="true" /> 給 {studentName} 出作業
-      </button>
+      <div className="mentor-card-actions">
+        <button type="button" className="settings-secondary-button" onClick={() => onAssign(studentName)}>
+          <ClipboardList size={15} aria-hidden="true" /> 給 {studentName} 出作業
+        </button>
+        <button
+          type="button"
+          className="teacher-link-button is-danger"
+          onClick={() => onRemove(studentName)}
+          title="把這位學生從班級移除，並清掉他在本站的作答紀錄"
+        >
+          <Trash2 size={14} aria-hidden="true" /> 移除
+        </button>
+      </div>
     </article>
   );
 }
@@ -81,6 +101,10 @@ export default function TeacherDashboard() {
   const [subject, setSubject] = useState<string>("數學");
   const [grade, setGrade] = useState(4);
   const [questionCount, setQuestionCount] = useState(10);
+  /** 知識點：從學生的薄弱標籤點進來時會被預填，讓作業能對症下藥。 */
+  const [topic, setTopic] = useState("");
+  /** 從哪位學生的卡片點進來的：空值代表派給全班。 */
+  const [assignTarget, setAssignTarget] = useState("");
   const [dueDate, setDueDate] = useState("");
   const [notice, setNotice] = useState<string | null>(null);
 
@@ -94,6 +118,28 @@ export default function TeacherDashboard() {
     { classCode: trimmedCode },
     { enabled: trimmedCode.length >= 4, retry: false },
   );
+  const isSingleSubject = subject !== "綜合課綱";
+  const topicQuery = trpc.teacher.topicOptions.useQuery(
+    { subject: subject as "國語" | "數學" | "自然" | "社會", grade },
+    { enabled: showAssign && isSingleSubject, retry: false },
+  );
+
+  const removeMember = trpc.teacher.removeMember.useMutation({
+    onSuccess: () => {
+      setNotice("已移除這位學生，他的作答紀錄也一併清掉了。");
+      void reportQuery.refetch();
+    },
+    onError: () => setNotice("無法連線到伺服器，移除失敗。"),
+  });
+
+  const deleteClassMutation = trpc.teacher.deleteClass.useMutation({
+    onSuccess: () => {
+      localStorage.removeItem(TEACHER_CODE_KEY);
+      setCode("");
+      setNotice("班級已刪除。");
+    },
+    onError: () => setNotice("無法連線到伺服器，刪除班級失敗。"),
+  });
 
   const createClass = trpc.teacher.createClass.useMutation({
     onSuccess: (result) => {
@@ -114,8 +160,15 @@ export default function TeacherDashboard() {
         setNotice("指派失敗：找不到這個班級。");
         return;
       }
-      setNotice(`已指派作業（${subject} ${grade} 年級 ${questionCount} 題）。`);
+      const who = assignTarget ? `只給 ${assignTarget}` : "全班";
+      setNotice(
+        topic
+          ? `已指派：${who} · ${subject}「${topic}」${questionCount} 題，學生打開就會先寫這份。`
+          : `已指派：${who} · ${subject} ${grade} 年級 ${questionCount} 題。`,
+      );
       setShowAssign(false);
+      setTopic("");
+      setAssignTarget("");
       void reportQuery.refetch();
     },
     onError: () => setNotice("無法連線到伺服器，指派作業失敗。"),
@@ -154,8 +207,22 @@ export default function TeacherDashboard() {
       subject: subject as (typeof SUBJECTS)[number],
       grade,
       questionCount,
+      learningTopic: topic || undefined,
+      studentName: assignTarget || undefined,
       dueDate: dueDate || undefined,
     });
+  }
+
+  /** 出作業表單：從學生卡片的薄弱標籤點進來時，直接鎖定那位學生與那個知識點。 */
+  function openAssign(student: string, preset?: { subject: string; topic: string }) {
+    setAssignTarget(student);
+    if (preset) {
+      setSubject(preset.subject);
+      setTopic(preset.topic);
+    } else {
+      setTopic("");
+    }
+    setShowAssign(true);
   }
 
   async function copyCode() {
@@ -258,6 +325,17 @@ export default function TeacherDashboard() {
                 >
                   切換班級
                 </button>
+                <button
+                  type="button"
+                  className="teacher-link-button is-danger"
+                  onClick={() => {
+                    if (window.confirm(`刪除班級「${trimmedCode}」？學生名單、作業與繳交紀錄都會清掉，無法復原。`)) {
+                      deleteClassMutation.mutate({ classCode: trimmedCode });
+                    }
+                  }}
+                >
+                  <Trash2 size={14} aria-hidden="true" /> 刪除班級
+                </button>
               </div>
               <p className="teacher-hint">
                 學生在「我的教室」輸入這組碼就能加入。目前 {students.length} 位學生。
@@ -272,8 +350,15 @@ export default function TeacherDashboard() {
                 </div>
                 <form className="teacher-assign-form" onSubmit={handleAssign}>
                   <label>
+                    給誰
+                    <select value={assignTarget} onChange={(event) => setAssignTarget(event.target.value)}>
+                      <option value="">全班</option>
+                      {students.map((item) => <option key={item.studentName} value={item.studentName}>{item.studentName}</option>)}
+                    </select>
+                  </label>
+                  <label>
                     科目
-                    <select value={subject} onChange={(event) => setSubject(event.target.value)}>
+                    <select value={subject} onChange={(event) => { setSubject(event.target.value); setTopic(""); }}>
                       {SUBJECTS.map((item) => <option key={item} value={item}>{item}</option>)}
                     </select>
                   </label>
@@ -289,6 +374,15 @@ export default function TeacherDashboard() {
                       {[5, 10, 15, 20].map((item) => <option key={item} value={item}>{item} 題</option>)}
                     </select>
                   </label>
+                  <label className="teacher-assign-wide">
+                    針對知識點（可不指定）
+                    <select value={topic} onChange={(event) => setTopic(event.target.value)} disabled={!isSingleSubject}>
+                      <option value="">— 全科隨機 —</option>
+                      {(topicQuery.data?.topics ?? []).map((item) => (
+                        <option key={item.topic} value={item.topic}>{item.topic}（{item.count} 題）</option>
+                      ))}
+                    </select>
+                  </label>
                   <label>
                     截止日（可不填）
                     <input type="date" value={dueDate} onChange={(event) => setDueDate(event.target.value)} />
@@ -296,11 +390,15 @@ export default function TeacherDashboard() {
                   <button type="submit" className="settings-primary-button" disabled={createAssignment.isPending}>
                     {createAssignment.isPending ? "指派中…" : "指派作業"}
                   </button>
-                  <button type="button" className="teacher-link-button" onClick={() => setShowAssign(false)}>
+                  <button type="button" className="teacher-link-button" onClick={() => { setShowAssign(false); setTopic(""); setAssignTarget(""); }}>
                     取消
                   </button>
                 </form>
-                <p className="teacher-hint">作業會派給全班，學生在「我的教室」看得到。</p>
+                <p className="teacher-hint">
+                  {topic
+                    ? `這份作業會優先出「${topic}」的題，學生打開網站就會先寫這份，不用另外通知。`
+                    : "指定知識點可以對症下藥：從學生卡片的「需要加強」標籤點一下，就會自動帶入。"}
+                </p>
               </section>
             ) : null}
 
@@ -322,7 +420,12 @@ export default function TeacherDashboard() {
                     key={student.studentName}
                     studentName={student.studentName}
                     assignmentCount={student.assignmentCount}
-                    onAssign={() => setShowAssign(true)}
+                    onAssign={(name, preset) => openAssign(name, preset)}
+                    onRemove={(name) => {
+                      if (window.confirm(`把「${name}」從班級移除？他在本站的作答紀錄會一起清掉，之後要用同一個船名重新加入。`)) {
+                        removeMember.mutate({ classCode: trimmedCode, studentName: name });
+                      }
+                    }}
                   />
                 ))}
               </div>

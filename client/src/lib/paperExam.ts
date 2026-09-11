@@ -115,6 +115,42 @@ export function buildPersonalizedPaperDeck(
   return buildPaperDeck(filteredQuestions, scope, size);
 }
 
+/**
+ * 老師指派的作業卷。
+ *
+ * 與自由練習不同的是：老師在督學台看到學生某個知識點錯很多，會針對該知識點出作業，
+ * 這時整份卷子就該集中在那個知識點上，而不是再用年級＋難度隨機抽
+ * （否則「看見病因、開廣效藥」，學生練不到真正不會的地方）。
+ *
+ * 知識點題數不足時才用同年級同科目的題補滿，避免作業開天窗。
+ */
+export function buildAssignmentDeck(
+  questions: readonly PaperQuestion[],
+  options: { subject: string; grade: number; topic?: string | null; size: number },
+): PaperQuestion[] {
+  const { subject, grade, topic, size } = options;
+  const inSubject =
+    subject === "綜合課綱" ? [...questions] : questions.filter((question) => question.subject === subject);
+  if (inSubject.length === 0) return [];
+
+  const take = (pool: readonly PaperQuestion[], exclude: Set<string>, count: number) =>
+    shuffled(pool.filter((question) => !exclude.has(question.id))).slice(0, count);
+
+  const deck: PaperQuestion[] = [];
+  if (topic) {
+    const inTopic = inSubject.filter((question) => question.learningTopic === topic);
+    deck.push(...take(inTopic, new Set(), size));
+  }
+  // 指定知識點題目不夠／沒指定知識點：先用同年級，再用同科目補滿。
+  if (deck.length < size) {
+    deck.push(...take(inSubject.filter((q) => q.grade === grade), new Set(deck.map((q) => q.id)), size - deck.length));
+  }
+  if (deck.length < size) {
+    deck.push(...take(inSubject, new Set(deck.map((q) => q.id)), size - deck.length));
+  }
+  return deck;
+}
+
 function shuffled<T>(items: readonly T[]) {
   const result = [...items];
   for (let index = result.length - 1; index > 0; index -= 1) {

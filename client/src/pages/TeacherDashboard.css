@@ -298,3 +298,28 @@
   .mentor-accuracy { font-size: 1.45rem; }
   .mentor-card { padding: 15px; }
 }
+
+/* ---------- 督學台：卡片操作列與危險操作 ---------- */
+
+.mentor-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.teacher-link-button.is-danger {
+  margin-left: auto;
+  color: #a8442a;
+  border-color: rgba(168, 68, 42, 0.32);
+}
+
+.teacher-link-button.is-danger:hover {
+  background: rgba(168, 68, 42, 0.1);
+}
+
+.teacher-assign-wide {
+  grid-column: 1 / -1;
+}
+
+/* 作業橫幅樣式放在 PaperExam.css（學生作答頁） */

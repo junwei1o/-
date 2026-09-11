@@ -26,6 +26,8 @@ export interface PendingAssignment {
   subject: string;
   grade: number;
   questionCount: number;
+  /** 老師指定要加強的知識點；有值時組卷只出這個知識點的題。 */
+  learningTopic?: string | null;
 }
 
 export function setPendingAssignment(pending: PendingAssignment): void {

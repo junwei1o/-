@@ -9,6 +9,7 @@ import { AiReviewPlanCard } from "@/components/AiReviewPlanCard";
 import { QuestionTransition } from "@/components/QuestionTransition";
 import {
   buildPaperDeck,
+  buildAssignmentDeck,
 	buildPersonalizedPaperDeck,
   buildSubjectWrongReviewDeck,
   DEFAULT_PAPER_SIZE,
@@ -29,7 +30,7 @@ import {
 import { getDueReviewQuestionIds, loadAdaptiveProfile, recordAdaptiveAttempt, saveAdaptiveProfile, updateLatestAdaptiveAttempt, type AdaptiveErrorType } from "@/game/adaptiveLearning";
 import { recordRpgAnswer } from "@/game/rpgStorage";
 import { recordExamCloud } from "@/game/cloudSync";
-import { readPendingAssignment, submitAssignmentScore } from "@/game/classPortal";
+import { clearPendingAssignment, readPendingAssignment, submitAssignmentScore, type PendingAssignment } from "@/game/classPortal";
 import { claimRandomAdventureBonus } from "@/game/randomAdventureBonus";
 import { queueRandomAdventureRouteReward } from "@/game/randomAdventureRouteReward";
 import { rewardForAnswer } from "@/game/rpgRewards";
@@ -94,6 +95,7 @@ export default function PaperExam() {
   const [showSummitEncouragement, setShowSummitEncouragement] = useState(false);
   const [showSummitStrategyRecap, setShowSummitStrategyRecap] = useState(false);
   const [pendingPaperScope, setPendingPaperScope] = useState<PaperScope | null>(null);
+  const [assignmentBrief, setAssignmentBrief] = useState<PendingAssignment | null>(null);
   const [strategyCueEnabled, setStrategyCueEnabled] = useState(loadPaperStrategyCueEnabled);
   const reviewTopic = useMemo(() => {
     if (typeof window === "undefined") return "";
@@ -303,6 +305,7 @@ export default function PaperExam() {
         correctCount: result.correct,
         totalQuestions: deck.length,
       });
+      setAssignmentBrief(null);
     }
   }, [allAnswered, deck, result.correct, scope, subjectScope]);
 
@@ -509,6 +512,51 @@ function pickPoolWithCooldown(nextScope: PaperScope): PaperQuestion[] {
     setNotice(nextDeck.length ? `已建立 ${nextScope} 試卷，共 ${nextDeck.length} 題。選項一經點選就會立即顯示結果。` : "目前沒有符合此範圍的題目，請選擇其他試卷。");
   }
 
+  // 從「我的教室」認領作業後進來：直接把老師指定的卷子開好。
+  // 兩個孩子的場景裡，多一次「按建立試卷」就是多一次流失，所以這裡自動開卷。
+  const assignmentAutoStartedRef = useRef(false);
+  useEffect(() => {
+    if (assignmentAutoStartedRef.current || questions.length === 0) return;
+    const pending = readPendingAssignment();
+    if (!pending) return;
+    assignmentAutoStartedRef.current = true;
+    const nextDeck = buildAssignmentDeck(questions, {
+      subject: pending.subject,
+      grade: pending.grade,
+      topic: pending.learningTopic ?? null,
+      size: pending.questionCount,
+    });
+    if (nextDeck.length === 0) {
+      clearPendingAssignment();
+      setNotice("這份作業的題目目前抓不到，請回「我的教室」重新開始一次。");
+      return;
+    }
+    const nextScope = (PAPER_SCOPES as readonly string[]).includes(pending.subject)
+      ? (pending.subject as PaperScope)
+      : "綜合課綱";
+    setAssignmentBrief(pending);
+    setScope(nextScope);
+    setDeck(nextDeck);
+    setAnswers({});
+    resetRetentionState();
+    setCurrentIndex(0);
+    setShowSummary(false);
+    setReviewTopicConfirmed(true);
+    setWrongPracticePreview(null);
+    setQuickQuizBaseline(null);
+    setIsQuickQuiz(false);
+    setShowRelatedWrong(false);
+    setWrongSubjectFilter("全部");
+    setWrongReasonFilter("全部");
+    recordedIdsRef.current = new Set();
+    startedAtRef.current = Date.now();
+    setNotice(
+      pending.learningTopic
+        ? `老師的作業：${pending.subject} · ${pending.learningTopic} 共 ${nextDeck.length} 題，完成後會自動回報給老師。`
+        : `老師的作業：${pending.subject} ${pending.grade} 年級共 ${nextDeck.length} 題，完成後會自動回報給老師。`,
+    );
+  }, [questions]);
+
   function retryUnmasteredQuestions() {
     const retryDeck = [...wrongQuestions];
     if (retryDeck.length === 0) {
@@ -693,6 +741,32 @@ function pickPoolWithCooldown(nextScope: PaperScope): PaperQuestion[] {
         {questionBankFallback && <p className="paper-error" role="status"><CircleAlert size={17} aria-hidden="true" /> 線上題庫暫時無法連線，已改用內建題庫（{questions.length} 題），可直接離線作答。<button type="button" onClick={() => refetchQuestionBank()}>重新連線</button></p>}
         <p className="sr-only" aria-live="polite">{notice}</p>
       </section>
+
+      {assignmentBrief && !showSummary && (
+        <aside className="paper-assignment-banner" aria-labelledby="paper-assignment-title">
+          <BookOpenCheck size={22} aria-hidden="true" />
+          <div className="paper-assignment-copy">
+            <h2 id="paper-assignment-title">老師的作業</h2>
+            <p>
+              {assignmentBrief.subject} {assignmentBrief.grade} 年級
+              {assignmentBrief.learningTopic ? ` · 加強「${assignmentBrief.learningTopic}」` : ""}
+              ，共 {deck.length} 題
+            </p>
+            <span>寫完會自動把成績回報給老師，不用另外交。</span>
+          </div>
+          <button
+            type="button"
+            className="paper-secondary-button"
+            onClick={() => {
+              clearPendingAssignment();
+              setAssignmentBrief(null);
+              setNotice("已切回自由練習，這份作業留在「我的教室」裡，想寫時再點開。");
+            }}
+          >
+            先改自由練習
+          </button>
+        </aside>
+      )}
 
       {pendingPaperScope && (
         <aside className="paper-next-group-tip" aria-labelledby="paper-next-group-tip-title" data-testid="paper-next-group-tip">

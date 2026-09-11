@@ -67,13 +67,20 @@ export default function StudentClass() {
     joinClass.mutate({ code, studentName: cloudName });
   }
 
-  function startAssignment(assignment: { id: number; subject: string; grade: number; questionCount: number }) {
+  function startAssignment(assignment: {
+    id: number;
+    subject: string;
+    grade: number;
+    questionCount: number;
+    learningTopic?: string | null;
+  }) {
     setPendingAssignment({
       assignmentId: assignment.id,
       studentName: cloudName,
       subject: assignment.subject,
       grade: assignment.grade,
       questionCount: assignment.questionCount,
+      learningTopic: assignment.learningTopic ?? null,
     });
     setLocation("/practice");
   }
@@ -159,6 +166,7 @@ export default function StudentClass() {
                     <tr>
                       <th scope="col">科目</th>
                       <th scope="col">年級</th>
+                      <th scope="col">加強重點</th>
                       <th scope="col">題數</th>
                       <th scope="col">截止</th>
                       <th scope="col" />
@@ -169,6 +177,7 @@ export default function StudentClass() {
                       <tr key={item.id}>
                         <th scope="row">{item.subject}</th>
                         <td>{item.grade} 年級</td>
+                        <td>{item.learningTopic || "—"}</td>
                         <td>{item.questionCount} 題</td>
                         <td>{item.dueDate || "—"}</td>
                         <td>

@@ -1,0 +1,40 @@
+
+/* ---------- 老師的作業橫幅 ---------- */
+
+.paper-assignment-banner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding: 14px 18px;
+  margin-bottom: 14px;
+  border-radius: 16px;
+  background: linear-gradient(120deg, rgba(11, 110, 142, 0.1), rgba(232, 117, 74, 0.12));
+  border: 1px solid rgba(11, 110, 142, 0.22);
+}
+
+.paper-assignment-copy h2 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.paper-assignment-copy p {
+  margin: 3px 0 0;
+  font-size: 0.9rem;
+}
+
+.paper-assignment-copy span {
+  font-size: 0.8rem;
+  opacity: 0.75;
+}
+
+.paper-assignment-banner > button {
+  margin-left: auto;
+}
+
+@media (max-width: 640px) {
+  .paper-assignment-banner > button {
+    margin-left: 0;
+    width: 100%;
+  }
+}

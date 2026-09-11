@@ -234,6 +234,8 @@ const ENSURE_TABLE_STATEMENTS = [
     \`subject\` varchar(32) NOT NULL,
     \`grade\` int NOT NULL,
     \`questionCount\` int NOT NULL,
+    \`learningTopic\` varchar(255),
+    \`studentName\` varchar(24),
     \`dueDate\` varchar(10),
     \`createdAt\` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (\`id\`),
@@ -256,6 +258,9 @@ const ENSURE_COLUMN_STATEMENTS = [
   "ALTER TABLE `question_bank` MODIFY COLUMN `area` varchar(64)",
   // 對應遷移 0002：新增 questionType 欄位。
   "ALTER TABLE `question_bank` ADD COLUMN `questionType` enum('選擇題','是非題') NOT NULL DEFAULT '選擇題'",
+  // 對應遷移：作業可指定知識點與對象學生，讓老師能針對單一學生的薄弱處出題。
+  "ALTER TABLE `assignments` ADD COLUMN `learningTopic` varchar(255)",
+  "ALTER TABLE `assignments` ADD COLUMN `studentName` varchar(24)",
 ];
 
 const ENSURE_INDEX_STATEMENTS = [
@@ -466,6 +471,54 @@ export async function listClassMembers(code: string) {
   const db = await getDb();
   if (!db) throw new Error("Database is not available");
   return db.select().from(classMembers).where(eq(classMembers.classCode, code)).orderBy(classMembers.joinedAt);
+}
+
+/**
+ * 移除班級成員，並一併清掉他的作業繳交紀錄與學習紀錄。
+ * 小班場景裡孩子可能打錯名字加錯班，沒有移除機制就只能整班砍掉重練。
+ */
+export async function removeClassMember(code: string, studentName: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  const mine = await db
+    .select({ id: assignments.id })
+    .from(assignments)
+    .where(eq(assignments.classCode, code));
+  for (const row of mine) {
+    await db
+      .delete(assignmentSubmissions)
+      .where(and(eq(assignmentSubmissions.assignmentId, row.id), eq(assignmentSubmissions.studentName, studentName)));
+  }
+  await db.delete(examRecords).where(eq(examRecords.name, studentName));
+  await db.delete(classMembers).where(and(eq(classMembers.classCode, code), eq(classMembers.studentName, studentName)));
+}
+
+/**
+ * 刪除整個班級：成員、作業、繳交紀錄全部清掉。
+ * 供老師砍掉測試班或重新開始，不做軟刪除（資料量小、且無個資）。
+ */
+export async function deleteClass(code: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  const mine = await db.select({ id: assignments.id }).from(assignments).where(eq(assignments.classCode, code));
+  for (const row of mine) {
+    await db.delete(assignmentSubmissions).where(eq(assignmentSubmissions.assignmentId, row.id));
+  }
+  await db.delete(assignments).where(eq(assignments.classCode, code));
+  await db.delete(classMembers).where(eq(classMembers.classCode, code));
+  await db.delete(classes).where(eq(classes.code, code));
+}
+
+/**
+ * 清除某個船名在雲端的一切痕跡（船籍存檔＋學習紀錄）。
+ * 用來清掉測試帳號，或孩子換船名後不想留下舊紀錄。
+ */
+export async function purgeStudentName(studentName: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  await db.delete(examRecords).where(eq(examRecords.name, studentName));
+  await db.delete(cloudSaves).where(eq(cloudSaves.name, studentName));
+  await db.delete(classMembers).where(eq(classMembers.studentName, studentName));
 }
 
 /** 新增作業。 */

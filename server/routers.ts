@@ -3,6 +3,9 @@ import { z } from "zod";
 import { invokeLLM } from "./_core/llm";
 import {
   createAssignment,
+  deleteClass,
+  purgeStudentName,
+  removeClassMember,
   createClass,
   createCloudSave,
   getClassRow,
@@ -416,6 +419,36 @@ export const appRouter = router({
       .input(z.object({ studentName: cloudNameSchema }))
       .query(async ({ input }) => ({ classes: await listClassesOfStudent(input.studentName) })),
 
+    /** 移除班級中的一位學生（連帶清掉他的繳交與作答紀錄）。 */
+    removeMember: publicProcedure
+      .input(z.object({
+        classCode: z.string().trim().min(4).max(8),
+        studentName: z.string().trim().min(1).max(24),
+      }))
+      .mutation(async ({ input }) => {
+        await removeClassMember(input.classCode.trim().toUpperCase(), input.studentName.trim());
+        return { ok: true as const };
+      }),
+
+    /** 刪除班級（成員、作業、繳交紀錄全清）。 */
+    deleteClass: publicProcedure
+      .input(z.object({ classCode: z.string().trim().min(4).max(8) }))
+      .mutation(async ({ input }) => {
+        await deleteClass(input.classCode.trim().toUpperCase());
+        return { ok: true as const };
+      }),
+
+    /**
+     * 清除某個船名的所有雲端痕跡（船籍＋作答紀錄＋班級成員身分）。
+     * 用來清測試帳號，或孩子打錯船名重取後不想留舊資料。
+     */
+    purgeStudent: publicProcedure
+      .input(z.object({ studentName: z.string().trim().min(1).max(24) }))
+      .mutation(async ({ input }) => {
+        await purgeStudentName(input.studentName.trim());
+        return { ok: true as const };
+      }),
+
     /** 老師指派作業。 */
     createAssignment: publicProcedure
       .input(z.object({
@@ -423,6 +456,10 @@ export const appRouter = router({
         subject: z.enum(["國語", "數學", "自然", "社會", "綜合課綱"]),
         grade: z.number().int().min(3).max(6),
         questionCount: z.number().int().min(5).max(30),
+        /** 知識點：有值時學生端的這份作業只會出該知識點的題。 */
+        learningTopic: z.string().trim().min(1).max(255).optional(),
+        /** 指定學生：有值時只有這位學生看得到這份作業。 */
+        studentName: z.string().trim().min(1).max(24).optional(),
         dueDate: z.string().trim().max(10).optional(),
       }))
       .mutation(async ({ input }) => {
@@ -434,22 +471,54 @@ export const appRouter = router({
           subject: input.subject,
           grade: input.grade,
           questionCount: input.questionCount,
+          learningTopic: input.learningTopic ?? null,
+          studentName: input.studentName ?? null,
           dueDate: input.dueDate ?? null,
         });
         return { ok: true as const, id: created.id };
       }),
 
-    /** 列出班級作業。 */
+    /**
+     * 出作業時的知識點選項：列出某科目下有哪些知識點、各有多少題。
+     * 老師從督學台看到學生的薄弱點後，可以直接挑同一個知識點出作業。
+     */
+    topicOptions: publicProcedure
+      .input(z.object({
+        subject: z.enum(["國語", "數學", "自然", "社會"]),
+        grade: z.number().int().min(3).max(6).optional(),
+      }))
+      .query(async ({ input }) => {
+        const rows = await getQuestionBank({ subject: input.subject, limit: 1000 });
+        const counter = new Map<string, number>();
+        for (const row of rows) {
+          if (input.grade && row.grade !== input.grade) continue;
+          counter.set(row.learningTopic, (counter.get(row.learningTopic) ?? 0) + 1);
+        }
+        const topics = Array.from(counter.entries())
+          .map(([topic, count]) => ({ topic, count }))
+          .sort((a, b) => b.count - a.count || a.topic.localeCompare(b.topic, "zh-Hant"));
+        return { topics };
+      }),
+
+    /** 列出班級作業。帶 studentName 時只回傳「全班」或「指定給他」的作業。 */
     listAssignments: publicProcedure
-      .input(z.object({ classCode: z.string().trim().min(4).max(8) }))
+      .input(z.object({
+        classCode: z.string().trim().min(4).max(8),
+        studentName: z.string().trim().min(1).max(24).optional(),
+      }))
       .query(async ({ input }) => {
         const rows = await listAssignments(input.classCode.trim().toUpperCase());
+        const mine = input.studentName
+          ? rows.filter((row) => !row.studentName || row.studentName === input.studentName)
+          : rows;
         return {
-          assignments: rows.map((row) => ({
+          assignments: mine.map((row) => ({
             id: row.id,
             subject: row.subject,
             grade: row.grade,
             questionCount: row.questionCount,
+            learningTopic: row.learningTopic,
+            studentName: row.studentName,
             dueDate: row.dueDate,
             createdAt: row.createdAt instanceof Date ? row.createdAt.getTime() : Date.now(),
           })),
@@ -533,10 +602,13 @@ export const appRouter = router({
         if (!target) return { ok: false as const, reason: "notFound" as const };
         const [members, homework] = await Promise.all([listClassMembers(code), listAssignments(code)]);
         const submissionLists = await Promise.all(homework.map((item) => listSubmissions(item.id)));
+        const submissionsByAssignment = new Map(homework.map((item, index) => [item.id, submissionLists[index]]));
 
         const students = members.map((member) => {
-          const scores = homework.map((item, index) => {
-            const hit = submissionLists[index].find((row) => row.studentName === member.studentName);
+          // 只算派給全班或指定給他的作業，避免「只給阿明」的作業灌到小華的完成率。
+          const myHomework = homework.filter((item) => !item.studentName || item.studentName === member.studentName);
+          const scores = myHomework.map((item, index) => {
+            const hit = (submissionsByAssignment.get(item.id) ?? []).find((row) => row.studentName === member.studentName);
             return {
               assignmentId: item.id,
               done: Boolean(hit),
@@ -551,7 +623,7 @@ export const appRouter = router({
             studentName: member.studentName,
             joinedAt: member.joinedAt instanceof Date ? member.joinedAt.getTime() : Date.now(),
             doneCount,
-            assignmentCount: homework.length,
+            assignmentCount: myHomework.length,
             accuracy: totalSum > 0 ? Math.round((correctSum / totalSum) * 100) : 0,
             scores,
           };
@@ -565,6 +637,8 @@ export const appRouter = router({
             subject: item.subject,
             grade: item.grade,
             questionCount: item.questionCount,
+            learningTopic: item.learningTopic,
+            studentName: item.studentName,
             dueDate: item.dueDate,
           })),
           students,

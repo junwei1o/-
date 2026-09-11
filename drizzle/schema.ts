@@ -123,6 +123,10 @@ export const assignments = mysqlTable("assignments", {
   subject: varchar("subject", { length: 32 }).notNull(),
   grade: int("grade").notNull(),
   questionCount: int("questionCount").notNull(),
+  /** 指定知識點時，組卷會優先出該知識點的題（學生薄弱處加強用）。 */
+  learningTopic: varchar("learningTopic", { length: 255 }),
+  /** 空值＝全班；有值時只有這位學生看得到（兩個學生的場景常需要「只給阿明」）。 */
+  studentName: varchar("studentName", { length: 24 }),
   dueDate: varchar("dueDate", { length: 10 }),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 }, (table) => ({
