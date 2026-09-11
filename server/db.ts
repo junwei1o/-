@@ -280,11 +280,24 @@ const SEED_QUESTIONS: InsertQuestion[] = (() => {
   );
 })();
 
-export async function ensureQuestionBankReady(): Promise<void> {
+export interface QuestionBankSyncReport {
+  seedCount: number;
+  before: number;
+  missing: number;
+  inserted: number;
+  error?: string;
+}
+
+/**
+ * 啟動時自動佈建題庫，並回報同步結果（供維運端點查詢，避免只能翻日誌）。
+ * 冪等：只補進缺的題目 id，重複執行不會產生重複資料。
+ */
+export async function ensureQuestionBankReady(): Promise<QuestionBankSyncReport> {
+  const seedCount = SEED_QUESTIONS.length;
   const db = await getDb();
   if (!db) {
     console.warn("[Database] DATABASE_URL 未設定，跳過題庫自動佈建（前端仍有內建題庫可離線作答）");
-    return;
+    return { seedCount, before: -1, missing: 0, inserted: 0, error: "DATABASE_URL 未設定" };
   }
 
   for (const statement of ENSURE_TABLE_STATEMENTS) {
@@ -319,7 +332,7 @@ export async function ensureQuestionBankReady(): Promise<void> {
         await db.insert(questionBank).values(chunk);
       }
       console.log(`[Database] 已自動匯入 ${SEED_QUESTIONS.length} 題至 question_bank`);
-      return;
+      return { seedCount, before: 0, missing: SEED_QUESTIONS.length, inserted: SEED_QUESTIONS.length };
     }
 
     // 題庫已存在時改為增量同步：只補進缺的題目 id，讓後續擴充題庫能自動上線，
@@ -330,16 +343,21 @@ export async function ensureQuestionBankReady(): Promise<void> {
 
     if (missing.length === 0) {
       console.log(`[Database] question_bank 已有 ${total} 題，與內建題庫一致，無需補題`);
-      return;
+      return { seedCount, before: total, missing: 0, inserted: 0 };
     }
 
+    let inserted = 0;
     for (let offset = 0; offset < missing.length; offset += 50) {
       const chunk = missing.slice(offset, offset + 50).map((row) => ({ ...row, area: row.area ?? null }));
       await db.insert(questionBank).values(chunk);
+      inserted += chunk.length;
     }
-    console.log(`[Database] 題庫增量同步：補入 ${missing.length} 題（原有 ${total} 題）`);
+    console.log(`[Database] 題庫增量同步：補入 ${inserted} 題（原有 ${total} 題）`);
+    return { seedCount, before: total, missing: missing.length, inserted };
   } catch (err) {
+    const message = (err as Error)?.message ?? String(err);
     console.error("[Database] 題庫自動匯入失敗（前端仍可使用內建題庫）：", err);
+    return { seedCount, before: -1, missing: 0, inserted: 0, error: message };
   }
 }
 

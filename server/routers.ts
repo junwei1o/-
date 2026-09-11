@@ -7,6 +7,7 @@ import {
   createCloudSave,
   getClassRow,
   getCloudSave,
+  ensureQuestionBankReady,
   getQuestionBank,
   insertExamRecord,
   joinClass,
@@ -279,6 +280,15 @@ export const appRouter = router({
         const questions = await getQuestionBank(input ?? {});
         return { questions, total: questions.length };
       }),
+
+    /**
+     * 維運用：回報題庫同步狀態並補齊缺題（冪等，只補 id 不存在的題目）。
+     * 擴充題庫後若啟動時同步失敗，可呼叫此端點重試，不必進主機看日誌。
+     */
+    sync: publicProcedure.mutation(async () => {
+      const report = await ensureQuestionBankReady();
+      return report;
+    }),
   }),
   // 雲端船籍：以孩子自選名字（2–6 字，無密碼）為鍵的免註冊雲端存檔。
   // 內容僅學習進度（金幣/島嶼/徽章/作答統計），不含個資；名字即身分，認船畫面以防誤登。
