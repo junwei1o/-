@@ -139,7 +139,12 @@ export function buildAssignmentDeck(
   const deck: PaperQuestion[] = [];
   if (topic) {
     const inTopic = inSubject.filter((question) => question.learningTopic === topic);
-    deck.push(...take(inTopic, new Set(), size));
+    // 先同年級、再同年段以外：同一個知識點在不同年級都可能有題，
+    // 但對孩子來說，先練他這個年級的說法與難度最剛好。
+    deck.push(...take(inTopic.filter((question) => question.grade === grade), new Set(), size));
+    if (deck.length < size) {
+      deck.push(...take(inTopic, new Set(deck.map((question) => question.id)), size - deck.length));
+    }
   }
   // 指定知識點題目不夠／沒指定知識點：先用同年級，再用同科目補滿。
   if (deck.length < size) {
