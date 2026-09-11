@@ -1,0 +1,228 @@
+/* 潮汐牌局（/tavern/cards）— 桌面場景式版面
+   設計語言：紙感牌桌＋木質桌緣＋潮藍／珊瑚橘行動色，沿用全站 CSS 變數 */
+
+.trump-board,
+.trump-start {
+  --trump-felt: radial-gradient(120% 90% at 50% 0%, #fdf8ee 0%, var(--paper) 45%, var(--paper-deep) 100%);
+  --trump-wood: #7a4f2e;
+  --trump-wood-dark: #5c3d26;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+/* ===== 開局畫面 ===== */
+.trump-start {
+  padding: 26px 22px 30px;
+  border-radius: 18px;
+  border: 3px solid var(--trump-wood);
+  background: var(--trump-felt);
+  box-shadow: 0 6px 20px rgba(92, 61, 38, .16);
+  text-align: center;
+}
+.trump-start h2 { font-family: Fraunces, serif; font-size: 26px; margin: 0 0 10px; letter-spacing: .06em; }
+.trump-start p { margin: 0 auto 18px; max-width: 460px; color: var(--muted); font-size: 14.5px; line-height: 1.65; }
+.trump-start button {
+  padding: 12px 34px; border: none; border-radius: 12px; cursor: pointer;
+  background: var(--coral); color: #fff; font-size: 16px; font-weight: 700;
+  box-shadow: 0 4px 12px rgba(232, 117, 74, .34);
+  transition: transform .16s var(--ease), filter .16s var(--ease);
+}
+.trump-start button:hover { transform: translateY(-2px); filter: brightness(1.06); }
+
+/* ===== 牌桌主體 ===== */
+.trump-board {
+  padding: 16px 16px 22px;
+  border-radius: 18px;
+  border: 3px solid var(--trump-wood);
+  background: var(--trump-felt);
+  box-shadow: 0 6px 22px rgba(92, 61, 38, .18);
+  display: flex; flex-direction: column; gap: 14px;
+}
+
+/* HUD 資訊列 */
+.trump-hud { display: flex; flex-wrap: wrap; gap: 6px; }
+.trump-hud span {
+  font-size: 12px; font-weight: 700; color: var(--ink);
+  background: var(--white); border: 1px solid var(--line);
+  border-radius: 999px; padding: 4px 11px;
+  white-space: nowrap;
+}
+.trump-hud span.is-active { background: var(--yellow); border-color: var(--yellow); color: #4a3410; }
+
+/* 桌面：對手牌堆 → 公共池 → 我方牌堆 */
+.trump-stage {
+  display: grid; grid-template-columns: 1fr auto 1fr;
+  align-items: center; gap: 12px;
+  padding: 14px 12px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(11, 110, 142, .07), rgba(108, 132, 96, .10));
+  border: 1px dashed rgba(92, 61, 38, .28);
+}
+.trump-deck { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.trump-deck-label { font-size: 12px; color: var(--muted); font-weight: 700; }
+.trump-deck-count { font-size: 20px; font-weight: 800; font-family: Fraunces, serif; }
+.trump-deck.is-leader .trump-deck-count { color: var(--coral); }
+
+/* 卡背（純 CSS，不用圖） */
+.trump-card-back {
+  width: 54px; height: 74px; border-radius: 8px;
+  border: 2px solid var(--tidal-deep, #07516A);
+  background:
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, .28) 0 5px, transparent 5px 10px),
+    linear-gradient(160deg, var(--tidal), var(--tidal-deep, #07516A));
+  box-shadow: 0 2px 6px rgba(31, 48, 49, .22);
+  display: grid; place-items: center;
+  color: #fff; font-size: 20px;
+}
+.trump-card-back-stack { position: relative; display: inline-grid; }
+.trump-card-back-stack .trump-card-back:nth-child(2) { position: absolute; top: -4px; left: 4px; z-index: -1; opacity: .55; }
+.trump-card-back-stack .trump-card-back:nth-child(3) { position: absolute; top: -8px; left: 8px; z-index: -2; opacity: .3; }
+
+/* 公共池 */
+.trump-pot { display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 92px; }
+.trump-pot-pile { display: flex; flex-wrap: wrap; justify-content: center; gap: 3px; max-width: 96px; }
+.trump-pot-chip {
+  width: 15px; height: 21px; border-radius: 3px;
+  background: linear-gradient(160deg, var(--yellow), var(--coral));
+  border: 1px solid rgba(92, 61, 38, .4);
+}
+.trump-pot-empty { font-size: 11px; color: var(--muted); }
+
+/* 回合橫幅 */
+.trump-turn {
+  display: flex; align-items: center; gap: 8px;
+  padding: 9px 14px; border-radius: 11px;
+  background: var(--white); border: 1px solid var(--line);
+  font-size: 14px; font-weight: 700;
+}
+.trump-turn.is-player { border-left: 5px solid var(--coral); }
+.trump-turn.is-ai { border-left: 5px solid var(--tidal); }
+
+/* ===== 選屬性 ===== */
+.trump-panel {
+  display: flex; flex-direction: column; gap: 12px;
+  padding: 14px; border-radius: 14px;
+  background: var(--white); border: 1px solid var(--line);
+}
+.trump-panel > p { margin: 0; font-size: 14px; color: var(--muted); }
+
+.trump-card-preview { display: flex; flex-direction: column; gap: 10px; }
+.trump-card-preview > strong {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 16px;
+}
+.trump-card-art {
+  width: 64px; height: 64px; border-radius: 10px; object-fit: cover;
+  font-size: 26px; line-height: 64px; text-align: center;
+  border: 2px solid var(--line); background: var(--paper); flex: 0 0 auto;
+}
+.trump-card-preview .trump-card-art { width: 84px; height: 84px; font-size: 34px; line-height: 84px; }
+
+.trump-stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+.trump-stat-grid button {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  padding: 13px 15px; border-radius: 12px; cursor: pointer;
+  border: 2px solid var(--tidal); background: var(--white); color: var(--tidal-deep, #07516A);
+  font-size: 15px; font-weight: 700;
+  transition: transform .14s var(--ease), background .14s var(--ease), color .14s var(--ease);
+}
+.trump-stat-grid button:hover { transform: translateY(-2px); background: var(--tidal); color: #fff; }
+.trump-stat-grid button b { font-family: Fraunces, serif; font-size: 20px; }
+
+/* ===== 作答 ===== */
+.trump-question-prompt {
+  margin: 0; padding: 12px 14px; border-radius: 11px;
+  background: var(--paper); border-left: 5px solid var(--moss);
+  font-size: 15.5px; line-height: 1.7;
+}
+.trump-options { display: flex; flex-direction: column; gap: 8px; }
+.trump-options button {
+  display: flex; align-items: center; gap: 10px; text-align: left;
+  padding: 12px 14px; border-radius: 11px; cursor: pointer;
+  border: 1px solid var(--line); background: var(--white); color: var(--ink);
+  font-size: 15px; line-height: 1.55;
+  transition: border-color .14s var(--ease), background .14s var(--ease);
+}
+.trump-options button::before {
+  content: attr(data-index);
+  flex: 0 0 auto; width: 26px; height: 26px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: var(--paper-deep); color: var(--ink);
+  font-size: 13px; font-weight: 800;
+}
+.trump-options button:hover { border-color: var(--tidal); background: rgba(11, 110, 142, .07); }
+
+.trump-bonus-choices { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.trump-bonus-choices small { flex: 1 1 100%; color: var(--muted); }
+.trump-bonus-choices button {
+  padding: 9px 16px; border-radius: 10px; cursor: pointer;
+  border: 2px solid var(--yellow); background: var(--white); color: #7a5a12;
+  font-size: 14px; font-weight: 700;
+}
+.trump-bonus-choices button:hover { background: var(--yellow); color: #4a3410; }
+
+/* ===== 揭曉 ===== */
+.trump-reveal-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.trump-reveal-card {
+  display: flex; flex-direction: column; align-items: center; gap: 7px;
+  padding: 13px 11px; border-radius: 13px; text-align: center;
+  background: var(--white); border: 1px solid var(--line);
+}
+.trump-reveal-card > span:first-child { font-size: 12px; color: var(--muted); font-weight: 700; }
+.trump-reveal-art {
+  width: 88px; height: 88px; border-radius: 10px; object-fit: cover;
+  font-size: 34px; line-height: 88px; border: 2px solid var(--line);
+}
+.trump-reveal-card strong { font-size: 14.5px; line-height: 1.4; }
+.trump-reveal-value { font-size: 15px; font-weight: 800; font-family: Fraunces, serif; }
+/* 勝方高亮；平手兩邊都不亮 */
+.trump-reveal-card.is-winner { border-color: var(--yellow); border-width: 3px; background: rgba(232, 184, 75, .14); }
+.trump-reveal-card.is-winner .trump-reveal-value { color: #8a5a00; }
+.trump-boost-badge {
+  font-size: 11px; font-weight: 800; color: #fff; background: var(--coral);
+  border-radius: 999px; padding: 1px 8px;
+}
+.trump-peek {
+  margin: 0; padding: 9px 13px; border-radius: 10px;
+  background: rgba(11, 110, 142, .12); color: var(--tidal-deep, #07516A);
+  font-size: 13.5px; font-weight: 700;
+}
+.trump-draw-note { margin: 0; text-align: center; font-size: 13px; color: var(--muted); }
+
+.trump-panel button.trump-primary {
+  align-self: stretch; padding: 13px; border: none; border-radius: 12px; cursor: pointer;
+  background: var(--coral); color: #fff; font-size: 16px; font-weight: 700;
+  box-shadow: 0 4px 12px rgba(232, 117, 74, .3);
+}
+.trump-panel button.trump-primary:hover { filter: brightness(1.06); }
+
+/* ===== 結束 ===== */
+.trump-finished {
+  display: flex; flex-direction: column; align-items: center; gap: 12px;
+  padding: 24px 18px; border-radius: 15px; text-align: center;
+  background: var(--white); border: 2px solid var(--line);
+}
+.trump-finished h3 { font-family: Fraunces, serif; font-size: 24px; margin: 0; }
+.trump-finished-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+.trump-finished-actions button {
+  padding: 11px 24px; border: none; border-radius: 11px; cursor: pointer;
+  background: var(--tidal); color: #fff; font-size: 15px; font-weight: 700;
+}
+.trump-finished-actions button:hover { filter: brightness(1.07); }
+.trump-back-to-study {
+  padding: 11px 20px; border-radius: 11px; text-decoration: none;
+  border: 2px solid var(--tidal); color: var(--tidal-deep, #07516A);
+  font-size: 15px; font-weight: 700;
+}
+
+/* ===== 手機 ===== */
+@media (max-width: 520px) {
+  .trump-stage { grid-template-columns: 1fr 1fr; grid-template-areas: "ai ai" "pot pot" "me me"; row-gap: 10px; }
+  .trump-reveal-art { width: 76px; height: 76px; font-size: 28px; line-height: 76px; }
+  .trump-board { padding: 13px 12px 18px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .trump-start button, .trump-stat-grid button, .trump-options button { transition: none; }
+  .trump-start button:hover, .trump-stat-grid button:hover { transform: none; }
+}

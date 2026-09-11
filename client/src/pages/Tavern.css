@@ -226,18 +226,6 @@
 .tavern-companion-avatar { font-size: 36px; }
 .tavern-empty { color: var(--muted, #5f6e6a); padding: 20px; text-align: center; }
 
-/* ===== 潮汐牌局（TrumpDuelBoard）：卡牌插畫 ===== */
-.trump-reveal-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.trump-reveal-card {
-  display: flex; flex-direction: column; align-items: center; gap: 6px;
-  padding: 12px; border-radius: 12px; text-align: center;
-  background: var(--white, #fffdf8); border: 1px solid var(--line, #d9d1c2);
-}
-.trump-reveal-art {
-  width: 88px; height: 88px; border-radius: 10px; object-fit: cover;
-  font-size: 34px; line-height: 88px;
-}
-
 /* 無障礙：減少動態 */
 @media (prefers-reduced-motion: reduce) {
   .tavern-lantern, .tavern-fire, .tavern-keeper-bubble, .tavern-bar-overlay { animation: none !important; }
