@@ -29,6 +29,7 @@ import {
 import { getDueReviewQuestionIds, loadAdaptiveProfile, recordAdaptiveAttempt, saveAdaptiveProfile, updateLatestAdaptiveAttempt, type AdaptiveErrorType } from "@/game/adaptiveLearning";
 import { recordRpgAnswer } from "@/game/rpgStorage";
 import { recordExamCloud } from "@/game/cloudSync";
+import { readPendingAssignment, submitAssignmentScore } from "@/game/classPortal";
 import { claimRandomAdventureBonus } from "@/game/randomAdventureBonus";
 import { queueRandomAdventureRouteReward } from "@/game/randomAdventureRouteReward";
 import { rewardForAnswer } from "@/game/rpgRewards";
@@ -281,6 +282,16 @@ export default function PaperExam() {
       });
     } catch {
       // 雲端記錄失敗不影響作答流程。
+    }
+    // 教師作業：若這次是從「我的教室」認領的作業，把成績回報給老師（失敗靜默、下次補報）。
+    const pending = readPendingAssignment();
+    if (pending) {
+      void submitAssignmentScore({
+        assignmentId: pending.assignmentId,
+        studentName: pending.studentName,
+        correctCount: result.correct,
+        totalQuestions: deck.length,
+      });
     }
   }, [allAnswered, deck, result.correct, scope, subjectScope]);
 

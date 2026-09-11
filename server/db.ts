@@ -1,7 +1,24 @@
 import { and, count, desc, eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import mysql from "mysql2/promise";
-import { cloudSaves, examRecords, InsertCloudSave, InsertExamRecord, InsertQuestion, InsertUser, questionBank, users } from "../drizzle/schema";
+import {
+  assignmentSubmissions,
+  assignments,
+  classes,
+  classMembers,
+  cloudSaves,
+  examRecords,
+  InsertAssignment,
+  InsertAssignmentSubmission,
+  InsertClass,
+  InsertClassMember,
+  InsertCloudSave,
+  InsertExamRecord,
+  InsertQuestion,
+  InsertUser,
+  questionBank,
+  users,
+} from "../drizzle/schema";
 import questionSeed from "../data/taiwan_curriculum_500.json";
 import { ENV } from './_core/env';
 
@@ -196,6 +213,42 @@ const ENSURE_TABLE_STATEMENTS = [
     PRIMARY KEY (\`id\`),
     KEY \`exam_records_name_idx\` (\`name\`)
   )`,
+  `CREATE TABLE IF NOT EXISTS \`classes\` (
+    \`code\` varchar(8) NOT NULL,
+    \`name\` varchar(40) NOT NULL,
+    \`teacherName\` varchar(24) NOT NULL,
+    \`createdAt\` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (\`code\`)
+  )`,
+  `CREATE TABLE IF NOT EXISTS \`class_members\` (
+    \`id\` int AUTO_INCREMENT NOT NULL,
+    \`classCode\` varchar(8) NOT NULL,
+    \`studentName\` varchar(24) NOT NULL,
+    \`joinedAt\` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (\`id\`),
+    KEY \`class_members_class_idx\` (\`classCode\`)
+  )`,
+  `CREATE TABLE IF NOT EXISTS \`assignments\` (
+    \`id\` int AUTO_INCREMENT NOT NULL,
+    \`classCode\` varchar(8) NOT NULL,
+    \`subject\` varchar(32) NOT NULL,
+    \`grade\` int NOT NULL,
+    \`questionCount\` int NOT NULL,
+    \`dueDate\` varchar(10),
+    \`createdAt\` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (\`id\`),
+    KEY \`assignments_class_idx\` (\`classCode\`)
+  )`,
+  `CREATE TABLE IF NOT EXISTS \`assignment_submissions\` (
+    \`id\` int AUTO_INCREMENT NOT NULL,
+    \`assignmentId\` int NOT NULL,
+    \`studentName\` varchar(24) NOT NULL,
+    \`correctCount\` int NOT NULL,
+    \`totalQuestions\` int NOT NULL,
+    \`submittedAt\` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (\`id\`),
+    KEY \`assignment_submissions_assignment_idx\` (\`assignmentId\`)
+  )`,
 ];
 
 const ENSURE_COLUMN_STATEMENTS = [
@@ -259,15 +312,32 @@ export async function ensureQuestionBankReady(): Promise<void> {
   try {
     const result = await db.select({ value: count() }).from(questionBank);
     const total = result[0]?.value ?? 0;
-    if (total > 0) {
-      console.log(`[Database] question_bank 已有 ${total} 題，無需匯入`);
+
+    if (total === 0) {
+      for (let offset = 0; offset < SEED_QUESTIONS.length; offset += 50) {
+        const chunk = SEED_QUESTIONS.slice(offset, offset + 50).map((row) => ({ ...row, area: row.area ?? null }));
+        await db.insert(questionBank).values(chunk);
+      }
+      console.log(`[Database] 已自動匯入 ${SEED_QUESTIONS.length} 題至 question_bank`);
       return;
     }
-    for (let offset = 0; offset < SEED_QUESTIONS.length; offset += 50) {
-      const chunk = SEED_QUESTIONS.slice(offset, offset + 50).map((row) => ({ ...row, area: row.area ?? null }));
+
+    // 題庫已存在時改為增量同步：只補進缺的題目 id，讓後續擴充題庫能自動上線，
+    // 同時保留既有資料列（避免每次啟動都重建、也避免打斷線上作答）。
+    const existing = await db.select({ id: questionBank.id }).from(questionBank);
+    const have = new Set(existing.map((row) => row.id));
+    const missing = SEED_QUESTIONS.filter((row) => !have.has(row.id));
+
+    if (missing.length === 0) {
+      console.log(`[Database] question_bank 已有 ${total} 題，與內建題庫一致，無需補題`);
+      return;
+    }
+
+    for (let offset = 0; offset < missing.length; offset += 50) {
+      const chunk = missing.slice(offset, offset + 50).map((row) => ({ ...row, area: row.area ?? null }));
       await db.insert(questionBank).values(chunk);
     }
-    console.log(`[Database] 已自動匯入 ${SEED_QUESTIONS.length} 題至 question_bank`);
+    console.log(`[Database] 題庫增量同步：補入 ${missing.length} 題（原有 ${total} 題）`);
   } catch (err) {
     console.error("[Database] 題庫自動匯入失敗（前端仍可使用內建題庫）：", err);
   }
@@ -321,4 +391,130 @@ export async function listExamRecords(name: string, limit = 10) {
     .where(eq(examRecords.name, name))
     .orderBy(desc(examRecords.id))
     .limit(Math.min(Math.max(limit, 1), 50));
+}
+
+/* ---------- 教師端：班級與作業 ---------- */
+
+/** 產生 6 位班級碼（去掉容易看錯的 0/O/1/I）。 */
+function generateClassCode(): string {
+  const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  let code = "";
+  for (let i = 0; i < 6; i += 1) {
+    code += alphabet[Math.floor(Math.random() * alphabet.length)];
+  }
+  return code;
+}
+
+/** 建立班級；班級碼重複時重試，回傳新班級或 null。 */
+export async function createClass(name: string, teacherName: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    const code = generateClassCode();
+    const existing = await db.select({ code: classes.code }).from(classes).where(eq(classes.code, code)).limit(1);
+    if (existing.length > 0) continue;
+    await db.insert(classes).values({ code, name, teacherName });
+    return { code, name, teacherName };
+  }
+  return null;
+}
+
+/** 讀取班級資料。 */
+export async function getClassRow(code: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  const rows = await db.select().from(classes).where(eq(classes.code, code)).limit(1);
+  return rows[0] ?? null;
+}
+
+/** 加入班級；已在同一班級時回傳 duplicated。 */
+export async function joinClass(code: string, studentName: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  const target = await getClassRow(code);
+  if (!target) return { ok: false as const, reason: "notFound" as const };
+  const existing = await db
+    .select({ id: classMembers.id })
+    .from(classMembers)
+    .where(and(eq(classMembers.classCode, code), eq(classMembers.studentName, studentName)))
+    .limit(1);
+  if (existing.length > 0) return { ok: false as const, reason: "duplicated" as const };
+  await db.insert(classMembers).values({ classCode: code, studentName });
+  return { ok: true as const, className: target.name };
+}
+
+/** 列出班級成員。 */
+export async function listClassMembers(code: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  return db.select().from(classMembers).where(eq(classMembers.classCode, code)).orderBy(classMembers.joinedAt);
+}
+
+/** 新增作業。 */
+export async function createAssignment(row: InsertAssignment) {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  const result = await db.insert(assignments).values(row);
+  const insertId = (result as unknown as [{ insertId?: number }])[0]?.insertId ?? 0;
+  return { id: Number(insertId) };
+}
+
+/** 列出班級作業（新的在前）。 */
+export async function listAssignments(code: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  return db.select().from(assignments).where(eq(assignments.classCode, code)).orderBy(desc(assignments.id)).limit(50);
+}
+
+/** 繳交作業（同一份作業重複繳交時以最新成績覆寫）。 */
+export async function submitAssignment(row: InsertAssignmentSubmission) {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  const existing = await db
+    .select({ id: assignmentSubmissions.id })
+    .from(assignmentSubmissions)
+    .where(
+      and(
+        eq(assignmentSubmissions.assignmentId, row.assignmentId),
+        eq(assignmentSubmissions.studentName, row.studentName),
+      ),
+    )
+    .limit(1);
+  if (existing.length > 0) {
+    await db
+      .update(assignmentSubmissions)
+      .set({ correctCount: row.correctCount, totalQuestions: row.totalQuestions })
+      .where(eq(assignmentSubmissions.id, existing[0].id));
+    return { id: existing[0].id, updated: true as const };
+  }
+  const result = await db.insert(assignmentSubmissions).values(row);
+  const insertId = (result as unknown as [{ insertId?: number }])[0]?.insertId ?? 0;
+  return { id: Number(insertId), updated: false as const };
+}
+
+/** 列出某份作業的所有繳交紀錄。 */
+export async function listSubmissions(assignmentId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  return db.select().from(assignmentSubmissions).where(eq(assignmentSubmissions.assignmentId, assignmentId));
+}
+
+/** 學生已加入的班級（取最近一筆）。 */
+export async function listClassesOfStudent(studentName: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  const rows = await db
+    .select({ classCode: classMembers.classCode })
+    .from(classMembers)
+    .where(eq(classMembers.studentName, studentName))
+    .orderBy(desc(classMembers.id))
+    .limit(10);
+  const codes = Array.from(new Set(rows.map((row) => row.classCode)));
+  if (codes.length === 0) return [];
+  const found = [];
+  for (const code of codes) {
+    const row = await getClassRow(code);
+    if (row) found.push({ code: row.code, name: row.name, teacherName: row.teacherName });
+  }
+  return found;
 }

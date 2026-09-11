@@ -17,12 +17,25 @@ type Bank = {
   }>;
 };
 
-describe("正式 500 題題庫", () => {
+describe("正式題庫", () => {
   it("具備完整數量與唯一題目 ID", async () => {
     const bank = JSON.parse(await readFile(new URL("../data/taiwan_curriculum_500.json", import.meta.url), "utf8")) as Bank;
-    expect(bank.questionCount).toBe(500);
-    expect(bank.questions).toHaveLength(500);
-    expect(new Set(bank.questions.map((question) => question.id)).size).toBe(500);
+    // 題庫會持續擴充，因此不斷言固定題數，只要求：宣告數與實際一致、
+    // 達到擴充後的規模下限，且 ID 與題目都唯一。
+    expect(bank.questionCount).toBe(bank.questions.length);
+    expect(bank.questions.length).toBeGreaterThanOrEqual(900);
+    expect(new Set(bank.questions.map((question) => question.id)).size).toBe(bank.questions.length);
+  });
+
+  it("每個知識點至少四題，避免重複感", async () => {
+    const bank = JSON.parse(await readFile(new URL("../data/taiwan_curriculum_500.json", import.meta.url), "utf8")) as Bank;
+    const counts = new Map<string, number>();
+    for (const question of bank.questions) {
+      const key = `${question.subject}/${question.learningTopic}`;
+      counts.set(key, (counts.get(key) ?? 0) + 1);
+    }
+    const thin = [...counts.entries()].filter(([, count]) => count < 4);
+    expect(thin).toEqual([]);
   });
 
   it("每題都有四個選項、有效答案與課綱 metadata", async () => {

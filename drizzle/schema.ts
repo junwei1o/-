@@ -88,3 +88,62 @@ export const examRecords = mysqlTable("exam_records", {
 
 export type ExamRecord = typeof examRecords.$inferSelect;
 export type InsertExamRecord = typeof examRecords.$inferInsert;
+
+/* ---------- 教師端：班級、成員、作業 ---------- */
+
+/** 班級：以 6 位班級碼作為主鍵，老師與學生都靠這組碼相認。 */
+export const classes = mysqlTable("classes", {
+  code: varchar("code", { length: 8 }).primaryKey(),
+  name: varchar("name", { length: 40 }).notNull(),
+  teacherName: varchar("teacherName", { length: 24 }).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type ClassRow = typeof classes.$inferSelect;
+export type InsertClass = typeof classes.$inferInsert;
+
+/** 班級成員：學生的雲端船籍名字加入班級的對應關係。 */
+export const classMembers = mysqlTable("class_members", {
+  id: int("id").autoincrement().primaryKey(),
+  classCode: varchar("classCode", { length: 8 }).notNull(),
+  studentName: varchar("studentName", { length: 24 }).notNull(),
+  joinedAt: timestamp("joinedAt").defaultNow().notNull(),
+}, (table) => ({
+  classIdx: index("class_members_class_idx").on(table.classCode),
+  uniqueMember: index("class_members_unique_idx").on(table.classCode, table.studentName),
+}));
+
+export type ClassMember = typeof classMembers.$inferSelect;
+export type InsertClassMember = typeof classMembers.$inferInsert;
+
+/** 作業：老師指派給某班級的一份練習（科目＋年級＋題數＋截止日）。 */
+export const assignments = mysqlTable("assignments", {
+  id: int("id").autoincrement().primaryKey(),
+  classCode: varchar("classCode", { length: 8 }).notNull(),
+  subject: varchar("subject", { length: 32 }).notNull(),
+  grade: int("grade").notNull(),
+  questionCount: int("questionCount").notNull(),
+  dueDate: varchar("dueDate", { length: 10 }),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+}, (table) => ({
+  classIdx: index("assignments_class_idx").on(table.classCode),
+}));
+
+export type Assignment = typeof assignments.$inferSelect;
+export type InsertAssignment = typeof assignments.$inferInsert;
+
+/** 作業繳交紀錄：一位學生對一份作業的成績。 */
+export const assignmentSubmissions = mysqlTable("assignment_submissions", {
+  id: int("id").autoincrement().primaryKey(),
+  assignmentId: int("assignmentId").notNull(),
+  studentName: varchar("studentName", { length: 24 }).notNull(),
+  correctCount: int("correctCount").notNull(),
+  totalQuestions: int("totalQuestions").notNull(),
+  submittedAt: timestamp("submittedAt").defaultNow().notNull(),
+}, (table) => ({
+  assignmentIdx: index("assignment_submissions_assignment_idx").on(table.assignmentId),
+  uniqueSubmission: index("assignment_submissions_unique_idx").on(table.assignmentId, table.studentName),
+}));
+
+export type AssignmentSubmission = typeof assignmentSubmissions.$inferSelect;
+export type InsertAssignmentSubmission = typeof assignmentSubmissions.$inferInsert;

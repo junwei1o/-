@@ -1,7 +1,23 @@
 import { COOKIE_NAME } from "@shared/const";
 import { z } from "zod";
 import { invokeLLM } from "./_core/llm";
-import { createCloudSave, getCloudSave, getQuestionBank, insertExamRecord, listExamRecords, updateCloudSave } from "./db";
+import {
+  createAssignment,
+  createClass,
+  createCloudSave,
+  getClassRow,
+  getCloudSave,
+  getQuestionBank,
+  insertExamRecord,
+  joinClass,
+  listAssignments,
+  listClassMembers,
+  listClassesOfStudent,
+  listExamRecords,
+  listSubmissions,
+  submitAssignment,
+  updateCloudSave,
+} from "./db";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router } from "./_core/trpc";
@@ -344,6 +360,155 @@ export const appRouter = router({
             correctCount: row.correctCount,
             createdAt: row.createdAt instanceof Date ? row.createdAt.getTime() : Date.now(),
           })),
+        };
+      }),
+  }),
+  teacher: router({
+    /** 建立班級並取得 6 位班級碼。 */
+    createClass: publicProcedure
+      .input(z.object({
+        name: z.string().trim().min(1, "請填班級名稱").max(40),
+        teacherName: z.string().trim().min(1, "請填老師稱呼").max(24),
+      }))
+      .mutation(async ({ input }) => {
+        const created = await createClass(input.name, input.teacherName);
+        if (!created) return { ok: false as const, reason: "retry" as const };
+        return { ok: true as const, ...created };
+      }),
+
+    /** 以班級碼讀取班級（老師看板用）。 */
+    getClass: publicProcedure
+      .input(z.object({ code: z.string().trim().min(4).max(8) }))
+      .query(async ({ input }) => {
+        const row = await getClassRow(input.code.trim().toUpperCase());
+        if (!row) return { ok: false as const, reason: "notFound" as const };
+        return {
+          ok: true as const,
+          classInfo: {
+            code: row.code,
+            name: row.name,
+            teacherName: row.teacherName,
+            createdAt: row.createdAt instanceof Date ? row.createdAt.getTime() : Date.now(),
+          },
+        };
+      }),
+
+    /** 學生加入班級。 */
+    joinClass: publicProcedure
+      .input(z.object({
+        code: z.string().trim().min(4).max(8),
+        studentName: cloudNameSchema,
+      }))
+      .mutation(async ({ input }) => joinClass(input.code.trim().toUpperCase(), input.studentName)),
+
+    /** 學生查詢自己已加入的班級。 */
+    myClasses: publicProcedure
+      .input(z.object({ studentName: cloudNameSchema }))
+      .query(async ({ input }) => ({ classes: await listClassesOfStudent(input.studentName) })),
+
+    /** 老師指派作業。 */
+    createAssignment: publicProcedure
+      .input(z.object({
+        classCode: z.string().trim().min(4).max(8),
+        subject: z.enum(["國語", "數學", "自然", "社會", "綜合課綱"]),
+        grade: z.number().int().min(3).max(6),
+        questionCount: z.number().int().min(5).max(30),
+        dueDate: z.string().trim().max(10).optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const code = input.classCode.trim().toUpperCase();
+        const target = await getClassRow(code);
+        if (!target) return { ok: false as const, reason: "notFound" as const };
+        const created = await createAssignment({
+          classCode: code,
+          subject: input.subject,
+          grade: input.grade,
+          questionCount: input.questionCount,
+          dueDate: input.dueDate ?? null,
+        });
+        return { ok: true as const, id: created.id };
+      }),
+
+    /** 列出班級作業。 */
+    listAssignments: publicProcedure
+      .input(z.object({ classCode: z.string().trim().min(4).max(8) }))
+      .query(async ({ input }) => {
+        const rows = await listAssignments(input.classCode.trim().toUpperCase());
+        return {
+          assignments: rows.map((row) => ({
+            id: row.id,
+            subject: row.subject,
+            grade: row.grade,
+            questionCount: row.questionCount,
+            dueDate: row.dueDate,
+            createdAt: row.createdAt instanceof Date ? row.createdAt.getTime() : Date.now(),
+          })),
+        };
+      }),
+
+    /** 繳交作業成績。 */
+    submitAssignment: publicProcedure
+      .input(z.object({
+        assignmentId: z.number().int().positive(),
+        studentName: cloudNameSchema,
+        correctCount: z.number().int().min(0),
+        totalQuestions: z.number().int().positive(),
+      }))
+      .mutation(async ({ input }) => {
+        if (input.correctCount > input.totalQuestions) return { ok: false as const, reason: "invalidScore" as const };
+        await submitAssignment({
+          assignmentId: input.assignmentId,
+          studentName: input.studentName,
+          correctCount: input.correctCount,
+          totalQuestions: input.totalQuestions,
+        });
+        return { ok: true as const };
+      }),
+
+    /** 班級報表：成員 × 作業的完成與正確率矩陣。 */
+    classReport: publicProcedure
+      .input(z.object({ classCode: z.string().trim().min(4).max(8) }))
+      .query(async ({ input }) => {
+        const code = input.classCode.trim().toUpperCase();
+        const target = await getClassRow(code);
+        if (!target) return { ok: false as const, reason: "notFound" as const };
+        const [members, homework] = await Promise.all([listClassMembers(code), listAssignments(code)]);
+        const submissionLists = await Promise.all(homework.map((item) => listSubmissions(item.id)));
+
+        const students = members.map((member) => {
+          const scores = homework.map((item, index) => {
+            const hit = submissionLists[index].find((row) => row.studentName === member.studentName);
+            return {
+              assignmentId: item.id,
+              done: Boolean(hit),
+              correctCount: hit?.correctCount ?? 0,
+              totalQuestions: hit?.totalQuestions ?? item.questionCount,
+            };
+          });
+          const doneCount = scores.filter((score) => score.done).length;
+          const correctSum = scores.reduce((sum, score) => sum + score.correctCount, 0);
+          const totalSum = scores.reduce((sum, score) => sum + score.totalQuestions, 0);
+          return {
+            studentName: member.studentName,
+            joinedAt: member.joinedAt instanceof Date ? member.joinedAt.getTime() : Date.now(),
+            doneCount,
+            assignmentCount: homework.length,
+            accuracy: totalSum > 0 ? Math.round((correctSum / totalSum) * 100) : 0,
+            scores,
+          };
+        });
+
+        return {
+          ok: true as const,
+          classInfo: { code: target.code, name: target.name, teacherName: target.teacherName },
+          assignments: homework.map((item) => ({
+            id: item.id,
+            subject: item.subject,
+            grade: item.grade,
+            questionCount: item.questionCount,
+            dueDate: item.dueDate,
+          })),
+          students,
         };
       }),
   }),

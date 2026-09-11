@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Accessibility, AlertTriangle, BarChart3, BookMarked, Clipboard, Crown, Download, Lock, LockOpen, Palette, RefreshCw, Settings as SettingsIcon, Ship, Sparkles, Trash2, UserRound, Volume2 } from "lucide-react";
+import { Accessibility, AlertTriangle, BarChart3, BookMarked, Clipboard, Crown, Download, Lock, LockOpen, Palette, RefreshCw, School, Settings as SettingsIcon, Ship, Sparkles, Trash2, UserRound, Volume2 } from "lucide-react";
 import { toast } from "sonner";
 import { useLocation } from "wouter";
 import {
@@ -464,6 +464,15 @@ export default function Settings() {
           <div className="settings-audio-heading"><span className="settings-page-icon" aria-hidden="true"><BarChart3 size={20} /></span><div><p className="settings-eyebrow">學習成效</p><h2 id="learning-report-link-title">學習分析報告</h2></div></div>
           <p className="settings-log-description">查看各科正確率、弱項標籤、每日答題量，設定本週目標並列印學習報告。</p>
           <button type="button" className="settings-primary-button" onClick={() => setLocation("/learning-report")}>開啟學習報告</button>
+        </section>
+
+        <section className="settings-audio-card settings-report-link-card" aria-labelledby="classroom-link-title">
+          <div className="settings-audio-heading"><span className="settings-page-icon" aria-hidden="true"><School size={20} /></span><div><p className="settings-eyebrow">班級</p><h2 id="classroom-link-title">教室</h2></div></div>
+          <p className="settings-log-description">老師可建立班級、指派作業並查看班級報表；學生用班級碼加入並完成作業。</p>
+          <div className="settings-cloud-actions">
+            <button type="button" className="settings-primary-button" onClick={() => setLocation("/class")}>我的教室（學生）</button>
+            <button type="button" className="settings-secondary-button" onClick={() => setLocation("/teacher")}>班級教室（老師）</button>
+          </div>
         </section>
 
         <ParentLearningView />
