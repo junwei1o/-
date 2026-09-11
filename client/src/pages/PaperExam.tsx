@@ -40,6 +40,7 @@ import { recordAnalyticsEvent } from "@/utils/storage";
 import { loadPaperStrategyCueEnabled, playPaperStrategyCue, savePaperStrategyCueEnabled } from "@/lib/paperExamStrategyCue";
 import { useLocation } from "wouter";
 import "./PaperExamAltitude.css";
+import "./PaperExam.css";
 
 function toAdaptiveDifficulty(difficulty: string): "基礎" | "標準" | "挑戰" {
   return difficulty === "挑戰" ? "挑戰" : difficulty === "標準" ? "標準" : "基礎";
