@@ -1,10 +1,206 @@
-.tavern-page { max-width: 720px; margin: 0 auto; padding: 24px 16px; }
-.tavern-hero h1 { font-family: Fraunces, serif; font-size: clamp(26px, 4vw, 36px); }
-.tavern-gold { font-weight: 700; }
-.tavern-entries { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 20px 0; }
-.tavern-entry { display: flex; flex-direction: column; gap: 6px; padding: 16px; border-radius: 14px; border: 1px solid rgba(0,0,0,.08); background: #fff; text-align: left; cursor: pointer; transition: transform .15s; }
-.tavern-entry:hover { transform: translateY(-2px); }
+/* 燈塔酒館 — 場景式版面 */
+.tavern-page {
+  --tavern-wood-dark: #5c3d26;
+  --tavern-wood: #7a4f2e;
+  --tavern-wood-light: #9a6a3e;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 18px 16px 40px;
+  background: linear-gradient(180deg, var(--paper-deep, #efe6d7) 0%, var(--paper, #f9f3e8) 40%);
+  border-radius: 18px;
+  min-height: 80vh;
+  position: relative;
+  overflow: hidden;
+}
+
+/* 招牌＋燈籠 */
+.tavern-signboard {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  background: linear-gradient(180deg, var(--tavern-wood-dark), var(--tavern-wood));
+  border-radius: 14px;
+  color: var(--yellow, #e8b84b);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, .18);
+}
+.tavern-title {
+  flex: 1 1 auto;
+  text-align: center;
+  font-family: Fraunces, serif;
+  font-size: clamp(24px, 4.5vw, 34px);
+  letter-spacing: .12em;
+  margin: 0;
+}
+.tavern-gold { font-weight: 700; white-space: nowrap; font-size: 14px; }
+.tavern-lantern { font-size: 30px; display: inline-block; transform-origin: top center; animation: lantern-sway 3s ease-in-out infinite; }
+@keyframes lantern-sway { 0%,100% { transform: rotate(-6deg); } 50% { transform: rotate(6deg); } }
+
+/* 窗＋酒瓶木層架（純裝飾） */
+.tavern-window-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 18px 6px;
+  opacity: .9;
+}
+.tavern-window {
+  font-size: 26px;
+  filter: drop-shadow(0 2px 4px rgba(11, 110, 142, .35));
+}
+.tavern-shelf { font-size: 20px; letter-spacing: 2px; }
+
+/* 場景熱點 */
+.tavern-hotspots {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin: 16px 0;
+}
+.tavern-hotspot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 16px 10px;
+  border-radius: 14px;
+  border: 2px solid var(--tavern-wood);
+  background: var(--white, #fffdf8);
+  color: var(--ink, #1f3031);
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform .16s var(--ease), box-shadow .16s var(--ease);
+}
+.tavern-hotspot:hover { transform: translateY(-3px); box-shadow: 0 6px 16px rgba(92, 61, 38, .25); }
+.tavern-hotspot-icon { font-size: 30px; }
+.tavern-hotspot strong { font-size: 16px; }
+.tavern-hotspot small { color: var(--muted, #5f6e6a); font-size: 12px; }
+
+/* 壁爐＋吧檯老闆 */
+.tavern-bar-zone {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 8px 0 16px;
+  padding: 16px;
+  background: linear-gradient(180deg, transparent, rgba(92, 61, 38, .12));
+  border-radius: 14px;
+  border: 1px solid var(--tavern-wood-light);
+}
+.tavern-fireplace { font-size: 40px; line-height: 1; }
+.tavern-fire { display: inline-block; animation: fire-flicker 1.4s ease-in-out infinite; }
+@keyframes fire-flicker { 0%,100% { opacity: 1; transform: scale(1); } 45% { opacity: .7; transform: scale(.94); } 70% { opacity: .85; transform: scale(1.04); } }
+
+.tavern-counter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 12px;
+  border: 2px solid var(--tavern-wood-dark);
+  background: linear-gradient(180deg, var(--tavern-wood-light), var(--tavern-wood));
+  color: var(--white, #fffdf8);
+  cursor: pointer;
+  font-size: 15px;
+  transition: transform .16s var(--ease);
+}
+.tavern-counter:hover { transform: translateY(-2px); }
+.tavern-keeper { font-size: 28px; }
+.tavern-counter-mug { font-size: 20px; }
+
+/* 老闆對話氣泡 */
+.tavern-keeper-bubble {
+  position: relative;
+  margin: 0 0 14px;
+  padding: 10px 14px;
+  background: var(--white, #fffdf8);
+  border: 1.5px solid var(--coral, #e8754a);
+  border-radius: 12px;
+  color: var(--ink, #1f3031);
+  font-size: 14px;
+  animation: bubble-in .3s var(--ease);
+}
+@keyframes bubble-in { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+
+/* 壁爐角夥伴 */
+.tavern-companions h2 { font-family: Fraunces, serif; font-size: 20px; margin: 0 0 10px; }
+
+/* 返回學習區 */
+.tavern-back-to-study { text-align: center; margin: 22px 0 0; color: var(--muted, #5f6e6a); font-size: 14px; }
+.tavern-link-button {
+  background: none; border: none; color: var(--tidal, #0b6e8e); font-weight: 700; cursor: pointer; text-decoration: underline; padding: 0;
+}
+
+/* ===== 吧檯面板（TavernBar） ===== */
+.tavern-bar-overlay {
+  position: fixed; inset: 0; z-index: 60;
+  background: rgba(31, 48, 49, .55);
+  display: flex; align-items: flex-end; justify-content: center;
+  animation: bubble-in .2s var(--ease);
+}
+.tavern-bar-panel {
+  width: min(560px, 94vw);
+  max-height: 84vh; overflow-y: auto;
+  background: var(--paper, #f9f3e8);
+  border-radius: 16px 16px 0 0;
+  border-top: 4px solid var(--tavern-wood);
+  padding: 20px 18px 24px;
+  position: relative;
+  box-shadow: 0 -8px 28px rgba(0, 0, 0, .2);
+}
+.tavern-bar-close {
+  position: absolute; top: 12px; right: 14px;
+  border: none; background: rgba(0,0,0,.06); border-radius: 50%;
+  width: 32px; height: 32px; cursor: pointer; font-size: 15px;
+}
+.tavern-bar-section { padding: 10px 0; border-bottom: 1px dashed var(--line, #d9d1c2); }
+.tavern-bar-section:last-child { border-bottom: none; }
+.tavern-bar-section h3 { margin: 0 0 8px; font-size: 16px; }
+.tavern-keeper-greeting { margin: 0; color: var(--ink); }
+.tavern-pack-price { margin: 0 0 8px; color: var(--muted); font-size: 13px; }
+.tavern-buy-button {
+  padding: 8px 18px; border-radius: 10px; border: none; cursor: pointer;
+  background: var(--coral, #e8754a); color: #fff; font-weight: 700;
+}
+.tavern-buy-button:hover { filter: brightness(1.08); }
+.tavern-pack-result { display: grid; gap: 8px; }
+.tavern-pack-card {
+  display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 8px;
+  padding: 8px 12px; border-radius: 10px; background: var(--white, #fffdf8);
+  border-left: 5px solid var(--moss, #6c8460);
+}
+.tavern-pack-card.rarity-rare { border-left-color: var(--tidal, #0b6e8e); }
+.tavern-pack-card.rarity-legendary { border-left-color: var(--yellow, #e8b84b); }
+.tavern-pack-emoji { font-size: 22px; }
+.tavern-pack-card small { display: block; color: var(--muted); }
+.tavern-pack-stats { font-size: 11px; color: var(--muted); }
+.tavern-pack-claim { margin-top: 6px; padding: 8px 16px; border-radius: 10px; border: 1px solid var(--tidal, #0b6e8e); background: var(--white, #fffdf8); color: var(--tidal, #0b6e8e); cursor: pointer; }
+
+.tavern-chapter-guide { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.tavern-chapter-guide li {
+  display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 10px;
+  padding: 8px 12px; border-radius: 10px; background: var(--white, #fffdf8);
+}
+.tavern-chapter-guide li.is-done { opacity: .7; }
+.tavern-chapter-guide li.is-done small { color: var(--moss, #6c8460); }
+.tavern-chapter-icon { font-size: 22px; }
+.tavern-chapter-go {
+  padding: 6px 12px; border-radius: 8px; border: none; cursor: pointer;
+  background: var(--tidal, #0b6e8e); color: #fff; font-size: 13px;
+}
+
+/* ===== 夥伴小屋（沿用既有 class） ===== */
 .tavern-companion-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
-.tavern-companion-card { display: flex; flex-direction: column; gap: 4px; padding: 12px; border-radius: 12px; background: #f7f9fb; }
+.tavern-companion-card {
+  display: flex; flex-direction: column; gap: 4px; padding: 12px; border-radius: 12px;
+  background: var(--paper-deep, #efe6d7); border-left: 4px solid var(--coral, #e8754a);
+}
 .tavern-companion-avatar { font-size: 36px; }
-.tavern-empty { color: var(--muted, #666); padding: 24px; text-align: center; }
+.tavern-empty { color: var(--muted, #5f6e6a); padding: 20px; text-align: center; }
+
+/* 無障礙：減少動態 */
+@media (prefers-reduced-motion: reduce) {
+  .tavern-lantern, .tavern-fire, .tavern-keeper-bubble, .tavern-bar-overlay { animation: none !important; }
+  .tavern-hotspot:hover, .tavern-counter:hover { transform: none; }
+}

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { Link } from "wouter";
 import { useQuestionBank } from "@/lib/questionBank";
 import { ALL_CARDS, STAT_LABELS, type CardStat } from "@/game/trumpCardData";
 import {
@@ -183,6 +184,7 @@ export default function TrumpDuelBoard() {
         <div className="trump-finished">
           <h3>{state.result === "victory" ? "🏆 勝利！" : state.result === "defeat" ? "💔 落敗" : "🤝 平手"}</h3>
           <button onClick={start}>再戰一局</button>
+          <Link className="trump-back-to-study" href="/practice">回去答題</Link>
         </div>
       )}
     </div>

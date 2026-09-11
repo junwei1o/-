@@ -1,4 +1,5 @@
 import React, { useMemo } from "react";
+import { useLocation } from "wouter";
 import { loadRpgState } from "@/game/rpgStorage";
 import { affectionLevel } from "@/game/companionGrowth";
 import type { Rarity } from "@/game/rpgTypes";
@@ -16,10 +17,18 @@ const RARITY_EMOJI: Record<Rarity, string> = {
 };
 
 export function TavernCompanion() {
+  const [, setLocation] = useLocation();
   const state = useMemo(() => loadRpgState(), []);
   const companions = state.companions ?? [];
   if (companions.length === 0) {
-    return <div className="tavern-empty">還沒有夥伴，去答題戰鬥招募第一位冒險夥伴吧！</div>;
+    return (
+      <div className="tavern-empty">
+        壁爐邊還有空位……去答題戰鬥招募第一位夥伴吧！
+        <div>
+          <button className="tavern-link-button" onClick={() => setLocation("/battle")}>前往戰鬥</button>
+        </div>
+      </div>
+    );
   }
   return (
     <div className="tavern-companion-list">
