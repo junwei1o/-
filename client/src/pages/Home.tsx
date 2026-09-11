@@ -468,7 +468,16 @@ export default function Home() {
         const question = questions.find((item) => item.subject === quizSubject);
         return question ? <QuizModal question={question} subject={quizSubject} onClose={() => setQuizSubject(null)} onCompleted={refreshLearningData} /> : null;
       })() : null}
-      <DailySignInModal open={showGoldSignIn} onClose={() => { setShowGoldSignIn(false); setPlayerData(getPlayerData()); }} />
+      <DailySignInModal
+        open={showGoldSignIn}
+        onClose={() => {
+          setShowGoldSignIn(false);
+          // 簽到在彈窗裡完成，首頁的金幣與簽到卡要跟著更新，
+          // 否則卡片會停在「今天回來留下足跡 · 0 天」，和彈窗的連續天數互相矛盾。
+          setPlayerData(getPlayerData());
+          setDailySignIn(getDailySignIn());
+        }}
+      />
     </main>
   );
 }
