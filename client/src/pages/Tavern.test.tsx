@@ -42,6 +42,29 @@ describe("Tavern page", () => {
     expect(screen.getByRole("dialog", { name: "吧檯老闆" })).toBeTruthy();
   });
 
+  it("吧檯面板可按 Esc 關閉", () => {
+    render(<Tavern />);
+    fireEvent.click(screen.getByLabelText("老闆吧檯"));
+    expect(screen.getByRole("dialog", { name: "吧檯老闆" })).toBeTruthy();
+    fireEvent.keyDown(window, { key: "Escape" });
+    expect(screen.queryByRole("dialog", { name: "吧檯老闆" })).toBeNull();
+  });
+
+  it("顯示下一步目標提示", () => {
+    render(<Tavern />);
+    // 新玩家未簽到 → 提示去簽到（新手贈卡氣泡同樣是 status，故用 getAllByRole）
+    const statuses = screen.getAllByRole("status").map((el) => el.textContent ?? "");
+    expect(statuses.some((text) => text.includes("簽到"))).toBe(true);
+  });
+
+  it("吧檯面板的簽到按鈕可開啟每日簽到視窗", () => {
+    render(<Tavern />);
+    fireEvent.click(screen.getByLabelText("老闆吧檯"));
+    const signInButton = screen.getByRole("button", { name: /領取今日/ });
+    fireEvent.click(signInButton);
+    expect(screen.getByRole("dialog", { name: /留下今天的探險足跡/ })).toBeTruthy();
+  });
+
   it("首次進入自動贈送新手卡並寫入一次性標記", () => {
     render(<Tavern />);
     expect(localStorage.getItem(STARTER_KEY)).toBe("1");

@@ -1,10 +1,12 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { useLocation } from "wouter";
+import { Link, useLocation } from "wouter";
 import TavernBar from "@/components/TavernBar";
+import { DailySignInModal } from "@/components/DailySignInModal";
 import { TavernCompanion } from "@/components/TavernCompanion";
 import { addCardToCollection, getCardCollection } from "@/game/cardCollection";
-import { STARTER_KEY, grantStarterCards, type KeeperContext } from "@/game/tavernKeeper";
+import { STARTER_KEY, grantStarterCards, nextTavernGoal, type KeeperContext } from "@/game/tavernKeeper";
+import { hasSignedInToday, loadSignInState, rewardOfCycleDay, cycleDayOf } from "@/game/dailySignIn";
 import { ALL_CHAPTERS } from "@/game/adventureChapters";
 import { bxStore } from "@/game/bxStore";
 import { getPlayerData, getLimitedTitles } from "@/utils/storage";
@@ -21,7 +23,19 @@ export default function Tavern() {
   const [, setLocation] = useLocation();
   const [barOpen, setBarOpen] = useState(false);
   const [firstVisit, setFirstVisit] = useState(false);
+  const [signInOpen, setSignInOpen] = useState(false);
   const player = getPlayerData();
+  // 金幣用 state 維護：吧檯／簽到視窗關閉時重讀，避免消費後顯示過期
+  const [gold, setGold] = useState(player.gold);
+
+  // 簽到狀態：面板或簽到視窗開合時重讀（領取後要變「已簽到」）
+  const signInState = useMemo(() => loadSignInState(), [barOpen, signInOpen]);
+  const signedInToday = useMemo(() => hasSignedInToday(signInState), [signInState]);
+  const signInReward = rewardOfCycleDay(cycleDayOf(signInState.streak + (signedInToday ? 0 : 1)));
+
+  useEffect(() => {
+    if (!barOpen && !signInOpen) setGold(getPlayerData().gold);
+  }, [barOpen, signInOpen]);
 
   // 首次進入酒館自動贈送新手卡
   useEffect(() => {
@@ -45,7 +59,20 @@ export default function Tavern() {
       ownedCardCount: collection.ownedCardIds.length,
       uncompletedChapters,
     };
-  }, [player.totalAnswers]);
+    // barOpen 作為依賴：每次開吧檯重算問候（買卡包後收藏數會變）
+  }, [player.totalAnswers, barOpen]);
+
+  // 下一步目標：讓玩家進酒館就知道該做什麼
+  const goal = useMemo(
+    () =>
+      nextTavernGoal({
+        gold,
+        signedInToday,
+        signInReward,
+        uncompletedChapters: keeperContext.uncompletedChapters,
+      }),
+    [gold, signedInToday, signInReward, keeperContext.uncompletedChapters],
+  );
 
   return (
     <main className="tavern-page">
@@ -54,8 +81,11 @@ export default function Tavern() {
         <span className="tavern-lantern tavern-lantern--left" aria-hidden="true">🏮</span>
         <h1 className="tavern-title">燈塔酒館</h1>
         <span className="tavern-lantern tavern-lantern--right" aria-hidden="true">🏮</span>
-        <span className="tavern-gold" aria-label="金幣">💰 {player.gold}</span>
+        <span className="tavern-gold" aria-label="金幣">💰 {gold}</span>
       </header>
+
+      {/* 下一步目標提示 */}
+      <p className="tavern-next-goal" role="status">{goal.text}</p>
 
       {/* 窗＋酒瓶木層架（純裝飾） */}
       <div className="tavern-window-row" aria-hidden="true">
@@ -80,11 +110,11 @@ export default function Tavern() {
           <strong>壁爐角</strong>
           <small>夥伴小屋</small>
         </a>
-        <a className="tavern-hotspot tavern-hotspot--titles" href="/badges" aria-label="稱號牆">
+        <Link className="tavern-hotspot tavern-hotspot--titles" href="/badges" aria-label="稱號牆">
           <span className="tavern-hotspot-icon" aria-hidden="true">🏅</span>
           <strong>稱號牆</strong>
           <small>限定稱號</small>
-        </a>
+        </Link>
       </div>
 
       {/* 壁爐＋吧檯老闆 */}
@@ -117,7 +147,20 @@ export default function Tavern() {
         📚 今天學夠了嗎？<button className="tavern-link-button" onClick={() => setLocation("/practice")}>回去答題賺金幣</button>
       </p>
 
-      <TavernBar open={barOpen} onClose={() => setBarOpen(false)} keeperContext={keeperContext} />
+      <TavernBar
+        open={barOpen}
+        onClose={() => setBarOpen(false)}
+        keeperContext={keeperContext}
+        signedInToday={signedInToday}
+        signInStreak={signInState.streak}
+        signInReward={signInReward}
+        onOpenSignIn={() => {
+          setBarOpen(false);
+          setSignInOpen(true);
+        }}
+      />
+
+      <DailySignInModal open={signInOpen} onClose={() => setSignInOpen(false)} />
     </main>
   );
 }

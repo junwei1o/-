@@ -36,6 +36,18 @@
 .tavern-lantern { font-size: 30px; display: inline-block; transform-origin: top center; animation: lantern-sway 3s ease-in-out infinite; }
 @keyframes lantern-sway { 0%,100% { transform: rotate(-6deg); } 50% { transform: rotate(6deg); } }
 
+/* 下一步目標提示 */
+.tavern-next-goal {
+  margin: 12px 0 0;
+  padding: 9px 14px;
+  border-radius: 10px;
+  background: rgba(232, 184, 75, .16);
+  border-left: 4px solid var(--yellow, #e8b84b);
+  color: var(--ink, #1f3031);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
 /* 窗＋酒瓶木層架（純裝飾） */
 .tavern-window-row {
   display: flex;
@@ -159,6 +171,15 @@
 .tavern-bar-section h3 { margin: 0 0 8px; font-size: 16px; }
 .tavern-keeper-greeting { margin: 0; color: var(--ink); }
 .tavern-pack-price { margin: 0 0 8px; color: var(--muted); font-size: 13px; }
+.tavern-pack-hint { margin: 0 0 8px; color: var(--coral, #e8754a); font-size: 13px; }
+
+/* 今日簽到區 */
+.tavern-signin-button {
+  padding: 8px 18px; border-radius: 10px; border: none; cursor: pointer;
+  background: var(--yellow, #e8b84b); color: #4a3410; font-weight: 700;
+}
+.tavern-signin-button:hover { filter: brightness(1.06); }
+.tavern-signin-done { margin: 0; color: var(--moss, #6c8460); font-size: 13px; }
 .tavern-buy-button {
   padding: 8px 18px; border-radius: 10px; border: none; cursor: pointer;
   background: var(--coral, #e8754a); color: #fff; font-weight: 700;

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { useLocation } from "wouter";
 import { ALL_CHAPTERS } from "@/game/adventureChapters";
@@ -20,25 +20,51 @@ type TavernBarProps = {
   onClose: () => void;
   /** 注入問候所需的狀態；Tavern 負責組裝 */
   keeperContext: KeeperContext;
+  /** 今日是否已簽到（Tavern 讀 dailySignIn 後傳入） */
+  signedInToday: boolean;
+  /** 連續簽到天數，已簽到時顯示 */
+  signInStreak: number;
+  /** 今日簽到可領金幣 */
+  signInReward: number;
+  /** 開啟每日簽到視窗（由 Tavern 掛載既有 DailySignInModal） */
+  onOpenSignIn: () => void;
 };
 
 /**
  * 吧檯面板：頁內彈層。三區——老闆的話、卡包商店、冒險引導。
  * 開包結果以翻面卡片展示，按「收下」關閉。
  */
-export default function TavernBar({ open, onClose, keeperContext }: TavernBarProps) {
+export default function TavernBar({
+  open,
+  onClose,
+  keeperContext,
+  signedInToday,
+  signInStreak,
+  signInReward,
+  onOpenSignIn,
+}: TavernBarProps) {
   const [, setLocation] = useLocation();
   const [packResult, setPackResult] = useState<ReturnType<typeof openCardPack> | null>(null);
 
   const greeting = useMemo(() => greetKeeper(keeperContext), [keeperContext]);
   const ownedTitles = useMemo(() => getLimitedTitles(), [open, packResult]);
 
+  // Esc 鍵關閉吧檯（鍵盤使用者需要可預期的退出路徑）
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open, onClose]);
+
   if (!open) return null;
 
   function handleBuyPack() {
     const player = getPlayerData();
     if (player.gold < CARD_PACK_GOLD_COST) {
-      toast.warning(`金幣不足，還差 ${CARD_PACK_GOLD_COST - player.gold} 枚。`);
+      toast.warning(`金幣不足，還差 ${CARD_PACK_GOLD_COST - player.gold} 枚——打一局牌局 +15，或先簽到領金幣。`);
       return;
     }
     updatePlayerData({ gold: player.gold - CARD_PACK_GOLD_COST });
@@ -58,8 +84,24 @@ export default function TavernBar({ open, onClose, keeperContext }: TavernBarPro
         </section>
 
         <section className="tavern-bar-section">
+          <h3>📅 今日簽到</h3>
+          {signedInToday ? (
+            <p className="tavern-signin-done">今天已簽到 · 連續 {signInStreak} 天，明天再來。</p>
+          ) : (
+            <button className="tavern-signin-button" onClick={onOpenSignIn}>
+              領取今日 {signInReward} 金幣
+            </button>
+          )}
+        </section>
+
+        <section className="tavern-bar-section">
           <h3>📦 卡包商店</h3>
           <p className="tavern-pack-price">一包 {CARD_PACK_GOLD_COST} 金幣 · 你有 {getPlayerData().gold} 金幣</p>
+          {!packResult && getPlayerData().gold < CARD_PACK_GOLD_COST && (
+            <p className="tavern-pack-hint">
+              還差 {CARD_PACK_GOLD_COST - getPlayerData().gold} 枚——打一局牌局 +15，或先簽到領金幣。
+            </p>
+          )}
           {packResult ? (
             <div className="tavern-pack-result">
               {packResult.map((card) => {

@@ -70,3 +70,38 @@ export function grantStarterCards(rng: () => number = Math.random): string[] | n
   }
   return picks;
 }
+
+/** 酒館「下一步」提示所需的狀態（全部由呼叫端注入，便於單測） */
+export type TavernGoalContext = {
+  gold: number;
+  signedInToday: boolean;
+  /** 今日簽到可領金幣（未簽到時顯示用） */
+  signInReward: number;
+  uncompletedChapters: number;
+};
+
+export type TavernGoal = {
+  key: "signin" | "pack" | "adventure" | "study";
+  text: string;
+};
+
+/**
+ * 酒館下一步目標：依優先序挑一件最該做的事，避免玩家進酒館後無所適從。
+ * 優先序：今日未簽到 → 金幣夠開卡包 → 有未解章節 → 都好（提示賺金幣）。
+ */
+export function nextTavernGoal(ctx: TavernGoalContext): TavernGoal {
+  if (!ctx.signedInToday) {
+    return { key: "signin", text: `💰 今天還沒簽到——去吧檯領 ${ctx.signInReward} 金幣` };
+  }
+  if (ctx.gold >= CARD_PACK_GOLD_COST) {
+    return { key: "pack", text: `📦 金幣夠了！去吧檯開一包卡（${CARD_PACK_GOLD_COST} 金幣）` };
+  }
+  const short = Math.max(0, CARD_PACK_GOLD_COST - ctx.gold);
+  if (ctx.uncompletedChapters > 0) {
+    return {
+      key: "adventure",
+      text: `📜 佈告欄還有 ${ctx.uncompletedChapters} 個任務——或答題賺金幣（離卡包還差 ${short} 枚）`,
+    };
+  }
+  return { key: "study", text: `🃏 離下一包卡還差 ${short} 金幣——答題或牌局都能賺` };
+}

@@ -6,6 +6,7 @@ import {
   STARTER_KEY,
   greetKeeper,
   grantStarterCards,
+  nextTavernGoal,
   type KeeperContext,
 } from "./tavernKeeper";
 
@@ -85,5 +86,41 @@ describe("tavernKeeper - 常數", () => {
 
   it("STARTER_KEY 採用 xue- 慣例", () => {
     expect(STARTER_KEY).toMatch(/^xue-/);
+  });
+});
+
+describe("tavernKeeper - nextTavernGoal", () => {
+  it("未簽到時優先提示簽到，並帶出可領金幣", () => {
+    const goal = nextTavernGoal({ gold: 100, signedInToday: false, signInReward: 8, uncompletedChapters: 2 });
+    expect(goal.key).toBe("signin");
+    expect(goal.text).toContain("8");
+  });
+
+  it("已簽到且金幣足夠時提示開卡包", () => {
+    const goal = nextTavernGoal({ gold: 30, signedInToday: true, signInReward: 8, uncompletedChapters: 2 });
+    expect(goal.key).toBe("pack");
+    expect(goal.text).toContain(String(CARD_PACK_GOLD_COST));
+  });
+
+  it("金幣不足且有未解章節時提示佈告欄與金幣差距", () => {
+    const goal = nextTavernGoal({ gold: 10, signedInToday: true, signInReward: 8, uncompletedChapters: 1 });
+    expect(goal.key).toBe("adventure");
+    expect(goal.text).toContain("15");
+  });
+
+  it("金幣不足且無未解章節時提示賺金幣", () => {
+    const goal = nextTavernGoal({ gold: 0, signedInToday: true, signInReward: 8, uncompletedChapters: 0 });
+    expect(goal.key).toBe("study");
+    expect(goal.text).toContain(String(CARD_PACK_GOLD_COST));
+  });
+
+  it("金幣剛好等於售價視為可購買", () => {
+    const goal = nextTavernGoal({
+      gold: CARD_PACK_GOLD_COST,
+      signedInToday: true,
+      signInReward: 8,
+      uncompletedChapters: 0,
+    });
+    expect(goal.key).toBe("pack");
   });
 });
