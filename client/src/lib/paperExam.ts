@@ -86,25 +86,27 @@ export function buildPersonalizedPaperDeck(
 ) {
   const prefs = loadUserPreferences();
   const hasUserPrefs = prefs.updatedAt > 0 && (prefs.gradeLevel !== 4 || prefs.difficultyPreference !== "均衡混合");
-  
-  let filteredQuestions = questions;
-  
+
+  // 年級過濾一律生效（±1 年級浮動）：即使使用者保持預設值（四年級＋均衡混合），
+  // 也不應混入超出範圍的年級題目。
+  const scopeFiltered = scope === "綜合課綱" ? questions : questions.filter((q) => q.subject === scope);
+  const gradePool = filterQuestionsByGrade(scopeFiltered, prefs);
+
+  let filteredQuestions: typeof questions;
+
   if (hasUserPrefs) {
-    // 有用戶偏好：按年級 + 難度篩選
+    // 有用戶偏好：在年級池內按難度篩選
     const userAllowedDifficulties = getTargetDifficultiesFromPrefs(prefs);
     const adaptiveTargets = profile ? targetDifficulties(profile, questions as any) : userAllowedDifficulties;
     const finalTargets = adaptiveTargets.filter(d => userAllowedDifficulties.includes(d));
     const effectiveDifficulties = finalTargets.length > 0 ? finalTargets : userAllowedDifficulties;
 
-    const scopeFiltered = scope === "綜合課綱" ? questions : questions.filter((q) => q.subject === scope);
-    const gradeFiltered = filterQuestionsByGrade(scopeFiltered, prefs);
-    const difficultyFiltered = gradeFiltered.filter((q) => effectiveDifficulties.includes(q.difficulty as any));
-    filteredQuestions = difficultyFiltered.length >= Math.min(size, gradeFiltered.length) ? difficultyFiltered : gradeFiltered;
+    const difficultyFiltered = gradePool.filter((q) => effectiveDifficulties.includes(q.difficulty as any));
+    filteredQuestions = difficultyFiltered.length >= Math.min(size, gradePool.length) ? difficultyFiltered : gradePool;
   } else {
-    // 無用戶偏好：最難的排最前面
-    const scopeFiltered = scope === "綜合課綱" ? questions : questions.filter((q) => q.subject === scope);
+    // 無用戶偏好：年級池內最難的排最前面
     const difficultyOrder = { "挑戰": 3, "標準": 2, "基礎": 1 };
-    filteredQuestions = [...scopeFiltered].sort((a, b) => 
+    filteredQuestions = [...gradePool].sort((a, b) => 
       (difficultyOrder[b.difficulty as keyof typeof difficultyOrder] ?? 0) - 
       (difficultyOrder[a.difficulty as keyof typeof difficultyOrder] ?? 0)
     );

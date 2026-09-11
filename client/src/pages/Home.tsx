@@ -301,7 +301,7 @@ export default function Home() {
           <div>
             <p className="home-dashboard-eyebrow">TAIWAN EXPEDITION STATUS</p>
             <h1>{getPlayerName()}，{selectedTitle ? titleLabel(selectedTitle) : rankFromAnswers(answerCount)}</h1>
-            <p>已留下 {answerCount} 次真實作答線索 · 下一次升階正在前方</p>
+            <p>學習足跡 {answerCount} 筆 · 下一次升階正在前方</p>
             <div className="home-dashboard-progress" role="progressbar" aria-label="目前等級經驗值" aria-valuemin={0} aria-valuemax={100} aria-valuenow={progress}><span style={{ width: `${progress}%` }} /></div>
           </div>
           <div className="home-dashboard-status-side">

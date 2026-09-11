@@ -367,6 +367,9 @@ export function clockDistractors(correct: string): string[] {
 export function embeddedNumberDistractors(prompt: string, options: readonly string[], correct: string): string[] {
   if (isEnumStylePrompt(prompt, options)) return [];
   if (!/[一-龥]/.test(correct)) return [];
+  // 判斷句（「每戶1人最多只有120人，未達200人」）內含算術約束，擾動任一數字
+  // 都會讓句子自相矛盾（如「每戶2人……最多只有120人」），必須整題跳過。
+  if (/最多(只有|只能)|至少(要|需要)|未達/.test(correct)) return [];
   const numberMatches = Array.from(correct.matchAll(/\d+/g));
   if (numberMatches.length === 0) return [];
   const existing = new Set(options);

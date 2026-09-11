@@ -158,6 +158,10 @@
 }
 
 .home-dashboard-action:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(46, 90, 76, 0.16); }
+
+/* 錯題重練頁：科目按鈕垂直堆疊，避免行動版擠在一行 */
+.wrong-answers-page .paper-exam-panel { display: flex; flex-direction: column; gap: 10px; }
+.wrong-answers-page .paper-exam-panel .home-dashboard-action { width: 100%; text-align: left; padding: 12px 16px; }
 .home-dashboard-action:active { transform: scale(0.97); }
 .home-dashboard-action.primary { color: #fff; border-color: transparent; background: linear-gradient(135deg, #ff6b35, #ff8a5c); }
 .home-dashboard-action small { display: block; margin-top: 2px; font-weight: 600; opacity: 0.84; }
