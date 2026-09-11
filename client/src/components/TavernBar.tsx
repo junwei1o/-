@@ -3,6 +3,7 @@ import { toast } from "sonner";
 import { useLocation } from "wouter";
 import { ALL_CHAPTERS } from "@/game/adventureChapters";
 import { openCardPack } from "@/game/cardCollection";
+import CardArt from "@/components/CardArt";
 import { CARD_PACK_GOLD_COST, greetKeeper, type KeeperContext } from "@/game/tavernKeeper";
 import { getCardById } from "@/game/trumpCardData";
 import { getPlayerData, getLimitedTitles, updatePlayerData } from "@/utils/storage";
@@ -108,7 +109,7 @@ export default function TavernBar({
                 const def = getCardById(card.id);
                 return (
                   <div key={card.id} className={`tavern-pack-card rarity-${card.rarity}`}>
-                    <span className="tavern-pack-emoji">{card.emoji}</span>
+                    <CardArt cardId={card.id} emoji={card.emoji} name={card.name} className="tavern-pack-art" />
                     <strong>{card.name}</strong>
                     <small>{card.theme}</small>
                     {def && (

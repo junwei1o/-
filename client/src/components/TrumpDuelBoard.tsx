@@ -15,6 +15,7 @@ import {
   type TrumpState,
 } from "@/game/trumpDuel";
 import { getCardCollection, maybeDropUnownedCard, recordCardDuelResult } from "@/game/cardCollection";
+import CardArt from "@/components/CardArt";
 import { getPlayerData, updatePlayerData } from "@/utils/storage";
 
 const HAND_SIZE = 8;
@@ -166,11 +167,13 @@ export default function TrumpDuelBoard() {
           <div className="trump-reveal-cards">
             <div className="trump-reveal-card">
               <span>我方</span>
+              {playerTop && <CardArt cardId={playerTop.id} emoji={playerTop.emoji} name={playerTop.name} className="trump-reveal-art" />}
               <strong>{playerTop?.emoji} {playerTop?.name}</strong>
               <span>{state.pendingStat ? STAT_LABELS[state.pendingStat] : ""}：{state.pendingStat ? playerTop?.stats[state.pendingStat] : "?"}{state.pendingBoost ? " +2" : ""}</span>
             </div>
             <div className="trump-reveal-card">
               <span>對手</span>
+              {aiTop && <CardArt cardId={aiTop.id} emoji={aiTop.emoji} name={aiTop.name} className="trump-reveal-art" />}
               <strong>{aiTop?.emoji} {aiTop?.name}</strong>
               <span>{state.pendingStat ? STAT_LABELS[state.pendingStat] : ""}：{state.pendingStat ? aiTop?.stats[state.pendingStat] : "?"}</span>
             </div>

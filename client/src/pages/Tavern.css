@@ -194,6 +194,12 @@
 .tavern-pack-card.rarity-rare { border-left-color: var(--tidal, #0b6e8e); }
 .tavern-pack-card.rarity-legendary { border-left-color: var(--yellow, #e8b84b); }
 .tavern-pack-emoji { font-size: 22px; }
+/* 卡牌插畫（載入失敗時回退 emoji，兩種元素共用尺寸） */
+.tavern-pack-art {
+  width: 46px; height: 46px; flex: 0 0 auto;
+  border-radius: 8px; object-fit: cover;
+  font-size: 22px; line-height: 46px; text-align: center;
+}
 .tavern-pack-card small { display: block; color: var(--muted); }
 .tavern-pack-stats { font-size: 11px; color: var(--muted); }
 .tavern-pack-claim { margin-top: 6px; padding: 8px 16px; border-radius: 10px; border: 1px solid var(--tidal, #0b6e8e); background: var(--white, #fffdf8); color: var(--tidal, #0b6e8e); cursor: pointer; }
@@ -219,6 +225,18 @@
 }
 .tavern-companion-avatar { font-size: 36px; }
 .tavern-empty { color: var(--muted, #5f6e6a); padding: 20px; text-align: center; }
+
+/* ===== 潮汐牌局（TrumpDuelBoard）：卡牌插畫 ===== */
+.trump-reveal-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.trump-reveal-card {
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  padding: 12px; border-radius: 12px; text-align: center;
+  background: var(--white, #fffdf8); border: 1px solid var(--line, #d9d1c2);
+}
+.trump-reveal-art {
+  width: 88px; height: 88px; border-radius: 10px; object-fit: cover;
+  font-size: 34px; line-height: 88px;
+}
 
 /* 無障礙：減少動態 */
 @media (prefers-reduced-motion: reduce) {
