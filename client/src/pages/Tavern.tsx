@@ -115,6 +115,11 @@ export default function Tavern() {
           <strong>稱號牆</strong>
           <small>限定稱號</small>
         </Link>
+        <button className="tavern-hotspot tavern-hotspot--album" onClick={() => setLocation("/tavern/collection")}>
+          <span className="tavern-hotspot-icon" aria-hidden="true">📖</span>
+          <strong>卡冊</strong>
+          <small>已收集 {keeperContext.ownedCardCount} / 20 張</small>
+        </button>
       </div>
 
       {/* 壁爐＋吧檯老闆 */}

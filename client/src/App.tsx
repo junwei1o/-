@@ -41,6 +41,7 @@ const Settings = React.lazy(() => import("@/pages/Settings"));
 const StudyTips = React.lazy(() => import("@/pages/StudyTips"));
 const GuardianExpedition = React.lazy(() => import("@/pages/GuardianExpedition"));
 const Tavern = React.lazy(() => import("@/pages/Tavern"));
+const CardCollection = React.lazy(() => import("@/pages/CardCollection"));
 const TeacherDashboard = React.lazy(() => import("@/pages/TeacherDashboard"));
 const StudentClass = React.lazy(() => import("@/pages/StudentClass"));
 const TrumpDuelBoard = React.lazy(() => import("@/components/TrumpDuelBoard"));
@@ -91,6 +92,7 @@ function Router() {
         <Route path={"/tavern"} component={Tavern} />
         <Route path={"/tavern/cards"} component={() => <TrumpDuelBoard />} />
         <Route path={"/tavern/adventure"} component={() => <AdventureViewer />} />
+        <Route path={"/tavern/collection"} component={CardCollection} />
         <Route path={"/error-statistics"} component={ErrorTypeStatistics} />
         <Route path={"/learning-summary"} component={TeacherParentSummary} />
         <Route path={"/settings"} component={Settings} />

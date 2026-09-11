@@ -87,6 +87,16 @@
 .tavern-hotspot-icon { font-size: 30px; }
 .tavern-hotspot strong { font-size: 16px; }
 .tavern-hotspot small { color: var(--muted, #5f6e6a); font-size: 12px; }
+/* 卡冊：第五個熱點，橫跨整列呈「書架」感 */
+.tavern-hotspot--album {
+  grid-column: 1 / -1;
+  flex-direction: row;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px 10px;
+  background: linear-gradient(180deg, var(--white, #fffdf8), var(--paper-deep, #efe6d7));
+}
+.tavern-hotspot--album .tavern-hotspot-icon { font-size: 26px; }
 
 /* 壁爐＋吧檯老闆 */
 .tavern-bar-zone {
