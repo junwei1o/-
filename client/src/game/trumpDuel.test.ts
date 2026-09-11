@@ -95,4 +95,36 @@ describe("trump duel engine", () => {
     const settled = settleTrumpRound(state);
     expect(settled.result).toBe("draw");
   });
+
+  it("偷看情報持續到下一輪選屬性（不再結算時無條件重置）", () => {
+    const strong = { id: "x-1", name: "強", theme: "數學" as const, rarity: "common" as const, stats: { power: 10, wisdom: 1, speed: 1, charm: 1 }, emoji: "💪", flavor: "" };
+    const weak = { id: "x-2", name: "弱", theme: "數學" as const, rarity: "common" as const, stats: { power: 1, wisdom: 1, speed: 1, charm: 1 }, emoji: "🐌", flavor: "" };
+    let state = beginTrumpDuel([strong, strong], [weak, weak]);
+    state = chooseTrumpStat(state, "power");
+    state = applyTrumpAnswer(state, true, "peek");
+    // 結算後：情報仍在，phase 回到 choose-stat
+    const settled = settleTrumpRound(state);
+    expect(settled.phase).toBe("choose-stat");
+    expect(settled.peekRevealed).toBe(true);
+  });
+
+  it("選屬性時消耗偷看情報（用過即焚）", () => {
+    const strong = { id: "x-1", name: "強", theme: "數學" as const, rarity: "common" as const, stats: { power: 10, wisdom: 1, speed: 1, charm: 1 }, emoji: "💪", flavor: "" };
+    const weak = { id: "x-2", name: "弱", theme: "數學" as const, rarity: "common" as const, stats: { power: 1, wisdom: 1, speed: 1, charm: 1 }, emoji: "🐌", flavor: "" };
+    let state = beginTrumpDuel([strong, strong], [weak, weak]);
+    state = chooseTrumpStat(state, "power");
+    state = applyTrumpAnswer(state, true, "peek");
+    state = settleTrumpRound(state);
+    expect(state.peekRevealed).toBe(true);
+    // 玩家在下一輪選屬性時消耗情報
+    state = chooseTrumpStat(state, "speed");
+    expect(state.peekRevealed).toBe(false);
+  });
+
+  it("答錯偷看不產生情報", () => {
+    let state = freshState();
+    state = chooseTrumpStat(state, "power");
+    const wrongPeek = applyTrumpAnswer(state, false, "peek");
+    expect(wrongPeek.peekRevealed).toBe(false);
+  });
 });

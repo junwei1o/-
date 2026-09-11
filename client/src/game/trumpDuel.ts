@@ -36,7 +36,8 @@ export function beginTrumpDuel(playerDeck: CardDef[], aiDeck: CardDef[], startLe
 
 export function chooseTrumpStat(state: TrumpState, stat: CardStat): TrumpState {
   if (state.phase !== "choose-stat") throw new Error("非 choose-stat 階段");
-  return { ...state, pendingStat: stat, phase: "answer" };
+  // 玩家做出選屬性決策後，偷看情報即消耗完畢（一次性情報，用過即焚）
+  return { ...state, pendingStat: stat, phase: "answer", peekRevealed: false };
 }
 
 export function applyTrumpAnswer(state: TrumpState, correct: boolean, choice: AnswerChoice): TrumpState {
@@ -95,7 +96,9 @@ export function settleTrumpRound(state: TrumpState): TrumpState {
     round: state.round + 1,
     phase: "choose-stat",
     pendingStat: null,
-    peekRevealed: false,
+    // 偷看情報持續到下一輪「選屬性」階段：玩家答對選 peek 後，能看到對手下一張頂牌再選屬性。
+    // 不再在結算時無條件重置——情報的真正價值在「選屬性前知道對手牌」。
+    peekRevealed: state.peekRevealed,
     pendingBoost: false,
   };
   if (playerDeck.length === 0 || aiDeck.length === 0) {

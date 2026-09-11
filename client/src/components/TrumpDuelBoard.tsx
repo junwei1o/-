@@ -185,6 +185,24 @@ export default function TrumpDuelBoard() {
                   <small> （{playerTop.theme}）</small>
                 </span>
               </strong>
+
+              {/* 偷看情報：選屬性前就能看到對手頂牌，讓決策不再盲選 */}
+              {state.peekRevealed && aiTop && (
+                <div className="trump-peek-intel" role="status">
+                  <span aria-hidden="true">👁️</span>
+                  <div>
+                    <strong>對手這輪的牌：{aiTop.name}</strong>
+                    <span className="trump-peek-intel-stats">
+                      {(Object.keys(STAT_LABELS) as CardStat[]).map((stat) => (
+                        <em key={stat}>
+                          {STAT_LABELS[stat]} {aiTop.stats[stat]}
+                        </em>
+                      ))}
+                    </span>
+                  </div>
+                </div>
+              )}
+
               <div className="trump-stat-grid">
                 {(Object.keys(STAT_LABELS) as CardStat[]).map((stat) => (
                   <button key={stat} onClick={() => chooseStat(stat)}>
@@ -265,7 +283,9 @@ export default function TrumpDuelBoard() {
             </div>
           </div>
           {winner === "draw" && <p className="trump-draw-note">數值相同——兩張牌都進公共池，下一局贏回來！</p>}
-          {state.peekRevealed && <p className="trump-peek">👁️ 你偷看了對方的牌！</p>}
+          {state.peekRevealed && (
+            <p className="trump-peek">👁️ 你已偷看情報——下一輪選屬性前，會先看到對手的牌！</p>
+          )}
           <button className="trump-primary" onClick={reveal}>揭曉勝負</button>
         </div>
       )}
