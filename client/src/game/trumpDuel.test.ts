@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { applyTrumpAnswer, beginTrumpDuel, chooseTrumpStat, settleTrumpRound, type CardDef, type TrumpState } from "./trumpDuel";
+import { aiChooseStat, applyTrumpAnswer, beginTrumpDuel, chooseTrumpStat, settleTrumpRound, type CardDef, type TrumpState } from "./trumpDuel";
 import { getCardById } from "./trumpCardData";
 
 const D = (id: string): CardDef => getCardById(id)!;
@@ -126,5 +126,30 @@ describe("trump duel engine", () => {
     state = chooseTrumpStat(state, "power");
     const wrongPeek = applyTrumpAnswer(state, false, "peek");
     expect(wrongPeek.peekRevealed).toBe(false);
+  });
+});
+
+describe("trump duel - AI 選牌", () => {
+  const top = { id: "ai-top", name: "AI", theme: "數學" as const, rarity: "common" as const, stats: { power: 9, wisdom: 3, speed: 2, charm: 1 }, emoji: "🤖", flavor: "" };
+
+  it("隨機值 >= 0.3 時選最優屬性", () => {
+    expect(aiChooseStat([top], () => 0.5)).toBe("power");
+    expect(aiChooseStat([top], () => 0.99)).toBe("power");
+  });
+
+  it("隨機值 < 0.3 時從「非最優」屬性中選，絕不落回最優", () => {
+    // 固定 random 序列：第一次 0.1（進入隨機分支）、第二次 0（others[0]）
+    const call = (() => {
+      let i = 0;
+      const seq = [0.1, 0];
+      return () => seq[i++ % seq.length];
+    })();
+    const picked = aiChooseStat([top], call);
+    expect(picked).not.toBe("power"); // 隨機分支不得選最優（power）
+    expect(["wisdom", "speed", "charm"]).toContain(picked);
+  });
+
+  it("空牌堆回退 power", () => {
+    expect(aiChooseStat([], () => 0.5)).toBe("power");
   });
 });

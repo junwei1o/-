@@ -126,7 +126,15 @@ export function aiChooseStat(deck: CardDef[], random: () => number = Math.random
   if (!top) return "power";
   const stats: CardStat[] = ["power", "wisdom", "speed", "charm"];
   const best = stats.reduce((acc, stat) => (top.stats[stat] > top.stats[acc] ? stat : acc), "power" as CardStat);
-  return random() < 0.3 ? stats[Math.floor(random() * stats.length)] ?? best : best;
+
+  // 乾淨的二分：一次 random 決定「最優 vs 隨機」，隨機那支從「非最優」的三個屬性中選，
+  // 避免「隨機」又落回最優（原 bug 調用兩次 random，實際隨機率遠低於意圖的 30%）。
+  if (random() < 0.3) {
+    const others = stats.filter((stat) => stat !== best);
+    const pick = Math.floor(random() * others.length);
+    return others[pick] ?? best;
+  }
+  return best;
 }
 
 export function aiAnswerCorrect(difficulty: number, seed: number): boolean {
