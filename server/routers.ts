@@ -348,6 +348,8 @@ export const appRouter = router({
         totalQuestions: z.number().int().min(1).max(100),
         correctCount: z.number().int().min(0).max(100),
         detail: z.unknown().optional(),
+        /** 同一份試卷的識別碼：帶了就是覆蓋更新（學生補標錯誤原因時會再報一次）。 */
+        sessionKey: z.string().trim().min(1).max(160).optional(),
       }).refine((v) => v.correctCount <= v.totalQuestions, { message: "correctCount exceeds totalQuestions" }))
       .mutation(async ({ input }) => {
         await insertExamRecord({
@@ -358,6 +360,7 @@ export const appRouter = router({
           totalQuestions: input.totalQuestions,
           correctCount: input.correctCount,
           detail: input.detail ?? null,
+          sessionKey: input.sessionKey ?? null,
         });
         return { ok: true as const };
       }),
@@ -590,8 +593,15 @@ export const appRouter = router({
 
         type TopicStat = { subject: string; topic: string; total: number; wrong: number };
         const stats = new Map<string, TopicStat>();
+        // 錯誤歸因：學生自評的「為什麼錯」。正確率只看得出「哪裡不會」，
+        // 這裡才看得出「為什麼不會」——粗心與概念不清，老師該給的幫助完全不同。
+        const errorCounts: Record<string, number> = { concept: 0, careless: 0, memory: 0 };
+        let errorTagged = 0;
+
         for (const row of recent) {
-          const detail = row.detail as { topics?: Array<{ subject?: string; topic?: string; correct?: boolean }> } | null;
+          const detail = row.detail as {
+            topics?: Array<{ subject?: string; topic?: string; correct?: boolean; errorType?: string | null }>;
+          } | null;
           for (const item of detail?.topics ?? []) {
             if (!item?.topic) continue;
             const subject = item.subject ?? row.subject;
@@ -600,6 +610,15 @@ export const appRouter = router({
             current.total += 1;
             if (!item.correct) current.wrong += 1;
             stats.set(key, current);
+
+            const taggedType = item.errorType;
+            if (
+              !item.correct &&
+              (taggedType === "concept" || taggedType === "careless" || taggedType === "memory")
+            ) {
+              errorCounts[taggedType] += 1;
+              errorTagged += 1;
+            }
           }
         }
         const weakTopics = Array.from(stats.values())
@@ -607,12 +626,20 @@ export const appRouter = router({
           .sort((a, b) => b.wrong / b.total - a.wrong / a.total || b.wrong - a.wrong)
           .slice(0, 5);
 
+        // 依數量排序的錯誤歸因（只回有值的），供老師端顯示「這孩子多數是粗心還是真不懂」。
+        const errorPatterns = (["concept", "careless", "memory"] as const)
+          .map((type) => ({ type, count: errorCounts[type] }))
+          .filter((item) => item.count > 0)
+          .sort((a, b) => b.count - a.count);
+
         return {
           exams: recent.length,
           totalQuestions,
           correctCount,
           accuracy: totalQuestions > 0 ? Math.round((correctCount / totalQuestions) * 100) : 0,
           weakTopics,
+          errorPatterns,
+          errorTaggedWrong: errorTagged,
         };
       }),
 

@@ -29,7 +29,7 @@ import {
 import { getRareMonsters } from "@/game/expeditionContent";
 import { getJournalEntries } from "@/game/adventureJournal";
 import ParentLearningView from "@/components/ParentLearningView";
-import { FontSizeController } from "@/components/FontSizeController";
+import { ReadingScaleControl } from "@/components/ReadingScaleControl";
 import BackupPanel from "@/components/bx/BackupPanel";
 import { CloudSyncSettings } from "@/components/CloudModePrompt";
 import PrefsPanel from "@/components/bx/PrefsPanel";
@@ -444,8 +444,7 @@ export default function Settings() {
           <label className="settings-analytics-toggle"><span><strong>動畫簡化</strong><small>{accessibilityPrefs.reducedAnimation ? "特效將以短暫淡入淡出呈現" : "保留一般移動、旋轉與粒子效果"}</small></span><input type="checkbox" role="switch" checked={accessibilityPrefs.reducedAnimation} onChange={(event) => handleAccessibilityUpdate({ reducedAnimation: event.target.checked })} /></label>
           <p className="settings-log-description" role="status">目前採用{{ low: "低", medium: "中", high: "高" }[accessibilityPrefs.effectIntensity]}強度特效；{accessibilityPrefs.reducedAnimation ? "動畫已簡化。" : "一般動畫已啟用。"}</p>
           <div className="settings-font-size-block">
-            <p className="settings-log-description">覺得字體太小或想看起來更輕鬆嗎？調整後整個網站的文字都會跟著放大或縮小，設定會自動儲存在這台裝置。</p>
-            <FontSizeController />
+            <ReadingScaleControl />
           </div>
         </section>
 

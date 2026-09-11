@@ -6,11 +6,12 @@ import { createRoot } from "react-dom/client";
 import superjson from "superjson";
 import App from "./App";
 import { startLogin } from "./const";
-import { initFontSize } from "./components/FontSizeController";
+import { initReadingScale } from "@/game/readingScale";
 import "./index.css";
 
-// 在 React 掛載前套用儲存的字級，避免大字級使用者看到字級閃爍。
-initFontSize();
+// 在 React 掛載前套用儲存的閱讀字號，避免大字級使用者看到字級閃爍。
+// 注意：只切換 <html> 的 data-reading-scale 屬性，不動 root font-size。
+initReadingScale();
 
 const queryClient = new QueryClient();
 

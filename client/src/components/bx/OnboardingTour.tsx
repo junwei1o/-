@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { bxStore, BX_EVENTS } from "@/game/bxStore";
+import { claimDailySignIn } from "@/game/dailySignIn";
 import { bxToast, bxCelebrate } from "./bxRewards";
 import { useBxVersion } from "./useBx";
 
@@ -94,12 +95,14 @@ export default function OnboardingTour() {
   }, [teardown]);
 
   const doCheckin = useCallback(() => {
-    const r = bxStore.checkIn();
-    if (r.already) {
+    // 導覽的簽到步驟與首頁簽到共用同一個實作（game/dailySignIn.ts），
+    // 避免兩套各自累加連續天數，學生會看到互相矛盾的數字。
+    const r = claimDailySignIn();
+    if (r.alreadyClaimed) {
       bxToast("⚓ 今天已經簽到過了");
       return;
     }
-    bxToast(`⚓ 簽到成功！+${r.coins} 金幣（連續 ${r.streak} 天）`);
+    bxToast(`⚓ 簽到成功！+${r.goldGained} 金幣（連續 ${r.streak} 天）`);
     if ((bxStore.get<number>("stats.total_answers", 0) ?? 0) === 0) {
       bxStore.update((s) => { s.coins += 10; });
     }

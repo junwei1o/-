@@ -5,14 +5,17 @@ const source = readFileSync(new URL("./Home.tsx", import.meta.url), "utf8");
 const css = readFileSync(new URL("./HomeDashboard.css", import.meta.url), "utf8");
 
 describe("首頁遊戲模式入口", () => {
-  it("提供四個真實單機入口與統一儲存的每日簽到", () => {
+  it("提供四個真實單機入口，簽到一律走統一的彈窗", () => {
     expect(source).toContain("燈塔酒館");
     expect(source).toContain("錯題魔王");
     expect(source).toContain("限時挑戰");
     expect(source).toContain("每日簽到");
     expect(source).toContain('setLocation("/tavern")');
     expect(source).toContain('setLocation("/community?mode=timed")');
-    expect(source).toContain("claimDailySignIn()");
+    // 簽到只有一條路徑：首頁卡片開啟統一彈窗（dailySignIn.ts），
+    // 自己再領一次會讓兩份連續天數各自累加。
+    expect(source).toContain("setShowGoldSignIn(true)");
+    expect(source).not.toMatch(/claimDailySignIn\s*\(/);
     expect(source).not.toContain("localStorage.getItem('xueSignIn')");
   });
 

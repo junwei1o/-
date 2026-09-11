@@ -209,6 +209,7 @@ const ENSURE_TABLE_STATEMENTS = [
     \`totalQuestions\` int NOT NULL,
     \`correctCount\` int NOT NULL,
     \`detail\` json,
+    \`sessionKey\` varchar(160),
     \`createdAt\` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (\`id\`),
     KEY \`exam_records_name_idx\` (\`name\`)
@@ -261,6 +262,8 @@ const ENSURE_COLUMN_STATEMENTS = [
   // 對應遷移：作業可指定知識點與對象學生，讓老師能針對單一學生的薄弱處出題。
   "ALTER TABLE `assignments` ADD COLUMN `learningTopic` varchar(255)",
   "ALTER TABLE `assignments` ADD COLUMN `studentName` varchar(24)",
+  // 對應遷移：試卷補報用。同一份卷子重複上報時覆蓋，不新增重複紀錄。
+  "ALTER TABLE `exam_records` ADD COLUMN `sessionKey` varchar(160)",
 ];
 
 const ENSURE_INDEX_STATEMENTS = [
@@ -398,10 +401,42 @@ export async function updateCloudSave(name: string, payload: unknown, metrics: {
   return affected > 0;
 }
 
+/**
+ * 寫入航行紀錄。
+ *
+ * 帶 sessionKey 時採「同一份試卷覆蓋更新」：學生答完最後一題往往才回頭標
+ * 錯誤原因，那時會再上報一次；沒有覆蓋機制的話，同一份卷子會變成兩筆紀錄，
+ * 家長看到的航行紀錄會出現重複。
+ */
 export async function insertExamRecord(row: InsertExamRecord) {
   const db = await getDb();
   if (!db) throw new Error("Database is not available");
-  await db.insert(examRecords).values(row);
+  const sessionKey = row.sessionKey?.trim();
+  if (sessionKey) {
+    const existing = await db
+      .select({ id: examRecords.id })
+      .from(examRecords)
+      .where(and(eq(examRecords.name, row.name), eq(examRecords.sessionKey, sessionKey)))
+      .orderBy(desc(examRecords.id))
+      .limit(1);
+    if (existing.length > 0) {
+      await db
+        .update(examRecords)
+        .set({
+          subject: row.subject,
+          grade: row.grade ?? null,
+          difficulty: row.difficulty ?? null,
+          totalQuestions: row.totalQuestions,
+          correctCount: row.correctCount,
+          detail: row.detail ?? null,
+        })
+        .where(eq(examRecords.id, existing[0].id));
+      return existing[0].id;
+    }
+  }
+  const result = await db.insert(examRecords).values(row);
+  const insertId = (result as unknown as [{ insertId?: number }])[0]?.insertId ?? 0;
+  return Number(insertId);
 }
 
 /** 依名字取最近 N 筆航行紀錄（新的在前）。 */

@@ -1,0 +1,68 @@
+/* 閱讀字號控制（品牌色系：海藍 / 墨色 / 柔和墨） */
+
+.reading-scale-control {
+  margin-top: 0.9rem;
+  padding: 0.9rem 1rem 1rem;
+  border-radius: 16px;
+  background: rgba(255, 253, 248, 0.75);
+  border: 1px solid rgba(11, 110, 142, 0.14);
+}
+
+.reading-scale-desc {
+  margin: 0 0 0.75rem;
+  color: var(--color-ink-soft, #56635f);
+  font-size: 0.82rem;
+  line-height: 1.7;
+}
+
+.reading-scale-buttons {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 0.75rem;
+}
+
+.reading-scale-btn {
+  padding: 0.625rem 0.5rem;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  background: #fffdf8;
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--color-ink, #2c3a36);
+  transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.reading-scale-btn:hover {
+  border-color: rgba(11, 110, 142, 0.35);
+}
+
+.reading-scale-btn:focus-visible {
+  outline: 3px solid rgba(11, 110, 142, 0.45);
+  outline-offset: 1px;
+}
+
+.reading-scale-btn.is-active {
+  background: linear-gradient(135deg, rgba(11, 110, 142, 0.12), rgba(232, 117, 74, 0.14));
+  border-color: var(--color-tide-blue, #0b6e8e);
+  color: #0b4a60;
+  box-shadow: 0 2px 8px -2px rgba(11, 110, 142, 0.35);
+}
+
+.reading-scale-preview {
+  margin: 0;
+  padding: 0.75rem;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--color-ink, #2c3a36);
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px dashed rgba(11, 110, 142, 0.3);
+  text-align: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reading-scale-btn {
+    transition: none;
+  }
+}

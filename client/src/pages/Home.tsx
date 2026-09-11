@@ -13,7 +13,9 @@ import { getJournalEntries } from "@/game/adventureJournal";
 import { generateDailyAdventureSummary } from "@/game/academyExpansion";
 import { TaiwanMainNavigationMap } from "@/components/TaiwanMainNavigationMap";
 import { QuizModal } from "@/components/QuizModal";
-import { claimDailySignIn, consumeStorageNotice, getDailySignIn, getLearningRecord, getPlayerData, getPlayerName, getSelectedTitle, hasSignedInToday, type LearningRecord } from "@/utils/storage";
+import { consumeStorageNotice, getDailySignIn, getLearningRecord, getPlayerData, getPlayerName, getSelectedTitle, hasSignedInToday, type LearningRecord } from "@/utils/storage";
+import { loadSignInState, hasSignedInToday as hasGoldSignedInToday } from "@/game/dailySignIn";
+import { DailySignInModal } from "@/components/DailySignInModal";
 import { buildKnowledgeIslandSnapshots, type KnowledgeIslandSubject } from "@/lib/studentKnowledgeIslands";
 import type { PaperQuestion } from "@/lib/paperExam";
 import FirstLightQuest from "@/components/bx/FirstLightQuest";
@@ -155,6 +157,7 @@ export default function Home() {
   const [randomAdventureRouteReward] = useState(() => consumeRandomAdventureRouteReward());
   const [showBackpack, setShowBackpack] = useState(false);
   const [isActionsOpen, setIsActionsOpen] = useState(false);
+  const [showGoldSignIn, setShowGoldSignIn] = useState(false);
   const actionsToggleRef = useRef<HTMLButtonElement>(null);
   const firstActionRef = useRef<HTMLButtonElement>(null);
   const islands = useMemo(() => buildKnowledgeIslandSnapshots(profile), [profile]);
@@ -176,6 +179,17 @@ export default function Home() {
       items: group.items.filter((item) => normalizeFeatureQuery(`${group.label}${group.description}${item.label}${item.description}`).includes(query)),
     })).filter((group) => group.items.length > 0);
   }, [featureQuery]);
+
+  useEffect(() => {
+    // 進站延遲約 1 秒自動彈出簽到（金幣），避免干擾首屏；今天已簽到則不彈。
+    // 新手導覽期間不彈（導覽自己就有簽到步驟），否則兩個彈窗會疊在一起。
+    if (hasGoldSignedInToday(loadSignInState())) return;
+    const timer = window.setTimeout(() => {
+      if (document.body.classList.contains("bx-tour-open")) return;
+      setShowGoldSignIn(true);
+    }, 1000);
+    return () => window.clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     if (!isActionsOpen) return;
@@ -268,15 +282,9 @@ export default function Home() {
   }
 
   function handleDailySignIn() {
-    const result = claimDailySignIn();
-    setDailySignIn(result.signIn);
-    if (!result.claimed) {
-      toast.message("今天已完成簽到，明天再回來延續探險足跡。");
-      return;
-    }
-    toast.success(result.unlockedWeeklyTitle
-      ? `簽到成功，已連續 ${result.signIn.streak} 天並獲得「一週探險家」稱號！到每日營地可領任務金幣。`
-      : `簽到成功，已連續 ${result.signIn.streak} 天。到每日營地可領簽到任務金幣。`);
+    // 簽到只有一條路徑（dailySignIn.ts）：首頁卡片改成開啟同一個彈窗，
+    // 不再自己呼叫一次領取，避免兩個連續天數各自累加、互相矛盾。
+    setShowGoldSignIn(true);
   }
 
   return (
@@ -460,6 +468,7 @@ export default function Home() {
         const question = questions.find((item) => item.subject === quizSubject);
         return question ? <QuizModal question={question} subject={quizSubject} onClose={() => setQuizSubject(null)} onCompleted={refreshLearningData} /> : null;
       })() : null}
+      <DailySignInModal open={showGoldSignIn} onClose={() => { setShowGoldSignIn(false); setPlayerData(getPlayerData()); }} />
     </main>
   );
 }

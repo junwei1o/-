@@ -1,11 +1,31 @@
 import React, { useState } from "react";
 import { useLocation } from "wouter";
-import { ClipboardList, Copy, School, Target, Trash2, UserRound, Users } from "lucide-react";
+import { ClipboardList, Copy, Lightbulb, School, Target, Trash2, UserRound, Users } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import "@/pages/TeacherDashboard.css";
 
 const TEACHER_CODE_KEY = "xue-teacher-class-code-v1";
 const SUBJECTS = ["國語", "數學", "自然", "社會", "綜合課綱"] as const;
+
+/** 學生自評的錯誤原因，在督學台用老師看得懂的白話呈現。 */
+const ERROR_TYPE_LABEL: Record<string, string> = {
+  concept: "觀念不清",
+  careless: "粗心看錯",
+  memory: "記不起來",
+};
+
+/**
+ * 依錯誤型態給老師一句可執行的建議。
+ * 這才是「錯誤歸因」的價值：知道孩子卡在哪一類，比知道分數有用。
+ */
+function errorAdvice(patterns: Array<{ type: string; count: number }>): string {
+  const top = patterns[0];
+  if (!top) return "";
+  if (top.type === "careless") return "多數是粗心：建議出短題數、要求他檢查一次再送出。";
+  if (top.type === "concept") return "多數是觀念不清：建議針對該知識點從基礎題重講一次。";
+  if (top.type === "memory") return "多數是記不起來：建議用錯題複習拉長複習間隔，別急著加新進度。";
+  return "";
+}
 
 /** 單一學生的督學卡片：正確率、作業完成度與薄弱知識點。 */
 function StudentCard({
@@ -26,6 +46,7 @@ function StudentCard({
   );
   const data = insights.data;
   const weak = data?.weakTopics ?? [];
+  const errorPatterns = data?.errorPatterns ?? [];
 
   return (
     <article className="mentor-card" aria-labelledby={`student-${studentName}`}>
@@ -68,6 +89,21 @@ function StudentCard({
           </p>
         )}
       </div>
+
+      {errorPatterns.length > 0 ? (
+        <div className="mentor-errors" aria-label="錯題型態">
+          <span className="mentor-weak-title"><Lightbulb size={14} aria-hidden="true" /> 錯題型態</span>
+          <ul className="mentor-error-list">
+            {errorPatterns.map((item) => (
+              <li key={item.type} className={`mentor-error-item is-${item.type}`}>
+                <strong>{ERROR_TYPE_LABEL[item.type]}</strong>
+                <small>{item.count} 題</small>
+              </li>
+            ))}
+          </ul>
+          <p className="mentor-hint">{errorAdvice(errorPatterns)}</p>
+        </div>
+      ) : null}
 
       <div className="mentor-card-actions">
         <button type="button" className="settings-secondary-button" onClick={() => onAssign(studentName)}>

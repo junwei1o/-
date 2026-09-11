@@ -7,6 +7,7 @@ import { SpeechReadableText } from "@/components/SpeechReadableText";
 import { SpeechReadButton } from "@/components/SpeechReadButton";
 import { AiReviewPlanCard } from "@/components/AiReviewPlanCard";
 import { QuestionTransition } from "@/components/QuestionTransition";
+import { AnswerCombo } from "@/components/AnswerCombo";
 import {
   buildPaperDeck,
   buildAssignmentDeck,
@@ -87,6 +88,9 @@ export default function PaperExam() {
   const [errorTypes, setErrorTypes] = useState<Record<string, AdaptiveErrorType>>({});
   const [explanationStage, setExplanationStage] = useState<Record<string, 0 | 1 | 2>>({});
   const [consecutiveCorrectWithoutExplanation, setConsecutiveCorrectWithoutExplanation] = useState(0);
+  /** 連擊（純視覺）：連續答對就累加，答錯歸零。 */
+  const [comboCount, setComboCount] = useState(0);
+  const [comboTrigger, setComboTrigger] = useState(0);
   const [showSummary, setShowSummary] = useState(false);
   const [reviewTopicConfirmed, setReviewTopicConfirmed] = useState(false);
   const [showRelatedWrong, setShowRelatedWrong] = useState(false);
@@ -132,6 +136,8 @@ export default function PaperExam() {
   const recordedIdsRef = useRef(new Set<string>());
   const startedAtRef = useRef(Date.now());
   const completedJournalSessionRef = useRef<string | null>(null);
+  /** 記住「這份試卷上次上報出去的錯誤原因快照」，用於判斷是否需要補報。 */
+  const lastExamReportRef = useRef<{ sessionKey: string; signature: string }>({ sessionKey: "", signature: "" });
 
   function resetRetentionState() {
     setFlaggedQuestions({});
@@ -269,6 +275,13 @@ export default function PaperExam() {
     };
     saveJournalEntry({ ...journalBase, summary: formatJournalSummary(journalBase) });
     // 逐題知識點明細：老師端才能算出「哪個知識點錯最多」，而不是只有整卷正確率。
+    // 一併帶上學生自評的錯誤原因（整理觀念／檢查細節／喚回記憶）：
+    // 正確率看得出「哪裡不會」，錯誤原因才看得出「為什麼不會」——
+    // 粗心跟真的不懂，老師要給的幫助完全不同。
+    //
+    // 注意：只上報學生**真的點過**的原因（React state），不要從自適應存檔讀——
+    // 引擎在答錯當下會先塞一個預設值，照讀會讓督學台把「沒自評」全算成
+    // 「記不起來」，等於用假資料誤導老師。
     const topicBreakdown = deck
       .filter((question) => typeof answers[question.id] === "number")
       .map((question) => ({
@@ -276,6 +289,7 @@ export default function PaperExam() {
         topic: question.learningTopic,
         grade: question.grade,
         correct: answers[question.id] === question.answer,
+        errorType: errorTypes[question.id] ?? null,
       }));
 
     // 雲端船籍：試卷完成即時寫一筆航行紀錄（非雲端模式為 no-op）。
@@ -286,6 +300,9 @@ export default function PaperExam() {
         difficulty: deck[0]?.difficulty,
         totalQuestions: deck.length,
         correctCount: result.correct,
+        // 帶上同一份試卷的識別碼：學生答完最後一題才回頭補選原因時會再報一次，
+        // 沒有這個 key 雲端會多存一筆沒有歸因的紀錄，老師端反而看不到。
+        sessionKey,
         detail: {
           scope,
           islandId: journalBase.islandId,
@@ -297,6 +314,7 @@ export default function PaperExam() {
     } catch {
       // 雲端記錄失敗不影響作答流程。
     }
+    lastExamReportRef.current = { sessionKey, signature: JSON.stringify(errorTypes) };
     // 教師作業：若這次是從「我的教室」認領的作業，把成績回報給老師（失敗靜默、下次補報）。
     const pending = readPendingAssignment();
     if (pending) {
@@ -309,6 +327,41 @@ export default function PaperExam() {
       setAssignmentBrief(null);
     }
   }, [allAnswered, deck, result.correct, scope, subjectScope]);
+
+  // 學生常常整卷做完才回頭補選「為什麼答錯」。補選之後要把同一筆雲端紀錄覆蓋更新，
+  // 否則老師端看到的永遠是第一次上報、沒有歸因的那一版。
+  useEffect(() => {
+    const sessionKey = completedJournalSessionRef.current;
+    if (!sessionKey) return;
+    const signature = JSON.stringify(errorTypes);
+    const last = lastExamReportRef.current;
+    if (last.sessionKey === sessionKey && last.signature === signature) return;
+    lastExamReportRef.current = { sessionKey, signature };
+    const subject = scope === "綜合課綱" ? "綜合課綱" : scope;
+    const topicBreakdown = deck
+      .filter((question) => typeof answers[question.id] === "number")
+      .map((question) => ({
+        subject: question.subject,
+        topic: question.learningTopic,
+        grade: question.grade,
+        correct: answers[question.id] === question.answer,
+        errorType: errorTypes[question.id] ?? null,
+      }));
+    recordExamCloud({
+      subject,
+      grade: deck[0]?.grade,
+      difficulty: deck[0]?.difficulty,
+      totalQuestions: deck.length,
+      correctCount: result.correct,
+      sessionKey,
+      detail: {
+        scope,
+        islandId: subjectScope ?? null,
+        startedAt: startedAtRef.current,
+        topics: topicBreakdown,
+      },
+    });
+  }, [errorTypes, deck, result.correct, scope, subjectScope, answers]);
 
   useEffect(() => {
     if (!showSummitEncouragement) return;
@@ -344,6 +397,7 @@ export default function PaperExam() {
     setShowRelatedWrong(false);
     setWrongSubjectFilter("全部");
     setWrongReasonFilter("全部");
+    setComboCount(0);
     recordedIdsRef.current = new Set();
     startedAtRef.current = Date.now();
     setNotice(nextDeck.length ? `今天有 ${nextDeck.length} 題記憶線索回來了，先用自己的步調整理它們。` : "今天暫時沒有到期複習題；你可以繼續探索新的知識島。 ");
@@ -369,6 +423,7 @@ export default function PaperExam() {
     setShowRelatedWrong(false);
     setWrongSubjectFilter("全部");
     setWrongReasonFilter("全部");
+    setComboCount(0);
     recordedIdsRef.current = new Set();
     startedAtRef.current = Date.now();
     const reviewLabel = subjectScope ? `「${subjectScope}」的「${reviewTopic}」` : `「${reviewTopic}」`;
@@ -396,6 +451,7 @@ export default function PaperExam() {
     setShowRelatedWrong(false);
     setWrongSubjectFilter("全部");
     setWrongReasonFilter("全部");
+    setComboCount(0);
     recordedIdsRef.current = new Set();
     startedAtRef.current = Date.now();
     setNotice("隨機冒險已準備好：答對這一題可獲得雙倍航海金幣。");
@@ -420,6 +476,7 @@ export default function PaperExam() {
     setShowRelatedWrong(false);
     setWrongSubjectFilter("全部");
     setWrongReasonFilter("全部");
+    setComboCount(0);
     recordedIdsRef.current = new Set();
     startedAtRef.current = Date.now();
     setNotice(nextDeck.length
@@ -444,6 +501,7 @@ export default function PaperExam() {
     setShowRelatedWrong(false);
     setWrongSubjectFilter("全部");
     setWrongReasonFilter("全部");
+    setComboCount(0);
     recordedIdsRef.current = new Set();
     startedAtRef.current = Date.now();
     setNotice(nextDeck.length ? `已從${subjectScope}知識島準備 ${nextDeck.length} 題練習。選項一經點選就會立即顯示結果。` : `目前沒有${subjectScope}題目，可以先從其他試卷開始探索。`);
@@ -508,6 +566,7 @@ function pickPoolWithCooldown(nextScope: PaperScope): PaperQuestion[] {
     setShowRelatedWrong(false);
     setWrongSubjectFilter("全部");
     setWrongReasonFilter("全部");
+    setComboCount(0);
     recordedIdsRef.current = new Set();
     startedAtRef.current = Date.now();
     setNotice(nextDeck.length ? `已建立 ${nextScope} 試卷，共 ${nextDeck.length} 題。選項一經點選就會立即顯示結果。` : "目前沒有符合此範圍的題目，請選擇其他試卷。");
@@ -549,6 +608,7 @@ function pickPoolWithCooldown(nextScope: PaperScope): PaperQuestion[] {
     setShowRelatedWrong(false);
     setWrongSubjectFilter("全部");
     setWrongReasonFilter("全部");
+    setComboCount(0);
     recordedIdsRef.current = new Set();
     startedAtRef.current = Date.now();
     setNotice(
@@ -576,6 +636,7 @@ function pickPoolWithCooldown(nextScope: PaperScope): PaperQuestion[] {
     setShowRelatedWrong(false);
     setWrongSubjectFilter("全部");
     setWrongReasonFilter("全部");
+    setComboCount(0);
     recordedIdsRef.current = new Set();
     startedAtRef.current = Date.now();
     setNotice(`已準備 ${retryDeck.length} 題本次未掌握題目，現在就用自己的步調再練一次。`);
@@ -672,6 +733,8 @@ function pickPoolWithCooldown(nextScope: PaperScope): PaperQuestion[] {
     recordedIdsRef.current.add(question.id);
     setAnswers((previous) => ({ ...previous, [question.id]: selected }));
     if (correct) {
+      setComboCount((previous) => previous + 1);
+      setComboTrigger((previous) => previous + 1);
       setConsecutiveCorrectWithoutExplanation((previous) => {
         const next = previous + 1;
         if (next >= 10) setNotice("你已連續答對 10 題，而且都先靠自己的線索完成。可以試試看挑戰更難的區域。" );
@@ -679,6 +742,7 @@ function pickPoolWithCooldown(nextScope: PaperScope): PaperQuestion[] {
         return next;
       });
     } else {
+      setComboCount(0);
       setConsecutiveCorrectWithoutExplanation(0);
       const distractor = question.strongDistractor;
       setNotice(distractor?.optionIndex === selected && distractor.note.trim()
@@ -689,6 +753,7 @@ function pickPoolWithCooldown(nextScope: PaperScope): PaperQuestion[] {
 
   return (
     <main className="paper-exam-page">
+      <AnswerCombo combo={comboCount} trigger={comboTrigger} />
       <section className="paper-exam-hero" aria-labelledby="paper-exam-title">
         <p className="paper-exam-kicker"><ClipboardList size={16} aria-hidden="true" /> 十二年國教常規答題</p>
         <h1 id="paper-exam-title">常規試卷答題</h1>

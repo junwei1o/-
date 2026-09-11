@@ -245,6 +245,11 @@ export interface CloudExamInput {
   totalQuestions: number;
   correctCount: number;
   detail?: unknown;
+  /**
+   * 同一份試卷的識別碼。帶了就是覆蓋更新：學生常常答完最後一題才回頭補選錯誤原因，
+   * 沒有這個 key 就會變成兩筆紀錄（後一筆沒有原因），老師端反而看不到歸因。
+   */
+  sessionKey?: string;
 }
 
 /** 試卷完成即時記錄一筆（fire-and-forget，失敗不影響作答流程），並觸發整包進度同步。 */

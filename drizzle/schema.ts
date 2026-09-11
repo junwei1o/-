@@ -81,6 +81,12 @@ export const examRecords = mysqlTable("exam_records", {
   totalQuestions: int("totalQuestions").notNull(),
   correctCount: int("correctCount").notNull(),
   detail: json("detail").$type<unknown>(),
+  /**
+   * 同一份試卷的識別碼（學生 + 開始時間 + 題目組成）。
+   * 用來讓「補報」覆蓋同一筆紀錄，而不是灌出重複的航行紀錄——
+   * 學生常常答完最後一題才回頭標錯誤原因，那時需要再上報一次。
+   */
+  sessionKey: varchar("sessionKey", { length: 160 }),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 }, (table) => ({
   nameIdx: index("exam_records_name_idx").on(table.name),

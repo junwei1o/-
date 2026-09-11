@@ -2806,3 +2806,21 @@ body.bx-tour-open{overflow:hidden}
 .bx-high-contrast{--bx-mute:#1F2933;--bx-line:#94A3B8;--bx-soft:#FFFFFF}
 .bx-high-contrast .bx-empty-host{border-color:#334155;border-style:solid}
 @media(pointer:coarse){.bx-btn{min-height:48px}.bx-nav__item{min-height:56px}}
+
+/* ---------- 閱讀字號（只放大答題頁需要閱讀的文字） ----------
+   切換方式：在 <html> 上設定 data-reading-scale="large" | "xlarge"。
+   只在答題區塊容器用相對單位（em）放大，讓標題與內文依原本比例一起放大；
+   少數以 px 寫死的閱讀文字（錯題詳解、答案對照）轉成 em 以跟著容器一起縮放。
+   絕不修改 document.documentElement.style.fontSize，避免 rem 佈局與手機版溢出受影響。 */
+html[data-reading-scale="large"] .paper-question-panel,
+html[data-reading-scale="large"] .paper-wrong-card { font-size: 1.15em; }
+
+html[data-reading-scale="xlarge"] .paper-question-panel,
+html[data-reading-scale="xlarge"] .paper-wrong-card { font-size: 1.3em; }
+
+/* 以 px 寫死的閱讀文字：轉為 em（相對於已放大的容器）以同步縮放，避免大小不一致 */
+html[data-reading-scale="large"] .paper-wrong-prompt { font-size: 1.125em; }   /* 18px / 16 */
+html[data-reading-scale="large"] .paper-wrong-answer-grid p { font-size: 0.75em; } /* 12px / 16 */
+
+html[data-reading-scale="xlarge"] .paper-wrong-prompt { font-size: 1.125em; }
+html[data-reading-scale="xlarge"] .paper-wrong-answer-grid p { font-size: 0.75em; }
