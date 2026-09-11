@@ -521,6 +521,21 @@ export async function purgeStudentName(studentName: string) {
   await db.delete(classMembers).where(eq(classMembers.studentName, studentName));
 }
 
+/**
+ * 列出所有已建立雲端船籍的船名（不含存檔內容）。
+ * 用途：讓老師在督學台看到「哪些孩子已經有船籍但還沒加入班級」，
+ * 直接點一下就能加入，不必叫孩子手輸 6 位班級碼。
+ */
+export async function listCloudSaveNames() {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  return db
+    .select({ name: cloudSaves.name, totalAnswers: cloudSaves.totalAnswers, updatedAt: cloudSaves.updatedAt })
+    .from(cloudSaves)
+    .orderBy(desc(cloudSaves.updatedAt))
+    .limit(50);
+}
+
 /** 新增作業。 */
 export async function createAssignment(row: InsertAssignment) {
   const db = await getDb();

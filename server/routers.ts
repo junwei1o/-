@@ -14,6 +14,7 @@ import {
   getQuestionBank,
   insertExamRecord,
   joinClass,
+  listCloudSaveNames,
   listAssignments,
   listClassMembers,
   listClassesOfStudent,
@@ -447,6 +448,28 @@ export const appRouter = router({
       .mutation(async ({ input }) => {
         await purgeStudentName(input.studentName.trim());
         return { ok: true as const };
+      }),
+
+    /**
+     * 尚未加入本班的船籍名單。
+     * 小班場景裡要孩子手輸 6 位班級碼很麻煩，這裡讓老師直接看到
+     * 「誰已經取了船名但還沒進班」，點一下就加入。
+     */
+    joinCandidates: publicProcedure
+      .input(z.object({ classCode: z.string().trim().min(4).max(8) }))
+      .query(async ({ input }) => {
+        const code = input.classCode.trim().toUpperCase();
+        const [saves, members] = await Promise.all([listCloudSaveNames(), listClassMembers(code)]);
+        const joined = new Set(members.map((row) => row.studentName));
+        return {
+          candidates: saves
+            .filter((row) => !joined.has(row.name))
+            .map((row) => ({
+              name: row.name,
+              totalAnswers: row.totalAnswers ?? 0,
+              updatedAt: row.updatedAt instanceof Date ? row.updatedAt.getTime() : 0,
+            })),
+        };
       }),
 
     /** 老師指派作業。 */

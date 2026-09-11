@@ -105,6 +105,7 @@ export default function TeacherDashboard() {
   const [topic, setTopic] = useState("");
   /** 從哪位學生的卡片點進來的：空值代表派給全班。 */
   const [assignTarget, setAssignTarget] = useState("");
+  const [joinedName, setJoinedName] = useState("");
   const [dueDate, setDueDate] = useState("");
   const [notice, setNotice] = useState<string | null>(null);
 
@@ -118,6 +119,20 @@ export default function TeacherDashboard() {
     { classCode: trimmedCode },
     { enabled: trimmedCode.length >= 4, retry: false },
   );
+  // 已經取了船名、但還沒加入本班的孩子：老師點一下就能加進來，
+  // 不用叫兩個孩子手輸 6 位班級碼。
+  const candidatesQuery = trpc.teacher.joinCandidates.useQuery(
+    { classCode: trimmedCode },
+    { enabled: trimmedCode.length >= 4, retry: false },
+  );
+  const admitStudent = trpc.teacher.joinClass.useMutation({
+    onSuccess: (result) => {
+      setNotice(result.ok ? `已把「${joinedName}」加進班級。` : "加入失敗，請再試一次。");
+      void reportQuery.refetch();
+      void candidatesQuery.refetch();
+    },
+    onError: () => setNotice("無法連線到伺服器，加入失敗。"),
+  });
   const isSingleSubject = subject !== "綜合課綱";
   const topicQuery = trpc.teacher.topicOptions.useQuery(
     { subject: subject as "國語" | "數學" | "自然" | "社會", grade },
@@ -414,6 +429,34 @@ export default function TeacherDashboard() {
                   <p className="teacher-hint">還沒有學生加入。把班級碼給學生，他們在「我的教室」輸入後就會出現在這裡。</p>
                 </div>
               ) : null}
+              {candidatesQuery.data && candidatesQuery.data.candidates.length > 0 ? (
+                <section className="teacher-card" aria-labelledby="candidates-title">
+                  <div className="teacher-card-title">
+                    <Users size={19} aria-hidden="true" />
+                    <h2 id="candidates-title">還沒加入班級的孩子</h2>
+                  </div>
+                  <p className="teacher-hint">
+                    這些孩子已經在網站上取了船名，只要點一下就能加進班級，不用請他們輸入班級碼。
+                  </p>
+                  <div className="teacher-code-row">
+                    {candidatesQuery.data.candidates.map((item) => (
+                      <button
+                        key={item.name}
+                        type="button"
+                        className="settings-secondary-button"
+                        disabled={admitStudent.isPending}
+                        onClick={() => {
+                          setJoinedName(item.name);
+                          admitStudent.mutate({ code: trimmedCode, studentName: item.name });
+                        }}
+                      >
+                        <UserRound size={15} aria-hidden="true" /> 加入 {item.name}
+                      </button>
+                    ))}
+                  </div>
+                </section>
+              ) : null}
+
               <div className="mentor-grid">
                 {students.map((student) => (
                   <StudentCard
