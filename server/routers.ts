@@ -475,6 +475,55 @@ export const appRouter = router({
         return { ok: true as const };
       }),
 
+    /**
+     * 單一學生的學習洞察：正確率與**薄弱知識點**。
+     * 小班（1 老師 2 學生）場景下，老師最需要的是「這孩子哪裡不會」，
+     * 而不是籠統的正確率，所以這裡直接從逐題明細聚合出錯最多的知識點。
+     */
+    studentInsights: publicProcedure
+      .input(z.object({
+        studentName: cloudNameSchema,
+        days: z.number().int().min(1).max(365).optional(),
+      }))
+      .query(async ({ input }) => {
+        const records = await listExamRecords(input.studentName, 100);
+        const cutoff = Date.now() - (input.days ?? 30) * 86_400_000;
+        const recent = records.filter((row) => {
+          const time = row.createdAt instanceof Date ? row.createdAt.getTime() : 0;
+          return time >= cutoff;
+        });
+
+        const totalQuestions = recent.reduce((sum, row) => sum + row.totalQuestions, 0);
+        const correctCount = recent.reduce((sum, row) => sum + row.correctCount, 0);
+
+        type TopicStat = { subject: string; topic: string; total: number; wrong: number };
+        const stats = new Map<string, TopicStat>();
+        for (const row of recent) {
+          const detail = row.detail as { topics?: Array<{ subject?: string; topic?: string; correct?: boolean }> } | null;
+          for (const item of detail?.topics ?? []) {
+            if (!item?.topic) continue;
+            const subject = item.subject ?? row.subject;
+            const key = `${subject}/${item.topic}`;
+            const current = stats.get(key) ?? { subject, topic: item.topic, total: 0, wrong: 0 };
+            current.total += 1;
+            if (!item.correct) current.wrong += 1;
+            stats.set(key, current);
+          }
+        }
+        const weakTopics = Array.from(stats.values())
+          .filter((item) => item.wrong > 0)
+          .sort((a, b) => b.wrong / b.total - a.wrong / a.total || b.wrong - a.wrong)
+          .slice(0, 5);
+
+        return {
+          exams: recent.length,
+          totalQuestions,
+          correctCount,
+          accuracy: totalQuestions > 0 ? Math.round((correctCount / totalQuestions) * 100) : 0,
+          weakTopics,
+        };
+      }),
+
     /** 班級報表：成員 × 作業的完成與正確率矩陣。 */
     classReport: publicProcedure
       .input(z.object({ classCode: z.string().trim().min(4).max(8) }))

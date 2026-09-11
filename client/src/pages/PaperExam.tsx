@@ -265,6 +265,16 @@ export default function PaperExam() {
       islandId: subjectScope ?? null,
     };
     saveJournalEntry({ ...journalBase, summary: formatJournalSummary(journalBase) });
+    // 逐題知識點明細：老師端才能算出「哪個知識點錯最多」，而不是只有整卷正確率。
+    const topicBreakdown = deck
+      .filter((question) => typeof answers[question.id] === "number")
+      .map((question) => ({
+        subject: question.subject,
+        topic: question.learningTopic,
+        grade: question.grade,
+        correct: answers[question.id] === question.answer,
+      }));
+
     // 雲端船籍：試卷完成即時寫一筆航行紀錄（非雲端模式為 no-op）。
     try {
       recordExamCloud({
@@ -278,6 +288,7 @@ export default function PaperExam() {
           islandId: journalBase.islandId,
           startedAt: startedAtRef.current,
           topicCount: journalBase.topicCount,
+          topics: topicBreakdown,
         },
       });
     } catch {

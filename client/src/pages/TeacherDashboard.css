@@ -188,3 +188,113 @@
   .teacher-page { padding: 20px 14px 48px; }
   .teacher-code { font-size: 1.25rem; letter-spacing: 0.16em; }
 }
+
+/* ---------- 督學台：一人一卡的學生狀況（小班場景） ---------- */
+
+.mentor-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+}
+
+.mentor-card {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+  border-radius: 18px;
+  background: #fffdf8;
+  border: 1px solid rgba(11, 110, 142, 0.14);
+  box-shadow: 0 10px 26px rgba(46, 90, 76, 0.08);
+}
+
+.mentor-card-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mentor-avatar {
+  flex: 0 0 auto;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(140deg, rgba(11, 110, 142, 0.9), rgba(232, 117, 74, 0.85));
+  color: #fffdf8;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.mentor-card-head h3 {
+  margin: 0;
+  font-size: 1.06rem;
+  color: var(--color-ink, #2c3a36);
+}
+
+.mentor-card-sub {
+  margin: 3px 0 0;
+  font-size: 0.82rem;
+  color: var(--color-ink-soft, #56635f);
+}
+
+.mentor-accuracy {
+  margin-left: auto;
+  font-family: "Fraunces", "Noto Serif TC", serif;
+  font-size: 1.7rem;
+  color: var(--color-tide-blue, #0b6e8e);
+}
+
+.mentor-weak {
+  padding-top: 12px;
+  border-top: 1px dashed rgba(11, 110, 142, 0.22);
+}
+
+.mentor-weak-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: var(--color-ink-soft, #56635f);
+}
+
+.mentor-tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mentor-tag {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 6px 11px;
+  border-radius: 999px;
+  background: rgba(232, 117, 74, 0.14);
+  border: 1px solid rgba(232, 117, 74, 0.35);
+  color: #a8442a;
+  font-size: 0.84rem;
+}
+
+.mentor-tag small {
+  font-size: 0.74rem;
+  opacity: 0.8;
+}
+
+.mentor-hint {
+  margin: 8px 0 0;
+  font-size: 0.84rem;
+  color: var(--color-ink-soft, #56635f);
+}
+
+.mentor-classbar {
+  padding: 16px 20px;
+}
+
+@media (max-width: 640px) {
+  .mentor-accuracy { font-size: 1.45rem; }
+  .mentor-card { padding: 15px; }
+}
