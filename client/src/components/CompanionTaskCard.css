@@ -206,3 +206,59 @@
   border-top: 1px dashed var(--line, #C9BFA8);
   padding-top: 10px;
 }
+
+.companion-task-result {
+  background: linear-gradient(135deg, rgba(11, 110, 142, 0.08), rgba(108, 132, 96, 0.10));
+  border: 1px solid rgba(11, 110, 142, 0.20);
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.companion-task-result-row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.companion-task-result-score {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--tidal-deep, #07516A);
+  font-family: "Noto Serif TC", serif;
+}
+
+.companion-task-result-label {
+  font-size: 13px;
+  color: var(--ink, #1F3031);
+  font-weight: 600;
+}
+
+.companion-task-result-meta {
+  display: flex;
+  gap: 16px;
+  font-size: 13px;
+  color: var(--ink, #1F3031);
+  font-weight: 600;
+}
+
+.companion-task-result-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.companion-task-result-actions {
+  margin-top: 4px;
+}
+
+.companion-task-result-praise {
+  margin: 0;
+  font-size: 13px;
+  color: var(--moss, #6C8460);
+  font-weight: 600;
+}
