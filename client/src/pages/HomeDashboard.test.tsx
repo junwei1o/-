@@ -38,6 +38,9 @@ vi.mock("@/lib/trpc", () => ({
       getTeacherProfile: { useQuery: () => ({ data: undefined, isLoading: false, refetch: () => Promise.resolve() }) },
       upsertTeacherProfile: { useMutation: () => ({ mutate: () => {}, isPending: false }) },
     },
+    aiTutor: {
+      delegateTask: { useMutation: () => ({ mutateAsync: async () => ({ taskType: "single", subject: null, reason: "", title: "", questions: [], mastery: { totalQuestions: 0, subjectCorrectRate: {}, integratedCorrectRate: null, weakTopics: [] } }), isPending: false }) },
+    },
   },
 }));
 vi.mock("@/components/TaiwanMainNavigationMap", () => ({

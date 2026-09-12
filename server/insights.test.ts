@@ -189,3 +189,147 @@ describe("averageMs", () => {
     expect(averageMs([1_000, 1_000, 1_001])).toBe(1_000);
   });
 });
+
+import {
+  computeStudentMastery,
+  routeTaskType,
+  type StudentMastery,
+} from "./insights";
+
+function rec(over: Partial<{ subject: string; totalQuestions: number; correctCount: number; detail: unknown }> = {}) {
+  return {
+    subject: "數學",
+    totalQuestions: 5,
+    correctCount: 4,
+    detail: { topics: [{ subject: "數學", topic: "分數", correct: true }] },
+    ...over,
+  };
+}
+
+describe("computeStudentMastery", () => {
+  it("空樣本回傳空 bySubject 與 totalQuestions=0", () => {
+    const m = computeStudentMastery([]);
+    expect(m.totalQuestions).toBe(0);
+    expect(m.bySubject).toEqual({});
+    expect(m.integratedCorrectRate).toBeNull();
+    expect(m.weakTopics).toEqual([]);
+  });
+
+  it("彙總各學科正確率", () => {
+    const m = computeStudentMastery([
+      rec({ subject: "數學", totalQuestions: 10, correctCount: 8 }),
+      rec({ subject: "國語", totalQuestions: 5, correctCount: 3 }),
+    ]);
+    expect(m.subjectCorrectRate["數學"]).toBeCloseTo(0.8);
+    expect(m.subjectCorrectRate["國語"]).toBeCloseTo(0.6);
+    expect(m.totalQuestions).toBe(15);
+  });
+
+  it("整合「綜合課綱」正確率", () => {
+    const m = computeStudentMastery([
+      rec({ subject: "綜合課綱", totalQuestions: 10, correctCount: 7 }),
+    ]);
+    expect(m.integratedCorrectRate).toBeCloseTo(0.7);
+  });
+
+  it("找出最薄弱 3 個知識點", () => {
+    const m = computeStudentMastery([
+      rec({
+        subject: "數學", totalQuestions: 5, correctCount: 4,
+        detail: { topics: [
+          { subject: "數學", topic: "分數", correct: true },
+          { subject: "數學", topic: "分數", correct: false },
+          { subject: "數學", topic: "乘法", correct: false },
+        ] },
+      }),
+      rec({
+        subject: "國語", totalQuestions: 5, correctCount: 3,
+        detail: { topics: [
+          { subject: "國語", topic: "形近字", correct: false },
+          { subject: "國語", topic: "形近字", correct: true },
+        ] },
+      }),
+    ]);
+    // 數學分數 = 1/2 = 0.5；數學乘法 = 0/1（樣本 < 2 不計）；國語形近字 = 1/2 = 0.5
+    const m1 = m.weakTopics.find((t) => t.topic === "分數");
+    expect(m1?.correctRate).toBeCloseTo(0.5);
+    // 弱薄點只有分數一個（乘法樣本不足）
+    expect(m.weakTopics.some((t) => t.topic === "乘法")).toBe(false);
+  });
+
+  it("綜合課綱的題不進單薄排名", () => {
+    const m = computeStudentMastery([
+      rec({
+        subject: "綜合課綱", totalQuestions: 10, correctCount: 9,
+        detail: { topics: [
+          { subject: "綜合課綱", topic: "時事", correct: false },
+          { subject: "綜合課綱", topic: "時事", correct: false },
+        ] },
+      }),
+    ]);
+    expect(m.weakTopics).toEqual([]);
+  });
+});
+
+describe("routeTaskType", () => {
+  it("樣本 < 20 題派單科（資料不足）", () => {
+    const m: StudentMastery = {
+      bySubject: { 數學: { correct: 8, wrong: 2 } },
+      subjectCorrectRate: { 數學: 0.8 },
+      integratedCorrectRate: null,
+      totalQuestions: 10,
+      weakTopics: [{ subject: "數學", topic: "分數", correctRate: 0.5 }],
+    };
+    const r = routeTaskType(m);
+    expect(r.taskType).toBe("single");
+    expect(r.subject).toBe("數學");
+  });
+
+  it("綜合 ≥ 70% 且各單科 ≥ 60% → 派綜合題", () => {
+    const m: StudentMastery = {
+      bySubject: {
+        數學: { correct: 8, wrong: 2 },
+        國語: { correct: 7, wrong: 3 },
+        綜合課綱: { correct: 7, wrong: 3 },
+      },
+      subjectCorrectRate: { 數學: 0.8, 國語: 0.7, 綜合課綱: 0.7 },
+      integratedCorrectRate: 0.7,
+      totalQuestions: 30,
+      weakTopics: [],
+    };
+    expect(routeTaskType(m).taskType).toBe("integrated");
+  });
+
+  it("綜合 ≥ 70% 但某單科 < 60% → 派單科（先鞏固單科）", () => {
+    const m: StudentMastery = {
+      bySubject: {
+        數學: { correct: 5, wrong: 5 },  // 50%
+        國語: { correct: 8, wrong: 2 },
+        綜合課綱: { correct: 7, wrong: 3 },
+      },
+      subjectCorrectRate: { 數學: 0.5, 國語: 0.8, 綜合課綱: 0.7 },
+      integratedCorrectRate: 0.7,
+      totalQuestions: 30,
+      weakTopics: [{ subject: "數學", topic: "乘法", correctRate: 0.5 }],
+    };
+    const r = routeTaskType(m);
+    expect(r.taskType).toBe("single");
+    expect(r.subject).toBe("數學");
+  });
+
+  it("沒有綜合課綱資料 → 派單科", () => {
+    const m: StudentMastery = {
+      bySubject: {
+        數學: { correct: 8, wrong: 2 },
+        國語: { correct: 9, wrong: 1 },
+      },
+      subjectCorrectRate: { 數學: 0.8, 國語: 0.9 },
+      integratedCorrectRate: null,
+      totalQuestions: 20,
+      weakTopics: [{ subject: "國語", topic: "形近字", correctRate: 0.6 }],
+    };
+    const r = routeTaskType(m);
+    expect(r.taskType).toBe("single");
+    expect(r.subject).toBe("國語");
+  });
+});

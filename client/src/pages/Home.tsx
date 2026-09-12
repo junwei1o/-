@@ -17,6 +17,7 @@ import { consumeStorageNotice, getDailySignIn, getLearningRecord, getPlayerData,
 import { loadSignInState, hasSignedInToday as hasGoldSignedInToday } from "@/game/dailySignIn";
 import { DailySignInModal } from "@/components/DailySignInModal";
 import { HomeContactCard } from "@/components/HomeContactCard";
+import { CompanionTaskCard } from "@/components/CompanionTaskCard";
 import { buildKnowledgeIslandSnapshots, type KnowledgeIslandSubject } from "@/lib/studentKnowledgeIslands";
 import type { PaperQuestion } from "@/lib/paperExam";
 import FirstLightQuest from "@/components/bx/FirstLightQuest";
@@ -464,6 +465,7 @@ export default function Home() {
             {isActionsOpen ? <button type="button" className="home-dashboard-actions-close" onClick={closeActions}><X size={15} aria-hidden="true" /> 關閉</button> : null}
           </section>
           <HomeContactCard />
+          <CompanionTaskCard studentName={getPlayerName()} />
         </div>
       </div>
       {quizSubject ? (() => {

@@ -1,4 +1,5 @@
 import { synthesizeSpeech } from "./tts";
+import { computeStudentMastery, routeTaskType } from "./insights";
 import { TARGETED_PRACTICE_ITEMS, summarizeTargetedPractice } from "./targetedPractice";
 import { COOKIE_NAME } from "@shared/const";
 import { z } from "zod";
