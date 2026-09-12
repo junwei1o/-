@@ -5,12 +5,14 @@ import {
   assignmentSubmissions,
   assignments,
   classes,
+  classAnnouncements,
   classMembers,
   cloudSaves,
   examRecords,
   InsertAssignment,
   InsertAssignmentSubmission,
   InsertClass,
+  InsertClassAnnouncement,
   InsertClassMember,
   InsertCloudSave,
   InsertExamRecord,
@@ -251,6 +253,16 @@ const ENSURE_TABLE_STATEMENTS = [
     \`submittedAt\` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (\`id\`),
     KEY \`assignment_submissions_assignment_idx\` (\`assignmentId\`)
+  )`,
+  `CREATE TABLE IF NOT EXISTS \`class_announcements\` (
+    \`id\` int AUTO_INCREMENT NOT NULL,
+    \`classCode\` varchar(8) NOT NULL,
+    \`teacherName\` varchar(24) NOT NULL,
+    \`content\` varchar(500) NOT NULL,
+    \`createdAt\` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (\`id\`),
+    KEY \`class_announcements_class_idx\` (\`classCode\`),
+    KEY \`class_announcements_created_idx\` (\`createdAt\`)
   )`,
 ];
 
@@ -585,6 +597,46 @@ export async function listAssignments(code: string) {
   const db = await getDb();
   if (!db) throw new Error("Database is not available");
   return db.select().from(assignments).where(eq(assignments.classCode, code)).orderBy(desc(assignments.id)).limit(50);
+}
+
+/** 班級公告相關（老師發、學生按 classCode 拉取）。 */
+
+/** 老師發一則公告到班級。 */
+export async function createAnnouncement(row: InsertClassAnnouncement) {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  const result = await db.insert(classAnnouncements).values(row);
+  const insertId = (result as unknown as [{ insertId?: number }])[0]?.insertId ?? 0;
+  return { id: Number(insertId) };
+}
+
+/** 列出某班級最新 N 則公告（最新在前）。 */
+export async function listAnnouncements(code: string, limit = 10) {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  return db
+    .select()
+    .from(classAnnouncements)
+    .where(eq(classAnnouncements.classCode, code))
+    .orderBy(desc(classAnnouncements.id))
+    .limit(limit);
+}
+
+/** 刪除一則公告（僅限該班級老師本人）。 */
+export async function deleteAnnouncement(id: number, classCode: string, teacherName: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  const existing = await db
+    .select({ id: classAnnouncements.id, classCode: classAnnouncements.classCode, teacherName: classAnnouncements.teacherName })
+    .from(classAnnouncements)
+    .where(eq(classAnnouncements.id, id))
+    .limit(1);
+  if (existing.length === 0) return { ok: false as const, reason: "notFound" as const };
+  if (existing[0].classCode !== classCode || existing[0].teacherName !== teacherName) {
+    return { ok: false as const, reason: "forbidden" as const };
+  }
+  await db.delete(classAnnouncements).where(eq(classAnnouncements.id, id));
+  return { ok: true as const };
 }
 
 /** 繳交作業（同一份作業重複繳交時以最新成績覆寫）。 */

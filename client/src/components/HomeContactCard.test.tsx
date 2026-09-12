@@ -23,6 +23,16 @@ function makeLocalStorageStub() {
   };
 }
 
+vi.mock("@/lib/trpc", () => ({
+  trpc: {
+    teacher: {
+      listAnnouncements: { useQuery: () => ({ data: undefined as unknown[] | undefined, isLoading: false, refetch: vi.fn() }) },
+      postAnnouncement: { useMutation: () => ({ mutate: vi.fn(), isPending: false }) },
+      deleteAnnouncement: { useMutation: () => ({ mutate: vi.fn(), isPending: false }) },
+    },
+  },
+}));
+
 beforeEach(() => {
   vi.stubGlobal("localStorage", makeLocalStorageStub());
   vi.restoreAllMocks();
@@ -109,7 +119,7 @@ describe("HomeContactCard 聯絡老師區塊", () => {
     localStorage.setItem(STORAGE_LINE_ID, "liu_t3");
     render(<HomeContactCard />);
     fireEvent.click(screen.getByRole("button", { name: /聯絡老師/ }));
-    fireEvent.click(screen.getByRole("button", { name: "編輯" }));
+    fireEvent.click(screen.getByRole("button", { name: /編輯聯絡資訊/ }));
     fireEvent.click(screen.getByRole("button", { name: "取消" }));
     // 仍然顯示原本的 LINE ID，沒有被覆寫
     expect(localStorage.getItem(STORAGE_LINE_ID)).toBe("liu_t3");

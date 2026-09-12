@@ -157,3 +157,18 @@ export const assignmentSubmissions = mysqlTable("assignment_submissions", {
 
 export type AssignmentSubmission = typeof assignmentSubmissions.$inferSelect;
 export type InsertAssignmentSubmission = typeof assignmentSubmissions.$inferInsert;
+
+/** 班級公告：老師發的「週末作業」「下週主題」一類訊息，學生按 classCode 拉取。 */
+export const classAnnouncements = mysqlTable("class_announcements", {
+  id: int("id").autoincrement().primaryKey(),
+  classCode: varchar("classCode", { length: 8 }).notNull(),
+  teacherName: varchar("teacherName", { length: 24 }).notNull(),
+  content: varchar("content", { length: 500 }).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+}, (table) => ({
+  classIdx: index("class_announcements_class_idx").on(table.classCode),
+  createdIdx: index("class_announcements_created_idx").on(table.createdAt),
+}));
+
+export type ClassAnnouncement = typeof classAnnouncements.$inferSelect;
+export type InsertClassAnnouncement = typeof classAnnouncements.$inferInsert;

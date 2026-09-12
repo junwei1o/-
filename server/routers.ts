@@ -13,15 +13,18 @@ import {
   getClassRow,
   getCloudSave,
   ensureQuestionBankReady,
+  createAnnouncement,
   getQuestionBank,
   insertExamRecord,
   joinClass,
+  listAnnouncements,
   listCloudSaveNames,
   listAssignments,
   listClassMembers,
   listClassesOfStudent,
   listExamRecords,
   listSubmissions,
+  deleteAnnouncement,
   submitAssignment,
   updateCloudSave,
 } from "./db";
@@ -712,6 +715,54 @@ export const appRouter = router({
           })),
           students,
         };
+      }),
+
+    /** 老師發一則班級公告。 */
+    postAnnouncement: publicProcedure
+      .input(z.object({
+        classCode: z.string().trim().min(4).max(8),
+        teacherName: z.string().trim().min(1).max(24),
+        content: z.string().trim().min(1, "公告內容不可為空").max(500),
+      }))
+      .mutation(async ({ input }) => {
+        const code = input.classCode.trim().toUpperCase();
+        const cls = await getClassRow(code);
+        if (!cls) return { ok: false as const, reason: "classNotFound" as const };
+        const { id } = await createAnnouncement({
+          classCode: code,
+          teacherName: input.teacherName.trim(),
+          content: input.content.trim(),
+        });
+        return { ok: true as const, id };
+      }),
+
+    /** 列出某班級最新公告（學生/老師皆可調用，按 classCode 過濾）。 */
+    listAnnouncements: publicProcedure
+      .input(z.object({
+        classCode: z.string().trim().min(4).max(8),
+        limit: z.number().int().min(1).max(50).optional(),
+      }))
+      .query(async ({ input }) => {
+        const code = input.classCode.trim().toUpperCase();
+        const rows = await listAnnouncements(code, input.limit ?? 10);
+        return rows.map((row) => ({
+          id: row.id,
+          classCode: row.classCode,
+          teacherName: row.teacherName,
+          content: row.content,
+          createdAt: row.createdAt instanceof Date ? row.createdAt.getTime() : Date.now(),
+        }));
+      }),
+
+    /** 老師刪除自己的公告。 */
+    deleteAnnouncement: publicProcedure
+      .input(z.object({
+        id: z.number().int().min(1),
+        classCode: z.string().trim().min(4).max(8),
+        teacherName: z.string().trim().min(1).max(24),
+      }))
+      .mutation(async ({ input }) => {
+        return deleteAnnouncement(input.id, input.classCode.trim().toUpperCase(), input.teacherName.trim());
       }),
   }),
   tts: router({

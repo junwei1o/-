@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { ChevronDown, ChevronUp, MessageCircle, Phone, Settings } from "lucide-react";
+import { ChevronDown, ChevronUp, MessageCircle, Phone, Settings, Megaphone } from "lucide-react";
+import { toast } from "sonner";
+import { trpc } from "@/lib/trpc";
 import "@/components/HomeContactCard.css";
 
 const STORAGE_LINE_ID = "hdmx_teacher_line_id_v1";
 const STORAGE_TEACHER_NAME = "hdmx_teacher_name_v1";
 const STORAGE_NOTICE = "hdmx_class_notice_v1";
 const STORAGE_PHONE = "hdmx_teacher_phone_v1";
+const STORAGE_CLASS_CODE = "xue-teacher-class-code-v1";
 const QR_API = "https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=10&data=";
 
 type ContactInfo = {
@@ -35,7 +38,20 @@ function persistContact(next: ContactInfo) {
   localStorage.setItem(STORAGE_NOTICE, next.notice);
 }
 
+function readClassCode(): string {
+  if (typeof window === "undefined") return "";
+  return localStorage.getItem(STORAGE_CLASS_CODE) ?? "";
+}
+
 const LINE_ID_PATTERN = /^[A-Za-z0-9._-]{2,30}$/;
+
+type AnnouncementRow = {
+  id: number;
+  classCode: string;
+  teacherName: string;
+  content: string;
+  createdAt: number;
+};
 
 export function HomeContactCard() {
   const [open, setOpen] = useState(false);
@@ -43,11 +59,53 @@ export function HomeContactCard() {
   const [contact, setContact] = useState<ContactInfo>(() => loadContact());
   const [draft, setDraft] = useState<ContactInfo>(() => loadContact());
   const [statusMsg, setStatusMsg] = useState<{ kind: "ok" | "err"; text: string } | null>(null);
+  const [classCode, setClassCode] = useState<string>(() => readClassCode());
 
   // 編輯模式打開時，把當前值填入 draft
   useEffect(() => {
     if (editing) setDraft(contact);
   }, [editing, contact]);
+
+  // 監聽 localStorage 變化（其他 tab 改班级碼時同步）
+  useEffect(() => {
+    function onStorage(e: StorageEvent) {
+      if (e.key === STORAGE_CLASS_CODE) {
+        setClassCode(readClassCode());
+      }
+    }
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, []);
+
+  // 拉雲端公告（如果老師有班級碼）
+  const listQuery = trpc.teacher.listAnnouncements.useQuery(
+    { classCode, limit: 5 },
+    { enabled: Boolean(classCode) },
+  );
+  const announcements: AnnouncementRow[] = (listQuery.data ?? []) as AnnouncementRow[];
+  const postMutation = trpc.teacher.postAnnouncement.useMutation({
+    onSuccess: (data) => {
+      if (data.ok) {
+        toast.success("公告已發出，全班可見");
+        listQuery.refetch();
+      } else {
+        toast.error("發送失敗：" + data.reason);
+      }
+    },
+    onError: (e) => toast.error("發送失敗：" + e.message),
+  });
+  const deleteMutation = trpc.teacher.deleteAnnouncement.useMutation({
+    onSuccess: (data) => {
+      if (data.ok) {
+        toast.success("已刪除");
+        listQuery.refetch();
+      } else {
+        toast.error("無法刪除：" + data.reason);
+      }
+    },
+  });
+  const [posting, setPosting] = useState(false);
+  const [newContent, setNewContent] = useState("");
 
   const lineUrl = contact.lineId.trim() ? `https://line.me/ti/p/~${encodeURIComponent(contact.lineId.trim())}` : "";
   const qrSrc = lineUrl ? QR_API + encodeURIComponent(lineUrl) : "";
@@ -76,6 +134,20 @@ export function HomeContactCard() {
     setContact(trimmed);
     setEditing(false);
     flash({ kind: "ok", text: "已儲存" });
+  }
+
+  function submitAnnouncement() {
+    if (!newContent.trim() || !classCode || !contact.teacherName.trim()) {
+      toast.error("請先在「聯絡老師」設定中填入老師姓名，並確認已有班級碼");
+      return;
+    }
+    postMutation.mutate({
+      classCode,
+      teacherName: contact.teacherName.trim(),
+      content: newContent.trim(),
+    });
+    setPosting(false);
+    setNewContent("");
   }
 
   return (
@@ -145,16 +217,91 @@ export function HomeContactCard() {
                 )}
               </div>
 
-              {contact.notice ? (
-                <div className="home-contact-notice">
-                  <h3>📢 班級公告</h3>
-                  <p>{contact.notice}</p>
-                </div>
-              ) : null}
+              {/* 公告區：老師有班級碼時拉雲端；否則降級顯示 localStorage */}
+              <div className="home-contact-notice-block">
+                <header className="home-contact-notice-head">
+                  <Megaphone size={16} aria-hidden="true" />
+                  <span>班級公告</span>
+                  {classCode ? (
+                    <span className="home-contact-classcode">班級碼 {classCode}</span>
+                  ) : (
+                    <span className="home-contact-classcode muted">未綁定班級</span>
+                  )}
+                </header>
+
+                {classCode ? (
+                  <>
+                    {listQuery.isLoading ? (
+                      <p className="home-contact-notice">讀取中…</p>
+                    ) : announcements.length === 0 ? (
+                      <p className="home-contact-notice">尚未發過任何公告。</p>
+                    ) : (
+                      <ul className="home-contact-announcements">
+                        {announcements.map((row) => (
+                          <li key={row.id} className="home-contact-announcement">
+                            <p>{row.content}</p>
+                            <small>
+                              {row.teacherName} ・{" "}
+                              {new Date(row.createdAt).toLocaleString("zh-TW", {
+                                month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit",
+                              })}
+                              {row.teacherName === contact.teacherName.trim() ? (
+                                <button
+                                  type="button"
+                                  className="home-contact-del"
+                                  onClick={() => {
+                                    if (window.confirm("刪除這則公告？")) {
+                                      deleteMutation.mutate({ id: row.id, classCode, teacherName: contact.teacherName.trim() });
+                                    }
+                                  }}
+                                >
+                                  刪除
+                                </button>
+                              ) : null}
+                            </small>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+
+                    <div className="home-contact-post">
+                      {posting ? (
+                        <>
+                          <textarea
+                            value={newContent}
+                            onChange={(e) => setNewContent(e.target.value)}
+                            placeholder="例：週末作業：練習本第 32 頁。"
+                            maxLength={500}
+                            rows={2}
+                          />
+                          <div className="home-contact-post-actions">
+                            <button type="button" className="home-contact-cta primary" onClick={submitAnnouncement} disabled={postMutation.isPending}>
+                              {postMutation.isPending ? "送出中…" : "送出公告"}
+                            </button>
+                            <button type="button" className="home-contact-cta ghost" onClick={() => { setPosting(false); setNewContent(""); }}>
+                              取消
+                            </button>
+                          </div>
+                        </>
+                      ) : (
+                        <button type="button" className="home-contact-cta primary" onClick={() => setPosting(true)}>
+                          <Megaphone size={16} aria-hidden="true" /> 發新公告
+                        </button>
+                      )}
+                    </div>
+                  </>
+                ) : contact.notice ? (
+                  <p className="home-contact-notice">{contact.notice}</p>
+                ) : (
+                  <p className="home-contact-notice muted">
+                    建立班級後可發送雲端公告；未綁定時只顯示本機公告。
+                  </p>
+                )}
+              </div>
 
               <button type="button" className="home-contact-edit" onClick={() => setEditing(true)}>
                 <Settings size={16} aria-hidden="true" />
-                {contact.lineId || contact.phone ? "編輯" : "首次設定"}
+                {contact.lineId || contact.phone ? "編輯聯絡資訊" : "首次設定"}
               </button>
             </>
           ) : (
@@ -191,7 +338,7 @@ export function HomeContactCard() {
                 />
               </label>
               <label className="home-contact-field">
-                <span>班級公告（家長可見）</span>
+                <span>班級公告（無班級碼時的家長可見文字）</span>
                 <textarea
                   value={draft.notice}
                   onChange={(e) => setDraft({ ...draft, notice: e.target.value })}

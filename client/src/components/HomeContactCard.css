@@ -131,6 +131,122 @@
   margin-bottom: 14px;
 }
 
+.home-contact-notice-block {
+  margin-bottom: 14px;
+  background: var(--paper-deep, #EFE6D2);
+  border-radius: 12px;
+  padding: 12px 16px;
+}
+
+.home-contact-notice-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--coral, #E8754A);
+  margin-bottom: 8px;
+}
+
+.home-contact-classcode {
+  margin-left: auto;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--tidal-deep, #07516A);
+  letter-spacing: 0.04em;
+}
+
+.home-contact-classcode.muted { color: #999; font-weight: 400; }
+
+.home-contact-announcements {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.home-contact-announcement {
+  background: var(--white, #FFFDF8);
+  border-left: 3px solid var(--tidal, #0B6E8E);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.home-contact-announcement p {
+  margin: 0 0 4px;
+  font-size: 14px;
+  color: var(--ink, #1F3031);
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+
+.home-contact-announcement small {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 11px;
+  color: var(--tidal-deep, #07516A);
+  opacity: 0.8;
+}
+
+.home-contact-del {
+  margin-left: auto;
+  background: transparent;
+  border: 1px solid var(--line, #C9BFA8);
+  color: var(--coral, #E8754A);
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.home-contact-del:hover { background: rgba(232, 117, 74, 0.08); }
+
+.home-contact-post {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.home-contact-post textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--line, #C9BFA8);
+  border-radius: 10px;
+  background: var(--white, #FFFDF8);
+  color: var(--ink, #1F3031);
+  font-family: inherit;
+  font-size: 14px;
+  resize: vertical;
+}
+
+.home-contact-post textarea:focus {
+  outline: none;
+  border-color: var(--tidal, #0B6E8E);
+}
+
+.home-contact-post-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.home-contact-notice {
+  margin: 0;
+  font-size: 14px;
+  color: var(--ink, #1F3031);
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+.home-contact-notice.muted {
+  color: #888;
+  font-style: italic;
+}
+
 .home-contact-notice h3 {
   margin: 0 0 4px;
   font-size: 14px;
