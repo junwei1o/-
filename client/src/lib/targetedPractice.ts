@@ -20,7 +20,13 @@ import { createTRPCClient, httpBatchLink } from "@trpc/client";
 import superjson from "superjson";
 import type { AppRouter } from "../../../server/routers";
 import { buildVariant } from "@/game/questionVariant";
-import type { PaperQuestion, WrongReviewReplacement } from "./paperExam";
+import type { PaperQuestion } from "./paperExam";
+
+/** 错题重练的替换函数签名：给定 source 错题 + 已用 ID 集合，返回顶替题目（无则 null） */
+export type WrongReviewReplacement = (ctx: {
+  source: PaperQuestion;
+  usedIds: ReadonlySet<string>;
+}) => PaperQuestion | null;
 
 export type TargetedPracticeItem = {
   id: string;

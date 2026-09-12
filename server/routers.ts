@@ -1,3 +1,5 @@
+import { synthesizeSpeech } from "./tts";
+import { TARGETED_PRACTICE_ITEMS, summarizeTargetedPractice } from "./targetedPractice";
 import { COOKIE_NAME } from "@shared/const";
 import { z } from "zod";
 import { invokeLLM } from "./_core/llm";
@@ -293,6 +295,23 @@ export const appRouter = router({
       const report = await ensureQuestionBankReady();
       return report;
     }),
+  }),
+  /**
+   * 針對性練習備用題庫：只在「錯題重練」時頂替原題用，不進正式試卷與作業。
+   * 分量比主庫小，前端按需載入並在記憶體快取，離線時退回同知識點輪替。
+   */
+  targetedPractice: router({
+    list: publicProcedure
+      .input(z.object({ subject: z.enum(["數學", "自然", "社會", "國語"]).optional() }).optional())
+      .query(async ({ input }) => {
+        const items = input?.subject
+          ? TARGETED_PRACTICE_ITEMS.filter((item) => item.subject === input.subject)
+          : TARGETED_PRACTICE_ITEMS;
+        return { items, total: items.length };
+      }),
+
+    /** 維運用：看備用題庫覆蓋了幾個知識點、資料是否載入成功。 */
+    stats: publicProcedure.query(() => summarizeTargetedPractice()),
   }),
   // 雲端船籍：以孩子自選名字（2–6 字，無密碼）為鍵的免註冊雲端存檔。
   // 內容僅學習進度（金幣/島嶼/徽章/作答統計），不含個資；名字即身分，認船畫面以防誤登。
@@ -693,6 +712,24 @@ export const appRouter = router({
           })),
           students,
         };
+      }),
+  }),
+  tts: router({
+    /**
+     * 朗讀合成（Edge TTS）。離線或服務不可用時回 audio:null，
+     * 前端會自動退回瀏覽器內建語音——朗讀按鈕永遠有聲音，只是音質不同。
+     */
+    synthesize: publicProcedure
+      .input(
+        z.object({
+          text: z.string().min(1).max(600),
+          voice: z.enum(["hsiaochen", "hsiaoyu", "yunjhe", "xiaoxiao"]).optional(),
+          rate: z.number().min(0.5).max(2).optional(),
+        }),
+      )
+      .query(async ({ input }) => {
+        const audio = await synthesizeSpeech(input);
+        return audio ? { audio: audio.toString("base64"), mime: "audio/mpeg" } : { audio: null };
       }),
   }),
   auth: router({

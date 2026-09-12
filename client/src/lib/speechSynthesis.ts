@@ -59,6 +59,9 @@ type SpeechAudio = {
   pausedCount: number;
   play: () => Promise<void>;
   pause: () => void;
+  onplay?: (() => void) | null;
+  onended?: (() => void) | null;
+  onerror?: (() => void) | null;
 };
 
 export function createSpeechController(engine?: SpeechEngine | null): SpeechController {
