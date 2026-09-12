@@ -30,6 +30,10 @@ vi.mock("@/lib/trpc", () => ({
       postAnnouncement: { useMutation: () => ({ mutate: vi.fn(), isPending: false }) },
       deleteAnnouncement: { useMutation: () => ({ mutate: vi.fn(), isPending: false }) },
     },
+    cloud: {
+      getTeacherProfile: { useQuery: () => ({ data: undefined as { ok: boolean; profile?: unknown } | undefined, isLoading: false, refetch: vi.fn() }) },
+      upsertTeacherProfile: { useMutation: () => ({ mutate: vi.fn(), isPending: false }) },
+    },
   },
 }));
 

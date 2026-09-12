@@ -34,6 +34,10 @@ vi.mock("@/lib/trpc", () => ({
       postAnnouncement: { useMutation: () => ({ mutate: () => {}, isPending: false }) },
       deleteAnnouncement: { useMutation: () => ({ mutate: () => {}, isPending: false }) },
     },
+    cloud: {
+      getTeacherProfile: { useQuery: () => ({ data: undefined, isLoading: false, refetch: () => Promise.resolve() }) },
+      upsertTeacherProfile: { useMutation: () => ({ mutate: () => {}, isPending: false }) },
+    },
   },
 }));
 vi.mock("@/components/TaiwanMainNavigationMap", () => ({

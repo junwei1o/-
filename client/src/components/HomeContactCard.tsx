@@ -43,6 +43,14 @@ function readClassCode(): string {
   return localStorage.getItem(STORAGE_CLASS_CODE) ?? "";
 }
 
+type CloudTeacherProfile = {
+  teacherName?: string;
+  phone?: string;
+  lineId?: string;
+  notice?: string;
+  updatedAt?: number;
+};
+
 const LINE_ID_PATTERN = /^[A-Za-z0-9._-]{2,30}$/;
 
 type AnnouncementRow = {
@@ -60,6 +68,32 @@ export function HomeContactCard() {
   const [draft, setDraft] = useState<ContactInfo>(() => loadContact());
   const [statusMsg, setStatusMsg] = useState<{ kind: "ok" | "err"; text: string } | null>(null);
   const [classCode, setClassCode] = useState<string>(() => readClassCode());
+
+  // 雲端教師聯絡檔（按班級碼共享）。有班級碼就拉一次，無班級碼就跳過。
+  const profileQuery = trpc.cloud.getTeacherProfile.useQuery(
+    { classCode },
+    { enabled: Boolean(classCode) },
+  );
+  const upsertProfile = trpc.cloud.upsertTeacherProfile.useMutation({
+    onSuccess: () => {
+      toast.success("已同步到雲端，全班可見");
+      profileQuery.refetch();
+    },
+    onError: (e) => toast.error("同步失敗：" + e.message),
+  });
+
+  // 拉雲端檔後合併到 contact（雲端是 source of truth）
+  useEffect(() => {
+    if (profileQuery.data?.ok && profileQuery.data.profile) {
+      const p = profileQuery.data.profile as CloudTeacherProfile;
+      setContact((prev) => ({
+        teacherName: p.teacherName ?? prev.teacherName,
+        phone: p.phone ?? prev.phone,
+        lineId: p.lineId ?? prev.lineId,
+        notice: p.notice ?? prev.notice,
+      }));
+    }
+  }, [profileQuery.data]);
 
   // 編輯模式打開時，把當前值填入 draft
   useEffect(() => {
@@ -134,6 +168,16 @@ export function HomeContactCard() {
     setContact(trimmed);
     setEditing(false);
     flash({ kind: "ok", text: "已儲存" });
+    // 有班級碼時同步到雲端
+    if (classCode) {
+      upsertProfile.mutate({
+        classCode,
+        teacherName: trimmed.teacherName,
+        phone: trimmed.phone,
+        lineId: trimmed.lineId,
+        notice: trimmed.notice,
+      });
+    }
   }
 
   function submitAnnouncement() {

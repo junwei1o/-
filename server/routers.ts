@@ -401,6 +401,48 @@ export const appRouter = router({
           })),
         };
       }),
+
+    /**
+     * 教師聯絡檔案（按班級碼共享）。
+     * 用途：老師的 LINE ID / 電話 / 公告存在雲端，所有同班學生打開
+     * HomeContactCard 都會拉到同一份。
+     * Key 規則：「__teacher_profile_${classCode}」與學生船籍命名空間隔離。
+     */
+    getTeacherProfile: publicProcedure
+      .input(z.object({ classCode: z.string().trim().min(4).max(8) }))
+      .query(async ({ input }) => {
+        const code = input.classCode.trim().toUpperCase();
+        const row = await getCloudSave(`__teacher_profile_${code}`);
+        if (!row) return { ok: false as const, reason: "notFound" as const };
+        return { ok: true as const, profile: row.payload };
+      }),
+
+    upsertTeacherProfile: publicProcedure
+      .input(z.object({
+        classCode: z.string().trim().min(4).max(8),
+        teacherName: z.string().trim().min(1).max(24),
+        phone: z.string().trim().max(20).optional(),
+        lineId: z.string().trim().max(30).optional(),
+        notice: z.string().trim().max(500).optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const code = input.classCode.trim().toUpperCase();
+        const name = `__teacher_profile_${code}`;
+        const profile = {
+          teacherName: input.teacherName.trim(),
+          phone: (input.phone ?? "").trim(),
+          lineId: (input.lineId ?? "").trim(),
+          notice: (input.notice ?? "").trim(),
+          updatedAt: Date.now(),
+        };
+        const existing = await getCloudSave(name);
+        if (existing) {
+          await updateCloudSave(name, profile, { coins: 0, totalAnswers: 0, badges: 0 });
+        } else {
+          await createCloudSave({ name, payload: profile, coins: 0, totalAnswers: 0, badges: 0 });
+        }
+        return { ok: true as const };
+      }),
   }),
   teacher: router({
     /** 建立班級並取得 6 位班級碼。 */
