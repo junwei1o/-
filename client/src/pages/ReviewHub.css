@@ -1,0 +1,420 @@
+.review-hub {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 22px 18px 48px;
+  font-family: inherit;
+}
+
+.review-hub-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.review-hub-head-icon {
+  color: var(--tidal, #0B6E8E);
+  flex-shrink: 0;
+}
+
+.review-hub-eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--tidal-deep, #07516A);
+  margin: 0 0 2px;
+}
+
+.review-hub-head h1 {
+  font-family: "Noto Serif TC", serif;
+  font-size: 26px;
+  margin: 0;
+  color: var(--ink, #1F3031);
+}
+
+.review-hub-subtitle {
+  margin: 4px 0 0;
+  font-size: 14px;
+  color: var(--ink, #1F3031);
+  opacity: 0.85;
+}
+
+/* 進度條 */
+.review-hub-progress {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  background: var(--white, #FFFDF8);
+  border: 1px solid var(--line, #C9BFA8);
+  border-radius: 16px;
+  padding: 14px 18px;
+  margin-bottom: 14px;
+}
+
+.review-hub-progress-score {
+  font-family: "Noto Serif TC", serif;
+  font-size: 24px;
+  color: var(--tidal-deep, #07516A);
+}
+
+.review-hub-progress-label {
+  font-size: 14px;
+  color: var(--ink, #1F3031);
+}
+
+/* 複習階梯（間隔節點的可視化） */
+.review-hub-ladder {
+  background: var(--white, #FFFDF8);
+  border: 1px solid var(--line, #C9BFA8);
+  border-radius: 16px;
+  padding: 14px 18px;
+  margin-bottom: 14px;
+}
+
+.review-hub-ladder-title {
+  margin: 0 0 10px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--tidal-deep, #07516A);
+}
+
+.review-hub-ladder-nodes {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+
+.review-hub-ladder-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 6px;
+  border-radius: 12px;
+  background: var(--paper-deep, #EFE6D2);
+  border: 1px solid var(--line, #C9BFA8);
+  text-align: center;
+}
+
+.review-hub-ladder-node.is-due {
+  background: #E4F2F5;
+  border-color: var(--tidal, #0B6E8E);
+  box-shadow: 0 0 0 1px var(--tidal, #0B6E8E) inset;
+}
+
+.review-hub-ladder-node.is-idle {
+  opacity: 0.55;
+}
+
+.review-hub-ladder-label {
+  font-size: 12px;
+  color: var(--ink, #1F3031);
+}
+
+.review-hub-ladder-count {
+  font-family: "Noto Serif TC", serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--ink, #1F3031);
+}
+
+.review-hub-ladder-node.is-due .review-hub-ladder-count {
+  color: var(--tidal-deep, #07516A);
+}
+
+.review-hub-ladder-node small {
+  font-size: 11px;
+  color: var(--tidal-deep, #07516A);
+  font-weight: 700;
+}
+
+/* 複習題卡 */
+.review-hub-deck {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.review-hub-question {
+  background: var(--white, #FFFDF8);
+  border: 1px solid var(--line, #C9BFA8);
+  border-radius: 18px;
+  padding: 18px 20px;
+  box-shadow: 0 6px 20px -14px rgba(11, 110, 142, 0.18);
+}
+
+.review-hub-q-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.review-hub-q-index {
+  font-weight: 800;
+  font-size: 13px;
+  color: var(--tidal-deep, #07516A);
+}
+
+.review-hub-q-topic {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink, #1F3031);
+  flex: 1;
+}
+
+.review-hub-q-badge {
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  background: var(--paper-deep, #EFE6D2);
+  color: var(--ink, #1F3031);
+}
+
+.review-hub-q-badge.is-variant {
+  background: #E4F2F5;
+  color: var(--tidal-deep, #07516A);
+}
+
+.review-hub-prompt {
+  margin: 0 0 12px;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--ink, #1F3031);
+}
+
+.review-hub-options {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.review-hub-opt {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  text-align: left;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--line, #C9BFA8);
+  background: #FFF;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--ink, #1F3031);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.review-hub-opt:hover:not(:disabled) {
+  border-color: var(--tidal, #0B6E8E);
+  background: #F2FAFC;
+}
+
+.review-hub-opt:disabled {
+  cursor: default;
+}
+
+.review-hub-opt-letter {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--paper-deep, #EFE6D2);
+  font-size: 12px;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.review-hub-opt.correct {
+  border-color: #2E9E6B;
+  background: #EAF7F0;
+}
+
+.review-hub-opt.correct .review-hub-opt-letter {
+  background: #2E9E6B;
+  color: #fff;
+}
+
+.review-hub-opt.wrong {
+  border-color: #C0564F;
+  background: #FBEFEE;
+}
+
+.review-hub-opt.wrong .review-hub-opt-letter {
+  background: #C0564F;
+  color: #fff;
+}
+
+.review-hub-feedback {
+  margin: 12px 0 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.6;
+}
+
+.review-hub-feedback.ok {
+  color: #2E9E6B;
+}
+
+.review-hub-feedback.err {
+  color: #C0564F;
+}
+
+.review-hub-explanation {
+  font-weight: 500;
+  color: var(--ink, #1F3031);
+}
+
+/* 完成結果面板 */
+.review-hub-result {
+  background: var(--white, #FFFDF8);
+  border: 1px solid var(--line, #C9BFA8);
+  border-radius: 18px;
+  padding: 24px;
+  box-shadow: 0 8px 24px -14px rgba(11, 110, 142, 0.22);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.review-hub-result-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.review-hub-result-row .ok {
+  color: #2E9E6B;
+}
+
+.review-hub-result-score {
+  font-family: "Noto Serif TC", serif;
+  font-size: 28px;
+  color: var(--tidal-deep, #07516A);
+}
+
+.review-hub-result-label {
+  font-size: 15px;
+  color: var(--ink, #1F3031);
+}
+
+.review-hub-result-meta {
+  display: flex;
+  gap: 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink, #1F3031);
+}
+
+.review-hub-result-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.review-hub-result-meta svg {
+  color: var(--tidal, #0B6E8E);
+}
+
+.review-hub-result-praise {
+  margin: 0;
+  font-size: 14px;
+  color: #2E9E6B;
+  font-weight: 600;
+}
+
+/* 空狀態 */
+.review-hub-empty {
+  background: var(--white, #FFFDF8);
+  border: 1px dashed var(--line, #C9BFA8);
+  border-radius: 18px;
+  padding: 40px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+}
+
+.review-hub-empty svg {
+  color: #2E9E6B;
+}
+
+.review-hub-empty strong {
+  font-size: 17px;
+  color: var(--ink, #1F3031);
+}
+
+.review-hub-empty p {
+  margin: 0 0 6px;
+  max-width: 420px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--ink, #1F3031);
+  opacity: 0.85;
+}
+
+/* 共用按鈕 */
+.review-hub-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 11px 18px;
+  border-radius: 12px;
+  border: none;
+  background: var(--tidal, #0B6E8E);
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.review-hub-cta:hover:not(:disabled) {
+  background: var(--tidal-deep, #07516A);
+  transform: translateY(-1px);
+}
+
+.review-hub-cta.ghost {
+  background: var(--paper-deep, #EFE6D2);
+  color: var(--ink, #1F3031);
+}
+
+.review-hub-cta.ghost:hover {
+  background: var(--line, #C9BFA8);
+}
+
+/* 頁尾 */
+.review-hub-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+.review-hub-foot-hint {
+  font-size: 13px;
+  color: var(--ink, #1F3031);
+  opacity: 0.8;
+}
+
+@media (max-width: 560px) {
+  .review-hub-ladder-nodes {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

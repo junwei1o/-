@@ -1,4 +1,5 @@
 import {
+  AlarmClock,
   BarChart3,
   Beer,
   BookOpenCheck,
@@ -42,6 +43,7 @@ export const HOME_FEATURE_GROUPS: HomeFeatureGroup[] = [
     description: "從課綱練習、錯題到學習報告。",
     items: [
       { id: "practice", label: "課綱練習", description: "依科目與進度開始答題", href: "/practice", icon: BookOpenCheck },
+      { id: "review-hub", label: "今日複習中心", description: "按遺忘曲線整理到期複習", href: "/review-hub", icon: AlarmClock },
       { id: "wrong-answers", label: "錯題複習", description: "整理並補強真實錯題", href: "/wrong-answers", icon: RotateCcw },
       { id: "learning-insights", label: "學習洞察", description: "查看弱點與練習建議", href: "/learning-insights", icon: BrainCircuit },
       { id: "learning-report", label: "學習報告", description: "回顧答題與成長趨勢", href: "/learning-report", icon: BarChart3 },

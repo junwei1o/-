@@ -38,6 +38,7 @@ const AdventureJournal = React.lazy(() => import("@/pages/AdventureJournal"));
 const DailyCamp = React.lazy(() => import("@/pages/DailyCamp"));
 const Badges = React.lazy(() => import("@/pages/Badges"));
 const WrongAnswers = React.lazy(() => import("@/pages/WrongAnswers"));
+const ReviewHub = React.lazy(() => import("@/pages/ReviewHub"));
 const Settings = React.lazy(() => import("@/pages/Settings"));
 const StudyTips = React.lazy(() => import("@/pages/StudyTips"));
 const GuardianExpedition = React.lazy(() => import("@/pages/GuardianExpedition"));
@@ -72,6 +73,7 @@ function Router() {
         <Route path={"/badges"} component={Badges} />
         <Route path={"/practice"} component={PaperExam} />
         <Route path={"/wrong-answers"} component={WrongAnswers} />
+        <Route path={"/review-hub"} component={ReviewHub} />
         <Route path={"/regions/:regionKey"} component={RegionDetail} />
         <Route path={"/observatory"} component={MediaObservatory} />
         <Route path={"/observatory/:entryKey"} component={MediaObservatoryDetail} />
