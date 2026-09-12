@@ -658,12 +658,14 @@ export const appRouter = router({
           submittedAt: null,
         });
         // 並發生成時讓給先建立的一方，直接讀回已存的卷子。
-        const saved = created ? { id: created.id, questions } : (await getWeeklyQuiz(name, weekKey))?.questions;
-        if (!saved) throw new Error("週測卷建立失敗，請稍後再試");
+        const savedQuestions = created
+          ? questions
+          : (await getWeeklyQuiz(name, weekKey))?.questions;
+        if (!savedQuestions) throw new Error("週測卷建立失敗，請稍後再試");
         return {
           status: "ready" as const,
           weekKey,
-          quiz: { id: created?.id ?? -1, questions: saved as WeeklyQuizQuestion[] },
+          quiz: { id: created?.id ?? -1, questions: savedQuestions as WeeklyQuizQuestion[] },
         };
       }),
 
