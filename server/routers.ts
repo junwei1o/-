@@ -276,6 +276,125 @@ export const appRouter = router({
           throw new Error("AI progress summary format is invalid");
         }
       }),
+
+    /**
+     * AI 學伴主動委派任務卡：
+     * 讀最近 50 筆考試 → computeStudentMastery → routeTaskType →
+     * 一次 LLM 呼叫產出 5–8 題任務卡。
+     * 路由決策：綜合課綱 ≥ 70% 且各單科 ≥ 60% 派綜合題，否則派單科最薄弱點。
+     */
+    delegateTask: publicProcedure
+      .input(z.object({
+        studentName: z.string().trim().min(2).max(24),
+        days: z.number().int().min(1).max(30).optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const name = input.studentName.trim();
+        const records = await listExamRecords(name, 50);
+        const mastery = computeStudentMastery(
+          records.map((row) => ({
+            subject: row.subject,
+            totalQuestions: row.totalQuestions,
+            correctCount: row.correctCount,
+            detail: row.detail ?? null,
+          })),
+        );
+        const route = routeTaskType(mastery);
+        const focusTopic = mastery.weakTopics[0];
+        const taskBrief = route.taskType === "integrated"
+          ? `請設計 5–8 題「綜合課綱」題，融合至少兩個學科（例如：自然 + 社會、數學 + 自然），適合台灣國小 3–6 年級，題目要有真實情境感，難度中上。`
+          : focusTopic
+            ? `請設計 5–8 題「${focusTopic.subject}：${focusTopic.topic}」題，先鞏固學生最薄弱點，難度從基礎到標準，題目要有具體情境。`
+            : `請設計 5–8 題「${route.subject ?? "綜合課綱"}」題，難度基礎到標準。`;
+
+        const response = await invokeLLM({
+          messages: [
+            {
+              role: "system",
+              content: "你是台灣國小 3–6 年級的命題老師。題目要有真實情境（避免純算式），用繁體中文，輸出必須符合指定 JSON schema；不得捏造課綱編號。",
+            },
+            {
+              role: "user",
+              content: JSON.stringify({
+                task: taskBrief,
+                mastery: {
+                  totalQuestions: mastery.totalQuestions,
+                  subjectCorrectRate: mastery.subjectCorrectRate,
+                  integratedCorrectRate: mastery.integratedCorrectRate,
+                  weakTopics: mastery.weakTopics,
+                },
+                route: { taskType: route.taskType, subject: route.subject, reason: route.reason },
+              }),
+            },
+          ],
+          max_tokens: 1400,
+          response_format: {
+            type: "json_schema",
+            json_schema: {
+              name: "delegated_task_card",
+              strict: true,
+              schema: {
+                type: "object",
+                properties: {
+                  title: { type: "string" },
+                  questions: {
+                    type: "array",
+                    minItems: 5,
+                    maxItems: 8,
+                    items: {
+                      type: "object",
+                      properties: {
+                        prompt: { type: "string" },
+                        options: { type: "array", minItems: 2, maxItems: 4, items: { type: "string" } },
+                        answer: { type: "integer", minimum: 0, maximum: 3 },
+                        topic: { type: "string" },
+                        difficulty: { type: "string", enum: ["基礎", "標準", "挑戰"] },
+                      },
+                      required: ["prompt", "options", "answer", "topic", "difficulty"],
+                      additionalProperties: false,
+                    },
+                  },
+                },
+                required: ["title", "questions"],
+                additionalProperties: false,
+              },
+            },
+          },
+        });
+
+        const content = response.choices[0]?.message.content;
+        if (typeof content !== "string") throw new Error("AI delegation content is unavailable");
+        try {
+          const parsed = JSON.parse(content);
+          const validated = z.object({
+            title: z.string().min(1).max(120),
+            questions: z.array(z.object({
+              prompt: z.string().min(1).max(500),
+              options: z.array(z.string().min(1).max(240)).min(2).max(4),
+              answer: z.number().int().min(0).max(3),
+              topic: z.string().min(1).max(120),
+              difficulty: z.enum(["基礎", "標準", "挑戰"]),
+            }).superRefine((q, ctx) => {
+              if (q.answer >= q.options.length) ctx.addIssue({ code: z.ZodIssueCode.custom, message: "answer outside options" });
+            })).min(5).max(8),
+          }).parse(parsed);
+          return {
+            taskType: route.taskType,
+            subject: route.subject,
+            reason: route.reason,
+            title: validated.title,
+            questions: validated.questions,
+            mastery: {
+              totalQuestions: mastery.totalQuestions,
+              subjectCorrectRate: mastery.subjectCorrectRate,
+              integratedCorrectRate: mastery.integratedCorrectRate,
+              weakTopics: mastery.weakTopics,
+            },
+          };
+        } catch {
+          throw new Error("AI delegation format is invalid");
+        }
+      }),
   }),
   questionBank: router({
     list: publicProcedure
