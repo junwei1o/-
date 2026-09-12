@@ -515,3 +515,61 @@ export default function TeacherDashboard() {
     </main>
   );
 }
+
+/** 學生作答速度彙總：督學台提示用。 */
+export type SpeedSummary = {
+  sampleCount: number;
+  averageMs: number;
+  correctAverageMs: number;
+  wrongAverageMs: number;
+  /** 答錯且 5 秒以內的題數（可能是猜的）。 */
+  rushedWrongCount: number;
+  /** 答對但超過 20 秒的題數（概念可能不熟）。 */
+  slowCorrectCount: number;
+};
+
+/** 毫秒四捨五入為秒（顯示在督學台明細）。 */
+export function toSecondsLabel(ms: number): string {
+  return String(Math.round(ms / 1000));
+}
+
+/**
+ * 把作答速度轉成老師看得懂的提示句（最多兩句）。
+ * 規則：
+ * 1. rushedWrongCount > 0 → 猜題提示
+ * 2. slowCorrectCount > 0 → 概念不熟提示
+ * 3. 都沒有、且錯的平均時間 ≤ 對的 0.6 倍 → 答錯明顯較快（提示一句）
+ * 4. 其他 → 「速度分布正常。」
+ */
+export function speedInsight(speed: SpeedSummary): string[] {
+  const lines: string[] = [];
+
+  if (speed.rushedWrongCount > 0) {
+    lines.push(
+      `有 ${speed.rushedWrongCount} 題 5 秒內就答錯，可能是用猜的——建議提醒他先把題目讀完。`,
+    );
+  }
+
+  if (speed.slowCorrectCount > 0) {
+    lines.push(
+      `有 ${speed.slowCorrectCount} 題答對但想了超過 20 秒，概念還不熟——建議同一題型再練幾次。`,
+    );
+  }
+
+  // 兩個都沒命中時，額外看「答錯是否明顯比答對快」（< 0.6 倍視為異常）
+  if (
+    speed.rushedWrongCount === 0 &&
+    speed.wrongAverageMs > 0 &&
+    speed.correctAverageMs > 0 &&
+    speed.wrongAverageMs < speed.correctAverageMs * 0.6
+  ) {
+    lines.push(
+      `答錯比答對還快（平均 ${toSecondsLabel(speed.wrongAverageMs)} 秒 vs ${toSecondsLabel(speed.correctAverageMs)} 秒），值得關注。`,
+    );
+  }
+
+  if (lines.length === 0) {
+    return ["速度分布正常。"];
+  }
+  return lines;
+}
