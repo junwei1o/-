@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Accessibility, AlertTriangle, BarChart3, BookMarked, Clipboard, Crown, Download, Lock, LockOpen, Palette, RefreshCw, School, Settings as SettingsIcon, Ship, Sparkles, Trash2, UserRound, Volume2 } from "lucide-react";
+import { Accessibility, AlertTriangle, BarChart3, BookMarked, Clipboard, Crown, Download, GraduationCap, Lock, LockOpen, Palette, RefreshCw, School, Settings as SettingsIcon, Ship, Sparkles, Trash2, UserRound, Volume2 } from "lucide-react";
 import { toast } from "sonner";
 import { useLocation } from "wouter";
 import {
@@ -36,9 +36,72 @@ import PrefsPanel from "@/components/bx/PrefsPanel";
 import { cloudApi, getCloudMode, getLastSyncAt } from "@/game/cloudSync";
 import { isDebugUnlocked, lockDebug, tryUnlockDebug } from "@/game/debugGate";
 import { bxStore } from "@/game/bxStore";
+import { loadUserPreferences, saveUserPreferences, type UserDifficultyPreference, type UserGradeLevel } from "@/game/adaptiveLearning";
 import "./SettingsDiagnostics.css";
 
 const RARE_CODEX = (["chinese", "math", "english", "science"] as const).flatMap((subject) => getRareMonsters(subject));
+
+function LearningSettingsSection() {
+  const [prefs, setPrefs] = useState(() => loadUserPreferences());
+
+  function handleGradeChange(grade: UserGradeLevel) {
+    const next = { ...prefs, gradeLevel: grade };
+    setPrefs(next);
+    saveUserPreferences(next);
+    toast.success(`已切換為${grade}年級，試卷將優先出這個程度的題目。`);
+  }
+
+  function handleDifficultyChange(pref: UserDifficultyPreference) {
+    const next = { ...prefs, difficultyPreference: pref };
+    setPrefs(next);
+    saveUserPreferences(next);
+    toast.success(`已切換為「${pref}」模式，試卷難度會自動調整。`);
+  }
+
+  return (
+    <section className="settings-audio-card settings-learning-card" aria-labelledby="learning-settings-title">
+      <div className="settings-audio-heading">
+        <span className="settings-page-icon" aria-hidden="true"><GraduationCap size={20} /></span>
+        <div>
+          <p className="settings-eyebrow">學習航線</p>
+          <h2 id="learning-settings-title">學習設定</h2>
+        </div>
+      </div>
+      <p className="settings-log-description">
+        調整目前年級與難度偏好，讓試卷優先出這個程度的題目。設定會保存在這台裝置，下次回來還會記得。
+      </p>
+      <div className="settings-learning-grid">
+        <label className="settings-learning-item" htmlFor="settings-grade-select">
+          <span>目前年級</span>
+          <select
+            id="settings-grade-select"
+            value={prefs.gradeLevel}
+            onChange={(event) => handleGradeChange(Number(event.target.value) as UserGradeLevel)}
+            className="home-setting-select"
+          >
+            <option value={3}>三年級</option>
+            <option value={4}>四年級</option>
+            <option value={5}>五年級</option>
+            <option value={6}>六年級</option>
+          </select>
+        </label>
+        <label className="settings-learning-item" htmlFor="settings-difficulty-select">
+          <span>難度偏好</span>
+          <select
+            id="settings-difficulty-select"
+            value={prefs.difficultyPreference}
+            onChange={(event) => handleDifficultyChange(event.target.value as UserDifficultyPreference)}
+            className="home-setting-select"
+          >
+            <option value="簡單優先">簡單優先（避開太難）</option>
+            <option value="均衡混合">均衡混合（推薦）</option>
+            <option value="挑戰優先">挑戰優先（避開太簡單）</option>
+          </select>
+        </label>
+      </div>
+    </section>
+  );
+}
 
 function titleLabel(title: string) {
   return title.replace(/^擊敗後獲得限定稱號：/, "");
@@ -417,6 +480,8 @@ export default function Settings() {
           </div>
           <p>查看本機儲存遇到的問題。這些紀錄只保存在目前裝置，不會上傳到伺服器。</p>
         </header>
+
+        <LearningSettingsSection />
 
         <section className="settings-audio-card" aria-labelledby="battle-audio-title">
           <div className="settings-audio-heading">

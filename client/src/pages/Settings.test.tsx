@@ -273,3 +273,46 @@ describe("船長室密語閘門", () => {
     expect(screen.queryByLabelText("家長密語")).not.toBeInTheDocument();
   });
 });
+
+describe("Settings 學習設定", () => {
+  beforeEach(() => {
+    storage.clear();
+    bxStore.reset();
+  });
+
+  afterEach(() => {
+    cleanup();
+  });
+
+  it("顯示目前年級與難度偏好，並可即時切換並持久化", () => {
+    storage.set(
+      "xue-adventure-user-prefs-v1",
+      JSON.stringify({ version: 1, gradeLevel: 4, difficultyPreference: "均衡混合", updatedAt: 1 }),
+    );
+    render(<Settings />);
+
+    const gradeSelect = screen.getByLabelText("目前年級") as HTMLSelectElement;
+    const difficultySelect = screen.getByLabelText("難度偏好") as HTMLSelectElement;
+
+    expect(gradeSelect.value).toBe("4");
+    expect(difficultySelect.value).toBe("均衡混合");
+
+    fireEvent.change(gradeSelect, { target: { value: "6" } });
+    fireEvent.change(difficultySelect, { target: { value: "挑戰優先" } });
+
+    expect(gradeSelect.value).toBe("6");
+    expect(difficultySelect.value).toBe("挑戰優先");
+
+    // 持久化：localStorage 已被寫入新值
+    const stored = JSON.parse(storage.get("xue-adventure-user-prefs-v1") ?? "{}");
+    expect(stored.gradeLevel).toBe(6);
+    expect(stored.difficultyPreference).toBe("挑戰優先");
+    expect(stored.updatedAt).toBeGreaterThan(0);
+  });
+
+  it("無儲存時預設值為挑戰優先（確保新手直接面對最難題）", () => {
+    render(<Settings />);
+    const difficultySelect = screen.getByLabelText("難度偏好") as HTMLSelectElement;
+    expect(difficultySelect.value).toBe("挑戰優先");
+  });
+});
