@@ -427,8 +427,10 @@ export const USER_PREFERENCES_STORAGE_KEY = "xue-adventure-user-prefs-v1";
 export const defaultUserPreferences: UserPreferences = {
   version: 1,
   gradeLevel: 4,
-  difficultyPreference: "均衡混合",
-  updatedAt: 0, // 0 表示未設定，觸發「最難優先」模式
+  // 新使用者預設直接給最高難度（標準 + 挑戰），避免一進網站就只拿到基礎題。
+  // 老使用者 localStorage 已有值，loadUserPreferences 會保留原值不變。
+  difficultyPreference: "挑戰優先",
+  updatedAt: 0, // 0 表示未設定，僅供日後擴展
 };
 
 function isGradeLevel(value: unknown): value is UserGradeLevel {

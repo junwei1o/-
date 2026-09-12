@@ -157,3 +157,62 @@ describe("calculateLearningTrendReport", () => {
     expect(calculateLearningTrendReport({ version: 2, attempts: [] })).toEqual({ helpHabit: [], knowledgeMastery: [] });
   });
 });
+
+import {
+  defaultUserPreferences,
+  getTargetDifficultiesFromPrefs,
+  loadUserPreferences,
+  saveUserPreferences,
+  USER_PREFERENCES_STORAGE_KEY,
+} from "./adaptiveLearning";
+
+function makeStorage(initial: Record<string, string> = {}): Storage {
+  const map = new Map(Object.entries(initial));
+  return {
+    get length() { return map.size; },
+    clear() { map.clear(); },
+    getItem(key: string) { return map.has(key) ? map.get(key)! : null; },
+    key(index: number) { return Array.from(map.keys())[index] ?? null; },
+    removeItem(key: string) { map.delete(key); },
+    setItem(key: string, value: string) { map.set(key, value); },
+  } as Storage;
+}
+
+describe("使用者偏好：預設最高難度（F5）", () => {
+  it("預設值是挑戰優先（新使用者直接面對最難題）", () => {
+    expect(defaultUserPreferences.difficultyPreference).toBe("挑戰優先");
+  });
+
+  it("getTargetDifficultiesFromPrefs 預設回 [標準, 挑戰]", () => {
+    expect(getTargetDifficultiesFromPrefs(defaultUserPreferences)).toEqual(["標準", "挑戰"]);
+  });
+
+  it("loadUserPreferences 沒有 localStorage 時回傳挑戰優先", () => {
+    const storage = makeStorage();
+    const loaded = loadUserPreferences(storage);
+    expect(loaded.difficultyPreference).toBe("挑戰優先");
+    expect(loaded.gradeLevel).toBe(4);
+  });
+
+  it("老使用者 localStorage 已有均衡混合時不被覆蓋", () => {
+    const old = {
+      version: 1,
+      gradeLevel: 5,
+      difficultyPreference: "均衡混合",
+      updatedAt: 1700000000000,
+    } as const;
+    const storage = makeStorage({
+      [USER_PREFERENCES_STORAGE_KEY]: JSON.stringify(old),
+    });
+    const loaded = loadUserPreferences(storage);
+    expect(loaded.difficultyPreference).toBe("均衡混合");
+    expect(loaded.gradeLevel).toBe(5);
+  });
+
+  it("saveUserPreferences 後再次讀回仍是自己存的挑戰優先", () => {
+    const storage = makeStorage();
+    saveUserPreferences(defaultUserPreferences, storage);
+    const loaded = loadUserPreferences(storage);
+    expect(loaded.difficultyPreference).toBe("挑戰優先");
+  });
+});
