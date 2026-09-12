@@ -16,6 +16,7 @@ import { QuizModal } from "@/components/QuizModal";
 import { consumeStorageNotice, getDailySignIn, getLearningRecord, getPlayerData, getPlayerName, getSelectedTitle, hasSignedInToday, type LearningRecord } from "@/utils/storage";
 import { loadSignInState, hasSignedInToday as hasGoldSignedInToday } from "@/game/dailySignIn";
 import { DailySignInModal } from "@/components/DailySignInModal";
+import { HomeContactCard } from "@/components/HomeContactCard";
 import { buildKnowledgeIslandSnapshots, type KnowledgeIslandSubject } from "@/lib/studentKnowledgeIslands";
 import type { PaperQuestion } from "@/lib/paperExam";
 import FirstLightQuest from "@/components/bx/FirstLightQuest";
@@ -462,6 +463,7 @@ export default function Home() {
             </nav>
             {isActionsOpen ? <button type="button" className="home-dashboard-actions-close" onClick={closeActions}><X size={15} aria-hidden="true" /> 關閉</button> : null}
           </section>
+          <HomeContactCard />
         </div>
       </div>
       {quizSubject ? (() => {
