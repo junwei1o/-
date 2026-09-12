@@ -303,11 +303,13 @@ const buildProviderChain = (): ProviderConfig[] => {
     });
   }
   if (ENV.cerebrasApiKey) {
+    // Cerebras 這個 key 2026-09 實測：Llama 3.x 全 archived、qwen-3-32b 也 404，
+    // 唯一可用模型是 gpt-oss-120b（與 Groq 主用模型一致 → 熱備一致性最佳）。
     chain.push({
       id: "cerebras",
       url: "https://api.cerebras.ai/v1/chat/completions",
       apiKey: ENV.cerebrasApiKey,
-      defaultModel: "llama-3.3-70b",
+      defaultModel: "gpt-oss-120b",
     });
   }
   if (ENV.deepseekApiKey) {
