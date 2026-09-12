@@ -1,10 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { AlarmClock, Backpack, BarChart3, Beer, BookOpenCheck, BrainCircuit, Bug, CalendarDays, ChevronDown, ChevronUp, Coins, Crosshair, Crown, Dices, LifeBuoy, Medal, RotateCcw, ScrollText, Settings as SettingsIcon, ShieldAlert, Sparkles, Swords, Telescope, Tent, Timer, type LucideIcon, X } from "lucide-react";
+import { AlarmClock, Backpack, Beer, BookOpenCheck, Bug, CalendarDays, ChevronDown, ChevronUp, Coins, Compass, Crosshair, Dices, RotateCcw, ShieldAlert, Sparkles, Timer, X } from "lucide-react";
 import { toast } from "sonner";
 import { useLocation } from "wouter";
 import { useQuestionBank } from "@/lib/questionBank";
 import { getMemoryAlarmCount, loadAdaptiveProfile } from "@/game/adaptiveLearning";
-import { loadUserPreferences, saveUserPreferences, type UserGradeLevel, type UserDifficultyPreference } from "@/game/adaptiveLearning";
 import { getInventory } from "@/game/inventoryService";
 import { loadCurrentWeekReinforcementJournal } from "@/game/mapReinforcementReward";
 import { consumeRandomAdventureRouteReward } from "@/game/randomAdventureRouteReward";
@@ -19,6 +18,7 @@ import { DailySignInModal } from "@/components/DailySignInModal";
 import { HomeContactCard } from "@/components/HomeContactCard";
 import { CompanionTaskCard } from "@/components/CompanionTaskCard";
 import { buildKnowledgeIslandSnapshots, type KnowledgeIslandSubject } from "@/lib/studentKnowledgeIslands";
+import { HOME_FEATURE_GROUPS } from "@/lib/homeFeatureDirectory";
 import type { PaperQuestion } from "@/lib/paperExam";
 import FirstLightQuest from "@/components/bx/FirstLightQuest";
 import { BxEmptyState } from "@/components/bx/EmptyState";
@@ -34,75 +34,7 @@ function titleLabel(title: string) {
   return title.replace(/^擊敗後獲得限定稱號：/, "");
 }
 
-type HomeFeatureItem = {
-  id: string;
-  label: string;
-  description: string;
-  href: string;
-  icon: LucideIcon;
-};
-
-type HomeFeatureGroup = {
-  id: string;
-  label: string;
-  description: string;
-  items: HomeFeatureItem[];
-};
-
-const HOME_FEATURE_GROUPS: HomeFeatureGroup[] = [
-  {
-    id: "learning",
-    label: "學習與複習",
-    description: "從課綱練習、錯題到學習報告。",
-    items: [
-      { id: "practice", label: "課綱練習", description: "依科目與進度開始答題", href: "/practice", icon: BookOpenCheck },
-      { id: "wrong-answers", label: "錯題複習", description: "整理並補強真實錯題", href: "/wrong-answers", icon: RotateCcw },
-      { id: "learning-insights", label: "學習洞察", description: "查看弱點與練習建議", href: "/learning-insights", icon: BrainCircuit },
-      { id: "learning-report", label: "學習報告", description: "回顧答題與成長趨勢", href: "/learning-report", icon: BarChart3 },
-    ],
-  },
-  {
-    id: "expedition",
-    label: "探險與對戰",
-    description: "從主航海圖出發，解放知識島嶼。",
-    items: [
-      { id: "map", label: "主航海圖", description: "瀏覽島嶼與學習路線", href: "/map", icon: ScrollText },
-      { id: "battle", label: "答題戰鬥", description: "運用技能迎戰知識怪物", href: "/battle", icon: Swords },
-      { id: "guardian", label: "守護者遠征", description: "挑戰四位區域守護者", href: "/guardian", icon: Crown },
-      { id: "tavern", label: "燈塔酒館", description: "學完進來玩：卡牌、冒險、夥伴", href: "/tavern", icon: Beer },
-      { id: "self-challenge", label: "自我挑戰", description: "限時答題與個人最佳紀錄", href: "/community", icon: Timer },
-      { id: "daily-camp", label: "每日營地", description: "簽到、每日任務、金幣商店與每週王", href: "/camp", icon: Tent },
-      { id: "badges", label: "徽章牆", description: "收集探險徽章，點亮成就", href: "/badges", icon: Medal },
-      { id: "adventure-journal", label: "探險日誌", description: "查看每日與歷史航海足跡", href: "/adventure-journal", icon: CalendarDays },
-    ],
-  },
-  {
-    id: "knowledge",
-    label: "知識探索館",
-    description: "用不同主題延伸好奇心與閱讀。",
-    items: [
-      { id: "safety", label: "生活安全學院", description: "消防、醫療、食物與身體自保知識", href: "/safety", icon: LifeBuoy },
-      { id: "astronomy", label: "天文館", description: "探索星空、行星與太空任務", href: "/astronomy", icon: Telescope },
-      { id: "wisdom", label: "智慧故事館", description: "閱讀故事並發現知識線索", href: "/wisdom", icon: Sparkles },
-      { id: "principles", label: "世界原理站", description: "以互動方式理解科學原理", href: "/principles", icon: Dices },
-      { id: "observatory", label: "影視觀測站", description: "從作品主題延伸素養觀察", href: "/observatory", icon: Telescope },
-    ],
-  },
-  {
-    id: "support",
-    label: "學習支援與設定",
-    description: "管理設定、分析錯誤類型與查看摘要。",
-    items: [
-      { id: "error-statistics", label: "錯誤類型統計", description: "辨識概念、粗心與記憶弱點", href: "/error-statistics", icon: ShieldAlert },
-      { id: "learning-summary", label: "教師／家長摘要", description: "以 PIN 保護查看學習概況", href: "/learning-summary", icon: BarChart3 },
-      { id: "settings", label: "設定與個人化", description: "調整主題、稱號、音效與無障礙選項", href: "/settings", icon: SettingsIcon },
-    ],
-  },
-];
-
-function normalizeFeatureQuery(value: string) {
-  return value.trim().toLocaleLowerCase("zh-TW").replace(/\s+/g, "");
-}
+const totalFeatureDirectoryCount = HOME_FEATURE_GROUPS.reduce((sum, group) => sum + group.items.length, 0);
 
 export function buildWeeklySuggestion(records: LearningRecord[], now = Date.now()) {
   const current = new Date(now);
@@ -136,23 +68,7 @@ export default function Home() {
   const [playerData, setPlayerData] = useState(() => getPlayerData());
   const [selectedTitle, setSelectedTitle] = useState(() => getSelectedTitle());
   const [dailySignIn, setDailySignIn] = useState(() => getDailySignIn());
-  const [userPrefs, setUserPrefs] = useState(() => loadUserPreferences());
 
-  function handleGradeChange(grade: UserGradeLevel) {
-    const next = { ...userPrefs, gradeLevel: grade };
-    setUserPrefs(next);
-    saveUserPreferences(next);
-    toast.success(`已切換為${grade}年級，試卷將優先出這個程度的題目。`);
-  }
-
-  function handleDifficultyChange(pref: UserDifficultyPreference) {
-    const next = { ...userPrefs, difficultyPreference: pref };
-    setUserPrefs(next);
-    saveUserPreferences(next);
-    toast.success(`已切換為「${pref}」模式，試卷難度會自動調整。`);
-  }
-
-  const [featureQuery, setFeatureQuery] = useState("");
   const previousGoldRef = useRef(playerData.gold);
   const [isGoldPulseActive, setIsGoldPulseActive] = useState(false);
   const [quizSubject, setQuizSubject] = useState<KnowledgeIslandSubject | null>(null);
@@ -173,14 +89,6 @@ export default function Home() {
   const weeklySuggestion = useMemo(() => buildWeeklySuggestion(learningRecords), [learningRecords]);
   const dailyAdventureSummary = useMemo(() => generateDailyAdventureSummary({ date: Date.now(), entries: getJournalEntries() }), [learningRecords.length, rpgState.correctAnswerCount]);
   const signedInToday = hasSignedInToday(dailySignIn);
-  const visibleFeatureGroups = useMemo(() => {
-    const query = normalizeFeatureQuery(featureQuery);
-    if (!query) return HOME_FEATURE_GROUPS;
-    return HOME_FEATURE_GROUPS.map((group) => ({
-      ...group,
-      items: group.items.filter((item) => normalizeFeatureQuery(`${group.label}${group.description}${item.label}${item.description}`).includes(query)),
-    })).filter((group) => group.items.length > 0);
-  }, [featureQuery]);
 
   useEffect(() => {
     // 進站延遲約 1 秒自動彈出簽到（金幣），避免干擾首屏；今天已簽到則不彈。
@@ -336,47 +244,6 @@ export default function Home() {
           }
         />
 
-        {/* 學習設定卡片 */}
-        <section className="home-learning-settings-card" aria-labelledby="home-learning-settings-title">
-          <div className="home-learning-settings-heading">
-            <div>
-              <p className="home-dashboard-eyebrow">LEARNING PREFERENCES</p>
-              <h2 id="home-learning-settings-title">學習設定</h2>
-              <p>調整年級與難度偏好，讓試卷更貼近你的程度。</p>
-            </div>
-          </div>
-          <div className="home-learning-settings-grid">
-            <label className="home-setting-item">
-              <span>目前年級</span>
-              <select 
-                value={userPrefs.gradeLevel} 
-                onChange={(e) => handleGradeChange(Number(e.target.value) as UserGradeLevel)}
-                className="home-setting-select"
-              >
-                <option value={3}>三年級</option>
-                <option value={4}>四年級</option>
-                <option value={5}>五年級</option>
-                <option value={6}>六年級</option>
-              </select>
-            </label>
-            <label className="home-setting-item">
-              <span>難度偏好</span>
-              <select 
-                value={userPrefs.difficultyPreference} 
-                onChange={(e) => handleDifficultyChange(e.target.value as UserDifficultyPreference)}
-                className="home-setting-select"
-              >
-                <option value="簡單優先">簡單優先（避開太難）</option>
-                <option value="均衡混合">均衡混合（推薦）</option>
-                <option value="挑戰優先">挑戰優先（避開太簡單）</option>
-              </select>
-            </label>
-          </div>
-          <p className="home-learning-settings-hint">
-            💡 設定會儲存在你的瀏覽器中，下次回來還會記得。
-          </p>
-        </section>
-
         <section className="home-mode-hub" aria-labelledby="home-mode-hub-title">
           <div className="home-mode-hub-heading">
             <div>
@@ -409,43 +276,21 @@ export default function Home() {
             </button>
           </div>
         </section>
-        <section className="home-feature-directory" aria-labelledby="home-feature-directory-title">
-          <div className="home-feature-directory-heading">
-            <div>
-              <p className="home-dashboard-eyebrow">ALL EXPEDITION FEATURES</p>
-              <h2 id="home-feature-directory-title">全站功能總覽</h2>
-              <p>所有入口都會前往既有的單機學習功能，不會建立空白或重複頁面。</p>
-            </div>
-            <label className="home-feature-search" htmlFor="home-feature-search-input">
-              <span>搜尋功能</span>
-              <input id="home-feature-search-input" value={featureQuery} onChange={(event) => setFeatureQuery(event.target.value)} placeholder="例如：戰鬥、報告、天文" />
-            </label>
-          </div>
-          {visibleFeatureGroups.length ? (
-            <div className="home-feature-groups">
-              {visibleFeatureGroups.map((group) => (
-                <section className="home-feature-group" key={group.id} aria-labelledby={`home-feature-group-${group.id}`}>
-                  <div className="home-feature-group-heading">
-                    <h3 id={`home-feature-group-${group.id}`}>{group.label}</h3>
-                    <p>{group.description}</p>
-                  </div>
-                  <div className="home-feature-grid">
-                    {group.items.map((item) => {
-                      const Icon = item.icon;
-                      return <button type="button" className="home-feature-card" key={item.id} onClick={() => setLocation(item.href)} aria-label={`前往 ${item.label}：${item.description}`}>
-                        <Icon size={19} aria-hidden="true" />
-                        <span><strong>{item.label}</strong><small>{item.description}</small></span>
-                      </button>;
-                    })}
-                  </div>
-                </section>
-              ))}
-            </div>
-          ) : <p className="home-feature-empty" role="status">找不到「{featureQuery}」相關功能。請試試戰鬥、報告、天文或設定。</p>}
-          <button type="button" className="home-debug-entry" onClick={() => setLocation("/settings#diagnostics")}>
-            <Bug size={19} aria-hidden="true" />
-            <span><strong>調試參數</strong><small>前往安全診斷、儲存錯誤日誌與遮蔽後的診斷摘要；不顯示帳號、答案或機密參數。</small></span>
-          </button>
+        <section className="home-feature-directory-entry" aria-labelledby="home-feature-directory-entry-title">
+          {totalFeatureDirectoryCount ? (
+            <button
+              type="button"
+              className="home-feature-directory-cta"
+              onClick={() => setLocation("/features")}
+              aria-label={`全站功能總覽（${totalFeatureDirectoryCount} 個入口）`}
+            >
+              <Compass size={28} aria-hidden="true" />
+              <span>
+                <strong id="home-feature-directory-entry-title">全站功能總覽</strong>
+                <small>瀏覽全部 {totalFeatureDirectoryCount} 個入口，按主題快速找到要去的地方。</small>
+              </span>
+            </button>
+          ) : null}
         </section>
         {showBackpack ? <aside className="home-dashboard-backpack-panel" aria-label="特產背包"><h2>特產背包</h2>{inventory.length ? <ul>{inventory.map((item) => <li key={item.id}><span aria-hidden="true">{item.emoji}</span>{item.name}</li>)}</ul> : <p>完成真實學習里程碑或發現地圖故事後，特產會收進這裡。</p>}</aside> : null}
         <div className={`home-dashboard-actions-sheet ${isActionsOpen ? "is-open" : "is-collapsed"}`} data-open={isActionsOpen}>

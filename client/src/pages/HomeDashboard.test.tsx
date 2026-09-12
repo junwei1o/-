@@ -134,18 +134,22 @@ describe("首頁沉浸式儀表板", () => {
     expect(screen.getByRole("button", { name: "開啟快速行動" })).toHaveAttribute("aria-expanded", "false");
   });
 
-  it("在首頁列出全站公開功能，支援功能搜尋並導向安全調試參數入口", () => {
+  it("在首頁放置『全站功能總覽』單入口按鈕，點擊跳轉 /features", () => {
     render(<Home />);
 
-    expect(screen.getByRole("heading", { name: "全站功能總覽" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /前往 守護者遠征/ })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /前往 天文館/ })).toBeInTheDocument();
+    // 首頁不再展開所有功能；改為單一入口按鈕
+    const entryBtn = screen.getByRole("button", { name: /全站功能總覽/ });
+    expect(entryBtn).toBeInTheDocument();
+    // aria-label 應該帶有總入口數（N 個）
+    expect(entryBtn.getAttribute("aria-label") ?? "").toMatch(/\d+\s*個入口/);
 
-    fireEvent.change(screen.getByLabelText("搜尋功能"), { target: { value: "天文" } });
-    expect(screen.getByRole("button", { name: /前往 天文館/ })).toBeInTheDocument();
+    // 內聯功能按鈕已被移走
     expect(screen.queryByRole("button", { name: /前往 守護者遠征/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /前往 天文館/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /搜尋功能/ })).not.toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("button", { name: /調試參數/ }));
-    expect(setLocation).toHaveBeenCalledWith("/settings#diagnostics");
+    // 點擊入口跳轉到 /features
+    fireEvent.click(entryBtn);
+    expect(setLocation).toHaveBeenCalledWith("/features");
   });
 });

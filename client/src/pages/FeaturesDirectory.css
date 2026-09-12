@@ -1,0 +1,212 @@
+.features-page {
+  min-height: 100vh;
+  background: linear-gradient(180deg, var(--paper, #F8F1DD) 0%, var(--paper-deep, #EFE6D2) 100%);
+  padding: 32px 20px 80px;
+  color: var(--ink, #1F3031);
+}
+
+.features-page-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.features-back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  color: var(--tidal-deep, #07516A);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 12px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-family: inherit;
+}
+.features-back-button:hover { background: rgba(11, 110, 142, 0.08); }
+
+.features-page-header {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.features-page-heading {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.features-page-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: var(--tidal, #0B6E8E);
+  color: #fff;
+}
+
+.features-eyebrow {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--tidal-deep, #07516A);
+  text-transform: uppercase;
+}
+
+.features-page-header h1 {
+  margin: 4px 0 0;
+  font-size: 28px;
+  font-family: "Noto Serif TC", serif;
+  font-weight: 700;
+}
+
+.features-page-header p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.7;
+  max-width: 720px;
+}
+
+.features-search-bar {
+  margin-bottom: 20px;
+}
+
+.features-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--white, #FFFDF8);
+  border: 1px solid var(--line, #C9BFA8);
+  border-radius: 12px;
+  padding: 8px 14px;
+  color: var(--tidal-deep, #07516A);
+}
+.features-search:focus-within { border-color: var(--tidal, #0B6E8E); }
+.features-search input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--ink, #1F3031);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.features-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.features-group {
+  background: var(--white, #FFFDF8);
+  border: 1px solid var(--line, #C9BFA8);
+  border-radius: 16px;
+  padding: 18px 20px;
+  box-shadow: 0 6px 20px -14px rgba(11, 110, 142, 0.18);
+}
+
+.features-group-heading h2 {
+  margin: 0;
+  font-size: 18px;
+  font-family: "Noto Serif TC", serif;
+  font-weight: 700;
+  color: var(--tidal-deep, #07516A);
+}
+
+.features-group-heading p {
+  margin: 4px 0 14px;
+  font-size: 13px;
+  color: var(--ink, #1F3031);
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.features-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--line, #C9BFA8);
+  background: var(--paper-deep, #EFE6D2);
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  color: var(--ink, #1F3031);
+  transition: all 0.15s ease;
+}
+.features-card:hover {
+  border-color: var(--tidal, #0B6E8E);
+  background: var(--white, #FFFDF8);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px -8px rgba(11, 110, 142, 0.3);
+}
+
+.features-card span {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.features-card strong {
+  font-size: 14px;
+  font-weight: 700;
+}
+.features-card small {
+  font-size: 12px;
+  color: var(--tidal-deep, #07516A);
+}
+
+.features-empty {
+  margin: 32px 0;
+  text-align: center;
+  font-size: 14px;
+  color: var(--tidal-deep, #07516A);
+  background: var(--white, #FFFDF8);
+  border: 1px dashed var(--line, #C9BFA8);
+  border-radius: 12px;
+  padding: 32px 16px;
+}
+
+.features-debug-entry {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 24px;
+  padding: 14px 18px;
+  width: 100%;
+  border-radius: 12px;
+  border: 1px dashed var(--line, #C9BFA8);
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  color: var(--ink, #1F3031);
+}
+.features-debug-entry:hover { border-color: var(--tidal, #0B6E8E); background: var(--paper-deep, #EFE6D2); }
+.features-debug-entry span { display: flex; flex-direction: column; gap: 2px; }
+.features-debug-entry strong { font-size: 14px; font-weight: 700; }
+.features-debug-entry small { font-size: 12px; color: var(--tidal-deep, #07516A); }

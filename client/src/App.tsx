@@ -9,6 +9,7 @@ import TopNavigation from "@/components/TopNavigation";
 import BxEnhance from "@/components/bx/BxEnhance";
 import CloudModePrompt from "@/components/CloudModePrompt";
 import Home from "@/pages/Home";
+import FeaturesDirectory from "@/pages/FeaturesDirectory";
 import { initGameData } from "@/utils/storage";
 import { OfflineBanner } from "@/components/OfflineBanner";
 
@@ -66,6 +67,7 @@ function Router() {
         <Switch>
         <Route path={"/map"} component={StudentMap} />
         <Route path={"/"} component={Home} />
+        <Route path={"/features"} component={FeaturesDirectory} />
         <Route path={"/camp"} component={DailyCamp} />
         <Route path={"/badges"} component={Badges} />
         <Route path={"/practice"} component={PaperExam} />
