@@ -15,4 +15,8 @@ export const ENV = {
   cerebrasApiKey: process.env.CEREBRAS_API_KEY ?? "",
   qwenApiKey: process.env.QWEN_API_KEY ?? "",
   deepseekApiKey: process.env.DEEPSEEK_API_KEY ?? "",
+  // LINE Messaging API（LINE Notify 已於 2025/3 停用）：
+  //   金鑰設了才啟用「做題完成 → 推 LINE 給老師」；未設則功能完全休眠、不影響其他服務。
+  lineChannelSecret: process.env.LINE_CHANNEL_SECRET ?? "",
+  lineChannelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN ?? "",
 };

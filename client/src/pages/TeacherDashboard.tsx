@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useLocation } from "wouter";
 import { ClipboardList, Copy, Lightbulb, School, Target, Trash2, UserRound, Users } from "lucide-react";
 import { trpc } from "@/lib/trpc";
+import { TeacherLineSection } from "@/components/TeacherLineSection";
 import "@/pages/TeacherDashboard.css";
 
 const TEACHER_CODE_KEY = "xue-teacher-class-code-v1";
@@ -301,6 +302,8 @@ export default function TeacherDashboard() {
         </header>
 
         {notice ? <p className="teacher-notice" role="status">{notice}</p> : null}
+
+        <TeacherLineSection />
 
         {trimmedCode.length < 4 ? (
           <div className="teacher-grid">

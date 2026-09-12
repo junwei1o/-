@@ -8,10 +8,18 @@ import {
   scoreWeeklyQuiz,
   type WeeklyQuizQuestion,
 } from "./weeklyQuiz";
+import {
+  getLineRecipient,
+  LINE_RECIPIENT_KEY,
+  notifyExamCompletion,
+  sendLinePush,
+  type LineRecipientBinding,
+} from "./lineNotify";
 import { TARGETED_PRACTICE_ITEMS, summarizeTargetedPractice } from "./targetedPractice";
 import { COOKIE_NAME } from "@shared/const";
 import { z } from "zod";
 import { invokeLLM } from "./_core/llm";
+import { ENV } from "./_core/env";
 import {
   createAssignment,
   deleteClass,
@@ -515,6 +523,15 @@ export const appRouter = router({
           detail: input.detail ?? null,
           sessionKey: input.sessionKey ?? null,
         });
+        // 做題完成 → 推 LINE 給老師（未設定金鑰/未綁定時靜默跳過，失敗不影響作答）。
+        await notifyExamCompletion({
+          studentName: input.name,
+          subject: input.subject,
+          totalQuestions: input.totalQuestions,
+          correctCount: input.correctCount,
+          detail: input.detail ?? null,
+          sessionKey: input.sessionKey ?? null,
+        });
         return { ok: true as const };
       }),
     listExams: publicProcedure
@@ -722,6 +739,26 @@ export const appRouter = router({
           },
           sessionKey: `weekly-${name}-${input.weekKey}`,
         });
+        // 週測完成 → 推 LINE 給老師（未設定金鑰/未綁定時靜默跳過）。
+        await notifyExamCompletion({
+          studentName: name,
+          subject: "綜合課綱",
+          totalQuestions: score.total,
+          correctCount: score.correct,
+          detail: {
+            scope: "週測",
+            weekKey: input.weekKey,
+            topics: questions.map((question) => ({
+              questionId: question.id,
+              subject: question.subject,
+              topic: question.learningTopic,
+              grade: question.grade,
+              difficulty: question.difficulty,
+              correct: correctIds.has(question.id),
+            })),
+          },
+          sessionKey: `weekly-${name}-${input.weekKey}`,
+        });
         await markWeeklyQuizDone(row.id, score.correct, score.total);
 
         return {
@@ -732,6 +769,49 @@ export const appRouter = router({
           goldEarned: rewards.goldEarned,
           expEarned: rewards.expEarned,
         };
+      }),
+  }),
+  /**
+   * LINE 通知設定：金鑰在 Render 環境變數（LINE_CHANNEL_*），接收對象由
+   * webhook 自動綁定（老師把機器人加好友或建群後傳任一訊息）。
+   * 這組端點只給督學台設定頁用，學生端不接觸。
+   */
+  line: router({
+    /** 查詢 LINE 功能狀態：金鑰是否就緒、目前綁定到哪個聊天室。 */
+    getBinding: publicProcedure
+      .query(async () => {
+        const envReady = Boolean(ENV.lineChannelSecret.trim() && ENV.lineChannelAccessToken.trim());
+        let binding: LineRecipientBinding | null = null;
+        if (envReady) {
+          binding = await getLineRecipient();
+        }
+        return { envReady, binding };
+      }),
+
+    /** 送一封測試訊息到目前綁定的聊天室（驗證整條通道）。 */
+    sendTest: publicProcedure
+      .mutation(async () => {
+        const token = ENV.lineChannelAccessToken.trim();
+        if (!token) return { ok: false as const, reason: "line-token-not-set" as const };
+        const binding = await getLineRecipient();
+        if (!binding) return { ok: false as const, reason: "line-recipient-not-bound" as const };
+        const result = await sendLinePush(token, binding, "🧭 寶島探險家 LINE 通知已連通！之後每次學生完成試卷都會推一條到這裡。");
+        return result.ok
+          ? { ok: true as const }
+          : { ok: false as const, reason: result.reason ?? "line-send-failed" };
+      }),
+
+    /** 解除綁定（清空接收對象；再傳訊息給機器人即可重新綁定）。 */
+    clearBinding: publicProcedure
+      .mutation(async () => {
+        const existing = await getCloudSave(LINE_RECIPIENT_KEY);
+        if (!existing) return { ok: true as const };
+        await updateCloudSave(LINE_RECIPIENT_KEY, {}, {
+          coins: existing.coins,
+          totalAnswers: existing.totalAnswers,
+          badges: existing.badges,
+        });
+        return { ok: true as const };
       }),
   }),
   teacher: router({

@@ -1,5 +1,5 @@
 import "dotenv/config";
-import express from "express";
+import express, { type Request } from "express";
 import { createServer } from "http";
 import net from "net";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
@@ -8,6 +8,7 @@ import { registerStorageProxy } from "./storageProxy";
 import { appRouter } from "../routers";
 import { ensureQuestionBankReady } from "../db";
 import { createContext } from "./context";
+import { handleLineWebhook } from "./lineWebhook";
 import { serveStatic, setupVite } from "./vite";
 
 function isPortAvailable(port: number): Promise<boolean> {
@@ -34,6 +35,15 @@ async function startServer() {
   const server = createServer(app);
   // 背景自動佈建題庫（建表＋匯入內建 500 題）；不阻擋開機，失敗也不影響服務。
   void ensureQuestionBankReady();
+  // LINE webhook：必須在 express.json 之前用 raw parser，才能拿原文驗簽章。
+  app.use(
+    "/api/line/webhook",
+    express.raw({ type: "application/json", limit: "1mb" }),
+    (req, res) => {
+      (req as Request & { rawBody?: Buffer }).rawBody = req.body;
+      void handleLineWebhook(req, res);
+    },
+  );
   // Configure body parser with larger size limit for file uploads
   app.use(express.json({ limit: "50mb" }));
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
