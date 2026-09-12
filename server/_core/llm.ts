@@ -271,7 +271,7 @@ const normalizeResponseFormat = ({
 //   4. 模型覆寫規則：呼叫方傳入 `model` 時只嘗試主供應商；切到備援時改用備援的預設
 //      模型（避免把不存在的模型名丟給下一家）。
 
-type ProviderId = "groq" | "cerebras" | "deepseek" | "forge";
+type ProviderId = "groq" | "cerebras" | "qwen" | "deepseek" | "forge";
 
 type ProviderConfig = {
   id: ProviderId;
@@ -310,6 +310,17 @@ const buildProviderChain = (): ProviderConfig[] => {
       url: "https://api.cerebras.ai/v1/chat/completions",
       apiKey: ENV.cerebrasApiKey,
       defaultModel: "gpt-oss-120b",
+    });
+  }
+  if (ENV.qwenApiKey) {
+    // Qwen（阿里百煉 / DashScope）：OpenAI 相容協議，繁中最穩之一。
+    // 注意：DashScope 內建敏感詞過濾器對「答錯」「學生」之類教育情境偶有誤判，
+    // 必要時需調整提示措辭（fallback 到 Cerebras/Groq）。預設 qwen-plus（中文/速度平衡）。
+    chain.push({
+      id: "qwen",
+      url: "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
+      apiKey: ENV.qwenApiKey,
+      defaultModel: "qwen-plus",
     });
   }
   if (ENV.deepseekApiKey) {
