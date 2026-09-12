@@ -18,8 +18,10 @@ import {
   InsertExamRecord,
   InsertQuestion,
   InsertUser,
+  InsertWeeklyQuiz,
   questionBank,
   users,
+  weeklyQuizzes,
 } from "../drizzle/schema";
 import questionSeed from "../data/taiwan_curriculum_500.json";
 import { ENV } from './_core/env';
@@ -263,6 +265,21 @@ const ENSURE_TABLE_STATEMENTS = [
     PRIMARY KEY (\`id\`),
     KEY \`class_announcements_class_idx\` (\`classCode\`),
     KEY \`class_announcements_created_idx\` (\`createdAt\`)
+  )`,
+  `CREATE TABLE IF NOT EXISTS \`weekly_quizzes\` (
+    \`id\` int AUTO_INCREMENT NOT NULL,
+    \`studentName\` varchar(24) NOT NULL,
+    \`weekKey\` varchar(16) NOT NULL,
+    \`grade\` int,
+    \`questions\` json NOT NULL,
+    \`status\` enum('pending','done') NOT NULL DEFAULT 'pending',
+    \`correctCount\` int NOT NULL DEFAULT 0,
+    \`totalQuestions\` int NOT NULL DEFAULT 0,
+    \`submittedAt\` timestamp NULL,
+    \`createdAt\` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    \`updatedAt\` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (\`id\`),
+    KEY \`weekly_quizzes_student_week_idx\` (\`studentName\`, \`weekKey\`)
   )`,
 ];
 
@@ -690,4 +707,43 @@ export async function listClassesOfStudent(studentName: string) {
     if (row) found.push({ code: row.code, name: row.name, teacherName: row.teacherName });
   }
   return found;
+}
+
+/* ---------- AI 自動週測 ---------- */
+
+/** 讀取某位學生某週的週測卷（不存在回傳 null）。 */
+export async function getWeeklyQuiz(studentName: string, weekKey: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  const rows = await db
+    .select()
+    .from(weeklyQuizzes)
+    .where(and(eq(weeklyQuizzes.studentName, studentName), eq(weeklyQuizzes.weekKey, weekKey)))
+    .limit(1);
+  return rows[0] ?? null;
+}
+
+/** 建立週測卷（studentName + weekKey 唯一；重複建立回傳 null）。 */
+export async function createWeeklyQuiz(row: InsertWeeklyQuiz) {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  const existing = await db
+    .select({ id: weeklyQuizzes.id })
+    .from(weeklyQuizzes)
+    .where(and(eq(weeklyQuizzes.studentName, row.studentName), eq(weeklyQuizzes.weekKey, row.weekKey)))
+    .limit(1);
+  if (existing.length > 0) return null;
+  const result = await db.insert(weeklyQuizzes).values(row);
+  const insertId = (result as unknown as [{ insertId?: number }])[0]?.insertId ?? 0;
+  return { id: Number(insertId) };
+}
+
+/** 標記週測卷為已完成並寫入分數（同一份卷重複提交以最新分數覆寫）。 */
+export async function markWeeklyQuizDone(id: number, correctCount: number, totalQuestions: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  await db
+    .update(weeklyQuizzes)
+    .set({ status: "done", correctCount, totalQuestions, submittedAt: new Date() })
+    .where(eq(weeklyQuizzes.id, id));
 }

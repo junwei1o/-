@@ -41,6 +41,10 @@ vi.mock("@/lib/trpc", () => ({
     aiTutor: {
       delegateTask: { useMutation: () => ({ mutateAsync: async () => ({ taskType: "single", subject: null, reason: "", title: "", questions: [], mastery: { totalQuestions: 0, subjectCorrectRate: {}, integratedCorrectRate: null, weakTopics: [] } }), isPending: false }) },
     },
+    weeklyQuiz: {
+      get: { useQuery: () => ({ data: { status: "notOpen", weekKey: "2026-W37", opensAt: 0 }, isLoading: false, refetch: () => Promise.resolve() }) },
+      submit: { useMutation: () => ({ mutateAsync: async () => ({ ok: true, alreadyDone: false, correctCount: 0, totalQuestions: 0, goldEarned: 0, expEarned: 0 }), isPending: false }) },
+    },
   },
 }));
 vi.mock("@/components/TaiwanMainNavigationMap", () => ({
