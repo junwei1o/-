@@ -172,3 +172,29 @@ export const classAnnouncements = mysqlTable("class_announcements", {
 
 export type ClassAnnouncement = typeof classAnnouncements.$inferSelect;
 export type InsertClassAnnouncement = typeof classAnnouncements.$inferInsert;
+
+/**
+ * AI 自動週測：每週五（台北時間）自動為每位學生出 10 題本週回顧，
+ * 卷子在首次讀取時生成並固定（刷新不變），提交後寫入分數。
+ * 同一 (studentName, weekKey) 只有一份，重複提交以最新分數覆寫、不重複給獎。
+ */
+export const weeklyQuizzes = mysqlTable("weekly_quizzes", {
+  id: int("id").autoincrement().primaryKey(),
+  studentName: varchar("studentName", { length: 24 }).notNull(),
+  /** 週 key：ISO 週（台北時間），例 "2026-W37"。 */
+  weekKey: varchar("weekKey", { length: 16 }).notNull(),
+  grade: int("grade"),
+  /** 卷子內容（含每題 subject/difficulty/learningTopic/prompt/options/answer/explanation）。 */
+  questions: json("questions").$type<unknown>().notNull(),
+  status: mysqlEnum("status", ["pending", "done"]).default("pending").notNull(),
+  correctCount: int("correctCount").notNull().default(0),
+  totalQuestions: int("totalQuestions").notNull().default(0),
+  submittedAt: timestamp("submittedAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, (table) => ({
+  studentWeekIdx: index("weekly_quizzes_student_week_idx").on(table.studentName, table.weekKey),
+}));
+
+export type WeeklyQuiz = typeof weeklyQuizzes.$inferSelect;
+export type InsertWeeklyQuiz = typeof weeklyQuizzes.$inferInsert;

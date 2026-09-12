@@ -1,5 +1,13 @@
 import { synthesizeSpeech } from "./tts";
 import { computeStudentMastery, routeTaskType } from "./insights";
+import {
+  buildWeeklyQuiz,
+  computeWeeklyRewards,
+  getWeeklyQuizStatus,
+  getWeeklyQuizWindow,
+  scoreWeeklyQuiz,
+  type WeeklyQuizQuestion,
+} from "./weeklyQuiz";
 import { TARGETED_PRACTICE_ITEMS, summarizeTargetedPractice } from "./targetedPractice";
 import { COOKIE_NAME } from "@shared/const";
 import { z } from "zod";
@@ -11,11 +19,13 @@ import {
   removeClassMember,
   createClass,
   createCloudSave,
+  createWeeklyQuiz,
   getClassRow,
   getCloudSave,
   ensureQuestionBankReady,
   createAnnouncement,
   getQuestionBank,
+  getWeeklyQuiz,
   insertExamRecord,
   joinClass,
   listAnnouncements,
@@ -26,6 +36,7 @@ import {
   listExamRecords,
   listSubmissions,
   deleteAnnouncement,
+  markWeeklyQuizDone,
   submitAssignment,
   updateCloudSave,
 } from "./db";
@@ -562,6 +573,163 @@ export const appRouter = router({
           await createCloudSave({ name, payload: profile, coins: 0, totalAnswers: 0, badges: 0 });
         }
         return { ok: true as const };
+      }),
+  }),
+  /**
+   * AI 自動週測：每週五（台北時間 00:00）自動為學生出 10 題本週回顧，
+   * 開放至週日 23:59。卷子首次讀取時生成並固定（刷新不變），提交後
+   * 寫入考試紀錄並結算金幣／經驗；同一週重複提交以最新分數覆寫、不重複給獎。
+   */
+  weeklyQuiz: router({
+    /**
+     * 取得本週週測狀態與卷子。
+     * - 未到週五 → notOpen（附開放時間）
+     * - 已生成未作答 → ready（含 10 題）
+     * - 已完成 → done（含分數）
+     */
+    get: publicProcedure
+      .input(z.object({
+        studentName: cloudNameSchema,
+        grade: z.number().int().min(3).max(6).optional(),
+      }))
+      .query(async ({ input }) => {
+        const name = input.studentName.trim();
+        const now = Date.now();
+        const window = getWeeklyQuizWindow(now);
+        const weekKey = window.weekKey;
+
+        if (getWeeklyQuizStatus(now) !== "open") {
+          return { status: "notOpen" as const, weekKey, opensAt: window.opensAt };
+        }
+
+        const existing = await getWeeklyQuiz(name, weekKey);
+        if (existing && existing.status === "done") {
+          return {
+            status: "done" as const,
+            weekKey,
+            score: {
+              correctCount: existing.correctCount,
+              totalQuestions: existing.totalQuestions,
+              submittedAt: existing.submittedAt instanceof Date ? existing.submittedAt.getTime() : Date.now(),
+            },
+          };
+        }
+        if (existing) {
+          return { status: "ready" as const, weekKey, quiz: { id: existing.id, questions: existing.questions as WeeklyQuizQuestion[] } };
+        }
+
+        // 生成本週卷：本週（週一～現在）的作答紀錄 → 薄弱知識點 → 抽題。
+        const records = (await listExamRecords(name, 50)).filter((row) => {
+          const time = row.createdAt instanceof Date ? row.createdAt.getTime() : 0;
+          return time >= window.opensAt - 4 * 86_400_000 && time <= now;
+        });
+        // 主庫每科上限 500 題，分科並行取回完整題庫（現有資料每科遠小於上限）。
+        const [chinese, math, science, social] = await Promise.all([
+          getQuestionBank({ subject: "國語", limit: 500 }),
+          getQuestionBank({ subject: "數學", limit: 500 }),
+          getQuestionBank({ subject: "自然", limit: 500 }),
+          getQuestionBank({ subject: "社會", limit: 500 }),
+        ]);
+        const bank = [...chinese, ...math, ...science, ...social].map((row) => ({
+          id: row.id,
+          subject: row.subject,
+          grade: row.grade,
+          difficulty: row.difficulty,
+          learningTopic: row.learningTopic,
+          prompt: row.prompt,
+          options: row.options,
+          answer: row.answer,
+          explanation: row.explanation,
+        }));
+        const questions = buildWeeklyQuiz({
+          records: records.map((row) => ({ detail: row.detail ?? null })),
+          bank,
+          grade: input.grade,
+          count: 10,
+        });
+        const created = await createWeeklyQuiz({
+          studentName: name,
+          weekKey,
+          grade: input.grade ?? null,
+          questions,
+          status: "pending",
+          correctCount: 0,
+          totalQuestions: questions.length,
+          submittedAt: null,
+        });
+        // 並發生成時讓給先建立的一方，直接讀回已存的卷子。
+        const saved = created ? { id: created.id, questions } : (await getWeeklyQuiz(name, weekKey))?.questions;
+        if (!saved) throw new Error("週測卷建立失敗，請稍後再試");
+        return {
+          status: "ready" as const,
+          weekKey,
+          quiz: { id: created?.id ?? -1, questions: saved as WeeklyQuizQuestion[] },
+        };
+      }),
+
+    /**
+     * 提交本週週測。server 端依存卷驗證答案、寫入考試紀錄（綜合課綱），
+     * 回傳正確數與金幣／經驗；同一週重複提交回傳已存在的分數（不重複給獎）。
+     */
+    submit: publicProcedure
+      .input(z.object({
+        studentName: cloudNameSchema,
+        weekKey: z.string().regex(/^\d{4}-W\d{2}$/, "週 key 格式不符"),
+        answers: z.record(z.string(), z.number().int().min(0).max(3)),
+      }))
+      .mutation(async ({ input }) => {
+        const name = input.studentName.trim();
+        const row = await getWeeklyQuiz(name, input.weekKey);
+        if (!row) return { ok: false as const, reason: "notFound" as const };
+
+        const questions = row.questions as WeeklyQuizQuestion[];
+        const score = scoreWeeklyQuiz(questions, input.answers);
+
+        if (row.status === "done") {
+          return {
+            ok: true as const,
+            alreadyDone: true,
+            correctCount: row.correctCount,
+            totalQuestions: row.totalQuestions,
+          };
+        }
+
+        const correctIds = new Set(
+          questions.filter((question) => input.answers[question.id] === question.answer).map((question) => question.id),
+        );
+        const rewards = computeWeeklyRewards(questions, correctIds);
+
+        await insertExamRecord({
+          name,
+          subject: "綜合課綱",
+          grade: row.grade ?? null,
+          difficulty: "標準",
+          totalQuestions: score.total,
+          correctCount: score.correct,
+          detail: {
+            scope: "週測",
+            weekKey: input.weekKey,
+            topics: questions.map((question) => ({
+              questionId: question.id,
+              subject: question.subject,
+              topic: question.learningTopic,
+              grade: question.grade,
+              difficulty: question.difficulty,
+              correct: correctIds.has(question.id),
+            })),
+          },
+          sessionKey: `weekly-${name}-${input.weekKey}`,
+        });
+        await markWeeklyQuizDone(row.id, score.correct, score.total);
+
+        return {
+          ok: true as const,
+          alreadyDone: false,
+          correctCount: score.correct,
+          totalQuestions: score.total,
+          goldEarned: rewards.goldEarned,
+          expEarned: rewards.expEarned,
+        };
       }),
   }),
   teacher: router({

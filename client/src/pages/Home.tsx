@@ -17,6 +17,7 @@ import { loadSignInState, hasSignedInToday as hasGoldSignedInToday } from "@/gam
 import { DailySignInModal } from "@/components/DailySignInModal";
 import { HomeContactCard } from "@/components/HomeContactCard";
 import { CompanionTaskCard } from "@/components/CompanionTaskCard";
+import { WeeklyQuizCard } from "@/components/WeeklyQuizCard";
 import { buildKnowledgeIslandSnapshots, type KnowledgeIslandSubject } from "@/lib/studentKnowledgeIslands";
 import { HOME_FEATURE_GROUPS } from "@/lib/homeFeatureDirectory";
 import type { PaperQuestion } from "@/lib/paperExam";
@@ -276,6 +277,7 @@ export default function Home() {
             </button>
           </div>
         </section>
+        <WeeklyQuizCard />
         <section className="home-feature-directory-entry" aria-labelledby="home-feature-directory-entry-title">
           {totalFeatureDirectoryCount ? (
             <button
