@@ -45,6 +45,7 @@ const GuardianExpedition = React.lazy(() => import("@/pages/GuardianExpedition")
 const Tavern = React.lazy(() => import("@/pages/Tavern"));
 const CardCollection = React.lazy(() => import("@/pages/CardCollection"));
 const QuizRoom = React.lazy(() => import("@/pages/QuizRoom"));
+const WeeklyQuizPage = React.lazy(() => import("@/pages/WeeklyQuizPage"));
 const Expedition = React.lazy(() => import("@/pages/Expedition"));
 const LearningHub = React.lazy(() => import("@/pages/LearningHub"));
 const Gallery = React.lazy(() => import("@/pages/Gallery"));
@@ -74,6 +75,7 @@ function Router() {
         <Route path={"/map"} component={StudentMap} />
         <Route path={"/"} component={Home} />
         <Route path={"/quiz-room"} component={QuizRoom} />
+        <Route path={"/weekly-quiz"} component={WeeklyQuizPage} />
         <Route path={"/expedition"} component={Expedition} />
         <Route path={"/learning"} component={LearningHub} />
         <Route path={"/gallery"} component={Gallery} />

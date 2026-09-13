@@ -15,7 +15,7 @@ describe("QuizRoom 答題室", () => {
     setLocation.mockClear();
   });
 
-  it("展示六種答題模式並導向對應目的地", () => {
+  it("展示七種答題模式並導向對應目的地", () => {
     render(<QuizRoom />);
     expect(screen.getByRole("heading", { name: /答題室/ })).toBeInTheDocument();
 
@@ -26,6 +26,7 @@ describe("QuizRoom 答題室", () => {
       ["錯題本", "/review-hub"],
       ["專題觀測", "/gallery"],
       ["限時挑戰", "/community?mode=timed"],
+      ["本週週測", "/weekly-quiz"],
     ];
     for (const [label, href] of cases) {
       fireEvent.click(screen.getByRole("button", { name: new RegExp(label) }));

@@ -1,11 +1,11 @@
 import React from "react";
 import { useLocation } from "wouter";
-import { BookOpenCheck, Crosshair, RotateCcw, Swords, Telescope, Timer } from "lucide-react";
+import { BookOpenCheck, CalendarDays, Crosshair, RotateCcw, Swords, Telescope, Timer } from "lucide-react";
 import "./HubPages.css";
 
 /**
- * 答題室：同一個答題引擎、六種外殼，收編原本分散的答題入口。
- * 自由練習／潮汐戰鬥／卡牌決鬥／錯題本／專題觀測／限時挑戰。
+ * 答題室：同一個答題引擎、七種外殼，收編原本分散的答題入口。
+ * 自由練習／潮汐戰鬥／卡牌決鬥／錯題本／專題觀測／限時挑戰／本週週測。
  */
 export default function QuizRoom() {
   const [, setLocation] = useLocation();
@@ -17,6 +17,7 @@ export default function QuizRoom() {
     { id: "wrong", label: "錯題本", desc: "今日複習中心＋錯題魔王，整理真實弱點。", href: "/review-hub", icon: RotateCcw },
     { id: "topic", label: "專題觀測", desc: "天文／科學／生活安全，一次只鑽一個主題。", href: "/gallery", icon: Telescope },
     { id: "timed", label: "限時挑戰", desc: "十題自我挑戰，留下個人最佳紀錄。", href: "/community?mode=timed", icon: Timer },
+    { id: "weekly", label: "本週週測", desc: "每週五自動出 10 題回顧本週學習，完成有成就。", href: "/weekly-quiz", icon: CalendarDays },
   ];
 
   return (
@@ -24,7 +25,7 @@ export default function QuizRoom() {
       <header className="hub-header">
         <p className="hub-eyebrow">QUIZ ROOM</p>
         <h1 className="hub-title" id="quiz-room-title">📝 答題室</h1>
-        <p className="hub-sub">同一個答題引擎，六種外殼。選模式就好，不用開六個頁面。</p>
+        <p className="hub-sub">同一個答題引擎，七種外殼。選模式就好，不用開七個頁面。</p>
       </header>
       <div className="hub-grid">
         {modes.map(({ id, label, desc, href, icon: Icon }) => (

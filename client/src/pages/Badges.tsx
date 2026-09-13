@@ -156,6 +156,14 @@ export default function Badges() {
       hint: { label: "去挑戰每週王", href: "/camp" },
     },
     {
+      id: "weekly-quiz-voyager",
+      icon: "🗓️",
+      title: "每週遠征家",
+      description: "完成一次本週週測",
+      earned: player.badges.includes("weekly-quiz-voyager"),
+      hint: { label: "去答題室週測", href: "/quiz-room" },
+    },
+    {
       id: "companions-3",
       icon: "🧸",
       title: "夥伴收藏家",

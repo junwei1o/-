@@ -2,7 +2,7 @@
 import React from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import "@testing-library/jest-dom/vitest";
-import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { WeeklyQuizCard } from "./WeeklyQuizCard";
 
 const quizQuestions = Array.from({ length: 10 }, (_, index) => ({
@@ -64,8 +64,10 @@ vi.mock("@/game/adaptiveLearning", () => ({
   loadUserPreferences: () => ({ gradeLevel: 4 }),
 }));
 
+const locationMocks = vi.hoisted(() => ({ setLocation: vi.fn() }));
+
 vi.mock("wouter", () => ({
-  useLocation: () => ["/", vi.fn()] as const,
+  useLocation: () => ["/", locationMocks.setLocation] as const,
 }));
 
 const storageMocks = vi.hoisted(() => ({
@@ -99,6 +101,7 @@ beforeEach(() => {
   storageMocks.addLearningRecord.mockClear();
   storageMocks.updatePlayerData.mockClear();
   storageMocks.getPlayerData.mockClear();
+  locationMocks.setLocation.mockClear();
   storageMocks.getPlayerData.mockReturnValue({
     level: 1,
     exp: 20,
@@ -175,11 +178,12 @@ describe("WeeklyQuizCard AI 自動週測", () => {
     await waitFor(() =>
       expect(screen.getByRole("status", { name: "週測結果" })).toHaveTextContent("10/10"),
     );
-    // 100 + 60 金幣、20 + 50 經驗、3 + 10 總答題數
+    // 100 + 60 金幣、20 + 50 經驗、3 + 10 總答題數、成就徽章寫入
     expect(storageMocks.updatePlayerData).toHaveBeenCalledWith({
       gold: 160,
       exp: 70,
       totalAnswers: 13,
+      badges: ["weekly-quiz-voyager"],
     });
     expect(storageMocks.addLearningRecord).toHaveBeenCalledTimes(10);
     expect(storageMocks.addLearningRecord).toHaveBeenCalledWith(
@@ -212,5 +216,63 @@ describe("WeeklyQuizCard AI 自動週測", () => {
     );
     expect(storageMocks.updatePlayerData).not.toHaveBeenCalled();
     expect(storageMocks.addLearningRecord).not.toHaveBeenCalled();
+    expect(screen.queryByRole("dialog", { name: "本週週測完成" })).not.toBeInTheDocument();
+  });
+
+  it("完成後跳出成就彈窗：金幣／經驗／徽章回饋，按鈕可跳轉", async () => {
+    trpcMocks.getQuery.mockReturnValue({
+      status: "ready",
+      weekKey: "2026-W37",
+      quiz: { id: 1, questions: quizQuestions },
+    });
+    render(<WeeklyQuizCard />);
+
+    const optionButtons = screen.getAllByRole("button", { name: /甲/ });
+    for (const button of optionButtons) {
+      fireEvent.click(button);
+    }
+
+    await waitFor(() => expect(trpcMocks.submitAsync).toHaveBeenCalledTimes(1));
+    const dialog = await screen.findByRole("dialog", { name: "本週週測完成" });
+    expect(dialog).toHaveTextContent("10/10");
+    expect(dialog).toHaveTextContent("+60 金幣");
+    expect(dialog).toHaveTextContent("+50 經驗");
+    expect(dialog).toHaveTextContent("成就解鎖");
+    expect(dialog).toHaveTextContent("每週遠征家");
+
+    fireEvent.click(screen.getByRole("button", { name: "去錯題複習" }));
+    expect(locationMocks.setLocation).toHaveBeenCalledWith("/wrong-answers");
+  });
+
+  it("完成後幾秒內自動跳轉學習歷程", async () => {
+    vi.useFakeTimers();
+    try {
+      trpcMocks.getQuery.mockReturnValue({
+        status: "ready",
+        weekKey: "2026-W37",
+        quiz: { id: 1, questions: quizQuestions },
+      });
+      render(<WeeklyQuizCard />);
+
+      const optionButtons = screen.getAllByRole("button", { name: /甲/ });
+      for (const button of optionButtons) {
+        fireEvent.click(button);
+      }
+      // flush 自動提交的非同步流程
+      await act(async () => {
+        await Promise.resolve();
+      });
+      await act(async () => {
+        await Promise.resolve();
+      });
+
+      expect(screen.getByRole("dialog", { name: "本週週測完成" })).toBeInTheDocument();
+      act(() => {
+        vi.advanceTimersByTime(4_000);
+      });
+      expect(locationMocks.setLocation).toHaveBeenCalledWith("/learning");
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });
