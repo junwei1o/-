@@ -2687,6 +2687,11 @@ body.bx-tour-open{overflow:hidden}
 .bx-dot--on{background:var(--bx-gold);transform:scale(1.35)}
 .bx-tour__actions{display:flex;justify-content:flex-end}
 .bx-tour__actions .bx-btn{width:100%}
+.bx-tour__step{margin:0 0 6px;font-size:12px;font-weight:700;letter-spacing:.05em;color:var(--bx-gold)}
+.bx-tour__actions--row{justify-content:space-between;gap:10px;align-items:center}
+.bx-tour__actions--row .bx-btn{width:auto;flex:0 0 auto}
+.bx-tour__actions--row .bx-btn--primary{flex:1 1 auto}
+.bx-tour__mask{cursor:pointer}
 .bx-tour__hint{margin:12px 0 0;font-size:12.5px;color:var(--bx-gold);text-align:center;animation:bxPulse 1.6s infinite}
 @keyframes bxPulse{0%,100%{opacity:.6}50%{opacity:1}}
 .bx-spotlight{position:relative;z-index:9501!important;border-radius:var(--bx-r);

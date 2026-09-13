@@ -230,7 +230,7 @@ function CompanionBrainSection() {
       ) : null}
       <ul className="settings-companion-notes">
         <li>只在「答題後的深度伴讀」使用，主頁不會主動派任務。</li>
-        <li>送出的只有題目與選項，不含姓名、學校、班級。</li>
+        <li>深度反思時，題目、選項與你選的答案會送往 AI 服務商產生導讀，不會包含姓名、學校、班級。</li>
         <li>不填代理也能用：系統會嘗試內建模型，再不行就由離線規則腦陪讀。</li>
       </ul>
     </section>

@@ -6,6 +6,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { BxEmptyState } from "./EmptyState";
 import FirstLightQuest from "./FirstLightQuest";
 import PrivacyBanner from "./PrivacyBanner";
+import OnboardingTour from "./OnboardingTour";
 import PrefsPanel from "./PrefsPanel";
 import { bxStore } from "@/game/bxStore";
 
@@ -64,11 +65,67 @@ describe("隱私橫幅", () => {
 
   it("可展開詳細隱私說明", () => {
     render(<PrivacyBanner />);
-    expect(screen.queryByText(/不會記錄：/)).not.toBeVisible();
+    expect(screen.queryByText(/不會收集：/)).not.toBeVisible();
     act(() => {
       fireEvent.click(screen.getByRole("button", { name: /了解資料如何運作/ }));
     });
-    expect(screen.getByText(/不會記錄：/)).toBeVisible();
+    expect(screen.getByText(/不會收集：/)).toBeVisible();
+  });
+
+  it("首訪隱私約定必須揭露 AI 服務商傳輸（合規）", () => {
+    render(<PrivacyBanner />);
+    expect(screen.getByText(/深度反思時，題目內容會送往 AI 服務商/)).toBeInTheDocument();
+    act(() => {
+      fireEvent.click(screen.getByRole("button", { name: /了解資料如何運作/ }));
+    });
+    expect(screen.getByText(/AI 深度伴讀/)).toBeVisible();
+  });
+});
+
+describe("隱私 → 新手導覽 整合流程", () => {
+  it("尚未做隱私決定前，不顯示導覽", () => {
+    render(
+      <>
+        <PrivacyBanner />
+        <OnboardingTour />
+      </>,
+    );
+    expect(screen.getByText("航海前的隱私約定")).toBeInTheDocument();
+    expect(screen.queryByText(/歡迎登船/)).not.toBeInTheDocument();
+  });
+
+  it("略過隱私後仍會進入新手導覽", async () => {
+    render(
+      <>
+        <PrivacyBanner />
+        <OnboardingTour />
+      </>,
+    );
+    act(() => {
+      fireEvent.click(screen.getByRole("button", { name: /略過，先體驗看看/ }));
+    });
+    expect(bxStore.get<boolean>("privacy.accepted", false)).toBe(false);
+    await waitFor(() =>
+      expect(screen.getByText("歡迎登船，學習是自己的航行")).toBeInTheDocument(),
+    );
+    await waitFor(() =>
+      expect(screen.queryByText("航海前的隱私約定")).not.toBeInTheDocument(),
+    );
+  });
+
+  it("同意隱私後也會進入新手導覽", async () => {
+    render(
+      <>
+        <PrivacyBanner />
+        <OnboardingTour />
+      </>,
+    );
+    act(() => {
+      fireEvent.click(screen.getByRole("button", { name: "好的，開始航行" }));
+    });
+    await waitFor(() =>
+      expect(screen.getByText("歡迎登船，學習是自己的航行")).toBeInTheDocument(),
+    );
   });
 });
 

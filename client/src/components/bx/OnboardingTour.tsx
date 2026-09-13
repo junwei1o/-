@@ -1,30 +1,60 @@
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
-import { bxStore, BX_EVENTS } from "@/game/bxStore";
-import { claimDailySignIn } from "@/game/dailySignIn";
-import { bxToast, bxCelebrate } from "./bxRewards";
+import { bxStore } from "@/game/bxStore";
 import { useBxVersion } from "./useBx";
 
 /**
- * BX.Onboarding — 隱私接受後的四步驟聚光燈導覽。
- * 步驟：航海圖 → 選島嶼（強制點擊）→ 金幣 → 每日簽到（自動簽到一次）。
- * 標記 [data-tour="map|islands|coins|checkin"] 為聚光錨點；
- * 點擊 [data-island] 會派發 bx:tour:island-click 解鎖強制步驟。
+ * BX.Onboarding — 隱私約定完成（同意或略過皆可）後的六步驟聚光燈導覽。
+ * 設計原則：
+ * 1) 只做「說明」，不強制點擊、不代為簽到或發放獎勵，使用者每一步都可上一步／跳過／退出；
+ * 2) 主題強調教育與自我進步：看見學習軌跡、照自己的步調、答錯不懲罰、長期累積；
+ * 3) 沿用既有 bx-* 設計語彙（金幣色、圓角卡片、聚光錨點、圓點進度）。
+ * 標記 [data-tour="map|islands|coins|checkin"] 為聚光錨點；無錨點的步驟置中顯示。
  */
 
 interface Step {
   id: string;
   title: string;
   body: string;
-  target: string;
-  forced: boolean;
-  autoCheckin?: boolean;
+  target: string | null;
 }
 
 const STEPS: Step[] = [
-  { id: "welcome", title: "歡迎登船，見習航海士！", body: "你的任務是航行寶島四座知識島嶼，每答對一題，航海圖就會亮一點。", target: '[data-tour="map"]', forced: false },
-  { id: "pick-island", title: "選一座島嶼出發", body: "北部古書樓、中部量測塔、南部生活港、東部山海觀察站——想從哪裡開始？<strong>點一下任一座島嶼試試！</strong>", target: '[data-tour="islands"]', forced: true },
-  { id: "coins", title: "答題就能賺金幣", body: "答對題目會獲得金幣與經驗，金幣可以到商店換提示卡、護盾，甚至新的船標。", target: '[data-tour="coins"]', forced: false },
-  { id: "checkin", title: "每天回來簽到，船隊會更強", body: "連續簽到 3 天、7 天有特殊獎勵。今天就先幫你完成第一次簽到吧！", target: '[data-tour="checkin"]', forced: false, autoCheckin: true },
+  {
+    id: "welcome",
+    title: "歡迎登船，學習是自己的航行",
+    body: "在這裡答題不是為了跟別人比，而是<strong>看見自己哪裡懂、哪裡還要練習</strong>。花 30 秒認識你的學習航海圖，隨時都可以跳過。",
+    target: null,
+  },
+  {
+    id: "map",
+    title: "航海圖，就是你的學習地圖",
+    body: "四座知識島嶼對應國文、數學、社會、自然課綱；<strong>亮起來的地方，就是你努力過的軌跡</strong>。",
+    target: '[data-tour="map"]',
+  },
+  {
+    id: "islands",
+    title: "照自己的步調選島練習",
+    body: "每座島都由淺入深安排題目。想從哪裡開始都可以，<strong>慢慢進步，也是一種進步</strong>。",
+    target: '[data-tour="islands"]',
+  },
+  {
+    id: "growth",
+    title: "金幣與經驗，記錄每一次努力",
+    body: "答對會獲得金幣與經驗；<strong>答錯不會被懲罰</strong>，只會留下錯題線索，之後再挑戰就好。",
+    target: '[data-tour="coins"]',
+  },
+  {
+    id: "reflect",
+    title: "深度伴讀：引導你自己想通",
+    body: "答題後可以找學伴「伴小星」深度反思，它不會直接給答案，而是一次問你一個問題。<strong>此功能會把題目送往 AI 服務商產生導讀，不含姓名、學校、班級。</strong>",
+    target: null,
+  },
+  {
+    id: "checkin",
+    title: "每天進步一點點",
+    body: "每日簽到與學習報告，會幫你看見長期的累積；任何時候都能從「設定」匯出或清除自己的資料。準備好了就出發吧！",
+    target: '[data-tour="checkin"]',
+  },
 ];
 
 interface CardPos {
@@ -46,23 +76,29 @@ function computePos(target: Element | null, card: HTMLElement | null): CardPos {
   return { center: false, top, left };
 }
 
+const ENTRY_DELAY_MS = 340; // 等隱私橫幅滑出後再進場，避免兩個彈層重疊。
+
 export default function OnboardingTour() {
-  const accepted = bxStore.get<boolean>("privacy.accepted", false) ?? false;
+  // 隱私「做過決定」（同意或略過）以 privacy.ts 是否存在為準，兩種選擇都會進入導覽。
+  useBxVersion();
+  const decided = bxStore.get<number | null>("privacy.ts", null) != null;
   const completed = bxStore.get<boolean>("onboarding.completed", false) ?? false;
   const skipped = bxStore.get<boolean>("onboarding.skipped", false) ?? false;
-  const [active, setActive] = useState(accepted && !completed && !skipped);
-  const [idx, setIdx] = useState(() => Math.min(bxStore.get<number>("onboarding.step", 0) ?? 0, STEPS.length - 1));
-  const [unlocked, setUnlocked] = useState(false);
+
+  const [active, setActive] = useState(false);
+  const [idx, setIdx] = useState(() =>
+    Math.min(Math.max(bxStore.get<number>("onboarding.step", 0) ?? 0, 0), STEPS.length - 1),
+  );
   const [pos, setPos] = useState<CardPos>({ center: true });
-  const [hint, setHint] = useState<string | null>(null);
   const [leaving, setLeaving] = useState(false);
   const cardRef = useRef<HTMLDivElement | null>(null);
 
-  // 隱私接受（store 變化）後開啟導覽；完成或跳過後不再自動開啟。
-  useBxVersion();
+  // 隱私決定後稍候開啟導覽；完成或跳過後不再自動開啟。
   useEffect(() => {
-    if (accepted && !completed && !skipped) setActive(true);
-  }, [accepted, completed, skipped]);
+    if (!decided || completed || skipped || active) return;
+    const timer = window.setTimeout(() => setActive(true), ENTRY_DELAY_MS);
+    return () => window.clearTimeout(timer);
+  }, [decided, completed, skipped, active]);
 
   const step = STEPS[idx];
 
@@ -79,10 +115,10 @@ export default function OnboardingTour() {
   const finish = useCallback(() => {
     bxStore.update((s) => {
       s.onboarding.completed = true;
+      s.onboarding.skipped = false;
       s.onboarding.step = STEPS.length;
     });
     teardown();
-    bxCelebrate("🎉 歡迎加入！你的第一筆金幣已入帳");
     document.dispatchEvent(new CustomEvent("bx:onboarding:done"));
   }, [teardown]);
 
@@ -94,46 +130,25 @@ export default function OnboardingTour() {
     teardown();
   }, [teardown]);
 
-  const doCheckin = useCallback(() => {
-    // 導覽的簽到步驟與首頁簽到共用同一個實作（game/dailySignIn.ts），
-    // 避免兩套各自累加連續天數，學生會看到互相矛盾的數字。
-    const r = claimDailySignIn();
-    if (r.alreadyClaimed) {
-      bxToast("⚓ 今天已經簽到過了");
-      return;
-    }
-    bxToast(`⚓ 簽到成功！+${r.goldGained} 金幣（連續 ${r.streak} 天）`);
-    if ((bxStore.get<number>("stats.total_answers", 0) ?? 0) === 0) {
-      bxStore.update((s) => { s.coins += 10; });
-    }
-  }, []);
-
-  // 強制步驟：點擊任一島嶼後解鎖。
+  // 鎖定 body 捲動；Escape 隨時退出。
   useEffect(() => {
     if (!active) return;
-    const onIslandClickCapture = (e: MouseEvent) => {
-      const target = e.target as HTMLElement | null;
-      if (target?.closest("[data-island]")) {
-        document.dispatchEvent(new CustomEvent(BX_EVENTS.tourIslandClick));
-      }
+    document.body.classList.add("bx-tour-open");
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") skip();
     };
-    document.addEventListener("click", onIslandClickCapture, true);
-    return () => document.removeEventListener("click", onIslandClickCapture, true);
-  }, [active]);
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.body.classList.remove("bx-tour-open");
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [active, skip]);
 
-  // 鎖定 body 捲動。
-  useEffect(() => {
-    if (active) document.body.classList.add("bx-tour-open");
-    return () => document.body.classList.remove("bx-tour-open");
-  }, [active]);
-
-  // 每一步：聚光燈、定位、提示、自動簽到。
+  // 每一步：聚光燈、定位，並記住目前步驟（中斷後可從原步驟恢復）。
   useLayoutEffect(() => {
     if (!active || !step) return;
-    setUnlocked(false);
-    setHint(step.forced ? "👆 請先點擊畫面中高亮的區域" : null);
 
-    const targetEl = document.querySelector(step.target) as HTMLElement | null;
+    const targetEl = step.target ? (document.querySelector(step.target) as HTMLElement | null) : null;
     document.querySelectorAll(".bx-spotlight").forEach((el) => el.classList.remove("bx-spotlight"));
     if (targetEl) {
       targetEl.classList.add("bx-spotlight");
@@ -148,39 +163,19 @@ export default function OnboardingTour() {
     const reposition = () => setPos(computePos(targetEl, cardRef.current));
     window.addEventListener("resize", reposition);
     window.addEventListener("scroll", reposition, true);
-
-    if (step.forced) {
-      const unlock = () => {
-        setUnlocked(true);
-        setHint("✅ 很好！繼續下一步");
-        document.removeEventListener(BX_EVENTS.tourIslandClick, unlock);
-      };
-      document.addEventListener(BX_EVENTS.tourIslandClick, unlock);
-      return () => {
-        cancelAnimationFrame(raf);
-        window.removeEventListener("resize", reposition);
-        window.removeEventListener("scroll", reposition, true);
-        document.removeEventListener(BX_EVENTS.tourIslandClick, unlock);
-      };
-    }
-
-    let checkinTimer: number | undefined;
-    if (step.autoCheckin) checkinTimer = window.setTimeout(doCheckin, 700);
-    bxStore.update((s) => { s.onboarding.step = idx; });
+    bxStore.update((s) => {
+      s.onboarding.step = idx;
+    });
 
     return () => {
       cancelAnimationFrame(raf);
       window.removeEventListener("resize", reposition);
       window.removeEventListener("scroll", reposition, true);
-      if (checkinTimer) window.clearTimeout(checkinTimer);
     };
-  }, [active, idx, step, doCheckin]);
+  }, [active, idx, step]);
 
+  const back = () => setIdx((v) => Math.max(0, v - 1));
   const next = () => {
-    if (step?.forced && !unlocked) {
-      setHint("👆 請先點擊高亮區域才能繼續");
-      return;
-    }
     if (idx + 1 >= STEPS.length) {
       finish();
       return;
@@ -189,34 +184,35 @@ export default function OnboardingTour() {
   };
 
   if (!active || !step) return null;
+  const isLast = idx === STEPS.length - 1;
 
   return (
-    <div className={`bx-tour ${leaving ? "bx-tour--out" : ""}`} role="dialog" aria-label="新手導覽">
-      <div className="bx-tour__mask" />
+    <div className={`bx-tour ${leaving ? "bx-tour--out" : ""}`} role="dialog" aria-modal="true" aria-label="新手導覽">
+      <div className="bx-tour__mask" onClick={skip} />
       <div
         ref={cardRef}
         className={`bx-tour__card ${pos.center ? "bx-tour__card--center" : ""}`}
         style={pos.center ? undefined : { top: pos.top, left: pos.left }}
       >
-        <button type="button" className="bx-tour__skip" onClick={skip}>跳過導覽</button>
+        <button type="button" className="bx-tour__skip" onClick={skip}>跳過導覽 ✕</button>
+        <p className="bx-tour__step">新手導覽 {idx + 1} / {STEPS.length}</p>
         <h3 className="bx-tour__title">{step.title}</h3>
         <p className="bx-tour__body" dangerouslySetInnerHTML={{ __html: step.body }} />
-        <div className="bx-tour__dots">
+        <div className="bx-tour__dots" aria-label={`第 ${idx + 1} 步，共 ${STEPS.length} 步`}>
           {STEPS.map((s, i) => (
             <span key={s.id} className={`bx-dot ${i === idx ? "bx-dot--on" : ""} ${i < idx ? "bx-dot--done" : ""}`} />
           ))}
         </div>
-        <div className="bx-tour__actions">
-          <button
-            type="button"
-            className={`bx-btn bx-btn--primary ${step.forced && !unlocked ? "bx-btn--disabled" : ""}`}
-            disabled={step.forced && !unlocked}
-            onClick={next}
-          >
-            {idx === STEPS.length - 1 ? "開始探險 ⚓" : "下一步"}
+        <div className="bx-tour__actions bx-tour__actions--row">
+          {idx > 0 ? (
+            <button type="button" className="bx-btn bx-btn--ghost bx-btn--sm" onClick={back}>上一步</button>
+          ) : (
+            <span />
+          )}
+          <button type="button" className="bx-btn bx-btn--primary bx-btn--sm" onClick={next}>
+            {isLast ? "開始探險 ⚓" : "下一步"}
           </button>
         </div>
-        {hint ? <p className="bx-tour__hint">{hint}</p> : null}
       </div>
     </div>
   );
