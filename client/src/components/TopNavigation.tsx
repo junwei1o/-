@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Award, BarChart3, BookOpenCheck, BookOpenText, CalendarDays, Clapperboard, Compass, Crown, Crosshair, LifeBuoy, Lightbulb, Map as MapIcon, Menu, Orbit, ScrollText, Search, Settings, Sparkles, Swords, Telescope, Timer, UsersRound, X, type LucideIcon } from "lucide-react";
+import { BarChart3, BookOpenCheck, CalendarDays, Compass, Map as MapIcon, Menu, Search, Settings, Telescope, X, type LucideIcon } from "lucide-react";
 import { useLocation } from "wouter";
 import { Command, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -16,94 +16,38 @@ type NavItem = {
 
 type NavGroup = { id: string; label: string; items: NavItem[] };
 
-/** Desktop primary bar: the six destinations children use every day. */
+/**
+ * 頂層導航（22 入口 → 7）。
+ * 各入口的細節都在對應 Hub 頁展開（答題室／今日遠征／學習歷程／知識展廳／藏寶圖），
+ * 原本散落的頁面全部收編為 Hub 內的深層目的地，不再各自佔一個頂層入口。
+ */
 const PRIMARY_ITEMS: NavItem[] = [
-  { id: "home", label: "首頁", icon: Compass, href: "/", activePrefixes: ["/"] },
-  { id: "practice", label: "課綱練習", icon: BookOpenCheck, href: "/practice", activePrefixes: ["/practice"] },
-  { id: "map", label: "航海圖", icon: MapIcon, href: "/map", activePrefixes: ["/map", "/regions/"] },
-  { id: "battle", label: "答題戰鬥", icon: Swords, href: "/battle", activePrefixes: ["/battle"] },
-  { id: "camp", label: "每日營地", icon: CalendarDays, href: "/camp", activePrefixes: ["/camp"] },
-  { id: "badges", label: "徽章牆", icon: Award, href: "/badges", activePrefixes: ["/badges"] },
+  { id: "home", label: "首頁", icon: Compass, href: "/", activePrefixes: ["/map", "/regions/"] },
+  { id: "quiz-room", label: "答題室", icon: BookOpenCheck, href: "/quiz-room", activePrefixes: ["/quiz-room", "/practice", "/battle", "/knowledge-duel", "/duel", "/wrong-answers", "/review-hub", "/community"] },
+  { id: "expedition", label: "今日遠征", icon: CalendarDays, href: "/expedition", activePrefixes: ["/expedition", "/camp", "/guardian", "/guardian-expedition"] },
+  { id: "learning", label: "學習歷程", icon: BarChart3, href: "/learning", activePrefixes: ["/learning", "/learning-insights", "/learning-report", "/error-statistics", "/learning-summary", "/adventure-journal"] },
+  { id: "gallery", label: "知識展廳", icon: Telescope, href: "/gallery", activePrefixes: ["/gallery", "/wisdom", "/astronomy", "/principles", "/observatory", "/safety", "/study-tips"] },
+  { id: "treasure", label: "藏寶圖", icon: MapIcon, href: "/treasure", activePrefixes: ["/treasure", "/badges", "/tavern"] },
+  { id: "settings", label: "設定", icon: Settings, href: "/settings", activePrefixes: ["/settings", "/teacher", "/class", "/features"] },
 ];
 
-/** Everything else lives behind「更多」on desktop and the hamburger on mobile. */
-const MORE_ITEMS: NavItem[] = [
-  { id: "duel", label: "知識決鬥", icon: Crosshair, href: "/knowledge-duel", activePrefixes: ["/knowledge-duel", "/duel"] },
-  { id: "guardian", label: "守護者遠征", icon: Crown, href: "/guardian", activePrefixes: ["/guardian"] },
-  { id: "challenge", label: "自我挑戰", icon: Timer, href: "/community", activePrefixes: ["/community"] },
-  { id: "journal", label: "探險日誌", icon: BookOpenText, href: "/adventure-journal", activePrefixes: ["/adventure-journal"] },
-  { id: "astronomy", label: "天文館", icon: Orbit, href: "/astronomy", activePrefixes: ["/astronomy"] },
-  { id: "wisdom", label: "智慧故事館", icon: Sparkles, href: "/wisdom", activePrefixes: ["/wisdom"] },
-  { id: "principles", label: "世界原理站", icon: Telescope, href: "/principles", activePrefixes: ["/principles"] },
-  { id: "observatory", label: "影視觀測站", icon: Clapperboard, href: "/observatory", activePrefixes: ["/observatory"] },
-  { id: "safety", label: "生活安全學院", icon: LifeBuoy, href: "/safety", activePrefixes: ["/safety"] },
-  { id: "wrong-answers", label: "錯題複習", icon: ScrollText, href: "/wrong-answers", activePrefixes: ["/wrong-answers"] },
-  { id: "tips", label: "讀書技巧", icon: Lightbulb, href: "/study-tips", activePrefixes: ["/study-tips"] },
-  { id: "insights", label: "學習洞察", icon: BarChart3, href: "/learning-insights", activePrefixes: ["/learning-insights", "/learning-report"] },
-  { id: "errorStats", label: "錯題統計", icon: BarChart3, href: "/error-statistics", activePrefixes: ["/error-statistics"] },
-  { id: "support", label: "陪讀專區", icon: UsersRound, href: "/learning-summary", activePrefixes: ["/learning-summary"] },
-  { id: "settings", label: "設定", icon: Settings, href: "/settings", activePrefixes: ["/settings"] },
-];
-
-/** Mobile hamburger groups every destination so small screens never lose an entry. */
+/** 手機版選單：直接展示七個頂層入口（Hub 頁內再展開細節）。 */
 const MOBILE_GROUPS: NavGroup[] = [
-  {
-    id: "learning",
-    label: "學習練習",
-    items: [
-      PRIMARY_ITEMS[1],
-      MORE_ITEMS.find((item) => item.id === "wrong-answers")!,
-      MORE_ITEMS.find((item) => item.id === "tips")!,
-      MORE_ITEMS.find((item) => item.id === "insights")!,
-      MORE_ITEMS.find((item) => item.id === "errorStats")!,
-    ],
-  },
-  {
-    id: "expedition",
-    label: "探險對戰",
-    items: [
-      PRIMARY_ITEMS[2],
-      PRIMARY_ITEMS[3],
-      PRIMARY_ITEMS[4],
-      PRIMARY_ITEMS[5],
-      MORE_ITEMS.find((item) => item.id === "duel")!,
-      MORE_ITEMS.find((item) => item.id === "guardian")!,
-      MORE_ITEMS.find((item) => item.id === "challenge")!,
-      MORE_ITEMS.find((item) => item.id === "journal")!,
-    ],
-  },
-  {
-    id: "discovery",
-    label: "知識探索館",
-    items: [
-      MORE_ITEMS.find((item) => item.id === "safety")!,
-      MORE_ITEMS.find((item) => item.id === "astronomy")!,
-      MORE_ITEMS.find((item) => item.id === "wisdom")!,
-      MORE_ITEMS.find((item) => item.id === "principles")!,
-      MORE_ITEMS.find((item) => item.id === "observatory")!,
-    ],
-  },
-  {
-    id: "support",
-    label: "支援與設定",
-    items: [
-      MORE_ITEMS.find((item) => item.id === "support")!,
-      MORE_ITEMS.find((item) => item.id === "settings")!,
-    ],
-  },
+  { id: "main", label: "主選單", items: PRIMARY_ITEMS },
 ];
 
-/** Fixed bottom quick entries on phones; the hamburger still reaches every feature. */
+/** 手機底部固定快捷：最常用的四個。 */
 const MOBILE_PRIORITY_ITEMS: NavItem[] = [PRIMARY_ITEMS[0], PRIMARY_ITEMS[1], PRIMARY_ITEMS[2], PRIMARY_ITEMS[3]];
 
 function isItemActive(item: NavItem, pathname: string) {
-  if (item.href === "/") return pathname === "/" || pathname === "";
+  if (item.href === "/") {
+    return pathname === "/" || pathname === "" || (item.activePrefixes ?? []).some((prefix) => pathname === prefix || pathname.startsWith(prefix));
+  }
   return (item.activePrefixes ?? [item.href]).some((prefix) => pathname === prefix || pathname.startsWith(prefix.endsWith("/") ? prefix : `${prefix}/`) || pathname.startsWith(prefix));
 }
 
 function findActiveItem(pathname: string): NavItem | null {
-  const all = [...PRIMARY_ITEMS, ...MORE_ITEMS];
-  return all.find((item) => isItemActive(item, pathname)) ?? null;
+  return PRIMARY_ITEMS.find((item) => isItemActive(item, pathname)) ?? null;
 }
 
 export default function TopNavigation() {
@@ -112,9 +56,7 @@ export default function TopNavigation() {
   const activeItem = findActiveItem(pathname);
   const [searchOpen, setSearchOpen] = React.useState(false);
   const [searchQuery, setSearchQuery] = React.useState("");
-  const [moreOpen, setMoreOpen] = React.useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
-  const morePanelRef = React.useRef<HTMLDivElement>(null);
   const searchResults = React.useMemo(() => findFeatureSearchResults(searchQuery), [searchQuery]);
 
   React.useEffect(() => {
@@ -128,24 +70,7 @@ export default function TopNavigation() {
     return () => window.removeEventListener("keydown", handleShortcut);
   }, []);
 
-  React.useEffect(() => {
-    if (!moreOpen) return;
-    function handlePointerDown(event: MouseEvent) {
-      if (morePanelRef.current && !morePanelRef.current.contains(event.target as Node)) setMoreOpen(false);
-    }
-    function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") setMoreOpen(false);
-    }
-    document.addEventListener("mousedown", handlePointerDown);
-    document.addEventListener("keydown", handleKeyDown);
-    return () => {
-      document.removeEventListener("mousedown", handlePointerDown);
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [moreOpen]);
-
   function go(href: string) {
-    setMoreOpen(false);
     setMobileMenuOpen(false);
     setLocation(href);
   }
@@ -154,8 +79,6 @@ export default function TopNavigation() {
     setSearchQuery("");
     setSearchOpen(true);
   }
-
-  const moreActive = Boolean(activeItem && !PRIMARY_ITEMS.some((item) => item.id === activeItem.id));
 
   return (
     <header className="global-top-nav">
@@ -186,39 +109,6 @@ export default function TopNavigation() {
               </button>
             );
           })}
-          <div className="global-top-nav-more" ref={morePanelRef}>
-            <button
-              type="button"
-              className={`global-top-nav-item global-top-nav-more-trigger ${moreActive ? "is-active" : ""}`}
-              aria-label="更多功能"
-              aria-expanded={moreOpen}
-              aria-haspopup="menu"
-              onClick={() => setMoreOpen((open) => !open)}
-            >
-              <Menu size={17} strokeWidth={1.9} aria-hidden="true" />
-              <span>更多</span>
-            </button>
-            {moreOpen ? (
-              <div className="global-top-nav-more-panel" role="menu" aria-label="更多功能選單">
-                {MORE_ITEMS.map(({ id, label, icon: Icon, href }) => {
-                  const active = activeItem?.id === id;
-                  return (
-                    <button
-                      key={id}
-                      type="button"
-                      role="menuitem"
-                      className={`global-top-nav-more-item ${active ? "is-active" : ""}`}
-                      aria-current={active ? "page" : undefined}
-                      onClick={() => go(href)}
-                    >
-                      <Icon size={16} aria-hidden="true" />
-                      <span>{label}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            ) : null}
-          </div>
         </nav>
         <button
           type="button"

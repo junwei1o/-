@@ -19,4 +19,12 @@ describe("App 守護者路由相容性", () => {
     expect(appSource).toContain('path={"/tavern/cards"}');
     expect(appSource).toContain('path={"/tavern/adventure"}');
   });
+
+  it("新增導航重組（22 → 7）的五個 Hub 入口路由", () => {
+    expect(appSource).toContain('path={"/quiz-room"}');
+    expect(appSource).toContain('path={"/expedition"}');
+    expect(appSource).toContain('path={"/learning"}');
+    expect(appSource).toContain('path={"/gallery"}');
+    expect(appSource).toContain('path={"/treasure"}');
+  });
 });

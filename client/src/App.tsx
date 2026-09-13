@@ -44,6 +44,11 @@ const StudyTips = React.lazy(() => import("@/pages/StudyTips"));
 const GuardianExpedition = React.lazy(() => import("@/pages/GuardianExpedition"));
 const Tavern = React.lazy(() => import("@/pages/Tavern"));
 const CardCollection = React.lazy(() => import("@/pages/CardCollection"));
+const QuizRoom = React.lazy(() => import("@/pages/QuizRoom"));
+const Expedition = React.lazy(() => import("@/pages/Expedition"));
+const LearningHub = React.lazy(() => import("@/pages/LearningHub"));
+const Gallery = React.lazy(() => import("@/pages/Gallery"));
+const TreasureHub = React.lazy(() => import("@/pages/TreasureHub"));
 const TeacherDashboard = React.lazy(() => import("@/pages/TeacherDashboard"));
 const StudentClass = React.lazy(() => import("@/pages/StudentClass"));
 const TrumpDuelBoard = React.lazy(() => import("@/components/TrumpDuelBoard"));
@@ -68,6 +73,11 @@ function Router() {
         <Switch>
         <Route path={"/map"} component={StudentMap} />
         <Route path={"/"} component={Home} />
+        <Route path={"/quiz-room"} component={QuizRoom} />
+        <Route path={"/expedition"} component={Expedition} />
+        <Route path={"/learning"} component={LearningHub} />
+        <Route path={"/gallery"} component={Gallery} />
+        <Route path={"/treasure"} component={TreasureHub} />
         <Route path={"/features"} component={FeaturesDirectory} />
         <Route path={"/camp"} component={DailyCamp} />
         <Route path={"/badges"} component={Badges} />

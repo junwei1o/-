@@ -1,0 +1,159 @@
+/* 導航重組（22 → 7）後各 Hub 入口頁的共用版面。
+   設計語言沿用全站主題變數（--paper/--tidal/--coral…），與首頁、督學台一致。 */
+
+.hub-page {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 30px 18px 90px;
+}
+
+.hub-header {
+  margin-bottom: 22px;
+}
+
+.hub-eyebrow {
+  margin: 0 0 8px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+}
+
+.hub-title {
+  margin: 0;
+  color: var(--tidal-deep);
+  font-size: 30px;
+  line-height: 1.2;
+}
+
+.hub-sub {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.hub-tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 0 0 18px;
+}
+
+.hub-tab {
+  border: none;
+  border-radius: 999px;
+  padding: 8px 16px;
+  background: var(--paper-deep);
+  color: var(--ink);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.16s var(--ease);
+}
+
+.hub-tab:hover {
+  background: #e3d7bd;
+}
+
+.hub-tab.on {
+  background: var(--tidal);
+  color: #fff;
+}
+
+.hub-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 14px;
+}
+
+.hub-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 18px;
+  border: 1.5px solid var(--line);
+  border-radius: 16px;
+  background: var(--paper);
+  color: var(--ink);
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+  transition: border-color 0.16s var(--ease), transform 0.16s var(--ease), box-shadow 0.16s var(--ease);
+}
+
+.hub-card:hover,
+.hub-card:focus-visible {
+  border-color: var(--tidal);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(11, 110, 142, 0.1);
+  outline: none;
+}
+
+.hub-card-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: rgba(11, 110, 142, 0.12);
+  color: var(--tidal);
+}
+
+.hub-card h3 {
+  margin: 2px 0 0;
+  font-size: 17px;
+  color: var(--ink);
+}
+
+.hub-card p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--muted);
+}
+
+.hub-card small {
+  margin-top: auto;
+  padding-top: 6px;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--tidal);
+}
+
+.hub-section {
+  margin: 0 0 20px;
+}
+
+.hub-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 10px;
+  font-size: 16px;
+  color: var(--tidal-deep);
+}
+
+.hub-section-head svg {
+  color: var(--coral);
+}
+
+.hub-section-head h2 {
+  margin: 0;
+  font-size: 17px;
+}
+
+.hub-streak {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: rgba(232, 184, 75, 0.22);
+  color: #7a5a12;
+  font-size: 13px;
+  font-weight: 800;
+}
