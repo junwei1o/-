@@ -39,7 +39,8 @@ vi.mock("@/lib/trpc", () => ({
       upsertTeacherProfile: { useMutation: () => ({ mutate: () => {}, isPending: false }) },
     },
     aiTutor: {
-      delegateTask: { useMutation: () => ({ mutateAsync: async () => ({ taskType: "single", subject: null, reason: "", title: "", questions: [], mastery: { totalQuestions: 0, subjectCorrectRate: {}, integratedCorrectRate: null, weakTopics: [] } }), isPending: false }) },
+      reviewPlan: { useMutation: () => ({ mutateAsync: vi.fn(), isPending: false }) },
+      progressSummary: { useMutation: () => ({ mutateAsync: vi.fn(), isPending: false }) },
     },
     weeklyQuiz: {
       get: { useQuery: () => ({ data: { status: "notOpen", weekKey: "2026-W37", opensAt: 0 }, isLoading: false, refetch: () => Promise.resolve() }) },
@@ -66,6 +67,9 @@ describe("首頁沉浸式儀表板", () => {
     expect(screen.getByTestId("home-dashboard-map")).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "小晴，見習航海士" })).toBeInTheDocument();
     expect(screen.getByRole("progressbar", { name: "目前等級經驗值" })).toHaveAttribute("aria-valuenow", "0");
+    // 學伴派任務已從主頁移除，深度伴讀只留答題後單一入口
+    expect(screen.queryByText(/學伴主動派任務/)).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /讓學伴派今日任務/ })).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: /背包 0/ }));
     expect(screen.getByRole("complementary", { name: "特產背包" })).toHaveTextContent("完成真實學習里程碑");

@@ -20,6 +20,15 @@ vi.stubGlobal("localStorage", {
 vi.mock("wouter", () => ({ useLocation: () => ["/settings", setLocation] }));
 vi.mock("sonner", () => ({ toast: { success: vi.fn(), error: vi.fn() } }));
 
+const { testProxyMock } = vi.hoisted(() => ({ testProxyMock: vi.fn() }));
+vi.mock("@/lib/trpc", () => ({
+  trpc: {
+    aiCompanion: {
+      testProxy: { useMutation: () => ({ mutateAsync: testProxyMock, isPending: false }) },
+    },
+  },
+}));
+
 describe("設定頁錯誤日誌", () => {
   beforeEach(() => {
     // 既有測試都針對解鎖後的船長室內容：先重置閘門狀態再標記此裝置已解鎖。
@@ -314,5 +323,66 @@ describe("Settings 學習設定", () => {
     render(<Settings />);
     const difficultySelect = screen.getByLabelText("難度偏好") as HTMLSelectElement;
     expect(difficultySelect.value).toBe("挑戰優先");
+  });
+});
+
+describe("設定頁伴小星雙腦代理", () => {
+  beforeEach(() => {
+    bxStore.reset();
+    storage.set("xue-debug-unlocked-v1", "1");
+    testProxyMock.mockReset();
+  });
+  afterEach(() => {
+    cleanup();
+    storage.clear();
+  });
+
+  it("顯示 API Base / Key / 模型三欄與測試、儲存、清除按鈕", () => {
+    render(<Settings />);
+    expect(screen.getByRole("heading", { name: "深度伴讀的 AI 代理" })).toBeInTheDocument();
+    expect(screen.getByLabelText(/API Base/)).toBeInTheDocument();
+    expect(screen.getByLabelText(/API Key/)).toHaveAttribute("type", "password");
+    expect(screen.getByLabelText("模型名稱")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /查詢驗證代理連線/ })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "儲存設定" })).toBeInTheDocument();
+  });
+
+  it("填寫後儲存，代理設定只存本機", () => {
+    render(<Settings />);
+    fireEvent.change(screen.getByLabelText(/API Base/), { target: { value: "https://proxy.example.com/v1" } });
+    fireEvent.change(screen.getByLabelText(/API Key/), { target: { value: "sk-test" } });
+    fireEvent.change(screen.getByLabelText("模型名稱"), { target: { value: "gpt-4o-mini" } });
+    fireEvent.click(screen.getByRole("button", { name: "儲存設定" }));
+
+    const saved = JSON.parse(storage.get("companion-brain-config-v1") ?? "null");
+    expect(saved).toMatchObject({ base: "https://proxy.example.com/v1", key: "sk-test", model: "gpt-4o-mini" });
+  });
+
+  it("查詢驗證成功時顯示往返時間", async () => {
+    testProxyMock.mockResolvedValue({ ok: true, latencyMs: 1200, model: "gpt-4o-mini" });
+    render(<Settings />);
+    fireEvent.change(screen.getByLabelText(/API Base/), { target: { value: "https://proxy.example.com/v1" } });
+    fireEvent.change(screen.getByLabelText(/API Key/), { target: { value: "sk-test" } });
+    fireEvent.click(screen.getByRole("button", { name: /查詢驗證代理連線/ }));
+
+    expect(await screen.findByText(/連線成功/)).toHaveTextContent("1.2 秒");
+    expect(testProxyMock.mock.calls[0][0]).toMatchObject({ base: "https://proxy.example.com/v1", key: "sk-test" });
+  });
+
+  it("查詢驗證失敗（如金鑰錯誤）顯示錯誤訊息", async () => {
+    testProxyMock.mockRejectedValue(new Error("代理回應 401：金鑰無效或沒有權限"));
+    render(<Settings />);
+    fireEvent.change(screen.getByLabelText(/API Base/), { target: { value: "https://proxy.example.com/v1" } });
+    fireEvent.change(screen.getByLabelText(/API Key/), { target: { value: "bad" } });
+    fireEvent.click(screen.getByRole("button", { name: /查詢驗證代理連線/ }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent("401");
+  });
+
+  it("清除代理會移除本機設定", () => {
+    storage.set("companion-brain-config-v1", JSON.stringify({ base: "https://x/v1", key: "k", model: "m" }));
+    render(<Settings />);
+    fireEvent.click(screen.getByRole("button", { name: /清除代理/ }));
+    expect(storage.has("companion-brain-config-v1")).toBe(false);
   });
 });

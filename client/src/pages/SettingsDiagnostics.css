@@ -264,3 +264,58 @@
 @media (prefers-reduced-motion: reduce) {
   .diag-refresh-spinning { animation: none; }
 }
+
+/* 伴小星雙腦代理設定 */
+.settings-companion-grid {
+  display: grid;
+  gap: .7rem;
+  margin-top: .8rem;
+}
+.settings-companion-item { display: grid; gap: .35rem; }
+.settings-companion-item span { font-size: .82rem; font-weight: 700; color: var(--muted-foreground); }
+.settings-companion-item input {
+  font: inherit;
+  padding: .6rem .75rem;
+  border: 1px solid var(--border);
+  border-radius: .65rem;
+  background: var(--card);
+  color: var(--foreground);
+  width: 100%;
+}
+.settings-companion-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .6rem;
+  margin-top: .9rem;
+}
+.settings-companion-actions button {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  font: inherit;
+  font-weight: 700;
+  border-radius: 999px;
+  padding: .55rem 1.05rem;
+  cursor: pointer;
+  border: 1px solid var(--border);
+}
+.settings-companion-test { background: var(--tidal, #0B6E8E); color: #fff; border-color: var(--tidal, #0B6E8E) !important; }
+.settings-companion-test:disabled { opacity: .55; cursor: not-allowed; }
+.settings-companion-save { background: var(--card); color: var(--foreground); }
+.settings-companion-clear { background: transparent; color: var(--muted-foreground); }
+.settings-companion-state {
+  margin: .7rem 0 0;
+  padding: .55rem .8rem;
+  border-radius: .65rem;
+  font-size: .86rem;
+}
+.settings-companion-state.is-ok { background: rgba(108,132,96,.16); color: #42593a; }
+.settings-companion-state.is-error { background: rgba(196,92,60,.14); color: #8f3c24; }
+.settings-companion-notes {
+  margin: .7rem 0 0;
+  padding-left: 1.1rem;
+  display: grid;
+  gap: .25rem;
+  font-size: .8rem;
+  color: var(--muted-foreground);
+}

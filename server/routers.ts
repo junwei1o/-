@@ -1,5 +1,4 @@
 import { synthesizeSpeech } from "./tts";
-import { computeStudentMastery, routeTaskType } from "./insights";
 import {
   buildWeeklyQuiz,
   computeWeeklyRewards,
@@ -50,7 +49,17 @@ import {
 } from "./db";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
+import { TRPCError } from "@trpc/server";
 import { publicProcedure, router } from "./_core/trpc";
+import {
+  REFLECT_LIMIT_PER_MIN,
+  PROXY_TEST_LIMIT_PER_MIN,
+  buildReflectionMessages,
+  callOpenAICompatibleProxy,
+  ProxyCallError,
+  proxyTestLimiter,
+  reflectLimiter,
+} from "./companion";
 
 /** 雲端船籍名字：2–6 個中文字或英數字（如「張三」「小航海士02」）。 */
 const cloudNameSchema = z.string().trim().min(2, "名字至少 2 個字").max(6, "名字最多 6 個字").regex(/^[一-鿿A-Za-z0-9]+$/, "名字請用中文字或英數字");
@@ -296,123 +305,105 @@ export const appRouter = router({
         }
       }),
 
-    /**
-     * AI 學伴主動委派任務卡：
-     * 讀最近 50 筆考試 → computeStudentMastery → routeTaskType →
-     * 一次 LLM 呼叫產出 5–8 題任務卡。
-     * 路由決策：綜合課綱 ≥ 70% 且各單科 ≥ 60% 派綜合題，否則派單科最薄弱點。
-     */
-    delegateTask: publicProcedure
+  }),
+  // 伴小星雙腦：規則腦在客戶端離線運作；這裡只服務 LLM 腦（使用者自備代理或伺服器內建供應商鏈）。
+  aiCompanion: router({
+    /** 查詢驗證使用者填的 OpenAI 相容代理是否可以使用：發一個極小請求試連線。 */
+    testProxy: publicProcedure
       .input(z.object({
-        studentName: z.string().trim().min(2).max(24),
-        days: z.number().int().min(1).max(30).optional(),
+        base: z.string().trim().min(8, "請填 API Base 網址").max(300),
+        key: z.string().trim().min(1, "請填 API Key").max(300),
+        model: z.string().trim().max(120).optional(),
       }))
-      .mutation(async ({ input }) => {
-        const name = input.studentName.trim();
-        const records = await listExamRecords(name, 50);
-        const mastery = computeStudentMastery(
-          records.map((row) => ({
-            subject: row.subject,
-            totalQuestions: row.totalQuestions,
-            correctCount: row.correctCount,
-            detail: row.detail ?? null,
-          })),
-        );
-        const route = routeTaskType(mastery);
-        const focusTopic = mastery.weakTopics[0];
-        const taskBrief = route.taskType === "integrated"
-          ? `請設計 5–8 題「綜合課綱」題，融合至少兩個學科（例如：自然 + 社會、數學 + 自然），適合台灣國小 3–6 年級，題目要有真實情境感，難度中上。`
-          : focusTopic
-            ? `請設計 5–8 題「${focusTopic.subject}：${focusTopic.topic}」題，先鞏固學生最薄弱點，難度從基礎到標準，題目要有具體情境。`
-            : `請設計 5–8 題「${route.subject ?? "綜合課綱"}」題，難度基礎到標準。`;
+      .mutation(async ({ input, ctx }) => {
+        const bucket = ctx.req.ip || ctx.req.socket?.remoteAddress || "unknown";
+        const gate = proxyTestLimiter.consume(`test:${bucket}`, PROXY_TEST_LIMIT_PER_MIN);
+        if (!gate.allowed) {
+          throw new TRPCError({
+            code: "TOO_MANY_REQUESTS",
+            message: `測試太頻繁，請 ${Math.ceil(gate.retryAfterMs / 1000)} 秒後再試`,
+          });
+        }
+        const startedAt = Date.now();
+        try {
+          const result = await callOpenAICompatibleProxy(
+            input,
+            [{ role: "user", content: "請只回覆兩個字：OK" }],
+            8,
+          );
+          return { ok: true as const, latencyMs: Date.now() - startedAt, model: result.model };
+        } catch (error) {
+          if (error instanceof ProxyCallError) {
+            throw new TRPCError({ code: "BAD_REQUEST", message: error.message });
+          }
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: error instanceof Error ? error.message : "代理測試失敗",
+          });
+        }
+      }),
+    /** 答題後深度伴讀：一次只回一個蘇格拉底提問；每分鐘限額，超額直接報錯讓客戶端降級規則腦。 */
+    reflect: publicProcedure
+      .input(z.object({
+        studentName: z.string().trim().max(24).optional(),
+        proxy: z.object({
+          base: z.string().trim().min(8).max(300),
+          key: z.string().trim().min(1).max(300),
+          model: z.string().trim().max(120).optional(),
+        }).nullable(),
+        question: z.string().trim().min(1).max(1200),
+        options: z.array(z.string().trim().min(1).max(600)).min(2).max(6),
+        selectedAnswer: z.string().trim().max(600),
+        correctAnswer: z.string().trim().min(1).max(600),
+        correct: z.boolean(),
+        subject: z.string().trim().min(1).max(80),
+        learningTopic: z.string().trim().max(300).optional(),
+        grade: z.number().int().min(1).max(9),
+        turn: z.enum(["first", "more"]),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        const bucket = input.studentName?.trim() || ctx.req.ip || ctx.req.socket?.remoteAddress || "anon";
+        const gate = reflectLimiter.consume(`reflect:${bucket}`, REFLECT_LIMIT_PER_MIN);
+        if (!gate.allowed) {
+          throw new TRPCError({
+            code: "TOO_MANY_REQUESTS",
+            message: `這一分鐘的深度伴讀次數用完了（每分鐘 ${REFLECT_LIMIT_PER_MIN} 次），請 ${Math.ceil(gate.retryAfterMs / 1000)} 秒後再試`,
+          });
+        }
 
-        const response = await invokeLLM({
-          messages: [
-            {
-              role: "system",
-              content: "你是台灣國小 3–6 年級的命題老師。題目要有真實情境（避免純算式），用繁體中文，輸出必須符合指定 JSON schema；不得捏造課綱編號。",
-            },
-            {
-              role: "user",
-              content: JSON.stringify({
-                task: taskBrief,
-                mastery: {
-                  totalQuestions: mastery.totalQuestions,
-                  subjectCorrectRate: mastery.subjectCorrectRate,
-                  integratedCorrectRate: mastery.integratedCorrectRate,
-                  weakTopics: mastery.weakTopics,
-                },
-                route: { taskType: route.taskType, subject: route.subject, reason: route.reason },
-              }),
-            },
-          ],
-          max_tokens: 1400,
-          response_format: {
-            type: "json_schema",
-            json_schema: {
-              name: "delegated_task_card",
-              strict: true,
-              schema: {
-                type: "object",
-                properties: {
-                  title: { type: "string" },
-                  questions: {
-                    type: "array",
-                    minItems: 5,
-                    maxItems: 8,
-                    items: {
-                      type: "object",
-                      properties: {
-                        prompt: { type: "string" },
-                        options: { type: "array", minItems: 2, maxItems: 4, items: { type: "string" } },
-                        answer: { type: "integer", minimum: 0, maximum: 3 },
-                        topic: { type: "string" },
-                        difficulty: { type: "string", enum: ["基礎", "標準", "挑戰"] },
-                      },
-                      required: ["prompt", "options", "answer", "topic", "difficulty"],
-                      additionalProperties: false,
-                    },
-                  },
-                },
-                required: ["title", "questions"],
-                additionalProperties: false,
-              },
-            },
-          },
+        const messages = buildReflectionMessages({
+          question: input.question,
+          options: input.options,
+          selectedAnswer: input.selectedAnswer,
+          correctAnswer: input.correctAnswer,
+          correct: input.correct,
+          subject: input.subject,
+          learningTopic: input.learningTopic,
+          grade: input.grade,
+          turn: input.turn,
         });
 
-        const content = response.choices[0]?.message.content;
-        if (typeof content !== "string") throw new Error("AI delegation content is unavailable");
-        try {
-          const parsed = JSON.parse(content);
-          const validated = z.object({
-            title: z.string().min(1).max(120),
-            questions: z.array(z.object({
-              prompt: z.string().min(1).max(500),
-              options: z.array(z.string().min(1).max(240)).min(2).max(4),
-              answer: z.number().int().min(0).max(3),
-              topic: z.string().min(1).max(120),
-              difficulty: z.enum(["基礎", "標準", "挑戰"]),
-            }).superRefine((q, ctx) => {
-              if (q.answer >= q.options.length) ctx.addIssue({ code: z.ZodIssueCode.custom, message: "answer outside options" });
-            })).min(5).max(8),
-          }).parse(parsed);
-          return {
-            taskType: route.taskType,
-            subject: route.subject,
-            reason: route.reason,
-            title: validated.title,
-            questions: validated.questions,
-            mastery: {
-              totalQuestions: mastery.totalQuestions,
-              subjectCorrectRate: mastery.subjectCorrectRate,
-              integratedCorrectRate: mastery.integratedCorrectRate,
-              weakTopics: mastery.weakTopics,
-            },
-          };
-        } catch {
-          throw new Error("AI delegation format is invalid");
+        // 有自備代理 → 走代理；代理任何錯誤都明確報回，客戶端降級規則腦。
+        if (input.proxy?.base && input.proxy.key) {
+          try {
+            const result = await callOpenAICompatibleProxy(input.proxy, messages, 220);
+            return { text: result.content, source: "proxy" as const, remaining: gate.remaining };
+          } catch (error) {
+            if (error instanceof ProxyCallError) {
+              throw new TRPCError({ code: "BAD_REQUEST", message: error.message });
+            }
+            throw error;
+          }
         }
+
+        // 沒自備代理 → 用伺服器內建供應商鏈（Groq/Cerebras/…，取決於 ENV）；
+        // 完全沒設金鑰時 invokeLLM 會拋錯，客戶端同樣降級到離線規則腦。
+        const response = await invokeLLM({ messages, max_tokens: 220 });
+        const content = response.choices[0]?.message.content;
+        if (typeof content !== "string" || content.trim().length === 0) {
+          throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "學習模型沒有回覆" });
+        }
+        return { text: content.trim(), source: "builtin" as const, remaining: gate.remaining };
       }),
   }),
   questionBank: router({

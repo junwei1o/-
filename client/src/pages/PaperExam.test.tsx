@@ -33,6 +33,11 @@ vi.mock("@/lib/trpc", () => ({
         useMutation: () => ({ isPending: false, error: null, data: undefined, reset: vi.fn(), mutate: vi.fn() }),
       },
     },
+    aiCompanion: {
+      reflect: {
+        useMutation: () => ({ mutateAsync: vi.fn().mockResolvedValue({ text: "測試提問？", source: "rule", remaining: 8 }), isPending: false }),
+      },
+    },
     questionBank: {
       list: {
         useQuery: () => ({ data: { questions: [mockQuestion] }, isLoading: false, error: null, refetch: vi.fn() }),

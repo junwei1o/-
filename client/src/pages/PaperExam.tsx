@@ -8,6 +8,7 @@ import { SpeechReadButton } from "@/components/SpeechReadButton";
 import { AiReviewPlanCard } from "@/components/AiReviewPlanCard";
 import { QuestionTransition } from "@/components/QuestionTransition";
 import { AnswerCombo } from "@/components/AnswerCombo";
+import { CompanionReflection } from "@/components/CompanionReflection";
 import {
   buildPaperDeck,
   buildAssignmentDeck,
@@ -1219,6 +1220,14 @@ function pickPoolWithCooldown(nextScope: PaperScope): PaperQuestion[] {
                 {currentExplanationStage >= 1 && <button type="button" className="paper-explanation-toggle" onClick={() => revealExplanation(current, currentExplanationStage >= 2 ? 1 : 2)} aria-expanded={currentExplanationStage >= 2}>{currentExplanationStage >= 2 ? "收起完整深讀" : "進入完整深讀"}</button>}
                 <button type="button" className={`paper-doubt-button ${flaggedQuestions[current.id] ? "is-flagged" : ""}`} aria-pressed={Boolean(flaggedQuestions[current.id])} onClick={() => toggleDoubt(current)}><Flag size={16} aria-hidden="true" />{flaggedQuestions[current.id] ? "已標記疑惑" : "標記疑惑"}</button>
               </div>
+              <CompanionReflection
+                question={current.prompt}
+                options={current.options}
+                selectedIndex={answers[current.id] ?? -1}
+                answerIndex={current.answer}
+                subject={current.subject}
+                learningTopic={current.learningTopic}
+              />
               {currentCorrect && consecutiveCorrectWithoutExplanation >= 10 && <p className="paper-challenge-prompt" role="status">你已連續答對 10 題，而且先靠自己的線索完成；可以試試看挑戰更難的區域。</p>}
             </aside>
           )}
