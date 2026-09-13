@@ -9,6 +9,7 @@ import { AiReviewPlanCard } from "@/components/AiReviewPlanCard";
 import { QuestionTransition } from "@/components/QuestionTransition";
 import { AnswerCombo } from "@/components/AnswerCombo";
 import { CompanionReflection } from "@/components/CompanionReflection";
+import { ReflectionWorkspace } from "@/components/reflection/ReflectionWorkspace";
 import {
   buildPaperDeck,
   buildAssignmentDeck,
@@ -1239,6 +1240,7 @@ function pickPoolWithCooldown(nextScope: PaperScope): PaperQuestion[] {
           </QuestionTransition>
         </section>
       )}
+      <ReflectionWorkspace />
     </main>
   );
 }

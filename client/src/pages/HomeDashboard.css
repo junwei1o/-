@@ -103,8 +103,7 @@
   }
 }
 
-.home-dashboard-status,
-.home-dashboard-actions {
+.home-dashboard-status {
   pointer-events: auto;
   border: 1px solid rgba(255, 255, 255, 0.62);
   background: rgba(255, 255, 255, 0.58);
@@ -133,17 +132,6 @@
 .home-dashboard-coins { margin: 0; color: #805018; font-weight: 800; white-space: nowrap; }
 .home-dashboard-backpack { border: 0; border-radius: 999px; background: #fff8ea; color: #3e574c; padding: 9px 12px; font: inherit; font-weight: 800; cursor: pointer; }
 .home-dashboard-backpack:focus-visible, .home-dashboard-action:focus-visible { outline: 3px solid #ff8a5c; outline-offset: 3px; }
-
-.home-dashboard-actions {
-  align-self: end;
-  justify-self: center;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
-  width: min(920px, 100%);
-  padding: 12px;
-  border-radius: 24px;
-}
 
 .home-dashboard-action {
   min-height: 64px;
@@ -193,7 +181,6 @@
   .home-dashboard-status { grid-template-columns: 1fr; gap: 8px; padding: 13px; }
   .home-dashboard-status-side { justify-content: space-between; }
   .home-dashboard-progress { width: 100%; }
-  .home-dashboard-actions { grid-template-columns: 1fr; gap: 8px; padding: 9px; }
   .home-dashboard-action { min-height: 54px; }
   .home-dashboard-map-layer .taiwan-map-extras { top: 138px; }
   .home-dashboard-map-layer .taiwan-map-easter-egg-trigger { top: 202px; }
@@ -220,10 +207,6 @@
     min-height:calc(100dvh - 140px);
     padding-top:18px;
     padding-bottom:calc(92px + env(safe-area-inset-bottom));
-  }
-
-  .home-dashboard-actions {
-    margin-bottom:8px;
   }
 }
 
@@ -281,147 +264,202 @@
   }
 }
 
-/* Mobile Bottom Sheet: keep the map visible while preserving a clear, reachable action drawer. */
-.home-dashboard-actions-sheet {
-  position: relative;
-  z-index: 30;
+/* ===== 快速行動：右側半透明側邊欄（默認收起，懸浮鈕／邊緣把手喚出）===== */
+.home-quick-sidebar {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
 }
 
-.home-dashboard-actions-drawer {
-  position: relative;
+.home-quick-sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  display: block;
+  border: 0;
+  padding: 0;
+  cursor: default;
+  background: rgba(20, 38, 32, 0.30);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 220ms var(--ease-out, ease-out), visibility 0s linear 220ms;
 }
 
-.home-dashboard-actions-toggle,
-.home-dashboard-actions-close,
-.home-dashboard-actions-backdrop {
-  display: none;
+.home-quick-sidebar.is-open .home-quick-sidebar-backdrop {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition: opacity 220ms var(--ease-out, ease-out);
 }
+
+/* 懸浮喚出鈕（貼右緣置中） */
+.home-quick-fab,
+.home-quick-edge {
+  position: fixed;
+  top: 50%;
+  right: 12px;
+  z-index: 61;
+  pointer-events: auto;
+}
+
+.home-quick-fab {
+  transform: translateY(-50%);
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 10px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  border-radius: 18px;
+  background: rgba(255, 107, 53, 0.92);
+  color: #fff;
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  box-shadow: 0 12px 28px rgba(255, 107, 53, 0.32);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: transform 160ms var(--ease-out, ease-out), box-shadow 160ms var(--ease-out, ease-out);
+}
+
+.home-quick-fab:hover { transform: translateY(-50%) translateX(-2px); box-shadow: 0 16px 32px rgba(255, 107, 53, 0.4); }
+.home-quick-fab span { writing-mode: vertical-rl; }
+.home-quick-fab:focus-visible,
+.home-quick-edge:focus-visible,
+.home-quick-panel-collapse:focus-visible,
+.home-quick-panel-close:focus-visible { outline: 3px solid #ff8a5c; outline-offset: 2px; }
+
+/* 關閉懸浮鈕時的右緣細把手（仍保留鍵盤／螢幕閱讀器可達的開口） */
+.home-quick-edge {
+  transform: translateY(-50%);
+  width: 10px;
+  height: 88px;
+  padding: 0;
+  border: 0;
+  border-radius: 10px 0 0 10px;
+  background: rgba(46, 90, 76, 0.32);
+  cursor: pointer;
+}
+.home-quick-edge span {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+/* 右側側邊欄本體：半透明毛玻璃，默認收在畫面右緣外 */
+.home-quick-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 62;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: min(340px, 100%);
+  padding: 18px 16px calc(20px + env(safe-area-inset-bottom));
+  overflow-y: auto;
+  border-left: 1px solid rgba(255, 255, 255, 0.6);
+  background: rgba(249, 243, 232, 0.72);
+  box-shadow: -18px 0 48px rgba(45, 64, 60, 0.22);
+  backdrop-filter: blur(20px) saturate(1.25);
+  -webkit-backdrop-filter: blur(20px) saturate(1.25);
+  pointer-events: auto;
+  transform: translateX(100%);
+  visibility: hidden;
+  transition: transform 260ms var(--ease-out, cubic-bezier(0.23, 1, 0.32, 1)), visibility 0s linear 260ms;
+  will-change: transform;
+}
+
+.home-quick-sidebar.is-open .home-quick-panel {
+  transform: translateX(0);
+  visibility: visible;
+  transition: transform 260ms var(--ease-out, cubic-bezier(0.23, 1, 0.32, 1));
+}
+
+.home-quick-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.home-quick-panel-head > strong {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #29463c;
+  font-size: 1rem;
+}
+.home-quick-panel-head-actions { display: inline-flex; align-items: center; gap: 6px; }
+.home-quick-panel-collapse {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  border: 0;
+  background: transparent;
+  color: #567163;
+  font: inherit;
+  font-size: 0.76rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.home-quick-panel-close {
+  display: inline-grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(46, 90, 76, 0.1);
+  color: #29463c;
+  cursor: pointer;
+}
+
+/* 側欄內動作導覽：垂直單列，不再自帶玻璃卡外觀 */
+.home-quick-panel .home-dashboard-actions {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+.home-quick-panel .home-dashboard-actions[aria-hidden="true"] { visibility: hidden; pointer-events: none; }
+.home-quick-panel .home-dashboard-action {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  min-height: 0;
+  padding: 12px 14px;
+  text-align: left;
+}
+/* 聯絡老師卡靠側欄底部 */
+.home-quick-panel > .home-contact-card { margin-top: auto; }
 
 @media (max-width: 650px) {
-  .home-dashboard-actions-sheet {
-    position: fixed;
-    inset: auto 0 0;
-    z-index: 40;
-    pointer-events: none;
-  }
-
-  .home-dashboard-actions-backdrop {
-    position: fixed;
-    inset: 0;
-    display: block;
-    border: 0;
-    padding: 0;
-    background: rgba(36, 63, 54, 0.18);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 180ms var(--ease-out, ease-out);
-  }
-
-  .home-dashboard-actions-drawer {
-    width: 100%;
-    padding: 8px 12px calc(10px + env(safe-area-inset-bottom));
-    border-top: 1px solid rgba(255, 255, 255, 0.72);
-    border-radius: 22px 22px 0 0;
-    background: rgba(249, 243, 232, 0.94);
-    box-shadow: 0 -12px 32px rgba(45, 64, 60, 0.18);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    pointer-events: auto;
-    transform: translateY(calc(100% - 62px - env(safe-area-inset-bottom)));
-    transition: transform 220ms var(--ease-out, cubic-bezier(0.23, 1, 0.32, 1));
-    will-change: transform;
-  }
-
-  .home-dashboard-actions-sheet.is-open .home-dashboard-actions-backdrop {
-    opacity: 1;
-    pointer-events: auto;
-  }
-
-  .home-dashboard-actions-sheet.is-open .home-dashboard-actions-drawer {
-    transform: translateY(0);
-  }
-
-  .home-dashboard-actions-toggle {
-    display: flex;
-    width: 100%;
-    min-height: 46px;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    border: 0;
-    border-radius: 14px;
-    background: transparent;
-    color: #29463c;
-    font: inherit;
-    font-size: 0.88rem;
-    font-weight: 800;
-    cursor: pointer;
-  }
-
-  .home-dashboard-actions-toggle:focus-visible,
-  .home-dashboard-actions-close:focus-visible {
-    outline: 3px solid #ff8a5c;
-    outline-offset: 2px;
-  }
-
-  .home-dashboard-actions-grip {
-    position: absolute;
-    top: 7px;
-    left: 50%;
-    width: 42px;
-    height: 4px;
-    border-radius: 999px;
-    background: rgba(46, 90, 76, 0.34);
-    transform: translateX(-50%);
-  }
-
-  .home-dashboard-actions {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 8px;
-    width: 100%;
-    max-height: min(52dvh, 360px);
-    margin: 0;
-    padding: 0 0 4px;
-    overflow-y: auto;
-    border: 0;
-    border-radius: 0;
-    background: transparent;
-    box-shadow: none;
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-  }
-
-  .home-dashboard-actions[aria-hidden="true"] {
-    visibility: hidden;
-    pointer-events: none;
-  }
-
-  .home-dashboard-action {
-    min-height: 58px;
-  }
-
-  .home-dashboard-actions-close {
-    display: inline-flex;
-    min-height: 34px;
-    align-items: center;
-    gap: 4px;
-    margin: 5px auto 0;
-    border: 0;
-    background: transparent;
-    color: #567163;
-    font: inherit;
-    font-size: 0.78rem;
-    font-weight: 700;
-    cursor: pointer;
-  }
+  .home-quick-panel { width: 100%; border-left: 0; }
+  .home-quick-fab { right: 10px; padding: 12px 9px 10px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .home-dashboard-actions-backdrop,
-  .home-dashboard-actions-drawer {
-    transition: none;
-  }
+  .home-quick-sidebar-backdrop,
+  .home-quick-panel,
+  .home-quick-fab { transition: none; }
 }
 
 

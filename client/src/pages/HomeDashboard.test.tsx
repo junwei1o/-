@@ -4,6 +4,7 @@ import "@testing-library/jest-dom/vitest";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import Home, { buildWeeklySuggestion } from "./Home";
+import { bxStore } from "@/game/bxStore";
 
 const setLocation = vi.fn();
 const storage = new Map<string, string>();
@@ -57,6 +58,7 @@ describe("首頁沉浸式儀表板", () => {
     cleanup();
     storage.clear();
     setLocation.mockClear();
+    bxStore.reset();
   });
 
   it("從 playerData 與既有本機進度顯示狀態，並以非模態面板呈現特產背包", () => {
@@ -125,11 +127,12 @@ describe("首頁沉浸式儀表板", () => {
     expect(updatedCoins).toHaveClass("is-gold-pulse");
   });
 
-  it("將手機快捷入口收合為底部抽屜，展開後可由 Escape 關閉並恢復焦點", () => {
+  it("快速行動預設收於右側側邊欄，懸浮鈕展開後可由 Escape 關閉並恢復焦點", () => {
     render(<Home />);
 
     const toggle = screen.getByRole("button", { name: "開啟快速行動" });
     expect(toggle).toHaveAttribute("aria-expanded", "false");
+    expect(toggle).toHaveClass("home-quick-fab");
     const startAction = screen.getByText("開始探險").closest("button");
     expect(startAction).not.toBeNull();
     expect(startAction).toHaveAttribute("tabindex", "-1");
@@ -140,6 +143,25 @@ describe("首頁沉浸式儀表板", () => {
 
     fireEvent.keyDown(document, { key: "Escape" });
     expect(screen.getByRole("button", { name: "開啟快速行動" })).toHaveAttribute("aria-expanded", "false");
+  });
+
+  it("可在設定偏好中完全關閉快速行動側邊欄入口", () => {
+    bxStore.update((s) => { s.prefs.enableQuickSidebar = false; });
+    render(<Home />);
+
+    expect(screen.queryByRole("button", { name: "開啟快速行動" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("navigation", { name: "快速行動" })).not.toBeInTheDocument();
+  });
+
+  it("關閉懸浮鈕後改以右緣細把手開啟側邊欄，功能仍可達", () => {
+    bxStore.update((s) => { s.prefs.showQuickFloatBtn = false; });
+    render(<Home />);
+
+    const edge = screen.getByRole("button", { name: "開啟快速行動" });
+    expect(edge).toHaveClass("home-quick-edge");
+    fireEvent.click(edge);
+    expect(screen.getByRole("navigation", { name: "快速行動" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "收合快速行動" })).toHaveAttribute("aria-expanded", "true");
   });
 
   it("在首頁放置『全站功能總覽』單入口按鈕，點擊跳轉 /features", () => {

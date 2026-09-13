@@ -8,12 +8,14 @@ import { useBxVersion } from "./useBx";
  * 僅作用於 .bx-* 元件，不干擾站內既有字級控制。
  */
 
-const PREF_ITEMS: Array<{ key: "reduceMotion" | "largeText" | "highContrast" | "sound" | "music"; label: string; desc: string }> = [
+const PREF_ITEMS: Array<{ key: "reduceMotion" | "largeText" | "highContrast" | "sound" | "music" | "enableQuickSidebar" | "showQuickFloatBtn"; label: string; desc: string }> = [
   { key: "reduceMotion", label: "減少動畫", desc: "降低畫面跑動、閃爍與彈跳效果" },
   { key: "largeText", label: "大字體", desc: "把介面字級放大 20%" },
   { key: "highContrast", label: "高對比", desc: "加強文字與背景對比，較容易閱讀" },
   { key: "sound", label: "音效", desc: "答題回饋與按鈕音效" },
   { key: "music", label: "背景音樂", desc: "航行時的背景音樂" },
+  { key: "enableQuickSidebar", label: "快速行動側邊欄", desc: "首頁右側的快速行動收合側邊欄；關閉後完全隱藏" },
+  { key: "showQuickFloatBtn", label: "快速行動懸浮鈕", desc: "以懸浮圓鈕喚開側邊欄；關閉後改為右緣細把手" },
 ];
 
 const HTML_CLASS: Record<string, string> = {

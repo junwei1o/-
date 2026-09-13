@@ -94,6 +94,10 @@ export interface BxPrefs {
   music: boolean;
   grade: number | null;
   difficulty: string;
+  /** 首頁快速行動右側側邊欄總開關（預設啟用）。 */
+  enableQuickSidebar: boolean;
+  /** 快速行動懸浮喚出鈕開關（關閉時改為右緣細把手）。 */
+  showQuickFloatBtn: boolean;
 }
 
 export interface BxGuardian {
@@ -190,6 +194,8 @@ function defaults(): BxState {
       music: false,
       grade: null,
       difficulty: "balanced",
+      enableQuickSidebar: true,
+      showQuickFloatBtn: true,
     },
 
     guardian: { pin: null, remember_until: null, wrong_count: 0, lock_until: null },

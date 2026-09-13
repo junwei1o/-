@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { AlarmClock, Backpack, Beer, BookOpenCheck, Bug, CalendarDays, ChevronDown, ChevronUp, Coins, Compass, Crosshair, Dices, RotateCcw, ShieldAlert, Sparkles, Timer, X } from "lucide-react";
+import { AlarmClock, Backpack, Beer, BookOpenCheck, Bug, CalendarDays, ChevronLeft, Coins, Compass, Crosshair, Dices, RotateCcw, ShieldAlert, Sparkles, Timer, X, Zap } from "lucide-react";
 import { toast } from "sonner";
 import { useLocation } from "wouter";
 import { useQuestionBank } from "@/lib/questionBank";
@@ -20,6 +20,8 @@ import { buildKnowledgeIslandSnapshots, type KnowledgeIslandSubject } from "@/li
 import { HOME_FEATURE_GROUPS } from "@/lib/homeFeatureDirectory";
 import type { PaperQuestion } from "@/lib/paperExam";
 import FirstLightQuest from "@/components/bx/FirstLightQuest";
+import { useBxVersion } from "@/components/bx/useBx";
+import { bxStore } from "@/game/bxStore";
 import { BxEmptyState } from "@/components/bx/EmptyState";
 import "./HomeDashboard.css";
 
@@ -74,6 +76,10 @@ export default function Home() {
   const [randomAdventureRouteReward] = useState(() => consumeRandomAdventureRouteReward());
   const [showBackpack, setShowBackpack] = useState(false);
   const [isActionsOpen, setIsActionsOpen] = useState(false);
+  // 訂閱 BX 偏好：快速行動側邊欄總開關與懸浮鈕開關可在設定頁隨時切換。
+  useBxVersion();
+  const enableQuickSidebar = bxStore.get<boolean>("prefs.enableQuickSidebar", true) ?? true;
+  const showQuickFloatBtn = bxStore.get<boolean>("prefs.showQuickFloatBtn", true) ?? true;
   const [showGoldSignIn, setShowGoldSignIn] = useState(false);
   const actionsToggleRef = useRef<HTMLButtonElement>(null);
   const firstActionRef = useRef<HTMLButtonElement>(null);
@@ -105,7 +111,8 @@ export default function Home() {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         setIsActionsOpen(false);
-        actionsToggleRef.current?.focus();
+        // 懸浮鈕在關閉後才掛載，延遲到重渲染後再恢復焦點。
+        window.setTimeout(() => actionsToggleRef.current?.focus(), 0);
       }
     };
     document.addEventListener("keydown", handleKeyDown);
@@ -292,24 +299,43 @@ export default function Home() {
           ) : null}
         </section>
         {showBackpack ? <aside className="home-dashboard-backpack-panel" aria-label="特產背包"><h2>特產背包</h2>{inventory.length ? <ul>{inventory.map((item) => <li key={item.id}><span aria-hidden="true">{item.emoji}</span>{item.name}</li>)}</ul> : <p>完成真實學習里程碑或發現地圖故事後，特產會收進這裡。</p>}</aside> : null}
-        <div className={`home-dashboard-actions-sheet ${isActionsOpen ? "is-open" : "is-collapsed"}`} data-open={isActionsOpen}>
-          <button type="button" className="home-dashboard-actions-backdrop" aria-label="關閉快速行動選單" onClick={closeActions} tabIndex={isActionsOpen ? 0 : -1} />
-          <section className="home-dashboard-actions-drawer" aria-label="快速行動抽屜">
-            <button type="button" ref={actionsToggleRef} className="home-dashboard-actions-toggle" aria-controls="home-dashboard-actions-panel" aria-expanded={isActionsOpen} onClick={() => setIsActionsOpen((open) => !open)}>
-              <span className="home-dashboard-actions-grip" aria-hidden="true" />
-              <span>{isActionsOpen ? "收合快速行動" : "開啟快速行動"}</span>
-              {isActionsOpen ? <ChevronDown size={18} aria-hidden="true" /> : <ChevronUp size={18} aria-hidden="true" />}
-            </button>
-            <nav id="home-dashboard-actions-panel" className="home-dashboard-actions" aria-label="快速行動" aria-hidden={!isActionsOpen}>
-              <button ref={firstActionRef} tabIndex={isActionsOpen ? 0 : -1} type="button" className="home-dashboard-action primary" onClick={() => openSubject(firstUse ? islands[0].subject : nextIsland.subject)}><BookOpenCheck size={19} aria-hidden="true" /> {firstUse ? "開始探險" : "繼續探險"}<small>{firstUse ? "從國文島・台北啟航" : `前往${nextIsland.shortTitle}`}</small></button>
-              <button tabIndex={isActionsOpen ? 0 : -1} type="button" className="home-dashboard-action" onClick={() => setLocation("/wrong-answers")}><RotateCcw size={18} aria-hidden="true" /> 錯題重練<small>整理真實作答線索</small></button>
-              <button tabIndex={isActionsOpen ? 0 : -1} type="button" className={`home-dashboard-action home-dashboard-memory-alarm ${memoryAlarmCount > 0 ? "has-due" : ""}`} onClick={() => setLocation("/review-hub")} aria-label={memoryAlarmCount > 0 ? `記憶警報，今日有 ${memoryAlarmCount} 題到期複習` : "記憶警報，目前沒有到期複習"}><AlarmClock size={18} aria-hidden="true" /> 記憶警報<small>{memoryAlarmCount > 0 ? `今日有 ${memoryAlarmCount} 題線索回來了` : "目前沒有到期題目"}</small>{memoryAlarmCount > 0 && <strong aria-hidden="true">{memoryAlarmCount}</strong>}</button>
-              <button tabIndex={isActionsOpen ? 0 : -1} type="button" className="home-dashboard-action" disabled={questions.length === 0} onClick={startRandomAdventure}><Dices size={18} aria-hidden="true" /> 隨機冒險<small>答對可獲雙倍金幣</small></button>
-            </nav>
-            {isActionsOpen ? <button type="button" className="home-dashboard-actions-close" onClick={closeActions}><X size={15} aria-hidden="true" /> 關閉</button> : null}
-          </section>
-          <HomeContactCard />
-        </div>
+        {enableQuickSidebar ? (
+          <div className={`home-quick-sidebar ${isActionsOpen ? "is-open" : "is-collapsed"}`} data-open={isActionsOpen}>
+            <button type="button" className="home-quick-sidebar-backdrop" aria-label="關閉快速行動側邊欄" onClick={closeActions} tabIndex={isActionsOpen ? 0 : -1} />
+            {!isActionsOpen ? (
+              <button
+                type="button"
+                ref={actionsToggleRef}
+                className={showQuickFloatBtn ? "home-quick-fab" : "home-quick-edge"}
+                aria-controls="home-dashboard-actions-panel"
+                aria-expanded={false}
+                onClick={() => setIsActionsOpen(true)}
+              >
+                <Zap size={18} aria-hidden="true" />
+                <span>開啟快速行動</span>
+              </button>
+            ) : null}
+            <aside className="home-quick-panel" aria-label="快速行動側邊欄" aria-hidden={!isActionsOpen}>
+              <header className="home-quick-panel-head">
+                <strong><Zap size={16} aria-hidden="true" /> 快速行動</strong>
+                <div className="home-quick-panel-head-actions">
+                  <button type="button" ref={isActionsOpen ? actionsToggleRef : undefined} className="home-quick-panel-collapse" aria-controls="home-dashboard-actions-panel" aria-expanded={isActionsOpen} onClick={closeActions}>
+                    <span>收合快速行動</span>
+                    <ChevronLeft size={18} aria-hidden="true" />
+                  </button>
+                  <button type="button" className="home-quick-panel-close" onClick={closeActions} aria-label="關閉側邊欄"><X size={16} aria-hidden="true" /></button>
+                </div>
+              </header>
+              <nav id="home-dashboard-actions-panel" className="home-dashboard-actions" aria-label="快速行動" aria-hidden={!isActionsOpen}>
+                <button ref={firstActionRef} tabIndex={isActionsOpen ? 0 : -1} type="button" className="home-dashboard-action primary" onClick={() => openSubject(firstUse ? islands[0].subject : nextIsland.subject)}><BookOpenCheck size={19} aria-hidden="true" /> {firstUse ? "開始探險" : "繼續探險"}<small>{firstUse ? "從國文島・台北啟航" : `前往${nextIsland.shortTitle}`}</small></button>
+                <button tabIndex={isActionsOpen ? 0 : -1} type="button" className="home-dashboard-action" onClick={() => setLocation("/wrong-answers")}><RotateCcw size={18} aria-hidden="true" /> 錯題重練<small>整理真實作答線索</small></button>
+                <button tabIndex={isActionsOpen ? 0 : -1} type="button" className={`home-dashboard-action home-dashboard-memory-alarm ${memoryAlarmCount > 0 ? "has-due" : ""}`} onClick={() => setLocation("/review-hub")} aria-label={memoryAlarmCount > 0 ? `記憶警報，今日有 ${memoryAlarmCount} 題到期複習` : "記憶警報，目前沒有到期複習"}><AlarmClock size={18} aria-hidden="true" /> 記憶警報<small>{memoryAlarmCount > 0 ? `今日有 ${memoryAlarmCount} 題線索回來了` : "目前沒有到期題目"}</small>{memoryAlarmCount > 0 && <strong aria-hidden="true">{memoryAlarmCount}</strong>}</button>
+                <button tabIndex={isActionsOpen ? 0 : -1} type="button" className="home-dashboard-action" disabled={questions.length === 0} onClick={startRandomAdventure}><Dices size={18} aria-hidden="true" /> 隨機冒險<small>答對可獲雙倍金幣</small></button>
+              </nav>
+              <HomeContactCard />
+            </aside>
+          </div>
+        ) : null}
       </div>
       {quizSubject ? (() => {
         const question = questions.find((item) => item.subject === quizSubject);
