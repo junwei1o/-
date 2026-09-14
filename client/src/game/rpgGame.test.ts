@@ -80,12 +80,13 @@ describe("Island Explorer RPG mechanics", () => {
     expect(applyBattleAnswer(answered, performance)).toEqual(answered);
   });
 
-  it("does not spend energy when a battle skill cannot be afforded", () => {
+  it("refuses to start a battle skill when energy is insufficient", () => {
     const battle = { ...createBattle(STARTER_COMPANION, encounterForRegion("north"), "q-1"), energy: 0, phase: "action" as const, performance: calculateBattlePerformance({ questionId: "q-1", correct: true, responseMs: 5_000 }) };
-    const next = applyBattleAction(battle, { type: "skill", cost: 3, power: 9, label: "潮汐脈衝" });
+    const next = beginBattleQuestion(battle, { type: "skill", cost: 3, power: 9, label: "潮汐脈衝" }, "q-skill");
     expect(next.enemyHp).toBe(battle.enemyHp);
     expect(next.energy).toBe(0);
     expect(next.turn).toBe("player");
+    expect(next.phase).toBe("action");
   });
 
   it("applies answer-scaled skill damage and ends the battle on victory", () => {

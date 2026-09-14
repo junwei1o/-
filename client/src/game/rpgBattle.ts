@@ -41,7 +41,7 @@ export function beginBattleQuestion(state: BattleState, action: BattlePendingAct
   if (state.result !== "active" || state.turn !== "player" || state.phase !== "ready" && state.phase !== "action") return state;
   if (action.type === "ultimate" && state.ultimateUsed) return { ...state, log: [...state.log, "超必殺本場已使用，下一場再集結能量吧。"] };
   if (state.energy < action.cost) return { ...state, log: [...state.log, `能量不足，無法啟動${action.label}的答題施放。`] };
-  return { ...state, phase: "question", questionId, pendingAction: action, log: [...state.log, `啟動${action.label}；回答課綱題後決定技能威力。`] };
+  return { ...state, phase: "question", questionId, pendingAction: action, energy: state.energy - action.cost, log: [...state.log, `啟動${action.label}，消耗 ${action.cost} 點能量；回答課綱題後決定技能威力。`] };
 }
 
 export function applyBattleAnswer(state: BattleState, performance: BattlePerformance): BattleState {
@@ -63,7 +63,6 @@ export function applyBattleAction(state: BattleState, action: BattleAction, next
   if (action.type !== "enemy" && (state.turn !== "player" || (state.phase !== "ready" && state.phase !== "action"))) return state;
   if (action.type === "skill" || action.type === "ultimate" || action.type === "rage-precise" || action.type === "rage-shield" || action.type === "rage-heal") {
     if (action.type === "ultimate" && state.ultimateUsed) return { ...state, log: [...state.log, "超必殺本場已使用，下一場再集結能量吧。"] };
-    if (state.energy < action.cost) return { ...state, log: [...state.log, `能量不足，無法使用${action.label}。`] };
     const rageAction = action.type === "rage-precise" || action.type === "rage-shield" || action.type === "rage-heal";
     const precise = action.type === "rage-precise";
     const shield = action.type === "rage-shield";
@@ -76,7 +75,9 @@ export function applyBattleAction(state: BattleState, action: BattleAction, next
       ? { isCritical: true, multiplier: 1.5 }
       : calculateCritical(comboCount);
     const effectiveComboCount = critical.isCritical ? Math.max(3, comboCount) : comboCount;
-    const standardDamage = calculateDamage(baseDamage, state.performance?.correct ? 1 : 0, effectiveComboCount);
+    const standardDamage = state.performance?.correct
+      ? calculateDamage(baseDamage, 1, effectiveComboCount)
+      : Math.max(1, Math.round(baseDamage));
     const damage = rageAction && !state.performance?.correct ? 0 : precise ? Math.max(1, Math.round(standardDamage * 2.5)) : standardDamage;
     const criticalSuffix = state.performance?.correct && critical.isCritical
       ? state.performance?.comboCount && state.performance.comboCount >= 3
@@ -84,7 +85,7 @@ export function applyBattleAction(state: BattleState, action: BattleAction, next
         : " ✦ 裝備暴擊！答題增幅以 1.5 倍呈現。"
       : "";
     const enemyHp = Math.max(0, state.enemyHp - damage);
-    const common = { enemyHp, energy: state.energy - action.cost, ultimateUsed: state.ultimateUsed || action.type === "ultimate", strategyShieldActive: shield && !state.performance?.correct };
+    const common = { enemyHp, energy: state.energy, ultimateUsed: state.ultimateUsed || action.type === "ultimate", strategyShieldActive: shield && !state.performance?.correct };
     const actionLine = damage > 0
       ? `${action.label}造成 ${damage} 點答題增幅傷害！${criticalSuffix}`
       : shield
