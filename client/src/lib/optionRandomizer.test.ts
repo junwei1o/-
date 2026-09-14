@@ -354,3 +354,30 @@ describe("borrowingCandidates（跨題借用）", () => {
     }
   });
 });
+
+describe("q201 長方體體積判定（設計稿 Bug 3 回歸）", () => {
+  it("expand + shuffle 後 answer 仍指向 500000 立方公分（100 種 salt 全對）", () => {
+    const q201 = {
+      id: "q201",
+      prompt: "一個長方體盒子的長是 2.5 公尺，寬是 40 公分，高是 0.5 公尺。請問這個盒子的體積是多少立方公分？",
+      options: ["5000 立方公分", "500000 立方公分", "50000 立方公分", "5 立方公分"],
+      answer: 1,
+      explanation: "體積＝250×40×50=500000（立方公分）。",
+      subject: "數學",
+      learningTopic: "體積",
+      grade: 5,
+      curriculumDomain: "數學領域",
+      difficulty: "挑戰",
+    };
+    const expanded = expandQuestionBankToSix([q201])[0];
+    // 擴充只附加：前 4 選項與 answer 不變
+    expect(expanded.options.length).toBe(6);
+    expect(expanded.options[expanded.answer]).toBe("500000 立方公分");
+    // 任何 salt 下 shuffle 後 answer 仍指向正解文字
+    for (let salt = 1; salt <= 100; salt += 1) {
+      const shuffled = shuffleQuestionOptions(expanded, seededRandom((hashStringToSeed(q201.id) ^ salt) >>> 0));
+      expect(shuffled.options[shuffled.answer]).toBe("500000 立方公分");
+      expect(shuffled.options.length).toBe(6);
+    }
+  });
+});

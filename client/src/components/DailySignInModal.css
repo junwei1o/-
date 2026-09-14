@@ -43,8 +43,8 @@
 .daily-signin-close {
   display: grid;
   place-items: center;
-  width: 34px;
-  height: 34px;
+  width: 44px;
+  height: 44px;
   border-radius: 10px;
   background: transparent;
   color: var(--muted, #5f6e6a);

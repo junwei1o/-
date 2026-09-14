@@ -403,6 +403,7 @@
   display: inline-flex;
   align-items: center;
   gap: 2px;
+  min-height: 44px;
   border: 0;
   background: transparent;
   color: #567163;
@@ -414,8 +415,8 @@
 .home-quick-panel-close {
   display: inline-grid;
   place-items: center;
-  width: 32px;
-  height: 32px;
+  width: 44px;
+  height: 44px;
   border: 0;
   border-radius: 999px;
   background: rgba(46, 90, 76, 0.1);

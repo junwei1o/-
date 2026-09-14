@@ -43,6 +43,7 @@
 .hub-tab {
   border: none;
   border-radius: 999px;
+  min-height: 44px;
   padding: 8px 16px;
   background: var(--paper-deep);
   color: var(--ink);
