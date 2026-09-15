@@ -16,9 +16,9 @@ const attempt = (subject: string, id: string, correct: boolean, timestamp: numbe
 });
 
 describe("buildTeacherParentSummary", () => {
-  it("always returns all four islands without inventing activity", () => {
+  it("always returns all five islands (incl. English) without inventing activity", () => {
     const summary = buildTeacherParentSummary(emptyProfile, 1700000000000);
-    expect(summary.islands).toHaveLength(4);
+    expect(summary.islands).toHaveLength(5);
     expect(summary.totalAttempts).toBe(0);
     expect(summary.activeIslands).toBe(0);
     expect(summary.islands.every((item) => item.status === "尚未啟航")).toBe(true);

@@ -255,7 +255,7 @@ describe("TeacherParentSummary", () => {
     expect(screen.getAllByText("觀察證據")).toHaveLength(2);
   });
 
-  it("renders four island cards only from real adaptive attempts", () => {
+  it("renders five island cards (incl. English) only from real adaptive attempts", () => {
     const now = Date.now();
     localStorage.setItem("xue-adventure-adaptive-v1", JSON.stringify({
       version: 2,
@@ -278,10 +278,11 @@ describe("TeacherParentSummary", () => {
 
     expect(screen.getByRole("heading", { name: "各島嶼學習摘要" })).toBeInTheDocument();
     expect(screen.getAllByText("分數與比例")).toHaveLength(2);
-    expect(screen.getAllByRole("article")).toHaveLength(8);
-    expect(screen.getAllByRole("button", { name: "查看島嶼" })).toHaveLength(4);
+    // P1 新增英語島後，全部島嶼卡（含無作答空島）由 8 增為 9，可查看／附延伸資源的島由 4 增為 5。
+    expect(screen.getAllByRole("article")).toHaveLength(9);
+    expect(screen.getAllByRole("button", { name: "查看島嶼" })).toHaveLength(5);
     const resourceLinks = screen.getAllByRole("link", { name: "延伸資源" });
-    expect(resourceLinks).toHaveLength(4);
+    expect(resourceLinks).toHaveLength(5);
     resourceLinks.forEach((link) => expect(link).toHaveAttribute("target", "_blank"));
 
     fireEvent.click(screen.getAllByRole("button", { name: "查看島嶼" })[0]);
