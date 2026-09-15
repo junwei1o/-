@@ -57,7 +57,7 @@ describe("TeacherParentSummary", () => {
   it("shows an honest empty state without inventing island activity", () => {
     render(<TeacherParentSummary />);
 
-    expect(screen.getByRole("heading", { name: "四座知識島陪讀摘要" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "五座知識島陪讀摘要" })).toBeInTheDocument();
     expect(screen.getByText("資料只留在此裝置")).toBeInTheDocument();
     expect(screen.getAllByText("0").length).toBeGreaterThan(0);
     expect(screen.getByRole("heading", { name: "等待第一段探險足跡" })).toBeInTheDocument();
@@ -287,6 +287,36 @@ describe("TeacherParentSummary", () => {
 
     fireEvent.click(screen.getAllByRole("button", { name: "查看島嶼" })[0]);
     expect(setLocation).toHaveBeenCalledWith("/map?subject=%E6%95%B8%E5%AD%B8");
+  });
+
+  it("shows actionable weak-topic Top3 with recommended question counts and a practice link", () => {
+    const now = Date.now();
+    localStorage.setItem("xue-adventure-adaptive-v1", JSON.stringify({
+      version: 2,
+      attempts: [
+        { questionId: "w1", timestamp: now - 4000, correct: false, hintsUsed: 0, curriculumDomain: "數學", difficulty: "標準", responseMs: 9000, timeLimitMs: 25000, knowledge: ["分數運算"] },
+        { questionId: "w2", timestamp: now - 3000, correct: false, hintsUsed: 0, curriculumDomain: "數學", difficulty: "標準", responseMs: 9000, timeLimitMs: 25000, knowledge: ["分數運算"] },
+        { questionId: "w3", timestamp: now - 2000, correct: false, hintsUsed: 0, curriculumDomain: "數學", difficulty: "標準", responseMs: 9000, timeLimitMs: 25000, knowledge: ["分數運算"] },
+        { questionId: "w4", timestamp: now - 1000, correct: true, hintsUsed: 0, curriculumDomain: "數學", difficulty: "標準", responseMs: 9000, timeLimitMs: 25000, knowledge: ["分數運算"] },
+        { questionId: "s1", timestamp: now, correct: true, hintsUsed: 0, curriculumDomain: "自然", difficulty: "標準", responseMs: 9000, timeLimitMs: 25000, knowledge: ["水循環"] },
+      ],
+    }));
+
+    render(<TeacherParentSummary />);
+
+    const plan = screen.getByTestId("supporter-action-plan");
+    expect(plan).toBeInTheDocument();
+    expect(plan).toHaveTextContent("分數運算");
+    expect(plan).toHaveTextContent("建議這週練");
+    expect(plan).toHaveTextContent("5 題");
+    // 強主題不列入弱點。
+    expect(plan).not.toHaveTextContent("水循環");
+    const weakRows = screen.getAllByTestId("supporter-weak-topic");
+    expect(weakRows).toHaveLength(1);
+
+    fireEvent.click(screen.getByRole("button", { name: "前往練習分數運算相關題目" }));
+    expect(setLocation).toHaveBeenCalledWith(expect.stringContaining("reviewTopic="));
+    expect(setLocation).toHaveBeenCalledWith(expect.stringContaining("subject="));
   });
 
   it("shows real cross-island attempts in chronological timeline order and follows filters", () => {

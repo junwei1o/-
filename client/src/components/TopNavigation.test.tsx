@@ -25,7 +25,7 @@ vi.mock("wouter", () => ({
   useLocation: () => [currentPath, setLocation],
 }));
 
-describe("TopNavigation（22 入口 → 7 頂層）", () => {
+describe("TopNavigation（22 入口 → 7 → 5 頂層，P1 導航收斂）", () => {
   afterEach(() => {
     cleanup();
     setLocation.mockClear();
@@ -37,29 +37,30 @@ describe("TopNavigation（22 入口 → 7 頂層）", () => {
     delete (HTMLElement.prototype as Partial<HTMLElement>).scrollIntoView;
   });
 
-  it("primary bar 只放七個頂層入口，首頁預設 active", () => {
+  it("primary bar 只放五個頂層入口，首頁預設 active", () => {
     render(<TopNavigation />);
 
     const primary = screen.getByRole("navigation", { name: "主要功能選單" });
     expect(screen.getByRole("navigation", { name: "手機版核心入口" })).toBeInTheDocument();
     expect(within(primary).getByRole("button", { name: "首頁" })).toHaveAttribute("aria-current", "page");
-    for (const label of ["答題室", "今日遠征", "學習歷程", "知識展廳", "藏寶圖", "設定"]) {
+    for (const label of ["答題室", "學習歷程", "藏寶圖", "設定"]) {
       expect(within(primary).getByRole("button", { name: label })).toBeInTheDocument();
     }
+    // P1 收斂：今日遠征併入答題室、知識展廳併入藏寶圖，不再各自佔頂層按鈕。
+    expect(within(primary).queryByRole("button", { name: "今日遠征" })).not.toBeInTheDocument();
+    expect(within(primary).queryByRole("button", { name: "知識展廳" })).not.toBeInTheDocument();
     // 22 個舊入口不再各自佔一個頂層按鈕。
     expect(within(primary).queryByRole("button", { name: "課綱練習" })).not.toBeInTheDocument();
     expect(within(primary).queryByRole("button", { name: "天文館" })).not.toBeInTheDocument();
   });
 
-  it("七個頂層入口各自導向 Hub 頁", () => {
+  it("五個頂層入口各自導向 Hub 頁", () => {
     render(<TopNavigation />);
 
     const primary = screen.getByRole("navigation", { name: "主要功能選單" });
     const cases: Array<[string, string]> = [
       ["答題室", "/quiz-room"],
-      ["今日遠征", "/expedition"],
       ["學習歷程", "/learning"],
-      ["知識展廳", "/gallery"],
       ["藏寶圖", "/treasure"],
       ["設定", "/settings"],
     ];
@@ -87,6 +88,19 @@ describe("TopNavigation（22 入口 → 7 頂層）", () => {
     render(<TopNavigation />);
     const primary3 = screen.getByRole("navigation", { name: "主要功能選單" });
     expect(within(primary3).getByRole("button", { name: "首頁" })).toHaveAttribute("aria-current", "page");
+    cleanup();
+
+    // P1 收斂歸併：今日遠征深層頁標記答題室、知識展廳深層頁標記藏寶圖。
+    currentPath = "/expedition";
+    render(<TopNavigation />);
+    const primary4 = screen.getByRole("navigation", { name: "主要功能選單" });
+    expect(within(primary4).getByRole("button", { name: "答題室" })).toHaveAttribute("aria-current", "page");
+    cleanup();
+
+    currentPath = "/gallery";
+    render(<TopNavigation />);
+    const primary5 = screen.getByRole("navigation", { name: "主要功能選單" });
+    expect(within(primary5).getByRole("button", { name: "藏寶圖" })).toHaveAttribute("aria-current", "page");
   });
 
   it("exposes a feature search that routes card-play queries to knowledge duel", () => {
@@ -99,22 +113,23 @@ describe("TopNavigation（22 入口 → 7 頂層）", () => {
     expect(setLocation).toHaveBeenCalledWith("/knowledge-duel");
   });
 
-  it("手機選單展開七個頂層入口並可導向", () => {
+  it("手機選單展開五個頂層入口並可導向", () => {
     render(<TopNavigation />);
 
     fireEvent.click(screen.getByRole("button", { name: "開啟功能選單" }));
     const all = screen.getByRole("navigation", { name: "全部功能" });
     expect(within(all).getByRole("button", { name: "答題室" })).toBeInTheDocument();
-    fireEvent.click(within(all).getByRole("button", { name: "知識展廳" }));
-    expect(setLocation).toHaveBeenCalledWith("/gallery");
+    expect(within(all).queryByRole("button", { name: "今日遠征" })).not.toBeInTheDocument();
+    fireEvent.click(within(all).getByRole("button", { name: "藏寶圖" }));
+    expect(setLocation).toHaveBeenCalledWith("/treasure");
   });
 
-  it("手機底部快捷：首頁／答題室／今日遠征／學習歷程", () => {
+  it("手機底部快捷：首頁／答題室／學習歷程／藏寶圖", () => {
     render(<TopNavigation />);
 
     const mobile = screen.getByRole("navigation", { name: "手機版核心入口" });
-    fireEvent.click(within(mobile).getByRole("button", { name: "今日遠征" }));
-    expect(setLocation).toHaveBeenCalledWith("/expedition");
+    fireEvent.click(within(mobile).getByRole("button", { name: "藏寶圖" }));
+    expect(setLocation).toHaveBeenCalledWith("/treasure");
     setLocation.mockClear();
     fireEvent.click(within(mobile).getByRole("button", { name: "學習歷程" }));
     expect(setLocation).toHaveBeenCalledWith("/learning");

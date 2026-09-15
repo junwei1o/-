@@ -1,6 +1,6 @@
 import React from "react";
 import { useLocation } from "wouter";
-import { BookOpenCheck, CalendarDays, Crosshair, RotateCcw, Swords, Telescope, Timer } from "lucide-react";
+import { BookOpenCheck, CalendarDays, Compass, Crosshair, RotateCcw, Swords, Telescope, Timer } from "lucide-react";
 import "./HubPages.css";
 
 /**
@@ -18,6 +18,7 @@ export default function QuizRoom() {
     { id: "topic", label: "專題觀測", desc: "天文／科學／生活安全，一次只鑽一個主題。", href: "/gallery", icon: Telescope },
     { id: "timed", label: "限時挑戰", desc: "十題自我挑戰，留下個人最佳紀錄。", href: "/community?mode=timed", icon: Timer },
     { id: "weekly", label: "本週週測", desc: "每週五自動出 10 題回顧本週學習，完成有成就。", href: "/weekly-quiz", icon: CalendarDays },
+    { id: "expedition", label: "今日遠征", desc: "每日三線任務，答題收集線索、修復學習星圖。", href: "/expedition", icon: Compass },
   ];
 
   return (

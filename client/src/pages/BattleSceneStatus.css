@@ -633,3 +633,5 @@ html[data-animation-simplified="true"] .battle-scene-console.is-answer-wrong { a
 .battle-step-tutorial li::before { content: ""; position: absolute; left: 0.1rem; top: 0.42rem; width: 0.4rem; height: 0.4rem; border-radius: 50%; background: #e8933a; }
 .battle-step-tutorial li strong { color: #6b4a1f; font-size: 0.78rem; }
 @media (max-width: 560px) { .battle-step-tutorial { grid-template-columns: 1fr; } }
+.battle-help-reopen { justify-self: start; display: inline-flex; align-items: center; gap: 0.35rem; min-height: 44px; border-color: rgba(232, 147, 58, 0.55); color: #9a5a17; background: rgba(255, 246, 230, 0.9); }
+.battle-help-reopen:hover { border-color: #e8933a; background: rgba(255, 233, 205, 0.95); }

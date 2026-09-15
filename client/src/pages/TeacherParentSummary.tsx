@@ -198,7 +198,7 @@ export default function TeacherParentSummary() {
   const filteredEmpty = !emptyProfile && summary.totalAttempts === 0;
   const reviewEvent = timeline.events.find((event) => event.id === reviewEventId) ?? null;
   const questionReview = reviewEvent ? buildTimelineQuestionReview(reviewEvent, questionBank) : null;
-  const readout = `四座知識島陪讀摘要。${hasFilters ? "目前套用篩選條件。" : "目前顯示全部紀錄。"}共有 ${summary.totalAttempts} 次實際作答，${summary.activeIslands} 座島嶼留下學習足跡。${buildSupporterTimelineReadout(timeline)}${summary.nextConversation}`;
+  const readout = `五座知識島陪讀摘要。${hasFilters ? "目前套用篩選條件。" : "目前顯示全部紀錄。"}共有 ${summary.totalAttempts} 次實際作答，${summary.activeIslands} 座島嶼留下學習足跡。${buildSupporterTimelineReadout(timeline)}${summary.nextConversation}`;
   const updateFilter = (patch: Partial<SupporterSummaryFilters>) => { const next = { ...filters, ...patch }; setFilters(next); saveSupporterSummaryFilters(next); setSpoken(false); };
   const clearFilters = () => { setFilters({ ...DEFAULT_SUPPORTER_SUMMARY_FILTERS }); saveSupporterSummaryFilters(DEFAULT_SUPPORTER_SUMMARY_FILTERS); setSpoken(false); };
   const closeQuestionReview = () => {
@@ -216,18 +216,41 @@ export default function TeacherParentSummary() {
 
   return (
     <main className="supporter-summary-page">
-      <header className="supporter-summary-hero"><div className="supporter-summary-hero-copy"><p className="eyebrow">FAMILY & TEACHER VIEW / LOCAL-FIRST</p><h1><UsersRound size={31} aria-hidden="true" /> 四座知識島陪讀摘要</h1><p>用真實作答足跡看見學生探索過的課綱主題，讓陪伴從「問分數」開始轉向「聊學習」。</p></div><div className="supporter-privacy-note"><ShieldCheck size={18} /><span>資料只留在此裝置<br /><small>未練習的島嶼不會被推測</small></span></div></header>
+      <header className="supporter-summary-hero"><div className="supporter-summary-hero-copy"><p className="eyebrow">FAMILY & TEACHER VIEW / LOCAL-FIRST</p><h1><UsersRound size={31} aria-hidden="true" /> 五座知識島陪讀摘要</h1><p>用真實作答足跡看見學生探索過的課綱主題，讓陪伴從「問分數」開始轉向「聊學習」。</p></div><div className="supporter-privacy-note"><ShieldCheck size={18} /><span>資料只留在此裝置<br /><small>未練習的島嶼不會被推測</small></span></div></header>
 
       <section className="supporter-filter-panel" aria-labelledby="supporter-filter-title"><div className="supporter-filter-heading"><div><p className="eyebrow">FOCUS THE LOGBOOK</p><h2 id="supporter-filter-title">選擇想一起回顧的範圍</h2></div><span className="supporter-filter-count" aria-live="polite">顯示 {summary.totalAttempts} / {profile.attempts.length} 次足跡</span></div><div className="supporter-filter-grid"><label><span>知識島嶼</span><select aria-label="依知識島嶼篩選" value={filters.islandSubject} onChange={(event) => updateFilter({ islandSubject: event.target.value })}><option value="all">全部島嶼</option>{summary.islands.map(({ island }) => <option key={island.id} value={island.subject}>{island.subject}島</option>)}</select></label><label><span>開始日期</span><input aria-label="學習紀錄開始日期" type="date" value={filters.fromDate} onChange={(event) => updateFilter({ fromDate: event.target.value })} /></label><label><span>結束日期</span><input aria-label="學習紀錄結束日期" type="date" value={filters.toDate} onChange={(event) => updateFilter({ toDate: event.target.value })} /></label><div className="supporter-filter-actions">{hasFilters && <button type="button" className="supporter-secondary-button" onClick={clearFilters}><RotateCcw size={15} /> 清除篩選</button>}</div></div>{!validDateRange && <p className="supporter-filter-note" role="alert">請讓開始日期早於或等於結束日期，完成後就能查看這段航行紀錄。</p>}{hasFilters && validDateRange && <p className="supporter-filter-note" aria-live="polite">已依條件整理真實作答足跡；未符合範圍的紀錄不會出現在摘要中。</p>}</section>
 
-      <section className="supporter-summary-kpis" aria-label="四座知識島總覽"><article><span>學習足跡</span><strong>{summary.totalAttempts}</strong><small>次實際作答</small></article><article><span>已探索島嶼</span><strong>{summary.activeIslands}<small> / 4</small></strong><small>有作答紀錄</small></article><article><span>觀察主題</span><strong>{summary.visitedTopics.length}</strong><small>個最近出現的知識點</small></article></section>
+      <section className="supporter-summary-kpis" aria-label="五座知識島總覽"><article><span>學習足跡</span><strong>{summary.totalAttempts}</strong><small>次實際作答</small></article><article><span>已探索島嶼</span><strong>{summary.activeIslands}<small> / 5</small></strong><small>有作答紀錄</small></article><article><span>觀察主題</span><strong>{summary.visitedTopics.length}</strong><small>個最近出現的知識點</small></article></section>
 
       <section className="supporter-conversation-card" aria-labelledby="supporter-conversation-title"><div className="supporter-conversation-icon"><MessageCircleHeart size={22} aria-hidden="true" /></div><div><p className="eyebrow">A KIND NEXT QUESTION</p><h2 id="supporter-conversation-title">陪讀時可以這樣聊</h2><p>{summary.nextConversation}</p></div><button type="button" className="supporter-speak-button" onClick={() => { speak(readout); setSpoken(true); }}><Headphones size={16} /> {spoken ? "已朗讀" : "朗讀摘要"}</button></section>
+
+      {summary.weakTopics.length > 0 && (
+        <section className="supporter-action-plan" aria-labelledby="supporter-action-plan-title" data-testid="supporter-action-plan">
+          <div className="supporter-action-plan-heading">
+            <p className="eyebrow">ACTIONABLE NEXT STEPS</p>
+            <h2 id="supporter-action-plan-title"><Sparkles size={20} aria-hidden="true" /> 本週可操作建議｜優先補強 {summary.weakTopics.length} 個主題</h2>
+            <p>依真實答錯紀錄排序，本週總共建議練 <strong>{summary.recommendedWeeklyQuestions}</strong> 題；每個主題練到連續答對，就能換下一個。</p>
+          </div>
+          <ol className="supporter-weak-topic-list">
+            {summary.weakTopics.map((item, index) => (
+              <li key={item.topic} className="supporter-weak-topic" data-testid="supporter-weak-topic">
+                <span className="supporter-weak-topic-rank" aria-hidden="true">{index + 1}</span>
+                <div className="supporter-weak-topic-body">
+                  <h3>{item.topic}</h3>
+                  <p>{item.subject}島 · 近期正確率 {Math.round(item.accuracy * 100)}%（{item.attemptCount} 題中答錯 {item.wrongCount} 題）</p>
+                  <small>建議這週練 <strong>{item.recommendedQuestions}</strong> 題相關題目</small>
+                </div>
+                <button type="button" className="supporter-secondary-button" onClick={() => setLocation(`/?subject=${encodeURIComponent(item.subject)}&reviewTopic=${encodeURIComponent(item.topic)}&source=supporter-summary`)} aria-label={`前往練習${item.topic}相關題目`}><BookOpen size={15} /> 去練習</button>
+              </li>
+            ))}
+          </ol>
+        </section>
+      )}
 
       <SupporterReinforcementJournal entries={reinforcementJournal} islandTitleBySubject={islandTitleBySubject} weekOffset={reinforcementJournalWeekOffset} journalNow={reinforcementJournalNow} onWeekChange={(offset) => { setReinforcementJournalWeekOffset(offset); saveSupporterReinforcementWeekOffset(offset); }} />
         <SupporterReinforcementTopicDistribution topics={reinforcementTopicDistribution} islandTitleBySubject={islandTitleBySubject} journalNow={reinforcementJournalNow} />
 
-      {emptyProfile ? <section className="supporter-empty-state" aria-live="polite"><BookOpen size={28} aria-hidden="true" /><h2>等待第一段探險足跡</h2><p>學生完成第一題後，四座知識島會依真實紀錄逐步顯示學習方向。現在可以先一起看看地圖。</p><button type="button" className="supporter-primary-button" onClick={() => setLocation("/map")}><Compass size={17} /> 前往我的地圖</button></section> : filteredEmpty ? <section className="supporter-empty-state" aria-live="polite"><CalendarDays size={28} aria-hidden="true" /><h2>這段航線還沒有紀錄</h2><p>可以調整島嶼或日期範圍，回到已有足跡的學習旅程。</p><button type="button" className="supporter-primary-button" onClick={clearFilters}><RotateCcw size={17} /> 清除篩選</button></section> : <><div className="supporter-section-heading"><div><p className="eyebrow">ISLAND LOGBOOK</p><h2>各島嶼學習摘要</h2></div><span><CalendarDays size={15} /> 依本機紀錄更新</span></div><section className="supporter-island-grid" aria-label="四座知識島學習摘要">{summary.islands.map((item) => <IslandCard key={item.island.id} item={item} onOpenMap={(subject) => setLocation(`/map?subject=${encodeURIComponent(subject)}`)} />)}</section></>}
+      {emptyProfile ? <section className="supporter-empty-state" aria-live="polite"><BookOpen size={28} aria-hidden="true" /><h2>等待第一段探險足跡</h2><p>學生完成第一題後，五座知識島會依真實紀錄逐步顯示學習方向。現在可以先一起看看地圖。</p><button type="button" className="supporter-primary-button" onClick={() => setLocation("/map")}><Compass size={17} /> 前往我的地圖</button></section> : filteredEmpty ? <section className="supporter-empty-state" aria-live="polite"><CalendarDays size={28} aria-hidden="true" /><h2>這段航線還沒有紀錄</h2><p>可以調整島嶼或日期範圍，回到已有足跡的學習旅程。</p><button type="button" className="supporter-primary-button" onClick={clearFilters}><RotateCcw size={17} /> 清除篩選</button></section> : <><div className="supporter-section-heading"><div><p className="eyebrow">ISLAND LOGBOOK</p><h2>各島嶼學習摘要</h2></div><span><CalendarDays size={15} /> 依本機紀錄更新</span></div><section className="supporter-island-grid" aria-label="五座知識島學習摘要">{summary.islands.map((item) => <IslandCard key={item.island.id} item={item} onOpenMap={(subject) => setLocation(`/map?subject=${encodeURIComponent(subject)}`)} />)}</section></>}
 
       <section className="supporter-timeline-panel" aria-labelledby="supporter-timeline-title">
         <div className="supporter-timeline-heading"><div><p className="eyebrow">LEARNING VOYAGE</p><h2 id="supporter-timeline-title"><Waypoints size={20} aria-hidden="true" /> 跨島學習時間軸</h2><p>依真實作答時間串起不同知識島的探索歷程，方便一起回顧走過的主題。</p></div>{timeline.islandsRepresented.length > 0 && <div className="supporter-timeline-legend" aria-label="時間軸中的知識島">{timeline.islandsRepresented.map((subject) => <span key={subject} data-island={subject}>{subject}島</span>)}</div>}</div>

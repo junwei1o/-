@@ -53,10 +53,13 @@ describe("battleTutorial", () => {
     expect(loadBattleTutorial(storage).seen).toBe(false);
   });
 
-  it("教學三步驟文案完整（技能→答題→傷害結算）", () => {
-    expect(BATTLE_TUTORIAL_STEPS.map((step) => step.key)).toEqual(["act", "answer", "damage"]);
-    expect(BATTLE_TUTORIAL_STEPS[0].title).toContain("選擇");
-    expect(BATTLE_TUTORIAL_STEPS[1].title).toContain("作答");
-    expect(BATTLE_TUTORIAL_STEPS[2].title).toContain("傷害結算");
+  it("教學四步驟文案完整（基礎攻擊→答題能量→連擊怒氣→回合日誌）", () => {
+    expect(BATTLE_TUTORIAL_STEPS.map((step) => step.key)).toEqual(["basic", "energy", "rage", "flow"]);
+    expect(BATTLE_TUTORIAL_STEPS[0].title).toContain("基礎攻擊");
+    expect(BATTLE_TUTORIAL_STEPS[1].title).toContain("能量");
+    expect(BATTLE_TUTORIAL_STEPS[2].title).toContain("怒氣");
+    expect(BATTLE_TUTORIAL_STEPS[3].title).toContain("回合");
+    // 每步都要有實質說明文字。
+    for (const step of BATTLE_TUTORIAL_STEPS) expect(step.text.length).toBeGreaterThan(10);
   });
 });

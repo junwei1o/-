@@ -10,6 +10,7 @@ import { MAP_REINFORCEMENT_REWARD_STORAGE_KEY } from "@/game/mapReinforcementRew
 import { getInventory } from "@/game/inventoryService";
 import { getJournalEntries } from "@/game/adventureJournal";
 import { BATTLE_RAGE_SKILL_TUTORIAL_STORAGE_KEY } from "@/lib/battleRageSkillTutorial";
+import { BATTLE_TUTORIAL_STORAGE_KEY } from "@/lib/battleTutorial";
 
 vi.mock("@/lib/trpc", () => ({ trpc: { questionBank: { list: { useQuery: () => ({ data: { questions: [{ id: "q1", subject: "自然", grade: 5, prompt: "哪一個是水循環的一部分？", options: ["凝結", "燃燒"], answer: 0, explanation: "凝結會形成雲。", learningTopic: "水循環" }] }, isLoading: false, error: null }) } } } }));
 
@@ -66,6 +67,25 @@ describe("standalone battle scene", () => {
     expect(screen.queryByTestId("battle-rage-tutorial")).not.toBeInTheDocument();
     expect(JSON.parse(storage.get(BATTLE_RAGE_SKILL_TUTORIAL_STORAGE_KEY) ?? "{}")).toMatchObject({ version: 1, seen: true });
     expect(screen.getByRole("button", { name: /基礎攻擊.*免答題/ })).toBeInTheDocument();
+  });
+
+  it("首次顯示四步戰鬥教學，關閉後可用「戰鬥說明」重新查閱", () => {
+    render(<BattleScene questionPool={questionPool} />);
+    fireEvent.click(screen.getByRole("button", { name: /開始對戰/ }));
+
+    const tutorial = screen.getByTestId("battle-step-tutorial");
+    expect(tutorial).toHaveTextContent("四步認識你的回合");
+    expect(tutorial).toHaveTextContent("基礎攻擊");
+    expect(tutorial).toHaveTextContent("連擊與怒氣");
+
+    fireEvent.click(screen.getByRole("button", { name: "知道戰鬥教學了，開始對戰" }));
+    expect(screen.queryByTestId("battle-step-tutorial")).not.toBeInTheDocument();
+    expect(JSON.parse(storage.get(BATTLE_TUTORIAL_STORAGE_KEY) ?? "{}")).toMatchObject({ version: 1, seen: true });
+
+    const reopen = screen.getByTestId("battle-help-reopen");
+    expect(reopen).toBeInTheDocument();
+    fireEvent.click(reopen);
+    expect(screen.getByTestId("battle-step-tutorial")).toHaveTextContent("四步認識你的回合");
   });
 
   it("routes battle-page interaction through dispatcher phases and announces the current learning step", async () => {

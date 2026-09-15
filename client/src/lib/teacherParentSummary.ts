@@ -9,14 +9,65 @@ export type SupporterIslandSummary = {
   recentAttemptCount: number;
 };
 
+/** 單一弱點主題的可操作建議（設計稿 P3 問題13：弱點 Top3＋建議練習題數）。 */
+export type WeakTopicRecommendation = {
+  topic: string;
+  subject: string;
+  attemptCount: number;
+  wrongCount: number;
+  accuracy: number;
+  /** 依弱點程度換算的建議練習題數。 */
+  recommendedQuestions: number;
+};
+
 export type TeacherParentSummary = {
   generatedAt: number;
   totalAttempts: number;
   activeIslands: number;
   visitedTopics: string[];
   islands: SupporterIslandSummary[];
+  /** 依答錯程度排序的弱點主題，最多 3 個。 */
+  weakTopics: WeakTopicRecommendation[];
+  /** 所有弱點主題建議練習題數的加總；無弱點時為 0。 */
+  recommendedWeeklyQuestions: number;
   nextConversation: string;
 };
+
+/**
+ * 從作答紀錄聚合最弱的主題：
+ * 以每題第一個知識標籤為主題，只保留至少作答 2 次、正確率低於七成且有答錯的主題，
+ * 排序為「答錯多→正確率低」，取前 3 名。建議題數依嚴重度 3／4／5 題遞增。
+ */
+export function buildWeakTopicRecommendations(profile: AdaptiveProfile, limit = 3): WeakTopicRecommendation[] {
+  const buckets = new Map<string, { subject: string; attemptCount: number; wrongCount: number }>();
+  for (const attempt of profile.attempts) {
+    const topic = attempt.knowledge[0]?.trim();
+    if (!topic) continue;
+    const current = buckets.get(topic) ?? { subject: attempt.curriculumDomain, attemptCount: 0, wrongCount: 0 };
+    current.attemptCount += 1;
+    if (!attempt.correct) current.wrongCount += 1;
+    buckets.set(topic, current);
+  }
+
+  return Array.from(buckets.entries())
+    .map(([topic, stat]) => ({
+      topic,
+      subject: stat.subject,
+      attemptCount: stat.attemptCount,
+      wrongCount: stat.wrongCount,
+      accuracy: stat.attemptCount ? (stat.attemptCount - stat.wrongCount) / stat.attemptCount : 1,
+      recommendedQuestions: 0,
+    }))
+    .filter((item) => item.attemptCount >= 2 && item.wrongCount >= 1 && item.accuracy < 0.7)
+    .sort((a, b) => (b.wrongCount - a.wrongCount) || (a.accuracy - b.accuracy) || b.attemptCount - a.attemptCount)
+    .slice(0, limit)
+    .map((item) => {
+      let recommendedQuestions = 3;
+      if (item.accuracy < 0.4 || item.wrongCount >= 3) recommendedQuestions = 5;
+      else if (item.accuracy < 0.6) recommendedQuestions = 4;
+      return { ...item, recommendedQuestions };
+    });
+}
 
 function latestActivity(profile: AdaptiveProfile, subject: string) {
   return profile.attempts
@@ -53,10 +104,14 @@ export function buildTeacherParentSummary(profile: AdaptiveProfile, now = Date.n
   });
   const visitedTopics = Array.from(new Set(islands.flatMap(({ island }) => [...island.observedKnowledge, ...island.recentReviewTopics]))).slice(0, 8);
   const activeIslands = islands.filter(({ island }) => island.attemptCount > 0).length;
+  const weakTopics = buildWeakTopicRecommendations(profile);
+  const recommendedWeeklyQuestions = weakTopics.reduce((sum, item) => sum + item.recommendedQuestions, 0);
   const nextConversation = activeIslands === 0
     ? "可以先邀請學生挑選一座知識島，從一個小主題開始探索。"
-    : "可以請學生分享最近最有把握的一個主題，再一起選擇下一個想探索的方向。";
-  return { generatedAt: now, totalAttempts: profile.attempts.length, activeIslands, visitedTopics, islands, nextConversation };
+    : weakTopics.length > 0
+      ? `這週可陪學生優先複習「${weakTopics[0].topic}」，建議練 ${weakTopics[0].recommendedQuestions} 題找回把握，再往下一個主題前進。`
+      : "目前沒有明顯弱點，可以請學生分享最近最有把握的主題，再挑戰稍微進階的內容。";
+  return { generatedAt: now, totalAttempts: profile.attempts.length, activeIslands, visitedTopics, islands, weakTopics, recommendedWeeklyQuestions, nextConversation };
 }
 
 export function formatSupporterActivity(timestamp: number | null) {
