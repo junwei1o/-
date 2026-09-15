@@ -1,4 +1,4 @@
-import { int, index, json, mysqlEnum, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
+import { int, index, json, mysqlEnum, mysqlTable, primaryKey, text, timestamp, varchar } from "drizzle-orm/mysql-core";
 
 /**
  * Core user table backing auth flow.
@@ -198,3 +198,15 @@ export const weeklyQuizzes = mysqlTable("weekly_quizzes", {
 
 export type WeeklyQuiz = typeof weeklyQuizzes.$inferSelect;
 export type InsertWeeklyQuiz = typeof weeklyQuizzes.$inferInsert;
+export const aiUsage = mysqlTable("ai_usage", {
+  name: varchar("name", { length: 24 }).notNull(),
+  /** 使用日（台北時間 YYYY-MM-DD），配額每日重置。 */
+  usageDate: varchar("usageDate", { length: 10 }).notNull(),
+  count: int("count").notNull().default(0),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, (table) => ({
+  nameDateIdx: primaryKey({ columns: [table.name, table.usageDate] }),
+}));
+
+export type AiUsage = typeof aiUsage.$inferSelect;
+export type InsertAiUsage = typeof aiUsage.$inferInsert;

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useLocation } from "wouter";
-import { ClipboardList, Copy, Lightbulb, School, Target, Trash2, UserRound, Users } from "lucide-react";
+import { ClipboardList, Copy, Download, Lightbulb, School, Target, Trash2, UserRound, Users } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { TeacherLineSection } from "@/components/TeacherLineSection";
 import "@/pages/TeacherDashboard.css";
@@ -145,6 +145,7 @@ export default function TeacherDashboard() {
   const [joinedName, setJoinedName] = useState("");
   const [dueDate, setDueDate] = useState("");
   const [notice, setNotice] = useState<string | null>(null);
+  const [exporting, setExporting] = useState(false);
 
   const trimmedCode = code.trim().toUpperCase();
 
@@ -228,6 +229,39 @@ export default function TeacherDashboard() {
 
   const report = reportQuery.data;
   const students = report?.ok ? report.students : [];
+
+  /** 匯出全班表現為 CSV（UTF-8 BOM，Excel 可直接開啟）。 */
+  async function exportClassCsv() {
+    setExporting(true);
+    try {
+      const rows: string[][] = [
+        ["學生", "加入時間", "作業數", "已完成", "完成率", "作業正確率"],
+        ...students.map((student) => [
+          student.studentName,
+          new Date(student.joinedAt).toLocaleDateString("zh-TW"),
+          String(student.assignmentCount),
+          String(student.doneCount),
+          student.assignmentCount > 0 ? `${Math.round((student.doneCount / student.assignmentCount) * 100)}%` : "—",
+          `${student.accuracy}%`,
+        ]),
+      ];
+      const csv = "\uFEFF" + rows.map((row) => row.map((cell) => `"${cell.replaceAll('"', '""')}"`).join(",")).join("\r\n");
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = `班級表現_${trimmedCode || "未命名"}.csv`;
+      document.body.appendChild(anchor);
+      anchor.click();
+      document.body.removeChild(anchor);
+      URL.revokeObjectURL(url);
+      setNotice("已匯出全班表現 CSV。");
+    } catch {
+      setNotice("匯出失敗，請再試一次。");
+    } finally {
+      setExporting(false);
+    }
+  }
 
   function handleCreateClass(event: React.FormEvent) {
     event.preventDefault();
@@ -460,6 +494,11 @@ export default function TeacherDashboard() {
               <div className="teacher-card-title">
                 <UserRound size={19} aria-hidden="true" />
                 <h2 id="students-title">學生狀況</h2>
+                {students.length > 0 ? (
+                  <button type="button" className="teacher-link-button teacher-export-button" onClick={exportClassCsv} disabled={exporting}>
+                    {exporting ? "匯出中…" : "匯出全班 CSV"}
+                  </button>
+                ) : null}
               </div>
               {reportQuery.isLoading ? <p className="teacher-hint">讀取中…</p> : null}
               {report && !report.ok ? <p className="teacher-hint">找不到這個班級。</p> : null}

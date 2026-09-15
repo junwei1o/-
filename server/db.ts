@@ -1,7 +1,8 @@
-import { and, count, desc, eq } from "drizzle-orm";
+import { and, count, desc, eq, gte, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import mysql from "mysql2/promise";
 import {
+  aiUsage,
   assignmentSubmissions,
   assignments,
   classes,
@@ -280,6 +281,13 @@ const ENSURE_TABLE_STATEMENTS = [
     \`updatedAt\` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (\`id\`),
     KEY \`weekly_quizzes_student_week_idx\` (\`studentName\`, \`weekKey\`)
+  )`,
+  `CREATE TABLE IF NOT EXISTS \`ai_usage\` (
+    \`name\` varchar(24) NOT NULL,
+    \`usageDate\` date NOT NULL,
+    \`count\` int NOT NULL DEFAULT 0,
+    \`updatedAt\` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (\`name\`, \`usageDate\`)
   )`,
 ];
 
@@ -746,4 +754,52 @@ export async function markWeeklyQuizDone(id: number, correctCount: number, total
     .update(weeklyQuizzes)
     .set({ status: "done", correctCount, totalQuestions, submittedAt: new Date() })
     .where(eq(weeklyQuizzes.id, id));
+}
+
+/** 本週聯盟賽：聚合 exam_records（排除教師檔案），按作答量排序回傳前 30 名。 */
+export async function listWeeklyLeaderboard(weekStart: Date, limit = 30) {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  const rows = await db
+    .select({
+      name: examRecords.name,
+      totalQuestions: sql`COALESCE(SUM(${examRecords.totalQuestions}), 0)`,
+      correctCount: sql`COALESCE(SUM(${examRecords.correctCount}), 0)`,
+      lastActiveAt: sql`MAX(${examRecords.createdAt})`,
+    })
+    .from(examRecords)
+    .where(and(gte(examRecords.createdAt, weekStart), sql`${examRecords.name} NOT LIKE '__teacher_%'`))
+    .groupBy(examRecords.name)
+    .orderBy(desc(sql`COALESCE(SUM(${examRecords.totalQuestions}), 0)`))
+    .limit(Math.min(Math.max(limit, 1), 100));
+  return rows.map((row) => ({
+    name: row.name,
+    totalQuestions: Number(row.totalQuestions),
+    correctCount: Number(row.correctCount),
+    accuracy: Number(row.totalQuestions) > 0 ? Math.round((Number(row.correctCount) / Number(row.totalQuestions)) * 100) : 0,
+    lastActiveAt: row.lastActiveAt instanceof Date ? row.lastActiveAt.getTime() : Date.now(),
+  }));
+}
+
+/** AI 伴讀每日配額：取得某使用者當日已用次數。 */
+export async function getAiUsage(name: string, usageDate: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  const rows = await db
+    .select({ count: aiUsage.count })
+    .from(aiUsage)
+    .where(and(eq(aiUsage.name, name), eq(aiUsage.usageDate, usageDate)))
+    .limit(1);
+  return rows.length > 0 ? rows[0].count : 0;
+}
+
+/** AI 伴讀每日配額：遞增一次並回傳更新後的使用次數。 */
+export async function incrementAiUsage(name: string, usageDate: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  await db
+    .insert(aiUsage)
+    .values({ name, usageDate, count: 1 })
+    .onDuplicateKeyUpdate({ set: { count: sql`${aiUsage.count} + 1` } });
+  return getAiUsage(name, usageDate);
 }

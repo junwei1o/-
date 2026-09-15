@@ -43,6 +43,9 @@ import {
   listExamRecords,
   listSubmissions,
   deleteAnnouncement,
+  listWeeklyLeaderboard,
+  getAiUsage,
+  incrementAiUsage,
   markWeeklyQuizDone,
   submitAssignment,
   updateCloudSave,
@@ -64,6 +67,19 @@ import {
 /** 雲端船籍名字：2–6 個中文字或英數字（如「張三」「小航海士02」）。 */
 const cloudNameSchema = z.string().trim().min(2, "名字至少 2 個字").max(6, "名字最多 6 個字").regex(/^[一-鿿A-Za-z0-9]+$/, "名字請用中文字或英數字");
 
+/** AI 伴讀每日免費額度（台北時間每日重置）；有船名的請求才計額。 */
+const AI_DAILY_QUOTA = 20;
+
+async function consumeAiQuota(name: string | undefined): Promise<void> {
+  if (!name) return;
+  const usageDate = new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString().slice(0, 10);
+  const used = await getAiUsage(name, usageDate);
+  if (used >= AI_DAILY_QUOTA) {
+    throw new TRPCError({ code: "TOO_MANY_REQUESTS", message: `今天的 AI 伴讀次數已用完（每日 ${AI_DAILY_QUOTA} 次），明天再來吧。` });
+  }
+  await incrementAiUsage(name, usageDate);
+}
+
 /** 雲端存檔內容：rpg/bx 原始 JSON 字串＋版本號，大小由 express 50mb 上限把關。 */
 const cloudPayloadSchema = z.object({
   v: z.literal(1),
@@ -82,6 +98,14 @@ export const appRouter = router({
     // if you need to use socket.io, read and register route in server/_core/index.ts, all api should start with '/api/' so that the gateway can route correctly
   system: systemRouter,
   aiTutor: router({
+    /** 每日免費配額：有船名的請求每天最多 20 次 AI 伴讀。 */
+    quota: publicProcedure
+      .input(z.object({ name: cloudNameSchema }))
+      .query(async ({ input }) => {
+        const usageDate = new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString().slice(0, 10);
+        const used = await getAiUsage(input.name, usageDate);
+        return { used, limit: AI_DAILY_QUOTA, remaining: Math.max(0, AI_DAILY_QUOTA - used) };
+      }),
     explain: publicProcedure
       .input(z.object({
         prompt: z.string().trim().min(1).max(2000),
@@ -96,8 +120,10 @@ export const appRouter = router({
         competency: z.string().trim().max(500),
         officialExplanation: z.string().trim().max(1500),
         knowledge: z.array(z.string().trim().min(1).max(100)).max(10),
+        name: cloudNameSchema.optional(),
       }))
       .mutation(async ({ input }) => {
+        await consumeAiQuota(input.name);
         const response = await invokeLLM({
           messages: [
             {
@@ -167,6 +193,7 @@ export const appRouter = router({
         }),
         adaptation: z.object({
           difficulty: z.enum(["基礎", "標準", "挑戰"]),
+          name: cloudNameSchema.optional(),
           optionCount: z.union([z.literal(2), z.literal(3), z.literal(4)]),
           focusTopics: z.array(z.object({ topic: z.string().trim().min(1).max(160), count: z.number().int().min(1).max(12), highestDifficulty: z.enum(["基礎", "標準", "挑戰"]) })).max(2),
         }),
@@ -286,8 +313,10 @@ export const appRouter = router({
       .input(z.object({
         helpTrend: z.array(z.object({ label: z.string().trim().min(1).max(40), hintRate: z.number().min(0).max(100), attempts: z.number().int().min(1).max(100) })).max(12),
         masteryTrend: z.array(z.object({ label: z.string().trim().min(1).max(40), topics: z.array(z.object({ tag: z.string().trim().min(1).max(120), mastery: z.number().min(0).max(100), attempts: z.number().int().min(1).max(100) })).max(8) })).max(12),
+        name: cloudNameSchema.optional(),
       }))
       .mutation(async ({ input }) => {
+        await consumeAiQuota(input.name);
         const response = await invokeLLM({
           messages: [
             { role: "system", content: "你是台灣國小學生的學習陪伴者。只根據提供的真實趨勢數據說明變化，不得虛構進步、原因、分數或不存在的紀錄。請使用繁體中文、正向、具體、溫和且不誇大的語氣。求助習慣與知識點掌握度必須分開說明；提示使用不是扣分。輸出必須符合 JSON schema。" },
@@ -760,6 +789,25 @@ export const appRouter = router({
           goldEarned: rewards.goldEarned,
           expEarned: rewards.expEarned,
         };
+      }),
+  }),
+  /**
+   * 每週聯盟賽：以本週（台北時間週一 00:00 起）作答紀錄聚合全站排行榜。
+   * 排名依據本週作答量，正確率作為次要資訊；教師檔案（__teacher_*）不參賽。
+   */
+  league: router({
+    weekly: publicProcedure
+      .query(async () => {
+        const now = new Date();
+        // 台北時區（UTC+8）週一 00:00 作為本週起點。
+        const taipeiNow = new Date(now.getTime() + 8 * 60 * 60 * 1000);
+        const day = taipeiNow.getUTCDay(); // 0=週日
+        const daysSinceMonday = (day + 6) % 7;
+        const monday = new Date(Date.UTC(taipeiNow.getUTCFullYear(), taipeiNow.getUTCMonth(), taipeiNow.getUTCDate() - daysSinceMonday));
+        const weekStart = new Date(monday.getTime() - 8 * 60 * 60 * 1000);
+        const weekKey = `${monday.getUTCFullYear()}-W${String(Math.floor((monday.getUTCDate() - 1) / 7) + 1).padStart(2, "0")}`;
+        const standings = await listWeeklyLeaderboard(weekStart, 30);
+        return { weekKey, weekStart: weekStart.getTime(), standings };
       }),
   }),
   /**

@@ -158,3 +158,18 @@
   font-size: 13px;
   font-weight: 800;
 }
+
+/* 每週聯盟賽 */
+.league-my-rank { margin: 0.4rem 0 1rem; padding: 0.6rem 0.85rem; border-radius: 0.7rem; background: linear-gradient(135deg, rgba(255, 224, 130, 0.22), rgba(255, 196, 87, 0.14)); border: 1px solid rgba(217, 157, 33, 0.35); font-size: 0.85rem; color: var(--foreground); }
+.league-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.45rem; }
+.league-row { display: grid; grid-template-columns: 2.6rem minmax(0, 1fr) auto auto; gap: 0.6rem; align-items: center; padding: 0.62rem 0.85rem; border-radius: 0.75rem; background: var(--card); border: 1px solid color-mix(in srgb, var(--foreground) 10%, transparent); font-size: 0.88rem; }
+.league-row.is-me { outline: 2px solid rgba(217, 157, 33, 0.55); background: rgba(255, 224, 130, 0.12); }
+.league-row.is-top { border-color: rgba(217, 157, 33, 0.45); }
+.league-rank { font-weight: 800; text-align: center; }
+.league-name { display: flex; align-items: center; gap: 0.35rem; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.league-name small { color: var(--muted-foreground); font-weight: 500; }
+.league-answers { color: var(--muted-foreground); font-variant-numeric: tabular-nums; }
+.league-accuracy { min-width: 5.2rem; text-align: right; color: var(--muted-foreground); font-variant-numeric: tabular-nums; }
+.league-footnote { display: flex; align-items: center; gap: 0.35rem; margin-top: 0.9rem; }
+.hub-empty { padding: 1.6rem; text-align: center; color: var(--muted-foreground); background: var(--card); border-radius: 0.85rem; border: 1px dashed color-mix(in srgb, var(--foreground) 22%, transparent); }
+@media (max-width: 520px) { .league-row { grid-template-columns: 2.2rem minmax(0, 1fr) auto; } .league-accuracy { grid-column: 2 / -1; text-align: left; padding-left: 2.8rem; } }

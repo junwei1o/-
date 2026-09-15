@@ -1,6 +1,6 @@
 import React from "react";
 import { useLocation } from "wouter";
-import { Beer, MapPin, Medal, Sparkles } from "lucide-react";
+import { Beer, MapPin, Medal, Sparkles, Trophy } from "lucide-react";
 import "./HubPages.css";
 
 /**
@@ -14,6 +14,7 @@ export default function TreasureHub() {
     { id: "badges", label: "🏅 徽章", desc: "收集探險徽章，點亮成就。", href: "/badges", icon: Medal },
     { id: "items", label: "🧺 特產", desc: "答題與探索累積的特產，在首頁背包查看。", href: "/", icon: MapPin },
     { id: "cards", label: "🃏 卡牌", desc: "燈塔酒館：卡牌收集、對戰與冒險。", href: "/tavern", icon: Beer },
+    { id: "league", label: "🏆 每週聯盟賽", desc: "全站本週作答量排行榜，每週一重啟。", href: "/league", icon: Trophy },
   ];
 
   return (

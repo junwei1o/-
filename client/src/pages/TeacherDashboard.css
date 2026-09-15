@@ -375,3 +375,6 @@
   border-color: rgba(11, 110, 142, 0.3);
   color: #0b6e8e;
 }
+
+.teacher-card-title { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+.teacher-export-button { margin-left: auto; font-size: 0.78rem; }
