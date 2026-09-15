@@ -554,46 +554,46 @@ export default function TeacherDashboard() {
                 ))}
               </div>
             </section>
-
-            <section className="teacher-card" aria-labelledby="ai-usage-title">
-              <div className="teacher-card-title">
-                <Sparkles size={19} aria-hidden="true" />
-                <h2 id="ai-usage-title">AI 伴讀用量（全站）</h2>
-              </div>
-              {aiUsageQuery.isLoading ? <p className="teacher-hint">讀取中…</p> : null}
-              {aiUsageQuery.error ? <p className="teacher-hint">用量查詢暫時無法使用，請稍後再試。</p> : null}
-              {aiUsageQuery.data ? (
-                <>
-                  <p className="teacher-hint">深度反思實際消耗的 token（供應商回傳值；未回傳時為 0）。有船名的請求才會計入，同一船名每天最多 {20} 次。</p>
-                  <div className="ai-usage-kpis">
-                    <article><strong>{aiUsageQuery.data.today.calls}</strong><span>今日呼叫</span></article>
-                    <article><strong>{formatTokenCount(aiUsageQuery.data.today.totalTokens)}</strong><span>今日 token</span></article>
-                    <article><strong>{aiUsageQuery.data.last7Days.calls}</strong><span>近 7 天呼叫</span></article>
-                    <article><strong>{formatTokenCount(aiUsageQuery.data.last7Days.totalTokens)}</strong><span>近 7 天 token</span></article>
-                  </div>
-                  {aiUsageQuery.data.byDay.length > 0 ? (
-                    <table className="ai-usage-table">
-                      <thead><tr><th scope="col">日期</th><th scope="col">呼叫</th><th scope="col">輸入 token</th><th scope="col">輸出 token</th><th scope="col">合計</th></tr></thead>
-                      <tbody>
-                        {[...aiUsageQuery.data.byDay].reverse().map((row) => (
-                          <tr key={row.usageDate}>
-                            <td>{row.usageDate}</td>
-                            <td>{row.calls}</td>
-                            <td>{row.promptTokens.toLocaleString()}</td>
-                            <td>{row.completionTokens.toLocaleString()}</td>
-                            <td>{row.totalTokens.toLocaleString()}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  ) : (
-                    <p className="teacher-hint">近 7 天還沒有深度反思記錄；學生作答後點「深度反思」就會開始累計。</p>
-                  )}
-                </>
-              ) : null}
-            </section>
           </>
         )}
+
+        <section className="teacher-card" aria-labelledby="ai-usage-title">
+          <div className="teacher-card-title">
+            <Sparkles size={19} aria-hidden="true" />
+            <h2 id="ai-usage-title">AI 伴讀用量（全站）</h2>
+          </div>
+          {aiUsageQuery.isLoading ? <p className="teacher-hint">讀取中…</p> : null}
+          {aiUsageQuery.error ? <p className="teacher-hint">用量查詢暫時無法使用，請稍後再試。</p> : null}
+          {aiUsageQuery.data ? (
+            <>
+              <p className="teacher-hint">深度反思實際消耗的 token（供應商回傳值；未回傳時為 0）。有船名的請求才會計入，同一船名每天最多 {20} 次。</p>
+              <div className="ai-usage-kpis">
+                <article><strong>{aiUsageQuery.data.today.calls}</strong><span>今日呼叫</span></article>
+                <article><strong>{formatTokenCount(aiUsageQuery.data.today.totalTokens)}</strong><span>今日 token</span></article>
+                <article><strong>{aiUsageQuery.data.last7Days.calls}</strong><span>近 7 天呼叫</span></article>
+                <article><strong>{formatTokenCount(aiUsageQuery.data.last7Days.totalTokens)}</strong><span>近 7 天 token</span></article>
+              </div>
+              {aiUsageQuery.data.byDay.length > 0 ? (
+                <table className="ai-usage-table">
+                  <thead><tr><th scope="col">日期</th><th scope="col">呼叫</th><th scope="col">輸入 token</th><th scope="col">輸出 token</th><th scope="col">合計</th></tr></thead>
+                  <tbody>
+                    {[...aiUsageQuery.data.byDay].reverse().map((row) => (
+                      <tr key={row.usageDate}>
+                        <td>{row.usageDate}</td>
+                        <td>{row.calls}</td>
+                        <td>{row.promptTokens.toLocaleString()}</td>
+                        <td>{row.completionTokens.toLocaleString()}</td>
+                        <td>{row.totalTokens.toLocaleString()}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              ) : (
+                <p className="teacher-hint">近 7 天還沒有深度反思記錄；學生作答後點「深度反思」就會開始累計。</p>
+              )}
+            </>
+          ) : null}
+        </section>
       </div>
     </main>
   );
