@@ -20,6 +20,7 @@ import {
   InsertQuestion,
   InsertUser,
   InsertWeeklyQuiz,
+  pkChallenges,
   questionBank,
   users,
   weeklyQuizzes,
@@ -288,6 +289,19 @@ const ENSURE_TABLE_STATEMENTS = [
     \`count\` int NOT NULL DEFAULT 0,
     \`updatedAt\` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (\`name\`, \`usageDate\`)
+  )`,
+  `CREATE TABLE IF NOT EXISTS \`pk_challenges\` (
+    \`code\` varchar(8) NOT NULL,
+    \`initiatorName\` varchar(24) NOT NULL,
+    \`initiatorScore\` int,
+    \`challengerName\` varchar(24),
+    \`challengerScore\` int,
+    \`questionIds\` json NOT NULL,
+    \`status\` enum('waiting','completed') NOT NULL DEFAULT 'waiting',
+    \`createdAt\` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    \`updatedAt\` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (\`code\`),
+    KEY \`pk_challenges_status_idx\` (\`status\`)
   )`,
 ];
 
@@ -802,4 +816,43 @@ export async function incrementAiUsage(name: string, usageDate: string) {
     .values({ name, usageDate, count: 1 })
     .onDuplicateKeyUpdate({ set: { count: sql`${aiUsage.count} + 1` } });
   return getAiUsage(name, usageDate);
+}
+
+
+/** 異步 PK：建立挑戰（邀請碼由 router 產生並保證唯一）。 */
+export async function createPkChallenge(row: { code: string; initiatorName: string; questionIds: string[]; }) {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  await db.insert(pkChallenges).values({ code: row.code, initiatorName: row.initiatorName, questionIds: row.questionIds, status: "waiting" });
+  return getPkChallenge(row.code);
+}
+
+/** 異步 PK：以邀請碼讀取挑戰。 */
+export async function getPkChallenge(code: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  const rows = await db.select().from(pkChallenges).where(eq(pkChallenges.code, code)).limit(1);
+  return rows.length > 0 ? rows[0] : null;
+}
+
+/** 異步 PK：挑戰者加入（記名，尚未提交分數）。 */
+export async function joinPkChallenge(code: string, challengerName: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  await db.update(pkChallenges).set({ challengerName }).where(eq(pkChallenges.code, code));
+  return getPkChallenge(code);
+}
+
+/** 異步 PK：提交分數；雙方都完成時標記 completed。 */
+export async function submitPkScore(code: string, side: "initiator" | "challenger", score: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  const current = await getPkChallenge(code);
+  if (!current) return null;
+  const patch: Record<string, unknown> = side === "initiator" ? { initiatorScore: score } : { challengerScore: score };
+  const initiatorScore = side === "initiator" ? score : current.initiatorScore;
+  const challengerScore = side === "challenger" ? score : current.challengerScore;
+  if (initiatorScore !== null && challengerScore !== null) patch.status = "completed";
+  await db.update(pkChallenges).set(patch).where(eq(pkChallenges.code, code));
+  return getPkChallenge(code);
 }

@@ -46,6 +46,10 @@ import {
   listWeeklyLeaderboard,
   getAiUsage,
   incrementAiUsage,
+  createPkChallenge,
+  getPkChallenge,
+  joinPkChallenge,
+  submitPkScore,
   markWeeklyQuizDone,
   submitAssignment,
   updateCloudSave,
@@ -808,6 +812,56 @@ export const appRouter = router({
         const weekKey = `${monday.getUTCFullYear()}-W${String(Math.floor((monday.getUTCDate() - 1) / 7) + 1).padStart(2, "0")}`;
         const standings = await listWeeklyLeaderboard(weekStart, 30);
         return { weekKey, weekStart: weekStart.getTime(), standings };
+      }),
+  }),
+  /** 異步 PK：建立／加入／提交分數／讀取結果。只同步分數，不傳班級學校。 */
+  pk: router({
+    create: publicProcedure
+      .input(z.object({
+        name: cloudNameSchema,
+        questionIds: z.array(z.string().trim().min(1).max(80)).min(3).max(20),
+      }))
+      .mutation(async ({ input }) => {
+        const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+        for (let attempt = 0; attempt < 6; attempt += 1) {
+          let code = "";
+          for (let i = 0; i < 6; i += 1) code += alphabet[Math.floor(Math.random() * alphabet.length)];
+          const existing = await getPkChallenge(code);
+          if (existing) continue;
+          const created = await createPkChallenge({ code, initiatorName: input.name, questionIds: input.questionIds });
+          if (created) return { ok: true as const, code, challenge: created };
+        }
+        return { ok: false as const, reason: "retry" as const };
+      }),
+    get: publicProcedure
+      .input(z.object({ code: z.string().trim().min(4).max(8) }))
+      .query(async ({ input }) => {
+        const challenge = await getPkChallenge(input.code.trim().toUpperCase());
+        if (!challenge) return { ok: false as const, reason: "notFound" as const };
+        return { ok: true as const, challenge };
+      }),
+    join: publicProcedure
+      .input(z.object({ code: z.string().trim().min(4).max(8), name: cloudNameSchema }))
+      .mutation(async ({ input }) => {
+        const code = input.code.trim().toUpperCase();
+        const challenge = await getPkChallenge(code);
+        if (!challenge) return { ok: false as const, reason: "notFound" as const };
+        if (challenge.initiatorName === input.name) return { ok: true as const, challenge };
+        const updated = await joinPkChallenge(code, input.name);
+        return { ok: true as const, challenge: updated };
+      }),
+    submit: publicProcedure
+      .input(z.object({ code: z.string().trim().min(4).max(8), name: cloudNameSchema, score: z.number().int().min(0).max(100) }))
+      .mutation(async ({ input }) => {
+        const code = input.code.trim().toUpperCase();
+        const challenge = await getPkChallenge(code);
+        if (!challenge) return { ok: false as const, reason: "notFound" as const };
+        const side = challenge.initiatorName === input.name ? "initiator" : "challenger";
+        if (side === "challenger" && challenge.challengerName !== input.name) {
+          await joinPkChallenge(code, input.name);
+        }
+        const updated = await submitPkScore(code, side, input.score);
+        return { ok: true as const, challenge: updated };
       }),
   }),
   /**

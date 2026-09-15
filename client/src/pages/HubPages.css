@@ -173,3 +173,29 @@
 .league-footnote { display: flex; align-items: center; gap: 0.35rem; margin-top: 0.9rem; }
 .hub-empty { padding: 1.6rem; text-align: center; color: var(--muted-foreground); background: var(--card); border-radius: 0.85rem; border: 1px dashed color-mix(in srgb, var(--foreground) 22%, transparent); }
 @media (max-width: 520px) { .league-row { grid-template-columns: 2.2rem minmax(0, 1fr) auto; } .league-accuracy { grid-column: 2 / -1; text-align: left; padding-left: 2.8rem; } }
+
+/* 同學異步 PK */
+.pk-menu { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; }
+.pk-panel { padding: 1.1rem 1.15rem; border-radius: 0.9rem; background: var(--card); border: 1px solid color-mix(in srgb, var(--foreground) 10%, transparent); display: grid; gap: 0.6rem; align-content: start; }
+.pk-panel h2 { margin: 0; font-size: 1.02rem; }
+.pk-panel p { margin: 0; font-size: 0.85rem; color: var(--muted-foreground); line-height: 1.55; }
+.pk-code-input { min-height: 44px; padding: 0.55rem 0.75rem; border-radius: 0.6rem; border: 1.5px solid color-mix(in srgb, var(--foreground) 22%, transparent); font-size: 1rem; letter-spacing: 0.12em; font-weight: 700; background: var(--background); color: var(--foreground); }
+.pk-code-input:focus-visible { outline: 3px solid rgba(46, 125, 161, 0.35); outline-offset: 1px; }
+.pk-primary { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; padding: 0.55rem 1rem; border-radius: 0.65rem; border: none; font-weight: 800; font-size: 0.92rem; cursor: pointer; background: linear-gradient(135deg, var(--primary, #2e7da1), color-mix(in srgb, var(--primary, #2e7da1) 78%, #1f5e7c)); color: #fff; }
+.pk-primary:disabled { opacity: 0.55; cursor: not-allowed; }
+.pk-ghost { min-height: 44px; padding: 0.55rem 1rem; border-radius: 0.65rem; border: 1.5px solid color-mix(in srgb, var(--foreground) 25%, transparent); background: transparent; color: var(--foreground); font-weight: 700; cursor: pointer; }
+.pk-play { display: grid; gap: 0.8rem; }
+.pk-progress { font-size: 0.85rem; color: var(--muted-foreground); font-weight: 700; }
+.pk-question-card { padding: 1.1rem 1.15rem; border-radius: 0.9rem; background: var(--card); border: 1px solid color-mix(in srgb, var(--foreground) 10%, transparent); display: grid; gap: 0.7rem; }
+.pk-subject { margin: 0; font-size: 0.78rem; font-weight: 800; color: var(--primary, #2e7da1); letter-spacing: 0.04em; }
+.pk-prompt { margin: 0; font-size: 1.02rem; line-height: 1.6; }
+.pk-options { display: grid; gap: 0.5rem; }
+.pk-option { min-height: 44px; text-align: left; padding: 0.6rem 0.8rem; border-radius: 0.6rem; border: 1.5px solid color-mix(in srgb, var(--foreground) 18%, transparent); background: var(--background); color: var(--foreground); font-size: 0.9rem; line-height: 1.5; cursor: pointer; }
+.pk-option.is-selected { border-color: var(--primary, #2e7da1); background: color-mix(in srgb, var(--primary, #2e7da1) 12%, var(--card)); font-weight: 700; }
+.pk-actions { display: flex; justify-content: space-between; align-items: center; gap: 0.6rem; }
+.pk-result-panel { padding: 1.4rem 1.2rem; border-radius: 0.95rem; background: var(--card); border: 1px solid color-mix(in srgb, var(--foreground) 10%, transparent); display: grid; gap: 0.8rem; justify-items: start; }
+.pk-result-panel h2 { margin: 0; font-size: 1.2rem; }
+.pk-copy { display: inline-flex; align-items: center; gap: 0.3rem; border: none; background: rgba(46,125,161,.12); color: var(--primary, #2e7da1); font-weight: 800; letter-spacing: 0.12em; padding: 0.3rem 0.6rem; border-radius: 0.5rem; cursor: pointer; min-height: 36px; }
+.pk-scoreboard { list-style: none; margin: 0; padding: 0; width: 100%; display: grid; gap: 0.45rem; }
+.pk-scoreboard li { display: flex; justify-content: space-between; gap: 0.6rem; padding: 0.6rem 0.8rem; border-radius: 0.6rem; background: var(--background); border: 1px solid color-mix(in srgb, var(--foreground) 12%, transparent); }
+.pk-scoreboard li.is-me { outline: 2px solid rgba(46,125,161,.4); font-weight: 700; }

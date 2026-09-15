@@ -51,6 +51,7 @@ const LearningHub = React.lazy(() => import("@/pages/LearningHub"));
 const Gallery = React.lazy(() => import("@/pages/Gallery"));
 const TreasureHub = React.lazy(() => import("@/pages/TreasureHub"));
 const LeagueArena = React.lazy(() => import("@/pages/LeagueArena"));
+const PKArena = React.lazy(() => import("@/pages/PKArena"));
 const TeacherDashboard = React.lazy(() => import("@/pages/TeacherDashboard"));
 const StudentClass = React.lazy(() => import("@/pages/StudentClass"));
 const TrumpDuelBoard = React.lazy(() => import("@/components/TrumpDuelBoard"));
@@ -82,6 +83,7 @@ function Router() {
         <Route path={"/gallery"} component={Gallery} />
         <Route path={"/treasure"} component={TreasureHub} />
         <Route path={"/league"} component={LeagueArena} />
+        <Route path={"/pk"} component={PKArena} />
         <Route path={"/features"} component={FeaturesDirectory} />
         <Route path={"/camp"} component={DailyCamp} />
         <Route path={"/badges"} component={Badges} />

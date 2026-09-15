@@ -210,3 +210,19 @@ export const aiUsage = mysqlTable("ai_usage", {
 
 export type AiUsage = typeof aiUsage.$inferSelect;
 export type InsertAiUsage = typeof aiUsage.$inferInsert;
+
+export const pkChallenges = mysqlTable("pk_challenges", {
+  code: varchar("code", { length: 8 }).primaryKey(),
+  initiatorName: varchar("initiatorName", { length: 24 }).notNull(),
+  initiatorScore: int("initiatorScore"),
+  challengerName: varchar("challengerName", { length: 24 }),
+  challengerScore: int("challengerScore"),
+  /** 雙方共用的固定題目 ID 清單，確保 PK 公平。 */
+  questionIds: json("questionIds").$type<string[]>().notNull(),
+  status: mysqlEnum("status", ["waiting", "completed"]).default("waiting").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type PkChallenge = typeof pkChallenges.$inferSelect;
+export type InsertPkChallenge = typeof pkChallenges.$inferInsert;
