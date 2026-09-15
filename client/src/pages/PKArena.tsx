@@ -132,10 +132,12 @@ export default function PKArena() {
 
   return (
     <main className="hub-page" aria-labelledby="pk-title">
-      <header className="hub-header">
-        <p className="hub-eyebrow">FRIEND PK</p>
-        <h1 className="hub-title" id="pk-title">⚔️ 同學異步 PK</h1>
-        <p className="hub-sub">發起挑戰取得邀請碼，同學輸入代碼後各自答同一份題，雙方都完成就比高下。不同裝置、不必同時上線。</p>
+      <header className="illustration-hero" style={{ "--hero": "url(/assets/illustration/island-battle.webp)" } as React.CSSProperties}>
+        <div className="illustration-hero-copy">
+          <p className="hub-eyebrow">FRIEND PK</p>
+          <h1 className="hub-title" id="pk-title">⚔️ 同學異步 PK</h1>
+          <p className="hub-sub">發起挑戰取得邀請碼，同學輸入代碼後各自答同一份題，雙方都完成就比高下，不同裝置也能對戰。</p>
+        </div>
       </header>
 
       {error ? <p className="hub-empty" role="alert" style={{ borderColor: "rgba(220,80,80,.5)", color: "#b3402f" }}>{error}</p> : null}

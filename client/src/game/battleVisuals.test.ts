@@ -3,10 +3,11 @@ import { battleBackgroundForHabitat, battlePortraitForCompanion, battlePortraitF
 
 describe("battle visual mapping", () => {
   it("maps every arena habitat to a deployed background asset", () => {
-    expect(battleBackgroundForHabitat("tidal-grove")).toContain("academy-tidal-grove-arena");
-    expect(battleBackgroundForHabitat("cloud-shelf")).toContain("uncolored_peaks");
-    expect(battleBackgroundForHabitat("star-current")).toContain("sky_");
-    expect(battleBackgroundForHabitat("coral-shallows")).toContain("colored_talltrees");
+    // A 路線手繪島嶼冒險風格：棲息地背景統一換成手繪 webp 素材。
+    expect(battleBackgroundForHabitat("tidal-grove")).toContain("/assets/illustration/bg-mossland");
+    expect(battleBackgroundForHabitat("cloud-shelf")).toContain("/assets/illustration/bg-mountain");
+    expect(battleBackgroundForHabitat("star-current")).toContain("/assets/illustration/bg-ocean");
+    expect(battleBackgroundForHabitat("coral-shallows")).toContain("/assets/illustration/bg-ocean");
   });
 
   it("uses original CSS portrait classes with deployed CC0-derived original image compositions", () => {

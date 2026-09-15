@@ -20,10 +20,12 @@ export default function TreasureHub() {
 
   return (
     <main className="hub-page" aria-labelledby="treasure-title">
-      <header className="hub-header">
-        <p className="hub-eyebrow">TREASURE MAP</p>
-        <h1 className="hub-title" id="treasure-title">🧭 藏寶圖</h1>
-        <p className="hub-sub">徽章、特產、卡牌，全部收在一頁，收集的東西都在這。</p>
+      <header className="illustration-hero" style={{ "--hero": "url(/assets/illustration/island-overview.webp)" } as React.CSSProperties}>
+        <div className="illustration-hero-copy">
+          <p className="hub-eyebrow">TREASURE MAP</p>
+          <h1 className="hub-title" id="treasure-title">🧭 藏寶圖</h1>
+          <p className="hub-sub">徽章、特產、卡牌、聯盟賽與同學 PK，收集與對戰的入口都在這。</p>
+        </div>
       </header>
       <div className="hub-grid">
         {treasures.map(({ id, label, desc, href, icon: Icon }) => (

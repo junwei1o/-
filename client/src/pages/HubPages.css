@@ -199,3 +199,13 @@
 .pk-scoreboard { list-style: none; margin: 0; padding: 0; width: 100%; display: grid; gap: 0.45rem; }
 .pk-scoreboard li { display: flex; justify-content: space-between; gap: 0.6rem; padding: 0.6rem 0.8rem; border-radius: 0.6rem; background: var(--background); border: 1px solid color-mix(in srgb, var(--foreground) 12%, transparent); }
 .pk-scoreboard li.is-me { outline: 2px solid rgba(46,125,161,.4); font-weight: 700; }
+
+/* 手繪插圖 hero 橫幅（A 路線島嶼冒險風格，前景疊繁體標題，不依賴圖內簡體字） */
+.illustration-hero { position: relative; border-radius: 1rem; overflow: hidden; margin-bottom: 1.1rem; min-height: 158px; display: flex; align-items: flex-end; background-image: var(--hero); background-size: cover; background-position: center; border: 1px solid color-mix(in srgb, var(--foreground) 12%, transparent); box-shadow: 0 6px 18px rgba(31, 94, 124, 0.12); }
+.illustration-hero::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(255, 252, 245, 0.08) 0%, rgba(255, 252, 245, 0.72) 48%, var(--card) 100%); pointer-events: none; }
+.illustration-hero-copy { position: relative; z-index: 1; padding: 1rem 1.2rem 0.95rem; }
+.illustration-hero-copy .hub-eyebrow { margin: 0 0 0.2rem; }
+.illustration-hero-copy .hub-title { margin: 0 0 0.25rem; font-size: 1.4rem; }
+.illustration-hero-copy .hub-sub { margin: 0; font-size: 0.85rem; max-width: 46ch; }
+@media (max-width: 560px) { .illustration-hero { min-height: 138px; } .illustration-hero-copy .hub-title { font-size: 1.2rem; } }
+:root[data-theme="dark"] .illustration-hero::after { background: linear-gradient(180deg, rgba(20,32,40,0.12) 0%, rgba(20,32,40,0.72) 48%, var(--card) 100%); }

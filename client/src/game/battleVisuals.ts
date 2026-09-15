@@ -8,10 +8,11 @@ export type BattlePortrait = {
 };
 
 const HABITAT_BACKGROUNDS: Record<ArenaHabitatKey, string | undefined> = {
-  "tidal-grove": "/manus-storage/academy-tidal-grove-arena_0e369947.png",
-  "cloud-shelf": "/manus-storage/uncolored_peaks_e2e91e65.png",
-  "star-current": "/manus-storage/sky_f4784c05.png",
-  "coral-shallows": "/manus-storage/colored_talltrees_2d7cadc5.png",
+  // A 路線手繪島嶼冒險風格：統一換成手繪棲息地背景（webp，中央已預留戰鬥平台）。
+  "tidal-grove": "/assets/illustration/bg-mossland.webp",
+  "cloud-shelf": "/assets/illustration/bg-mountain.webp",
+  "star-current": "/assets/illustration/bg-ocean.webp",
+  "coral-shallows": "/assets/illustration/bg-ocean.webp",
 };
 
 const COMPANION_PORTRAITS: Record<string, BattlePortrait> = {

@@ -27,13 +27,12 @@ export default function LeagueArena() {
 
   return (
     <main className="hub-page" aria-labelledby="league-title">
-      <header className="hub-header">
-        <p className="hub-eyebrow">WEEKLY LEAGUE</p>
-        <h1 className="hub-title" id="league-title">🏆 每週聯盟賽</h1>
-        <p className="hub-sub">
-          每週一重新計分，比誰這週答最多題。正確率高的探險家會出現在榜前。
-          {data ? <> 目前第 {data.weekKey} 週。</> : null}
-        </p>
+      <header className="illustration-hero" style={{ "--hero": "url(/assets/illustration/trophy.webp)" } as React.CSSProperties}>
+        <div className="illustration-hero-copy">
+          <p className="hub-eyebrow">WEEKLY LEAGUE</p>
+          <h1 className="hub-title" id="league-title">🏆 每週聯盟賽</h1>
+          <p className="hub-sub">每週一重新計分，比誰這週答最多題，正確率高的探險家會出現在榜前。{data ? <> 目前第 {data.weekKey} 週。</> : null}</p>
+        </div>
       </header>
 
       {query.isLoading ? <p className="hub-empty" role="status">讀取本週榜單中…</p> : null}
