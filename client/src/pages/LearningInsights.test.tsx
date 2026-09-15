@@ -16,12 +16,20 @@ const mutationState = vi.hoisted(() => ({
   isError: false,
   mutate: vi.fn(),
 }));
+const usageState = vi.hoisted(() => ({
+  data: undefined as { today: { calls: number; totalTokens: number }; last7Days: { calls: number; totalTokens: number } } | undefined,
+  isError: false,
+  isLoading: false,
+}));
 const setLocation = vi.fn();
 
 vi.mock("@/lib/trpc", () => ({
   trpc: {
     questionBank: { list: { useQuery: () => queryState } },
-    aiTutor: { progressSummary: { useMutation: () => mutationState } },
+    aiTutor: {
+      progressSummary: { useMutation: () => mutationState },
+      tokenUsage: { useQuery: () => usageState },
+    },
   },
 }));
 
@@ -41,6 +49,9 @@ describe("learning insights", () => {
     mutationState.isPending = false;
     mutationState.isError = false;
     mutationState.mutate.mockReset();
+    usageState.data = undefined;
+    usageState.isError = false;
+    usageState.isLoading = false;
   });
   afterEach(() => cleanup());
 
@@ -100,5 +111,34 @@ describe("learning insights", () => {
     expect(screen.getByRole("heading", { name: "本期進步摘要" })).toBeInTheDocument();
     expect(screen.getByText(/AI 摘要暫時無法取得/)).toBeInTheDocument();
     expect(screen.getByText(/提示不是扣分/)).toBeInTheDocument();
+  });
+
+  it("shows personal AI token usage when a cloud name is set", () => {
+    const now = Date.now();
+    localStorage.setItem("xue-adventure-adaptive-v1", JSON.stringify({ version: 2, attempts: [
+      { questionId: "q-1", timestamp: now, correct: true, hintsUsed: 0, curriculumDomain: "數學領域", difficulty: "標準", responseMs: 10000, timeLimitMs: 25000, knowledge: ["分數與比例"] },
+    ] }));
+    queryState.data = { questions: [{ id: "q-1" }] };
+    localStorage.setItem("xue-cloud-mode-v1", JSON.stringify({ mode: "cloud", name: "小航海士" }));
+    usageState.data = {
+      today: { calls: 3, totalTokens: 880 },
+      last7Days: { calls: 5, totalTokens: 1510 },
+    };
+
+    render(<LearningInsights />);
+
+    expect(screen.getByText("AI 伴讀用量")).toBeInTheDocument();
+    expect(screen.getByText(/今天已用 3 次、880 token/)).toBeInTheDocument();
+    expect(screen.getByText(/近 7 天共 5 次、1,510 token/)).toBeInTheDocument();
+  });
+
+  it("prompts cloud login when no cloud name is set", () => {
+    const now = Date.now();
+    localStorage.setItem("xue-adventure-adaptive-v1", JSON.stringify({ version: 2, attempts: [
+      { questionId: "q-1", timestamp: now, correct: true, hintsUsed: 0, curriculumDomain: "數學領域", difficulty: "標準", responseMs: 10000, timeLimitMs: 25000, knowledge: ["分數與比例"] },
+    ] }));
+    queryState.data = { questions: [{ id: "q-1" }] };
+    render(<LearningInsights />);
+    expect(screen.getByText(/登入雲端船名後/)).toBeInTheDocument();
   });
 });

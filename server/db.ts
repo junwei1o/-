@@ -287,6 +287,9 @@ const ENSURE_TABLE_STATEMENTS = [
     \`name\` varchar(24) NOT NULL,
     \`usageDate\` date NOT NULL,
     \`count\` int NOT NULL DEFAULT 0,
+    \`promptTokens\` int NOT NULL DEFAULT 0,
+    \`completionTokens\` int NOT NULL DEFAULT 0,
+    \`totalTokens\` int NOT NULL DEFAULT 0,
     \`updatedAt\` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (\`name\`, \`usageDate\`)
   )`,
@@ -315,6 +318,10 @@ const ENSURE_COLUMN_STATEMENTS = [
   "ALTER TABLE `assignments` ADD COLUMN `studentName` varchar(24)",
   // 對應遷移：試卷補報用。同一份卷子重複上報時覆蓋，不新增重複紀錄。
   "ALTER TABLE `exam_records` ADD COLUMN `sessionKey` varchar(160)",
+  // 對應遷移：AI 深度反思 token 用量統計三欄（老庫冪等補欄）。
+  "ALTER TABLE `ai_usage` ADD COLUMN `promptTokens` int NOT NULL DEFAULT 0",
+  "ALTER TABLE `ai_usage` ADD COLUMN `completionTokens` int NOT NULL DEFAULT 0",
+  "ALTER TABLE `ai_usage` ADD COLUMN `totalTokens` int NOT NULL DEFAULT 0",
 ];
 
 const ENSURE_INDEX_STATEMENTS = [
@@ -816,6 +823,83 @@ export async function incrementAiUsage(name: string, usageDate: string) {
     .values({ name, usageDate, count: 1 })
     .onDuplicateKeyUpdate({ set: { count: sql`${aiUsage.count} + 1` } });
   return getAiUsage(name, usageDate);
+}
+
+/** AI 深度反思 token 用量：累加一次呼叫與 token 數，回傳更新後的當日總量。 */
+export async function addAiTokenUsage(
+  name: string,
+  usageDate: string,
+  tokens: { promptTokens: number; completionTokens: number; totalTokens: number },
+) {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  const safe = {
+    promptTokens: Math.max(0, Math.floor(tokens.promptTokens)),
+    completionTokens: Math.max(0, Math.floor(tokens.completionTokens)),
+    totalTokens: Math.max(0, Math.floor(tokens.totalTokens)),
+  };
+  await db
+    .insert(aiUsage)
+    .values({ name, usageDate, count: 1, ...safe })
+    .onDuplicateKeyUpdate({
+      set: {
+        count: sql`${aiUsage.count} + 1`,
+        promptTokens: sql`${aiUsage.promptTokens} + ${safe.promptTokens}`,
+        completionTokens: sql`${aiUsage.completionTokens} + ${safe.completionTokens}`,
+        totalTokens: sql`${aiUsage.totalTokens} + ${safe.totalTokens}`,
+      },
+    });
+  const rows = await db
+    .select({ count: aiUsage.count, promptTokens: aiUsage.promptTokens, completionTokens: aiUsage.completionTokens, totalTokens: aiUsage.totalTokens })
+    .from(aiUsage)
+    .where(and(eq(aiUsage.name, name), eq(aiUsage.usageDate, usageDate)))
+    .limit(1);
+  return rows.length > 0
+    ? { calls: rows[0].count, promptTokens: rows[0].promptTokens, completionTokens: rows[0].completionTokens, totalTokens: rows[0].totalTokens }
+    : { calls: 0, promptTokens: 0, completionTokens: 0, totalTokens: 0 };
+}
+
+export type AiTokenUsageRow = {
+  usageDate: string;
+  calls: number;
+  promptTokens: number;
+  completionTokens: number;
+  totalTokens: number;
+};
+
+/** AI token 用量查詢：近 N 天（含今天）依日期遞增，可只限單一使用者或全站。 */
+export async function listAiTokenUsage(days: number, name?: string): Promise<AiTokenUsageRow[]> {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  const startDate = new Date(Date.now() + 8 * 60 * 60 * 1000);
+  startDate.setUTCDate(startDate.getUTCDate() - (days - 1));
+  const startKey = startDate.toISOString().slice(0, 10);
+  const conditions = name
+    ? and(gte(aiUsage.usageDate, startKey), eq(aiUsage.name, name))
+    : gte(aiUsage.usageDate, startKey);
+  const rows = await db
+    .select({
+      usageDate: aiUsage.usageDate,
+      calls: aiUsage.count,
+      promptTokens: aiUsage.promptTokens,
+      completionTokens: aiUsage.completionTokens,
+      totalTokens: aiUsage.totalTokens,
+    })
+    .from(aiUsage)
+    .where(conditions);
+  const byDate = new Map<string, AiTokenUsageRow>();
+  for (const row of rows) {
+    const prev = byDate.get(row.usageDate);
+    if (prev) {
+      prev.calls += row.calls;
+      prev.promptTokens += row.promptTokens;
+      prev.completionTokens += row.completionTokens;
+      prev.totalTokens += row.totalTokens;
+    } else {
+      byDate.set(row.usageDate, { usageDate: row.usageDate, calls: row.calls, promptTokens: row.promptTokens, completionTokens: row.completionTokens, totalTokens: row.totalTokens });
+    }
+  }
+  return Array.from(byDate.values()).sort((a, b) => (a.usageDate < b.usageDate ? -1 : 1));
 }
 
 

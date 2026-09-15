@@ -1,8 +1,9 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { BookOpen, BrainCircuit, ChevronLeft, Compass, Headphones, ShieldCheck, Sparkles, Target } from "lucide-react";
+import { BookOpen, BrainCircuit, ChevronLeft, Compass, Gauge, Headphones, ShieldCheck, Sparkles, Target } from "lucide-react";
 import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { useQuestionBank } from "@/lib/questionBank";
+import { getCloudMode } from "@/game/cloudSync";
 import { calculateAdaptiveReport, calculateKnowledgeHeatmap, calculateLearningTrendReport, loadAdaptiveProfile } from "@/game/adaptiveLearning";
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 type QuestionIdentity = { id: string };
@@ -79,6 +80,11 @@ export default function LearningInsights() {
   const [, setLocation] = useLocation();
   const { questions: questionBankRows } = useQuestionBank();
   const progressSummaryMutation = trpc.aiTutor.progressSummary.useMutation();
+  const cloudMode = useMemo(() => getCloudMode(), []);
+  const usageQuery = trpc.aiTutor.tokenUsage.useQuery(
+    cloudMode.mode === "cloud" ? { name: cloudMode.name } : undefined,
+    { enabled: cloudMode.mode === "cloud", retry: false, staleTime: 60_000 },
+  );
   const [profile] = useState(() => loadAdaptiveProfile());
   const questionIds = useMemo(() => new Set((questionBankRows as QuestionIdentity[]).map((question) => question.id)), [questionBankRows]);
   const report = useMemo(() => calculateAdaptiveReport(profile, questionIds), [profile, questionIds]);
@@ -164,6 +170,7 @@ export default function LearningInsights() {
           <section className="learning-insights-boundary" aria-label="學習支援功能狀態">
             <article><BrainCircuit size={20} aria-hidden="true" /><div><strong>AI 錯題導師</strong><p>已支援錯題後的初步提示、進階提示與完整解析；內容只在你主動要求時產生。</p></div></article>
             <article><Compass size={20} aria-hidden="true" /><div><strong>間隔複習</strong><p>目前自適應選題會優先帶回弱知識點；依日期排程的重現提醒仍列為後續功能，尚未啟用。</p></div></article>
+            <article><Gauge size={20} aria-hidden="true" /><div><strong>AI 伴讀用量</strong>{cloudMode.mode === "cloud" ? (usageQuery.data ? <p>今天已用 {usageQuery.data.today.calls} 次、{usageQuery.data.today.totalTokens.toLocaleString("zh-TW")} token；近 7 天共 {usageQuery.data.last7Days.calls} 次、{usageQuery.data.last7Days.totalTokens.toLocaleString("zh-TW")} token（供應商實際回傳值）。</p> : usageQuery.isError ? <p>用量查詢暫時無法使用，請稍後再試。</p> : <p>讀取中…</p>) : <p>登入雲端船名後，這裡會顯示你實際消耗的 AI 伴讀 token。</p>}</div></article>
           </section>
         </>
       )}

@@ -378,3 +378,13 @@
 
 .teacher-card-title { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
 .teacher-export-button { margin-left: auto; font-size: 0.78rem; }
+
+/* AI 伴讀用量（全站） */
+.ai-usage-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin: 12px 0; }
+.ai-usage-kpis article { padding: 12px; border: 1px solid rgba(35, 114, 106, 0.2); border-radius: 14px; background: linear-gradient(145deg, rgba(231, 246, 234, 0.92), rgba(255, 252, 237, 0.9)); }
+.ai-usage-kpis strong { display: block; color: #23726a; font-size: 1.25rem; }
+.ai-usage-kpis span { color: #5d857a; font-size: 0.78rem; }
+.ai-usage-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+.ai-usage-table th, .ai-usage-table td { padding: 7px 9px; text-align: right; border-bottom: 1px solid rgba(35, 114, 106, 0.14); }
+.ai-usage-table th { color: #5d857a; font-weight: 800; text-align: right; }
+.ai-usage-table td:first-child, .ai-usage-table th:first-child { text-align: left; }

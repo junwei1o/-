@@ -4,6 +4,16 @@ vi.hoisted(() => {
   process.env.BUILT_IN_FORGE_API_KEY ??= "test-forge-key";
 });
 
+// reflect 成功後會寫 token 用量；測試環境無資料庫，只 mock 寫入函數。
+vi.mock("./db", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("./db")>();
+  return {
+    ...actual,
+    addAiTokenUsage: vi.fn().mockResolvedValue({ calls: 1, promptTokens: 0, completionTokens: 0, totalTokens: 0 }),
+    listAiTokenUsage: vi.fn().mockResolvedValue([]),
+  };
+});
+
 import { appRouter } from "./routers";
 import type { TrpcContext } from "./_core/context";
 import {
@@ -117,6 +127,26 @@ describe("callOpenAICompatibleProxy", () => {
     vi.stubGlobal("fetch", fetchMock);
     await callOpenAICompatibleProxy({ base: "https://x.com/v1", key: "k" }, [], 8);
     expect(JSON.parse(fetchMock.mock.calls[0]![1].body).model).toBe("gpt-4o-mini");
+  });
+
+  it("供應商回傳 usage 時透傳 token 用量", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(new Response(JSON.stringify({
+      model: "gpt-4o-mini",
+      choices: [{ message: { content: "OK" } }],
+      usage: { prompt_tokens: 321, completion_tokens: 87, total_tokens: 408 },
+    }), { status: 200 }));
+    vi.stubGlobal("fetch", fetchMock);
+    const result = await callOpenAICompatibleProxy({ base: "https://x.com/v1", key: "k" }, [], 8);
+    expect(result.usage).toEqual({ promptTokens: 321, completionTokens: 87, totalTokens: 408 });
+  });
+
+  it("供應商未回傳 usage 時回 null，不猜測數字", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(new Response(JSON.stringify({
+      choices: [{ message: { content: "OK" } }],
+    }), { status: 200 }));
+    vi.stubGlobal("fetch", fetchMock);
+    const result = await callOpenAICompatibleProxy({ base: "https://x.com/v1", key: "k" }, [], 8);
+    expect(result.usage).toBeNull();
   });
 
   it("401 歸類為 auth 錯誤", async () => {

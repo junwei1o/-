@@ -103,6 +103,12 @@ export function normalizeChatCompletionsUrl(base: string): string {
 export type ProxyCallResult = {
   content: string;
   model: string;
+  /** 供應商回傳的 token 用量；未回傳時為 null。 */
+  usage?: {
+    promptTokens: number;
+    completionTokens: number;
+    totalTokens: number;
+  } | null;
 };
 
 /**
@@ -166,14 +172,24 @@ export async function callOpenAICompatibleProxy(
   const body = (await response.json().catch(() => null)) as {
     model?: unknown;
     choices?: Array<{ message?: { content?: unknown } }>;
+    usage?: { prompt_tokens?: unknown; completion_tokens?: unknown; total_tokens?: unknown };
   } | null;
   const content = body?.choices?.[0]?.message?.content;
   if (typeof content !== "string" || content.trim().length === 0) {
     throw new ProxyCallError("shape", "代理回覆格式不正確（缺少 choices[0].message.content）");
   }
+  const usage = body?.usage;
+  const usagePayload = usage && (typeof usage.prompt_tokens === "number" || typeof usage.completion_tokens === "number" || typeof usage.total_tokens === "number")
+    ? {
+        promptTokens: typeof usage.prompt_tokens === "number" ? usage.prompt_tokens : 0,
+        completionTokens: typeof usage.completion_tokens === "number" ? usage.completion_tokens : 0,
+        totalTokens: typeof usage.total_tokens === "number" ? usage.total_tokens : 0,
+      }
+    : null;
   return {
     content: content.trim(),
     model: typeof body?.model === "string" ? body.model : model,
+    usage: usagePayload,
   };
 }
 

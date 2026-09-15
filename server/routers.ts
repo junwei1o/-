@@ -46,6 +46,8 @@ import {
   listWeeklyLeaderboard,
   getAiUsage,
   incrementAiUsage,
+  addAiTokenUsage,
+  listAiTokenUsage,
   createPkChallenge,
   getPkChallenge,
   joinPkChallenge,
@@ -84,6 +86,13 @@ async function consumeAiQuota(name: string | undefined): Promise<void> {
   await incrementAiUsage(name, usageDate);
 }
 
+/** 深度反思 token 用量：有船名才記錄（與每日配額同口徑）；供應商未回傳用量時不累計。 */
+async function recordReflectUsage(name: string | undefined, usage: { promptTokens: number; completionTokens: number; totalTokens: number } | null) {
+  if (!name) return;
+  const usageDate = new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString().slice(0, 10);
+  await addAiTokenUsage(name, usageDate, usage ?? { promptTokens: 0, completionTokens: 0, totalTokens: 0 });
+}
+
 /** 雲端存檔內容：rpg/bx 原始 JSON 字串＋版本號，大小由 express 50mb 上限把關。 */
 const cloudPayloadSchema = z.object({
   v: z.literal(1),
@@ -109,6 +118,31 @@ export const appRouter = router({
         const usageDate = new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString().slice(0, 10);
         const used = await getAiUsage(input.name, usageDate);
         return { used, limit: AI_DAILY_QUOTA, remaining: Math.max(0, AI_DAILY_QUOTA - used) };
+      }),
+    /**
+     * AI token 用量查詢：有 name 查單一船員，無 name 查全站。
+     * 回傳今天與近 7 天明細；token 為供應商實際回傳值，供應商未回傳時為 0。
+     */
+    tokenUsage: publicProcedure
+      .input(z.object({ name: z.string().trim().max(24).optional() }).optional())
+      .query(async ({ input }) => {
+        const usageDate = new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString().slice(0, 10);
+        const rows = await listAiTokenUsage(7, input?.name || undefined);
+        const todayRow = rows.find((row) => row.usageDate === usageDate);
+        const totals = rows.reduce(
+          (acc, row) => ({
+            calls: acc.calls + row.calls,
+            promptTokens: acc.promptTokens + row.promptTokens,
+            completionTokens: acc.completionTokens + row.completionTokens,
+            totalTokens: acc.totalTokens + row.totalTokens,
+          }),
+          { calls: 0, promptTokens: 0, completionTokens: 0, totalTokens: 0 },
+        );
+        return {
+          today: todayRow ?? { usageDate, calls: 0, promptTokens: 0, completionTokens: 0, totalTokens: 0 },
+          last7Days: totals,
+          byDay: rows,
+        };
       }),
     explain: publicProcedure
       .input(z.object({
@@ -420,7 +454,13 @@ export const appRouter = router({
         if (input.proxy?.base && input.proxy.key) {
           try {
             const result = await callOpenAICompatibleProxy(input.proxy, messages, 220);
-            return { text: result.content, source: "proxy" as const, remaining: gate.remaining };
+            await recordReflectUsage(input.studentName, result.usage ?? null);
+            return {
+              text: result.content,
+              source: "proxy" as const,
+              remaining: gate.remaining,
+              usage: result.usage ?? null,
+            };
           } catch (error) {
             if (error instanceof ProxyCallError) {
               throw new TRPCError({ code: "BAD_REQUEST", message: error.message });
@@ -436,7 +476,15 @@ export const appRouter = router({
         if (typeof content !== "string" || content.trim().length === 0) {
           throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "學習模型沒有回覆" });
         }
-        return { text: content.trim(), source: "builtin" as const, remaining: gate.remaining };
+        const usage = response.usage
+          ? {
+              promptTokens: typeof response.usage.prompt_tokens === "number" ? response.usage.prompt_tokens : 0,
+              completionTokens: typeof response.usage.completion_tokens === "number" ? response.usage.completion_tokens : 0,
+              totalTokens: typeof response.usage.total_tokens === "number" ? response.usage.total_tokens : 0,
+            }
+          : null;
+        await recordReflectUsage(input.studentName, usage);
+        return { text: content.trim(), source: "builtin" as const, remaining: gate.remaining, usage };
       }),
   }),
   questionBank: router({

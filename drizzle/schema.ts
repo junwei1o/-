@@ -203,6 +203,10 @@ export const aiUsage = mysqlTable("ai_usage", {
   /** 使用日（台北時間 YYYY-MM-DD），配額每日重置。 */
   usageDate: varchar("usageDate", { length: 10 }).notNull(),
   count: int("count").notNull().default(0),
+  /** 深度反思 token 用量（供應商回傳才累計；未回傳時為 0）。 */
+  promptTokens: int("promptTokens").notNull().default(0),
+  completionTokens: int("completionTokens").notNull().default(0),
+  totalTokens: int("totalTokens").notNull().default(0),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 }, (table) => ({
   nameDateIdx: primaryKey({ columns: [table.name, table.usageDate] }),
