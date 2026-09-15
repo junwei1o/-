@@ -1,4 +1,4 @@
-import { BookOpenCheck, Calculator, FlaskConical, Map, MessagesSquare, Sparkles } from "lucide-react";
+import { BookOpenCheck, Calculator, FlaskConical, Languages, Map, MessagesSquare, Sparkles } from "lucide-react";
 import React, { useEffect, useMemo, useState } from "react";
 import { createSpeechController, type SpeechStatus } from "@/lib/speechSynthesis";
 import type { KnowledgeIslandId, KnowledgeIslandSnapshot, KnowledgeIslandSubject } from "@/lib/studentKnowledgeIslands";
@@ -15,6 +15,7 @@ const ISLAND_ICONS: Record<KnowledgeIslandId, typeof Calculator> = {
   science: FlaskConical,
   social: Map,
   language: MessagesSquare,
+  english: Languages,
 };
 
 function islandStatus(island: KnowledgeIslandSnapshot) {

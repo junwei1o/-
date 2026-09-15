@@ -622,3 +622,14 @@ html[data-animation-simplified="true"] .battle-impact-stars,
 html[data-animation-simplified="true"] .battle-answer-burst { display: none !important; }
 html[data-animation-simplified="true"] .battle-scene-console.is-answer-correct,
 html[data-animation-simplified="true"] .battle-scene-console.is-answer-wrong { animation-duration: 1ms !important; animation-delay: 0ms !important; animation-iteration-count: 1 !important; }
+
+/* 三步戰鬥教學（首次對戰引導） */
+.battle-step-tutorial { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0.7rem; align-items: center; padding: 0.8rem 0.9rem; border: 1px solid rgba(255, 180, 110, 0.4); border-radius: 0.85rem; background: linear-gradient(135deg, rgba(255, 246, 230, 0.92), rgba(255, 233, 205, 0.86)); color: #6b4a1f; }
+.battle-step-tutorial > div { display: grid; gap: 0.3rem; }
+.battle-step-tutorial .eyebrow { color: #c07a2e; font-size: 0.62rem; letter-spacing: 0.08em; }
+.battle-step-tutorial h3 { margin: 0; color: #7a4a12; font-family: Fraunces, "Noto Sans TC", serif; font-size: 0.95rem; }
+.battle-step-tutorial ol { display: grid; gap: 0.22rem; margin: 0.15rem 0 0; padding: 0; list-style: none; }
+.battle-step-tutorial li { display: grid; gap: 0.05rem; padding-left: 0.85rem; position: relative; font-size: 0.76rem; line-height: 1.45; color: #7a5b31; }
+.battle-step-tutorial li::before { content: ""; position: absolute; left: 0.1rem; top: 0.42rem; width: 0.4rem; height: 0.4rem; border-radius: 50%; background: #e8933a; }
+.battle-step-tutorial li strong { color: #6b4a1f; font-size: 0.78rem; }
+@media (max-width: 560px) { .battle-step-tutorial { grid-template-columns: 1fr; } }

@@ -2,13 +2,15 @@ import { useMemo } from "react";
 import { trpc } from "@/lib/trpc";
 // 正式題庫 500 題隨安裝包一起發布；後端題庫無法使用時，用它作為離線後備，讓作答功能永遠可用。
 import curriculumSeed from "../../../data/taiwan_curriculum_500.json";
+// 英語文題目由前端本地題庫提供（後端 question_bank subject enum 尚未收錄英語，避免改動資料庫 schema）。
+import englishSeed from "../../../data/taiwan_english_seed.json";
 import { expandQuestionBankToSix, shuffleQuestionOptions } from "./optionRandomizer";
 
 /** 與後端 question_bank 資料列一致的題目欄位（去掉僅後端使用的時間戳）。 */
 export type CurriculumQuestionRow = {
   id: string;
   grade: number;
-  subject: "數學" | "自然" | "社會" | "國語";
+  subject: "數學" | "自然" | "社會" | "國語" | "英語";
   questionType: "選擇題" | "是非題";
   difficulty: "基礎" | "標準" | "挑戰";
   curriculumDomain: "語文領域" | "數學領域" | "自然科學領域" | "社會領域";
@@ -56,6 +58,13 @@ export const LOCAL_QUESTION_BANK: CurriculumQuestionRow[] = (() => {
   return questions.map((q) => ({ ...q, questionType: q.questionType ?? "選擇題" as const }));
 })();
 
+/** 英語文題庫（本地 seed，與 data/taiwan_english_seed.json 同步）。 */
+export const LOCAL_ENGLISH_BANK: CurriculumQuestionRow[] = (() => {
+  const seed = englishSeed as { questions?: unknown };
+  const questions = Array.isArray(seed.questions) ? seed.questions.filter(isValidQuestion) : [];
+  return questions.map((q) => ({ ...q, questionType: q.questionType ?? "選擇題" as const }));
+})();
+
 export type QuestionBankSource = "server" | "local";
 
 /**
@@ -69,7 +78,8 @@ export function useQuestionBank() {
   const query = trpc.questionBank.list.useQuery({ limit: 500 });
   const questions = useMemo(() => {
     const serverQuestions = (query.data?.questions ?? []) as CurriculumQuestionRow[];
-    const base = serverQuestions.length > 0 ? serverQuestions : LOCAL_QUESTION_BANK;
+    // 英語文題目固定附加本地 seed：後端 schema 未收錄英語時，英語港口仍有完整題目可作答。
+    const base = serverQuestions.length > 0 ? [...serverQuestions, ...LOCAL_ENGLISH_BANK] : [...LOCAL_QUESTION_BANK, ...LOCAL_ENGLISH_BANK];
     return expandQuestionBankToSix(base).map((question) => shuffleQuestionOptions(question));
   }, [query.data]);
   const usingLocal = (query.data?.questions ?? []).length === 0;

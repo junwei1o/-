@@ -1,7 +1,7 @@
 import { calculateKnowledgeHeatmap, getSpacedReviewSummary, type AdaptiveProfile } from "@/game/adaptiveLearning";
 
-export type KnowledgeIslandId = "math" | "science" | "social" | "language";
-export type KnowledgeIslandSubject = "數學" | "自然" | "社會" | "國語";
+export type KnowledgeIslandId = "math" | "science" | "social" | "language" | "english";
+export type KnowledgeIslandSubject = "數學" | "自然" | "社會" | "國語" | "英語";
 
 export type KnowledgeIslandResource = {
   title: string;
@@ -83,6 +83,20 @@ const ISLAND_DEFINITIONS: ReadonlyArray<Omit<KnowledgeIslandSnapshot, "attemptCo
       { title: "教育部國語小字典", provider: "教育部", url: "https://dict.mini.moe.edu.tw/", kind: "閱讀工具" },
       { title: "國字筆順學習網", provider: "教育部國語推動委員會", url: "https://stroke-order.learningweb.moe.edu.tw/", kind: "閱讀工具" },
       { title: "臺灣台語語料庫應用檢索系統", provider: "國家教育研究院", url: "https://tggl.naer.edu.tw/", kind: "閱讀工具" },
+    ],
+  },
+  {
+    id: "english",
+    subject: "英語",
+    title: "英語港口",
+    shortTitle: "英語",
+    description: "從日常用語與字母出發，練習聽讀與表達。",
+    curriculumFocus: "英語文聽、說、讀、寫：掌握基礎字母與發音、生活用語與簡短對話，建立語言學習的起步信心。",
+    learningDirections: ["辨識字母與基礎發音", "理解並回應簡短生活用語", "用簡單句子表達自我與日常需求"],
+    resources: [
+      { title: "教育部英語線上學習平臺", provider: "教育部 Cool English", url: "https://www.coolenglish.edu.tw/", kind: "互動學習" },
+      { title: "十二年國教英語文課程綱要", provider: "國家教育研究院", url: "https://www.naer.edu.tw/PageSyllabus?fid=52", kind: "課綱入口" },
+      { title: "教育雲數位學習入口", provider: "教育部教育雲", url: "https://cloud.edu.tw/", kind: "探究資源" },
     ],
   },
 ];

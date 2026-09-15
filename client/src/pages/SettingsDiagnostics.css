@@ -319,3 +319,15 @@
   font-size: .8rem;
   color: var(--muted-foreground);
 }
+
+/* PIN 雲端備份 */
+.pin-cloud-form { display: grid; grid-template-columns: minmax(0, 9rem) auto; gap: 0.6rem; align-items: center; margin-top: 0.7rem; }
+.pin-cloud-form input { font-family: inherit; font-size: 1rem; letter-spacing: 0.35em; text-align: center; padding: 0.55rem 0.5rem; border: 1px solid color-mix(in srgb, var(--foreground) 22%, transparent); border-radius: 0.6rem; background: var(--card); color: var(--foreground); min-height: 44px; }
+.pin-cloud-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.pin-cloud-actions .settings-companion-save { min-height: 44px; padding: 0 0.9rem; display: inline-flex; align-items: center; gap: 0.35rem; border: 1px solid color-mix(in srgb, var(--foreground) 18%, transparent); border-radius: 0.6rem; }
+.pin-cloud-actions .settings-companion-secondary { background: transparent; color: var(--foreground); }
+.pin-cloud-status { margin-top: 0.55rem; font-size: 0.78rem; line-height: 1.45; }
+.pin-cloud-status-ok { color: #2e7d4f; }
+.pin-cloud-status-error { color: #c0392b; }
+.pin-cloud-status-info { color: var(--muted-foreground); }
+@media (max-width: 520px) { .pin-cloud-form { grid-template-columns: 1fr; } }

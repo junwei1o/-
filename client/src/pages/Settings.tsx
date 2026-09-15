@@ -29,6 +29,7 @@ import {
 import { getRareMonsters } from "@/game/expeditionContent";
 import { getJournalEntries } from "@/game/adventureJournal";
 import ParentLearningView from "@/components/ParentLearningView";
+import { PinCloudSyncPanel } from "@/components/PinCloudSyncPanel";
 import { ReadingScaleControl } from "@/components/ReadingScaleControl";
 import BackupPanel from "@/components/bx/BackupPanel";
 import { CloudSyncSettings } from "@/components/CloudModePrompt";
@@ -719,6 +720,7 @@ export default function Settings() {
           {limitedTitles.length === 0 ? <p className="settings-showcase-empty" role="status">尚未解鎖限定稱號。保持連續答對，尋找稀有守門者吧。</p> : null}
         </section>
 
+        <PinCloudSyncPanel />
         <section id="diagnostics" className="settings-log-card" aria-labelledby="storage-log-title">
           <div className="settings-log-card-header">
             <div>

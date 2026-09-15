@@ -1,4 +1,4 @@
-import { Anchor, BookOpenCheck, BookText, Compass, FlaskConical, Landmark, RotateCcw, Ruler, Sparkles, Volume2, type LucideIcon } from "lucide-react";
+import { Anchor, BookOpenCheck, BookText, Compass, FlaskConical, Landmark, Languages, RotateCcw, Ruler, Sparkles, Volume2, type LucideIcon } from "lucide-react";
 import React, { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { createSpeechController, type SpeechStatus } from "@/lib/speechSynthesis";
 import { getPaperNextGroupStrategyHint } from "@/lib/paperExam";
@@ -50,6 +50,7 @@ const ISLAND_REGION_BY_ID: Record<KnowledgeIslandId, RegionKey> = {
   math: "central",
   social: "south",
   science: "east",
+  english: "south",
 };
 
 const ISLAND_POSITIONS: Record<KnowledgeIslandId, IslandPosition> = {
@@ -57,6 +58,7 @@ const ISLAND_POSITIONS: Record<KnowledgeIslandId, IslandPosition> = {
   math: { left: "49%", top: "42%", region: "中部・量測塔" },
   social: { left: "44%", top: "72%", region: "南部・生活港" },
   science: { left: "74%", top: "51%", region: "東部・山海觀察站" },
+  english: { left: "22%", top: "43%", region: "西部・英語港" },
 };
 
 const ISLAND_ROUTE_PATHS: Record<KnowledgeIslandId, string> = {
@@ -64,6 +66,7 @@ const ISLAND_ROUTE_PATHS: Record<KnowledgeIslandId, string> = {
   math: "M248 365 C332 350 421 290 490 260",
   social: "M248 365 C314 404 381 434 440 446",
   science: "M248 365 C394 330 578 316 740 316",
+  english: "M248 365 C192 356 141 342 115 323",
 };
 
 const ISLAND_ICONS: Record<KnowledgeIslandId, LucideIcon> = {
@@ -71,6 +74,7 @@ const ISLAND_ICONS: Record<KnowledgeIslandId, LucideIcon> = {
   math: Ruler,
   social: Landmark,
   science: FlaskConical,
+  english: Languages,
 };
 
 const ISLAND_LANDSCAPES: Record<KnowledgeIslandId, { summary: string; icons: LandscapeIcon[] }> = {
@@ -104,6 +108,14 @@ const ISLAND_LANDSCAPES: Record<KnowledgeIslandId, { summary: string; icons: Lan
       { symbol: "⛰️", label: "山林" },
       { symbol: "🌊", label: "海浪" },
       { symbol: "🔬", label: "顯微鏡" },
+    ],
+  },
+  english: {
+    summary: "西部英語港的燈塔、船錨與字母旗幟",
+    icons: [
+      { symbol: "🗼", label: "燈塔" },
+      { symbol: "⚓", label: "船錨" },
+      { symbol: "🔤", label: "字母旗幟" },
     ],
   },
 };
