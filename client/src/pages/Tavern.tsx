@@ -16,6 +16,10 @@ import "./Tavern.css";
 const CHAPTER_TITLES: Record<string, string> = {
   "lighthouse-call": "燈塔嚮導",
   "lost-classic": "古籍尋跡者",
+  "salt-field": "鹽田小達人",
+  "railway-math": "鐵道數學家",
+  "night-market": "夜市尋寶王",
+  "alishan-whisper": "山林解密者",
 };
 const CHAPTERS_WITH_TITLE = ALL_CHAPTERS.filter((ch) => CHAPTER_TITLES[ch.id]);
 

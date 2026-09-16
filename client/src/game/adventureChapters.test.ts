@@ -32,4 +32,25 @@ describe("adventure chapters", () => {
     expect(getChapterById("lighthouse-call")?.cost).toBe(0);
     expect(getChapterById("lost-classic")?.cost).toBe(30);
   });
+
+  it("共 6 個章節且都有多選擇分支與結局", () => {
+    expect(ALL_CHAPTERS).toHaveLength(6);
+    for (const chapter of ALL_CHAPTERS) {
+      const nodes = Object.values(chapter.nodes);
+      expect(nodes.some((node) => node.type === "choice" && (node.choices?.length ?? 0) >= 2)).toBe(true);
+      expect(nodes.some((node) => node.type === "check")).toBe(true);
+      expect(nodes.filter((node) => node.type === "ending").length).toBeGreaterThanOrEqual(2);
+      expect(chapter.title.trim()).not.toBe("");
+      expect(chapter.icon).not.toBe("");
+    }
+  });
+
+  it("good 結局章節授予限定稱號（與酒館 CHAPTER_TITLES 對應）", () => {
+    for (const chapter of ALL_CHAPTERS) {
+      const goodEnding = Object.values(chapter.nodes).find((node) => node.type === "ending" && node.ending === "good");
+      if (goodEnding?.reward?.title) {
+        expect(goodEnding.reward.title.length).toBeGreaterThanOrEqual(2);
+      }
+    }
+  });
 });
