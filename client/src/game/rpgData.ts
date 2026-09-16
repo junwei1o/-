@@ -44,6 +44,7 @@ export const COMPANION_CATALOG: Companion[] = [
   { id: "ember-guard", name: "焰甲衛", epithet: "守護求知火種的原創鎧甲夥伴", region: "central", rarity: "rare", level: 1, xp: 0, hp: 52, maxHp: 52, energyPower: 12, defense: 6, dialogue: ["知識是盾，勇氣是光。", "先看清問題，再選擇行動。"], skillName: "火種護盾", skillCost: 4, accent: "#e56d45" },
   { id: "star-runner", name: "星浪行者", epithet: "把夜空線索串成路徑的原創守望者", region: "east", rarity: "rare", level: 1, xp: 0, hp: 46, maxHp: 46, energyPower: 15, defense: 4, dialogue: ["每一顆星，都可能是一個好問題。", "沿著證據走，答案會發光。"], skillName: "星軌投射", skillCost: 5, accent: "#6f68c7" },
   { id: "milk-dragonling", name: "奶泡龍崽", epithet: "喜歡把複雜事情講成可愛比喻的原創寵物", region: "south", rarity: "legendary", level: 1, xp: 0, hp: 58, maxHp: 58, energyPower: 10, defense: 5, dialogue: ["先吃一口勇氣，再想一個方法！", "答對的能量，變成今天的閃亮力量。"], skillName: "泡泡鼓舞", skillCost: 4, accent: "#f0a4b8" },
+  { id: "formosa-bear", name: "黑熊護衛", epithet: "守護山林知識的原創台灣黑熊夥伴", region: "central", rarity: "legendary", level: 1, xp: 0, hp: 62, maxHp: 62, energyPower: 13, defense: 7, dialogue: ["穩住呼吸，答案會像山徑一樣浮現。", "每一步都算數，我們一起慢慢走。"], skillName: "熊掌守護", skillCost: 4, accent: "#4a3f35" },
 ];
 
 export const ENCOUNTERS: Encounter[] = [
@@ -54,9 +55,20 @@ export const ENCOUNTERS: Encounter[] = [
   { id: "star-fin", name: "星鰭魚", region: "east", habitatId: "star-current", rarity: "common", level: 2, hp: 30, maxHp: 30, defense: 2, captureCost: 7, description: "在夜色中留下星點水痕，擅長辨認方向與比例。", accent: "#5c86bd" },
   { id: "orbit-koi", name: "環軌錦鯉", region: "east", habitatId: "star-current", rarity: "rare", level: 3, hp: 40, maxHp: 40, defense: 3, captureCost: 9, description: "只在答對挑戰題後浮現，會把星點排列成穩定軌跡。", accent: "#8675d6" },
   { id: "coral-sprout", name: "珊芽獸", region: "south", habitatId: "coral-shallows", rarity: "common", level: 3, hp: 42, maxHp: 42, defense: 4, captureCost: 9, description: "守護潮間帶的小生物，對合作與耐心特別敏感。", accent: "#e98265" },
+  { id: "glow-jelly", name: "瑩光水母", region: "south", habitatId: "coral-shallows", rarity: "rare", level: 4, hp: 36, maxHp: 36, defense: 2, captureCost: 7, description: "夜晚會沿著洋流點起螢光，用柔和的節奏引導觀測者。", accent: "#7fd4c1" },
   { id: "reef-warden", name: "礁語守望者", region: "south", habitatId: "coral-shallows", rarity: "legendary", level: 4, hp: 54, maxHp: 54, defense: 5, captureCost: 12, description: "在多次守門突破後才會現身，用潮聲考驗探索者的耐心與理解。", accent: "#df78a5" },
+  { id: "tide-firefly", name: "夜潮螢", region: "north", habitatId: "tidal-grove", rarity: "legendary", level: 5, hp: 60, maxHp: 60, defense: 6, captureCost: 14, description: "只在完整整理一整天的觀測紀錄後現身，用螢光寫下潮汐密碼。", accent: "#1f8f7a" },
+  { id: "cloud-deer", name: "雲嶺水鹿", region: "central", habitatId: "cloud-shelf", rarity: "legendary", level: 5, hp: 58, maxHp: 58, defense: 7, captureCost: 15, description: "在高山雲霧中守護水脈的傳奇，回應願意把難題一步一步走完的探索者。", accent: "#7d8c4a" },
+  { id: "star-whale", name: "星谷鯨靈", region: "east", habitatId: "star-current", rarity: "legendary", level: 5, hp: 62, maxHp: 62, defense: 5, captureCost: 16, description: "沿著東岸星光洄游的巨影，只在多次挑戰題突破後浮出星海。", accent: "#4a6cc7" },
 ];
 
-export function encounterForRegion(region: RegionKey) {
-  return ENCOUNTERS.find((item) => item.region === region) ?? ENCOUNTERS[0];
+export function encounterForRegion(region: RegionKey, ownedIds?: string[]) {
+  const pool = ENCOUNTERS.filter((item) => item.region === region);
+  if (pool.length === 0) return ENCOUNTERS[0];
+  if (!ownedIds || ownedIds.length === 0) return pool[0];
+  const owned = new Set(ownedIds);
+  const unowned = pool.filter((item) => !owned.has(item.id));
+  // 先遇見低階未捕捉夥伴；該區全數捕捉後，回傳最高階供再次挑戰。
+  if (unowned.length > 0) return unowned.sort((a, b) => a.level - b.level)[0];
+  return [...pool].sort((a, b) => b.level - a.level)[0];
 }

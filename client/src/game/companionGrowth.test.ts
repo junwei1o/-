@@ -42,4 +42,16 @@ describe("companion growth", () => {
     const second = unlockGrowthAchievements(first.companion, 5, 3, true);
     expect(second.unlocked).toHaveLength(0);
   });
+
+  it("解鎖夥伴收藏與進化成就（不重複領取）", () => {
+    const collected = unlockGrowthAchievements(base, 0, 0, false, { companionCount: 3 });
+    expect(collected.unlocked.map((item) => item.id)).toContain("collection-starter");
+    expect(collected.companion.affection).toBe(8);
+    expect(collected.companion.trainingPoints).toBe(4);
+    const evolved = unlockGrowthAchievements(base, 0, 0, false, { evolutionStage: 2 });
+    expect(evolved.unlocked.map((item) => item.id)).toContain("evolution-starter");
+    // 舊參數缺省時不誤觸發新成就
+    expect(unlockGrowthAchievements(base, 5, 3, true).unlocked).not.toContain("collection-starter");
+    expect(unlockGrowthAchievements(base, 5, 3, true).unlocked).not.toContain("evolution-starter");
+  });
 });

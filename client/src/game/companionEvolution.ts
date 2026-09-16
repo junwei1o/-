@@ -33,6 +33,11 @@ const STAGES: Record<string, EvolutionStage[]> = {
     { stage: 2, title: "奶雲小龍", appearanceClass: "form-milk-cloud", appearanceLabel: "奶雲活力形", requiredEnergy: 20, passiveSkillIds: ["study-focus"], passiveLabels: ["答對時攻擊力 +2"] },
     { stage: 3, title: "彩虹奶龍王", appearanceClass: "form-rainbow-dragon", appearanceLabel: "彩虹歡樂形", requiredEnergy: 44, passiveSkillIds: ["study-focus", "capture-instinct"], passiveLabels: ["答對時攻擊力 +2", "捕捉成功率 +8%"] },
   ],
+  "formosa-bear": [
+    { stage: 1, title: "黑熊護衛", appearanceClass: "form-bear-guard", appearanceLabel: "黑熊護衛形", requiredEnergy: 0, passiveSkillIds: [], passiveLabels: [] },
+    { stage: 2, title: "黑曜熊衛", appearanceClass: "form-bear-obsidian", appearanceLabel: "黑曜強化形", requiredEnergy: 22, passiveSkillIds: ["shield-memory"], passiveLabels: ["答錯時防禦力 +2"] },
+    { stage: 3, title: "玉山熊皇", appearanceClass: "form-bear-jade", appearanceLabel: "玉山守護形", requiredEnergy: 46, passiveSkillIds: ["shield-memory", "streak-surge"], passiveLabels: ["答錯時防禦力 +2", "連續答對時終極技能傷害 +3"] },
+  ],
 };
 
 export function evolutionStagesFor(companion: Companion): EvolutionStage[] {

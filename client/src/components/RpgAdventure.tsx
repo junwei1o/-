@@ -220,7 +220,7 @@ export default function RpgAdventure({ onOpenChallenge, questionPool = [], sound
     setState((current) => ({ ...current, expansionProgress: { ...(current.expansionProgress ?? expansionProgress), activeWorldEvents: [...(current.expansionProgress?.activeWorldEvents ?? []), event].slice(-3), worldEventsTriggeredToday: (current.expansionProgress?.worldEventsTriggeredToday ?? 0) + 1, worldEventDayKey: new Date(now).toISOString().slice(0, 10) }, notice: `${event.label}出現在${REGION_LABELS[state.currentRegion]}！` }));
   };
   const explore = (region: RegionKey) => {
-    const found = encounterForRegion(region);
+    const found = encounterForRegion(region, state.companions.map((companion) => companion.id));
     const route = academyRouteFor(region);
     setState((current) => ({ ...current, currentRegion: region, explored: current.explored.includes(region) ? current.explored : [...current.explored, region], mode: "encounter", encounter: found, battle: null, notice: `已抵達${route.title}：${route.questTitle}正等待你的解題線索。` }));
   };

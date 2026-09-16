@@ -182,7 +182,7 @@ export function recordRpgAnswer(input: { eventId: string; correct: boolean; seco
     ? { ...(storyState.academyProgress ?? {}), [route.region]: { ...existingRouteProgress, correctAnswers: existingRouteProgress.correctAnswers + (input.correct ? 1 : 0) } }
     : storyState.academyProgress;
   const habitatDailyResult = recordHabitatDailyAnswer({ ...storyState, academyProgress }, input, todayKey);
-  const achievementResult = grownActive ? unlockGrowthAchievements(grownActive, correctAnswerCount, input.curriculumDomain ? domainAnswerCounts[input.curriculumDomain] ?? 0 : 0, challengeCorrectCount > 0) : null;
+  const achievementResult = grownActive ? unlockGrowthAchievements(grownActive, correctAnswerCount, input.curriculumDomain ? domainAnswerCounts[input.curriculumDomain] ?? 0 : 0, challengeCorrectCount > 0, { companionCount: current.companions.length, evolutionStage: grownActive.evolutionStage ?? 1 }) : null;
   const finalCompanion = achievementResult?.companion ?? grownActive;
   const missionRegionCorrect = route ? academyProgress?.[route.region]?.correctAnswers ?? 0 : 0;
   const missionResult = applyRegionMissionAnswer({ progress: storyState.regionMissionProgress ?? {}, region: route?.region, correct: input.correct, regionCorrect: missionRegionCorrect, totalCorrect: correctAnswerCount });

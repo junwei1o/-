@@ -17,6 +17,8 @@ export const GROWTH_ACHIEVEMENTS: RpgAchievement[] = [
   { id: "steady-mind", title: "穩定思考者", description: "累積 5 次正確作答，解鎖專注訓練。", domain: "綜合", requiredAnswers: 5, rewardAffection: 5, rewardTrainingPoints: 2 },
   { id: "domain-tracker", title: "領域觀測家", description: "在同一課綱領域完成 3 次正確作答。", domain: "課綱領域", requiredAnswers: 3, rewardAffection: 4, rewardTrainingPoints: 2 },
   { id: "brave-challenger", title: "勇敢挑戰者", description: "以挑戰題完成一次正確作答。", domain: "挑戰", requiredAnswers: 1, rewardAffection: 6, rewardTrainingPoints: 3 },
+  { id: "collection-starter", title: "圖鑑收藏家", description: "擁有 3 隻不同夥伴，開啟收藏之路。", domain: "夥伴", requiredAnswers: 0, rewardAffection: 8, rewardTrainingPoints: 4 },
+  { id: "evolution-starter", title: "進化先鋒", description: "讓夥伴完成第一次進化，見證成長。", domain: "夥伴", requiredAnswers: 0, rewardAffection: 6, rewardTrainingPoints: 3 },
 ];
 
 export const PERSONALITY_LABELS = {
@@ -40,7 +42,7 @@ export function normalizeCompanionGrowth(companion: Companion): Companion {
 }
 
 function personalityFor(id: string): Companion["personality"] {
-  if (id === "ember-guard") return "守護者";
+  if (id === "ember-guard" || id === "formosa-bear") return "守護者";
   if (id === "star-runner") return "探索者";
   if (id === "milk-dragonling") return "鼓舞者";
   return "觀察家";
@@ -79,13 +81,15 @@ export function trainCompanion(companion: Companion, action: GrowthAction): Comp
   };
 }
 
-export function unlockGrowthAchievements(companion: Companion, totalCorrect: number, domainCorrect: number, hasChallengeCorrect: boolean): { companion: Companion; unlocked: RpgAchievement[] } {
+export function unlockGrowthAchievements(companion: Companion, totalCorrect: number, domainCorrect: number, hasChallengeCorrect: boolean, extra?: { companionCount?: number; evolutionStage?: number }): { companion: Companion; unlocked: RpgAchievement[] } {
   const normalized = normalizeCompanionGrowth(companion);
   const checks: Record<string, boolean> = {
     "first-light": totalCorrect >= 1,
     "steady-mind": totalCorrect >= 5,
     "domain-tracker": domainCorrect >= 3,
     "brave-challenger": hasChallengeCorrect,
+    "collection-starter": (extra?.companionCount ?? 0) >= 3,
+    "evolution-starter": (extra?.evolutionStage ?? 1) >= 2,
   };
   const unlocked = GROWTH_ACHIEVEMENTS.filter((item) => checks[item.id] && !normalized.achievementIds?.includes(item.id));
   return {
