@@ -11,6 +11,7 @@ import {
   buildDeckFromCollection,
   chooseTrumpStat,
   settleTrumpRound,
+  themeAdvantageLabel,
   type AnswerChoice,
   type TrumpState,
 } from "@/game/trumpDuel";
@@ -283,6 +284,13 @@ export default function TrumpDuelBoard() {
             </div>
           </div>
           {winner === "draw" && <p className="trump-draw-note">數值相同——兩張牌都進公共池，下一局贏回來！</p>}
+          {playerTop && aiTop && (themeAdvantageLabel(playerTop.theme, aiTop.theme) || themeAdvantageLabel(aiTop.theme, playerTop.theme)) && (
+            <p className="trump-theme-note" role="status">
+              {themeAdvantageLabel(playerTop.theme, aiTop.theme)
+                ? <>⚔️ {themeAdvantageLabel(playerTop.theme, aiTop.theme)}——我方 +2</>
+                : <>🛡️ {themeAdvantageLabel(aiTop.theme, playerTop.theme)}——對手 +2</>}
+            </p>
+          )}
           {state.peekRevealed && (
             <p className="trump-peek">👁️ 你已偷看情報——下一輪選屬性前，會先看到對手的牌！</p>
           )}

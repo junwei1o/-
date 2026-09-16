@@ -1,4 +1,26 @@
-import type { CardDef, CardStat } from "./trumpCardData";
+import type { CardDef, CardStat, CardTheme } from "./trumpCardData";
+
+/**
+ * 屬性相克循環：自然剋社會 → 社會剋國語 → 國語剋數學 → 數學剋自然。
+ * 「聯盟」卡為中立屬性，不剋任何主題、也不被任何主題剋制。
+ */
+const THEME_CYCLE: Record<Exclude<CardTheme, "聯盟">, Exclude<CardTheme, "聯盟">> = {
+  自然: "社會",
+  社會: "國語",
+  國語: "數學",
+  數學: "自然",
+};
+
+export function themeAdvantage(attacker: CardTheme, defender: CardTheme): boolean {
+  if (attacker === "聯盟" || defender === "聯盟") return false;
+  return THEME_CYCLE[attacker] === defender;
+}
+
+/** 屬性相克名稱：例如「自然剋社會」。聯盟卡回傳 null。 */
+export function themeAdvantageLabel(attacker: CardTheme, defender: CardTheme): string | null {
+  if (themeAdvantage(attacker, defender)) return `${attacker}剋${defender}`;
+  return null;
+}
 
 export type TrumpPhase = "choose-stat" | "answer" | "reveal" | "finished";
 export type TrumpResult = "active" | "victory" | "defeat" | "draw";
@@ -51,8 +73,11 @@ export function applyTrumpAnswer(state: TrumpState, correct: boolean, choice: An
 }
 
 function compareStat(player: CardDef, ai: CardDef, stat: CardStat, playerBoost: boolean): "player" | "ai" | "draw" {
-  const playerVal = player.stats[stat] + (playerBoost ? 2 : 0);
-  const aiVal = ai.stats[stat];
+  let playerVal = player.stats[stat] + (playerBoost ? 2 : 0);
+  let aiVal = ai.stats[stat];
+  // 屬性相克：剋制對方主題時 +2（雙方一視同仁，玩家可藉選卡策略利用）。
+  if (themeAdvantage(player.theme, ai.theme)) playerVal += 2;
+  if (themeAdvantage(ai.theme, player.theme)) aiVal += 2;
   if (playerVal > aiVal) return "player";
   if (aiVal > playerVal) return "ai";
   return "draw";

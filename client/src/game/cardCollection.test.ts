@@ -46,7 +46,7 @@ describe("card collection", () => {
   });
 
   it("hasAllThemeCards 判斷是否集滿單一學科", () => {
-    ["math-01", "math-02", "math-03", "math-04", "math-05"].forEach(addCardToCollection);
+    ["math-01", "math-02", "math-03", "math-04", "math-05", "math-06", "math-07", "math-08", "math-09", "math-10", "math-11"].forEach(addCardToCollection);
     expect(hasAllThemeCards("數學")).toBe(true);
     expect(hasAllThemeCards("國語")).toBe(false);
   });

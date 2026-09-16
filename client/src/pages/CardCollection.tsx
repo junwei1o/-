@@ -6,7 +6,7 @@ import { ALL_CARDS, STAT_LABELS, type CardDef, type CardStat } from "@/game/trum
 import type { Rarity } from "@/game/rpgTypes";
 import "./CardCollection.css";
 
-const THEME_ORDER: CardDef["theme"][] = ["國語", "數學", "社會", "自然"];
+const THEME_ORDER: CardDef["theme"][] = ["國語", "數學", "社會", "自然", "聯盟"];
 
 const RARITY_LABEL: Record<Rarity, string> = {
   legendary: "傳說",

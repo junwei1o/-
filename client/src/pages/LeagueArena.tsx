@@ -2,6 +2,7 @@ import React, { useMemo, useState } from "react";
 import { Trophy, Medal, Gift, Clock, ChevronRight } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { getCloudMode } from "@/game/cloudSync";
+import { addCardToCollection } from "@/game/cardCollection";
 import "./HubPages.css";
 import "./LeagueArena.css";
 
@@ -65,10 +66,15 @@ export default function LeagueArena() {
     setClaimNotice(null);
     try {
       const result = await claimMutation.mutateAsync({ name: myName, rewardType });
+      // 排名獎前 10%：限定卡自動加入收藏（badge 如 league-gold-top10 → 卡 league-gold）。
+      if (rewardType === "rank" && result.badge) {
+        const groupKey = result.badge.replace("-top10", "");
+        addCardToCollection(groupKey);
+      }
       setClaimNotice(
         rewardType === "participate"
           ? `已領取參與獎：${result.coins} 金幣${result.badge ? `＋${result.title}` : ""}！`
-          : `已領取排名獎（第 ${result.rank} 名）：${result.coins} 金幣${result.badge ? "＋組別限定徽章" : ""}！`,
+          : `已領取排名獎（第 ${result.rank} 名）：${result.coins} 金幣${result.badge ? "＋組別限定卡已放入收藏" : ""}！`,
       );
     } catch (err) {
       const message = err instanceof Error ? err.message : "領取失敗，請稍後再試。";
