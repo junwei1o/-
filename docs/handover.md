@@ -163,9 +163,15 @@ hdmx/
 - 測試：`adventureChapters.test.ts` 新增「6 章節結構」「good 結局稱號」斷言；相關 5 檔 35 案全綠。
 - 驗收 key：玩家金幣 `xueAdventurerData`（PlayerData.gold）、稱號 `xue-adventure-limited-titles-v1`（陣列）、章節列表自動渲染（`/tavern/adventure`，ALL_CHAPTERS.map）。
 
-### P3-5 夜間觀測深化
-- 夜間專屬場景、限定事件、夜間主題（整合現有主題系統）、夜間任務獎勵。
-- 現有可複用：`expeditionObservations.ts`、`environmentTokens.ts`、AstronomyQuiz 元件。
+### P3-5 夜間觀測深化（已上線，commit `ebf9c4b`，線上驗收 6/6）
+> 原本夜間已有：worldStateForTime 夜間 18–6 時、battleAttackMultiplier 1.1、BattleScene「☾ 夜間觀測」chip、AstronomyQuiz 天文題庫、expeditionObservations 觀測系統。
+本次改動：
+- **`nightObservation.ts`（新）**：`isNightHour`（18–6 為夜）、`nightObservationBonus`（夜間金幣 +20%、稀有遭遇率 +5%、label「星光加成」）、`nightSkyCaption`（依時段回天文小語：獵戶座/銀河/北極星/金星）。
+- **`academyExpansion.ts`**：WorldEventKind 新增 **`starlight-observation`（星語觀測）**，reward 金幣 35＋補給 1；新增 `worldEventAllowedAt`（星語觀測僅夜間可觸發）。
+- **`rpgTypes.ts`**：activeWorldEvents 的 kind 型別同步加 `starlight-observation`（**改 WorldEventKind 時此處必同步**）。
+- **`RpgAdventure.tsx`**：世界事件列新增「星語觀測」按鈕（夜間顯示「✦ 星語觀測」）；白天觸發 announce「星語觀測需要夜空」。
+- **`BattleScene.tsx`**：夜間環境 chip 顯示「✦ 星光加成」。
+- 測試：`nightObservation.test.ts` 3 案（時段邊界/加成/小語）＋`academyExpansion.test.ts` 星語觀測案。
 
 ### 獨立待辦：LINE 推播（需使用者本人操作，助理無權限）
 - 程式碼已上線，但線上 webhook 回 501。
@@ -245,6 +251,7 @@ curl -s https://xue-gr3a.onrender.com/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | h
 
 | Commit | 內容 |
 |---|---|
+| `ebf9c4b` | feat(night)：夜間觀測深化（星語觀測夜間限定＋星光加成＋天文小語，已上線） |
 | `e9cb41d` | feat(adventure)：文字冒險 2→6 章（鹽田/鐵道/夜市/阿里山）＋酒館稱號（已上線） |
 | `a8ec4f3` | docs：handover 更新 P3-3 已上線 |
 | `d05f44f` | feat(rpg)：夥伴怪獸多樣化（黑熊護衛/12 捕捉怪/遭遇輪替/2 成就，已上線） |
@@ -261,8 +268,8 @@ curl -s https://xue-gr3a.onrender.com/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | h
 
 ## 8. 交接總結
 
-- **已上線且驗收**：P0、P1（英語島/PIN/戰鬥數值）、P2（教師端/全站週榜/AI 每日配額/異步 PK）、三項補缺、FAB 修復、AI Token 用量統計、聯盟賽完整賽季系統、卡牌系統 48 張、夥伴怪獸多樣化、文字冒險 6 章。
-- **待辦**：P3-5 夜間觀測深化；LINE 兩個 Render 環境變數（需使用者操作）。
-- **後續路線**：P3-5 夜間觀測深化。
+- **已上線且驗收**：P0、P1（英語島/PIN/戰鬥數值）、P2（教師端/全站週榜/AI 每日配額/異步 PK）、三項補缺、FAB 修復、AI Token 用量統計、聯盟賽完整賽季系統、卡牌系統 48 張、夥伴怪獸多樣化、文字冒險 6 章、夜間觀測深化（星語觀測/星光加成）。
+- **待辦**：LINE 兩個 Render 環境變數（需使用者操作）。
+- **後續路線**：無未完成開發項；五大長期項目（聯盟賽/卡牌/夥伴/文字冒險/夜間觀測）已全部完成上線。
 - **需使用者操作**：LINE 兩個 Render 環境變數。
 - 新接手者只要依第 4～6 節的守則與流程，即可直接繼續迭代。
