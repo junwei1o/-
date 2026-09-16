@@ -150,9 +150,18 @@ hdmx/
 - 新成就 2 個：「圖鑑收藏家」（3 隻夥伴）、「進化先鋒」（首次進化）；`unlockGrowthAchievements` 加可選 `extra` 參數，`rpgStorage` 串接 companionCount/evolutionStage。
 - 測試：`rpgData.test.ts`（5 主角/12 捕捉怪/四棲息地三檔齊全/輪替邏輯）＋companionGrowth 成就測試；全量 **173 檔 1011 測試全綠**。
 
-### P3-4 文字冒險擴充
-- 支線劇情、選擇分支、多結局；冒險獎勵；中斷存檔續玩。
-- 現有可複用：`adventureChapters.ts`、`adventureEngine.ts`、`expeditionContent.ts`、`tavernKeeper.ts`。
+### P3-4 文字冒險擴充（已上線，commit `e9cb41d`，線上驗收 12/12）
+> 原本僅 2 章（燈塔的呼喚／失落的古籍），引擎（begin/advance/settle）與章節結構完好。
+本次改動：
+- `adventureChapters.ts`：ALL_CHAPTERS 2→**6**，新增 4 個寶島主題章節——
+  - 鹽田的滋味 🧂（cost 40，自然+社會 check，good 結局「鹽田小達人」）
+  - 鐵道上的數學 🚂（cost 45，數學 check ×2，good 結局「鐵道數學家」）
+  - 夜市的祕密 🏮（cost 35，國語+數學 check，good 結局送卡＋「夜市尋寶王」）
+  - 阿里山的密語 🌲（cost 50，自然+國語 check，good 結局送卡＋「山林解密者」）
+- 每章節皆為多選擇分支＋≥1 跨科別 check＋多結局（good/neutral/bad），reward 金幣/卡/稱號。
+- `Tavern.tsx`：CHAPTER_TITLES 註冊 6 個稱號（**新章節必須在此註冊**，否則酒館不顯示）。
+- 測試：`adventureChapters.test.ts` 新增「6 章節結構」「good 結局稱號」斷言；相關 5 檔 35 案全綠。
+- 驗收 key：玩家金幣 `xueAdventurerData`（PlayerData.gold）、稱號 `xue-adventure-limited-titles-v1`（陣列）、章節列表自動渲染（`/tavern/adventure`，ALL_CHAPTERS.map）。
 
 ### P3-5 夜間觀測深化
 - 夜間專屬場景、限定事件、夜間主題（整合現有主題系統）、夜間任務獎勵。
@@ -236,6 +245,11 @@ curl -s https://xue-gr3a.onrender.com/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | h
 
 | Commit | 內容 |
 |---|---|
+| `e9cb41d` | feat(adventure)：文字冒險 2→6 章（鹽田/鐵道/夜市/阿里山）＋酒館稱號（已上線） |
+| `a8ec4f3` | docs：handover 更新 P3-3 已上線 |
+| `d05f44f` | feat(rpg)：夥伴怪獸多樣化（黑熊護衛/12 捕捉怪/遭遇輪替/2 成就，已上線） |
+| `e416db1` | docs：建立 handover.md 交接報告 |
+| `4731c13` | feat(cards)：卡牌 48 張＋屬性相克＋聯盟限定卡（已上線） |
 | `35a0691` | feat(league)：聯盟賽賽季分組/升降級/賽季獎勵（已上線） |
 | `56478fa` | fix(ui)：AI 用量卡移至條件外，無班級也能看全站用量 |
 | `88554c9` | feat(ai)：深度反思 token 用量統計與查詢儀表板 |
@@ -247,8 +261,8 @@ curl -s https://xue-gr3a.onrender.com/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | h
 
 ## 8. 交接總結
 
-- **已上線且驗收**：P0、P1（英語島/PIN/戰鬥數值）、P2（教師端/全站週榜/AI 每日配額/異步 PK）、三項補缺、FAB 修復、AI Token 用量統計、聯盟賽完整賽季系統（分組/升降級/獎勵）。
-- **本次待推送**：卡牌系統 48 張＋屬性相克＋聯盟限定卡（程式碼與測試就緒，待最終全量測試確認）。
-- **後續路線**：P3-3 夥伴怪獸 → P3-4 文字冒險 → P3-5 夜間觀測。
+- **已上線且驗收**：P0、P1（英語島/PIN/戰鬥數值）、P2（教師端/全站週榜/AI 每日配額/異步 PK）、三項補缺、FAB 修復、AI Token 用量統計、聯盟賽完整賽季系統、卡牌系統 48 張、夥伴怪獸多樣化、文字冒險 6 章。
+- **待辦**：P3-5 夜間觀測深化；LINE 兩個 Render 環境變數（需使用者操作）。
+- **後續路線**：P3-5 夜間觀測深化。
 - **需使用者操作**：LINE 兩個 Render 環境變數。
 - 新接手者只要依第 4～6 節的守則與流程，即可直接繼續迭代。

@@ -168,7 +168,7 @@ export function equipmentBonuses(growth: PlayerGrowth): { attack: number; defens
   }, { attack: 0, defense: 0, criticalRate: 0, rareEncounterRate: 0 });
 }
 
-export type WorldEventKind = "knowledge-storm" | "wandering-merchant" | "mystery-chest";
+export type WorldEventKind = "knowledge-storm" | "wandering-merchant" | "mystery-chest" | "starlight-observation";
 export type WorldEvent = { id: string; kind: WorldEventKind; region: RegionKey; label: string; description: string; expiresAt: number; reward: { gold?: number; potion?: number; expMultiplier?: number } };
 
 export function canTriggerWorldEvent(triggeredToday: number, maxPerDay = 3): boolean { return triggeredToday < maxPerDay; }
@@ -179,12 +179,20 @@ export function createWorldEvent(input: { kind: WorldEventKind; region: RegionKe
     "knowledge-storm": { kind: "knowledge-storm", label: "知識風暴", description: "這片區域的題目能量翻倍，持續 30 分鐘。", reward: { expMultiplier: 2 } },
     "wandering-merchant": { kind: "wandering-merchant", label: "流浪商人", description: "用折扣金幣交換補給或裝備碎片。", reward: { gold: -20 } },
     "mystery-chest": { kind: "mystery-chest", label: "神秘寶箱", description: "打開寶箱，可能獲得金幣與補給，也要留意陷阱。", reward: { gold: 30, potion: 1 } },
+    "starlight-observation": { kind: "starlight-observation", label: "星語觀測", description: "夜空中浮現天文訊號，觀測成功獲得金幣與補給。", reward: { gold: 35, potion: 1 } },
   };
   const event = copy[input.kind];
   return { ...event, region: input.region, id: `world-event-${input.kind}-${input.region}-${now}`, expiresAt: now + (input.kind === "knowledge-storm" ? 30 * 60_000 : 24 * 60 * 60_000) };
 }
 
 export function eventIsActive(event: WorldEvent, now = Date.now()): boolean { return event.expiresAt > now; }
+
+/** 夜間限定事件判斷：星語觀測只在夜間（18–6 時）觸發 */
+export function worldEventAllowedAt(kind: WorldEventKind, timestamp = Date.now()): boolean {
+  if (kind !== "starlight-observation") return true;
+  const hour = new Date(timestamp).getHours();
+  return hour >= 18 || hour < 6;
+}
 
 export function worldStateForTime(timestamp = Date.now(), rainRoll = 0): { period: "day" | "night"; rainy: boolean; festival: string | null; battleAttackMultiplier: number; potionDropBonus: number } {
   const date = new Date(timestamp);

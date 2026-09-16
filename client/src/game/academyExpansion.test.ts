@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { addGearFragment, baseAttributes, canTriggerWorldEvent, craftGear, createGuardianBattleProfile, createWorldEvent, equipmentBonuses, generateDailyAdventureSummary, guardianDamage, guardianHeal, guardianMaxHp, guardianBehaviorForTurn, spendTalentPoint, worldStateForTime, type PlayerGrowth } from "./academyExpansion";
+import { describe, expect, it } from "vitest";
+import { addGearFragment, baseAttributes, canTriggerWorldEvent, craftGear, createGuardianBattleProfile, createWorldEvent, equipmentBonuses, generateDailyAdventureSummary, guardianDamage, guardianHeal, guardianMaxHp, guardianBehaviorForTurn, spendTalentPoint, worldEventAllowedAt, worldStateForTime, type PlayerGrowth } from "./academyExpansion";
 
 describe("academy expansion systems", () => {
   it("builds a guardian with triple HP and rotating behavior", () => {
@@ -44,6 +45,16 @@ describe("academy expansion systems", () => {
     expect(night.period).toBe("night");
     expect(night.battleAttackMultiplier).toBe(1.1);
     expect(night.rainy).toBe(true);
+  });
+
+  it("星語觀測為夜間限定事件：夜間可觸發、白天不可", () => {
+    const event = createWorldEvent({ kind: "starlight-observation", region: "north", now: Date.parse("2026-09-16T21:00:00") });
+    expect(event.label).toBe("星語觀測");
+    expect(event.reward.gold).toBe(35);
+    expect(event.reward.potion).toBe(1);
+    expect(worldEventAllowedAt("starlight-observation", Date.parse("2026-09-16T21:00:00"))).toBe(true);
+    expect(worldEventAllowedAt("starlight-observation", Date.parse("2026-09-16T12:00:00"))).toBe(false);
+    expect(worldEventAllowedAt("knowledge-storm", Date.parse("2026-09-16T12:00:00"))).toBe(true);
   });
 
   it("returns level-based base attributes", () => {

@@ -147,7 +147,7 @@ export type PlayerExpansionProgress = {
   equippedGearIds: string[];
   fragments: Record<string, number>;
   journalSummaries: AdventureJournalSummary[];
-  activeWorldEvents: Array<{ id: string; kind: "knowledge-storm" | "wandering-merchant" | "mystery-chest"; region: RegionKey; label: string; description: string; expiresAt: number; reward: { gold?: number; potion?: number; expMultiplier?: number } }>;
+  activeWorldEvents: Array<{ id: string; kind: "knowledge-storm" | "wandering-merchant" | "mystery-chest" | "starlight-observation"; region: RegionKey; label: string; description: string; expiresAt: number; reward: { gold?: number; potion?: number; expMultiplier?: number } }>;
   worldEventDayKey: string;
   worldEventsTriggeredToday: number;
 };
