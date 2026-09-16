@@ -1,0 +1,311 @@
+{
+  "note": "五、六年級數學補充題（含是非題）。由助理依台灣國小 108 課綱內容撰寫，合併進主題庫前會先做格式與重複驗證。",
+  "questions": [
+    {
+      "grade": 5, "subject": "數學", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "數學領域", "learningTopic": "因數與倍數",
+      "learningPerformance": "能辨識質數與合數並說明差異。", "learningContent": "分辨質數與合數的定義，並判斷一個數的質數性。", "competency": "能正確判斷一個數是否為質數。",
+      "prompt": "下列哪一個數是質數？",
+      "options": ["21", "33", "37", "49"], "answer": 2,
+      "explanation": "37 只能被 1 和 37 整除，是質數；21＝3×7、33＝3×11、49＝7×7 都是合數。",
+      "knowledge": ["質數", "合數"]
+    },
+    {
+      "grade": 5, "subject": "數學", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "數學領域", "learningTopic": "因數與倍數",
+      "learningPerformance": "能求出兩個數的最大公因數。", "learningContent": "用列舉法或短除法找出最大公因數。", "competency": "能求出 12 和 18 的最大公因數。",
+      "prompt": "12 和 18 的最大公因數是多少？",
+      "options": ["3", "6", "9", "36"], "answer": 1,
+      "explanation": "12 的因數有 1、2、3、4、6、12；18 的因數有 1、2、3、6、9、18。共同的因數中最大的是 6。",
+      "knowledge": ["最大公因數"]
+    },
+    {
+      "grade": 5, "subject": "數學", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "數學領域", "learningTopic": "因數與倍數",
+      "learningPerformance": "能求出兩個數的最小公倍數。", "learningContent": "用列舉法或短除法找出最小公倍數。", "competency": "能求出 6 和 8 的最小公倍數。",
+      "prompt": "6 和 8 的最小公倍數是多少？",
+      "options": ["14", "24", "48", "96"], "answer": 1,
+      "explanation": "6 的倍數有 6、12、18、24、30…；8 的倍數有 8、16、24、32…。最小的共同倍數是 24。",
+      "knowledge": ["最小公倍數"]
+    },
+    {
+      "grade": 5, "subject": "數學", "questionType": "是非題", "difficulty": "基礎",
+      "curriculumDomain": "數學領域", "learningTopic": "因數與倍數",
+      "learningPerformance": "能利用整除規則判斷倍數。", "learningContent": "應用 3 的倍數判別法判斷一個數是否為 3 的倍數。", "competency": "能判斷 72 是否為 3 的倍數。",
+      "prompt": "72 是 3 的倍數。",
+      "options": ["正確", "錯誤"], "answer": 0,
+      "explanation": "72 的數字和是 7＋2＝9，9 是 3 的倍數，所以 72 是 3 的倍數。",
+      "knowledge": ["倍數判別"]
+    },
+    {
+      "grade": 5, "subject": "數學", "questionType": "選擇題", "difficulty": "基礎",
+      "curriculumDomain": "數學領域", "learningTopic": "分數",
+      "learningPerformance": "能做異分母分數的加法。", "learningContent": "先通分再相加，並將結果化成最簡分數。", "competency": "能計算 1/2＋1/3 的結果。",
+      "prompt": "1/2＋1/3 的結果是多少？",
+      "options": ["2/5", "5/6", "2/6", "1/6"], "answer": 1,
+      "explanation": "先通分成 3/6＋2/6＝5/6，不能再約分，所以答案是 5/6。",
+      "knowledge": ["異分母加法", "通分"]
+    },
+    {
+      "grade": 5, "subject": "數學", "questionType": "選擇題", "difficulty": "基礎",
+      "curriculumDomain": "數學領域", "learningTopic": "分數",
+      "learningPerformance": "能將分數約分成最簡分數。", "learningContent": "找出分子與分母的最大公因數並約分。", "competency": "能將 12/18 約分成最簡分數。",
+      "prompt": "12/18 約分後的最簡分數是多少？",
+      "options": ["4/6", "2/3", "6/9", "1/2"], "answer": 1,
+      "explanation": "12 和 18 的最大公因數是 6，分子分母同除以 6 得 2/3。",
+      "knowledge": ["約分", "最簡分數"]
+    },
+    {
+      "grade": 5, "subject": "數學", "questionType": "是非題", "difficulty": "基礎",
+      "curriculumDomain": "數學領域", "learningTopic": "分數",
+      "learningPerformance": "能進行分數的擴分。", "learningContent": "將分子分母同乘以一個數得到等值分數。", "competency": "能判斷擴分後的分數是否等值。",
+      "prompt": "3/4 擴分成以 12 為分母後是 9/12。",
+      "options": ["正確", "錯誤"], "answer": 0,
+      "explanation": "分母 4 擴成 12 要乘以 3，分子 3 也要乘以 3 得 9，所以 3/4＝9/12。",
+      "knowledge": ["擴分"]
+    },
+    {
+      "grade": 5, "subject": "數學", "questionType": "選擇題", "difficulty": "挑戰",
+      "curriculumDomain": "數學領域", "learningTopic": "分數",
+      "learningPerformance": "能比較異分母分數的大小。", "learningContent": "通分後比較分子大小。", "competency": "能比較 1/3 與 2/5 的大小。",
+      "prompt": "下列哪一個分數比較大？",
+      "options": ["1/3", "2/5", "一樣大", "無法比較"], "answer": 1,
+      "explanation": "通分成 5/15 和 6/15，6/15 較大，所以 2/5 比較大。",
+      "knowledge": ["分數比較", "通分"]
+    },
+    {
+      "grade": 5, "subject": "數學", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "數學領域", "learningTopic": "小數",
+      "learningPerformance": "能計算小數的乘法。", "learningContent": "先忽略小數點相乘，再依小數位數點上小數點。", "competency": "能計算 0.3×0.4 的結果。",
+      "prompt": "0.3×0.4 的結果是多少？",
+      "options": ["1.2", "0.12", "0.012", "12"], "answer": 1,
+      "explanation": "3×4＝12，兩個乘數共有兩位小數，所以答案是 0.12。",
+      "knowledge": ["小數乘法"]
+    },
+    {
+      "grade": 5, "subject": "數學", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "數學領域", "learningTopic": "面積",
+      "learningPerformance": "能運用平行四邊形面積公式。", "learningContent": "平行四邊形面積＝底×高。", "competency": "能求出底 8、高 5 的平行四邊形面積。",
+      "prompt": "底邊長 8 公分、高 5 公分的平行四邊形，面積是多少平方公分？",
+      "options": ["20", "26", "40", "80"], "answer": 2,
+      "explanation": "平行四邊形面積＝底×高＝8×5＝40 平方公分。",
+      "knowledge": ["平行四邊形面積"]
+    },
+    {
+      "grade": 5, "subject": "數學", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "數學領域", "learningTopic": "面積",
+      "learningPerformance": "能運用三角形面積公式。", "learningContent": "三角形面積＝底×高÷2。", "competency": "能求出底 10、高 6 的三角形面積。",
+      "prompt": "底邊長 10 公分、高 6 公分的三角形，面積是多少平方公分？",
+      "options": ["60", "30", "16", "15"], "answer": 1,
+      "explanation": "三角形面積＝底×高÷2＝10×6÷2＝30 平方公分。",
+      "knowledge": ["三角形面積"]
+    },
+    {
+      "grade": 5, "subject": "數學", "questionType": "選擇題", "difficulty": "挑戰",
+      "curriculumDomain": "數學領域", "learningTopic": "面積",
+      "learningPerformance": "能運用梯形面積公式。", "learningContent": "梯形面積＝（上底＋下底）×高÷2。", "competency": "能求出上底 3、下底 7、高 4 的梯形面積。",
+      "prompt": "上底 3 公分、下底 7 公分、高 4 公分的梯形，面積是多少平方公分？",
+      "options": ["20", "40", "14", "10"], "answer": 0,
+      "explanation": "（上底＋下底）×高÷2＝（3＋7）×4÷2＝20 平方公分。",
+      "knowledge": ["梯形面積"]
+    },
+    {
+      "grade": 5, "subject": "數學", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "數學領域", "learningTopic": "體積",
+      "learningPerformance": "能計算長方體的體積。", "learningContent": "長方體體積＝長×寬×高。", "competency": "能求出長 4、寬 3、高 2 的長方體體積。",
+      "prompt": "長 4 公分、寬 3 公分、高 2 公分的長方體，體積是多少立方公分？",
+      "options": ["9", "24", "20", "12"], "answer": 1,
+      "explanation": "長方體體積＝長×寬×高＝4×3×2＝24 立方公分。",
+      "knowledge": ["長方體體積"]
+    },
+    {
+      "grade": 5, "subject": "數學", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "數學領域", "learningTopic": "體積",
+      "learningPerformance": "能計算正方體的體積。", "learningContent": "正方體體積＝邊長×邊長×邊長。", "competency": "能求出邊長 5 公分的正方體體積。",
+      "prompt": "邊長 5 公分的正方體，體積是多少立方公分？",
+      "options": ["15", "25", "125", "250"], "answer": 2,
+      "explanation": "5×5×5＝125 立方公分。",
+      "knowledge": ["正方體體積"]
+    },
+    {
+      "grade": 5, "subject": "數學", "questionType": "選擇題", "difficulty": "基礎",
+      "curriculumDomain": "數學領域", "learningTopic": "時間",
+      "learningPerformance": "能進行時間單位的換算。", "learningContent": "1 小時＝60 分鐘，將分鐘換算成幾小時幾分鐘。", "competency": "能將 150 分鐘換算成幾小時幾分鐘。",
+      "prompt": "150 分鐘等於幾小時幾分鐘？",
+      "options": ["1 小時 50 分", "2 小時 30 分", "1 小時 30 分", "2 小時 50 分"], "answer": 1,
+      "explanation": "150 分鐘＝120 分鐘＋30 分鐘＝2 小時 30 分。",
+      "knowledge": ["時間換算"]
+    },
+    {
+      "grade": 5, "subject": "數學", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "數學領域", "learningTopic": "比率與百分率",
+      "learningPerformance": "能理解百分率的意義並進行換算。", "learningContent": "百分率表示分母為 100 的分數。", "competency": "能將 25% 換算成分數。",
+      "prompt": "25% 換算成分數是多少？",
+      "options": ["1/2", "1/4", "1/5", "1/25"], "answer": 1,
+      "explanation": "25%＝25/100，約分後是 1/4。",
+      "knowledge": ["百分率", "分數換算"]
+    },
+    {
+      "grade": 5, "subject": "數學", "questionType": "選擇題", "difficulty": "挑戰",
+      "curriculumDomain": "數學領域", "learningTopic": "比率與百分率",
+      "learningPerformance": "能應用百分率解決生活問題。", "learningContent": "求某數的百分之幾是多少。", "competency": "能算出全班 40 人中男生占 45% 的人數。",
+      "prompt": "全班有 40 人，男生占 45%，男生有多少人？",
+      "options": ["18 人", "20 人", "16 人", "22 人"], "answer": 0,
+      "explanation": "40×45%＝40×0.45＝18 人。",
+      "knowledge": ["百分率應用"]
+    },
+    {
+      "grade": 5, "subject": "數學", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "數學領域", "learningTopic": "速率",
+      "learningPerformance": "能利用速率公式計算距離。", "learningContent": "距離＝速率×時間。", "competency": "能算出時速 60 公里、行駛 2.5 小時的距離。",
+      "prompt": "一輛車以時速 60 公里行駛 2.5 小時，共行駛多少公里？",
+      "options": ["120 公里", "150 公里", "160 公里", "180 公里"], "answer": 1,
+      "explanation": "距離＝速率×時間＝60×2.5＝150 公里。",
+      "knowledge": ["速率"]
+    },
+    {
+      "grade": 6, "subject": "數學", "questionType": "選擇題", "difficulty": "基礎",
+      "curriculumDomain": "數學領域", "learningTopic": "比與比值",
+      "learningPerformance": "能將比化成最簡單整數比。", "learningContent": "比的前項與後項同除以公因數化簡。", "competency": "能將 12:18 化簡成最簡單整數比。",
+      "prompt": "12:18 化成最簡單整數比是多少？",
+      "options": ["2:3", "3:2", "6:9", "4:6"], "answer": 0,
+      "explanation": "12 和 18 的最大公因數是 6，同除以 6 得 2:3。",
+      "knowledge": ["比的化簡"]
+    },
+    {
+      "grade": 6, "subject": "數學", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "數學領域", "learningTopic": "比與比值",
+      "learningPerformance": "能解比例式中的未知數。", "learningContent": "利用比例式中外項乘積等於內項乘積來求解。", "competency": "能求出比例式 x:6＝2:3 中的 x。",
+      "prompt": "比例式 x:6＝2:3，x 是多少？",
+      "options": ["3", "4", "6", "9"], "answer": 1,
+      "explanation": "外項乘積＝內項乘積：3x＝12，所以 x＝4。",
+      "knowledge": ["比例式"]
+    },
+    {
+      "grade": 6, "subject": "數學", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "數學領域", "learningTopic": "圓",
+      "learningPerformance": "能運用圓周長公式。", "learningContent": "圓周長＝直徑×圓周率（π≈3.14）。", "competency": "能算出直徑 10 公分的圓周長。",
+      "prompt": "直徑 10 公分的圓，圓周長大約是多少公分？（圓周率用 3.14）",
+      "options": ["31.4", "62.8", "15.7", "78.5"], "answer": 0,
+      "explanation": "圓周長＝直徑×3.14＝10×3.14＝31.4 公分。",
+      "knowledge": ["圓周長", "圓周率"]
+    },
+    {
+      "grade": 6, "subject": "數學", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "數學領域", "learningTopic": "圓",
+      "learningPerformance": "能運用圓面積公式。", "learningContent": "圓面積＝半徑×半徑×圓周率。", "competency": "能算出半徑 5 公分的圓面積。",
+      "prompt": "半徑 5 公分的圓，面積大約是多少平方公分？（圓周率用 3.14）",
+      "options": ["78.5", "31.4", "157", "25"], "answer": 0,
+      "explanation": "圓面積＝5×5×3.14＝78.5 平方公分。",
+      "knowledge": ["圓面積"]
+    },
+    {
+      "grade": 6, "subject": "數學", "questionType": "選擇題", "difficulty": "挑戰",
+      "curriculumDomain": "數學領域", "learningTopic": "扇形",
+      "learningPerformance": "能計算扇形的面積。", "learningContent": "扇形面積＝圓面積×圓心角/360。", "competency": "能算出半徑 4、圓心角 90° 的扇形面積。",
+      "prompt": "半徑 4 公分、圓心角 90° 的扇形，面積大約是多少平方公分？（圓周率用 3.14）",
+      "options": ["12.56", "25.12", "50.24", "6.28"], "answer": 0,
+      "explanation": "圓面積＝4×4×3.14＝50.24，90° 是 360° 的 1/4，所以扇形面積＝50.24÷4＝12.56 平方公分。",
+      "knowledge": ["扇形面積"]
+    },
+    {
+      "grade": 6, "subject": "數學", "questionType": "選擇題", "difficulty": "基礎",
+      "curriculumDomain": "數學領域", "learningTopic": "正比",
+      "learningPerformance": "能解決正比關係的問題。", "learningContent": "兩量成正比時，一量增加另一量也依固定比例增加。", "competency": "能依筆的價錢算出 5 枝筆的價錢。",
+      "prompt": "2 枝筆賣 30 元，照同樣價錢，5 枝筆賣多少元？",
+      "options": ["60 元", "75 元", "90 元", "80 元"], "answer": 1,
+      "explanation": "1 枝筆 15 元，5 枝筆＝15×5＝75 元。",
+      "knowledge": ["正比"]
+    },
+    {
+      "grade": 6, "subject": "數學", "questionType": "是非題", "difficulty": "基礎",
+      "curriculumDomain": "數學領域", "learningTopic": "反比",
+      "learningPerformance": "能辨識反比關係。", "learningContent": "面積固定時，長變大則寬變小，兩量成反比。", "competency": "能判斷長方形的長與寬是否成反比。",
+      "prompt": "長方形面積固定時，長越長，寬就越短，兩者成反比。",
+      "options": ["正確", "錯誤"], "answer": 0,
+      "explanation": "面積＝長×寬固定時，長增加多少倍，寬就縮小多少倍，這是反比關係。",
+      "knowledge": ["反比"]
+    },
+    {
+      "grade": 6, "subject": "數學", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "數學領域", "learningTopic": "百分率應用",
+      "learningPerformance": "能計算折扣後的價錢。", "learningContent": "打八折表示售價為原價的 80%。", "competency": "能算出原價 200 元打八折的價錢。",
+      "prompt": "一件原價 200 元的衣服打八折，售價是多少元？",
+      "options": ["160 元", "180 元", "140 元", "120 元"], "answer": 0,
+      "explanation": "打八折＝原價×80%＝200×0.8＝160 元。",
+      "knowledge": ["折扣"]
+    },
+    {
+      "grade": 6, "subject": "數學", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "數學領域", "learningTopic": "百分率應用",
+      "learningPerformance": "能計算加成後的價錢。", "learningContent": "加三成表示在原價上再多 30%。", "competency": "能算出成本 500 元加三成的售價。",
+      "prompt": "老闆把成本 500 元的商品加三成賣出，售價是多少元？",
+      "options": ["530 元", "650 元", "600 元", "550 元"], "answer": 1,
+      "explanation": "加三成＝成本×（1＋30%）＝500×1.3＝650 元。",
+      "knowledge": ["加成"]
+    },
+    {
+      "grade": 6, "subject": "數學", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "數學領域", "learningTopic": "速率",
+      "learningPerformance": "能進行速率單位的換算。", "learningContent": "1 分鐘＝60 秒，秒速乘 60 即為分速。", "competency": "能把秒速 5 公尺換算成分速。",
+      "prompt": "秒速 5 公尺等於分速多少公尺？",
+      "options": ["60 公尺", "300 公尺", "500 公尺", "30 公尺"], "answer": 1,
+      "explanation": "1 分鐘有 60 秒，5×60＝300，所以是分速 300 公尺。",
+      "knowledge": ["速率換算"]
+    },
+    {
+      "grade": 6, "subject": "數學", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "數學領域", "learningTopic": "統計",
+      "learningPerformance": "能利用平均數反推總和。", "learningContent": "總和＝平均數×個數。", "competency": "能算出 5 個數平均 12 時的總和。",
+      "prompt": "5 個數的平均數是 12，這 5 個數的總和是多少？",
+      "options": ["50", "60", "72", "17"], "answer": 1,
+      "explanation": "總和＝平均數×個數＝12×5＝60。",
+      "knowledge": ["平均數"]
+    },
+    {
+      "grade": 6, "subject": "數學", "questionType": "選擇題", "difficulty": "挑戰",
+      "curriculumDomain": "數學領域", "learningTopic": "統計",
+      "learningPerformance": "能找出資料的中位數。", "learningContent": "將資料由小到大排列，取正中間的數。", "competency": "能找出 1、3、3、5、8 的中位數。",
+      "prompt": "資料 1、3、3、5、8 的中位數是多少？",
+      "options": ["1", "3", "5", "4"], "answer": 1,
+      "explanation": "共有 5 個數，排第 3 個的是正中間，數值是 3。",
+      "knowledge": ["中位數"]
+    },
+    {
+      "grade": 6, "subject": "數學", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "數學領域", "learningTopic": "百分率應用",
+      "learningPerformance": "能將分數換算成百分率。", "learningContent": "將分數化成分母為 100 的形式。", "competency": "能將 18/24 換算成百分率。",
+      "prompt": "18/24 換算成百分率是多少？",
+      "options": ["60%", "75%", "80%", "65%"], "answer": 1,
+      "explanation": "18÷24＝0.75＝75%。",
+      "knowledge": ["百分率換算"]
+    },
+    {
+      "grade": 6, "subject": "數學", "questionType": "是非題", "difficulty": "基礎",
+      "curriculumDomain": "數學領域", "learningTopic": "圓",
+      "learningPerformance": "能理解圓周率的意義。", "learningContent": "圓周長除以直徑的商固定是圓周率。", "competency": "能判斷圓周率的定義是否正確。",
+      "prompt": "任意圓的圓周長除以直徑，得到的商大約都是 3.14。",
+      "options": ["正確", "錯誤"], "answer": 0,
+      "explanation": "圓周長÷直徑＝圓周率，任何圓的圓周率都相同，約為 3.14。",
+      "knowledge": ["圓周率"]
+    },
+    {
+      "grade": 6, "subject": "數學", "questionType": "選擇題", "difficulty": "基礎",
+      "curriculumDomain": "數學領域", "learningTopic": "比與比值",
+      "learningPerformance": "能求出比的比值。", "learningContent": "比值＝前項÷後項。", "competency": "能求出 3:5 的比值。",
+      "prompt": "3:5 的比值是多少？",
+      "options": ["3/5", "5/3", "2/5", "3/8"], "answer": 0,
+      "explanation": "比值＝前項÷後項＝3÷5＝3/5。",
+      "knowledge": ["比值"]
+    },
+    {
+      "grade": 6, "subject": "數學", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "數學領域", "learningTopic": "統計",
+      "learningPerformance": "能找出資料的眾數。", "learningContent": "出現次數最多的數稱為眾數。", "competency": "能找出資料 2、2、3、3、3、4 的眾數。",
+      "prompt": "資料 2、2、3、3、3、4 中，眾數是多少？",
+      "options": ["2", "3", "4", "沒有眾數"], "answer": 1,
+      "explanation": "3 出現 3 次最多，所以眾數是 3。",
+      "knowledge": ["眾數"]
+    }
+  ]
+}

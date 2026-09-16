@@ -82,7 +82,7 @@ export type QuestionBankSource = "server" | "local";
  * 讓正確答案每次載入都出現在不同位置。
  */
 export function useQuestionBank() {
-  const query = trpc.questionBank.list.useQuery({ limit: 500 });
+  const query = trpc.questionBank.list.useQuery({ limit: 1200 });
   const questions = useMemo(() => {
     const serverQuestions = (query.data?.questions ?? []) as CurriculumQuestionRow[];
     // 英語文題目固定附加本地 seed：後端 schema 未收錄英語時，英語港口仍有完整題目可作答。

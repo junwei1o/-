@@ -500,7 +500,7 @@ export const appRouter = router({
         subject: z.enum(["數學", "自然", "社會", "國語"]).optional(),
         difficulty: z.enum(["基礎", "標準", "挑戰"]).optional(),
         curriculumDomain: z.enum(["語文領域", "數學領域", "自然科學領域", "社會領域"]).optional(),
-        limit: z.number().int().min(1).max(500).optional(),
+        limit: z.number().int().min(1).max(1200).optional(),
       }).optional())
       .query(async ({ input }) => {
         const questions = await getQuestionBank(input ?? {});

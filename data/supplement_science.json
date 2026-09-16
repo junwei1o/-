@@ -1,0 +1,338 @@
+{
+  "note": "五、六年級自然補充題（含是非題）。由助理依台灣國小 108 課綱內容撰寫，合併進主題庫前會先做格式與重複驗證。",
+  "questions": [
+    {
+      "grade": 5, "subject": "自然", "questionType": "選擇題", "difficulty": "基礎",
+      "curriculumDomain": "自然科學領域", "learningTopic": "燃燒與滅火",
+      "learningPerformance": "能說出燃燒所需要的三個條件。", "learningContent": "燃燒需要可燃物、助燃物（空氣）與達到燃點。", "competency": "能辨識燃燒的三要素。",
+      "prompt": "燃燒需要三個條件，下列哪一項不是燃燒的必要條件？",
+      "options": ["可燃物", "助燃物", "達到燃點", "用水澆溼"], "answer": 3,
+      "explanation": "燃燒需要可燃物、助燃物與達到燃點；用水澆溼是滅火的方法，不是燃燒的條件。",
+      "knowledge": ["燃燒條件"]
+    },
+    {
+      "grade": 5, "subject": "自然", "questionType": "是非題", "difficulty": "基礎",
+      "curriculumDomain": "自然科學領域", "learningTopic": "燃燒與滅火",
+      "learningPerformance": "能了解滅火的基本原理。", "learningContent": "用水滅火主要靠降溫與隔絕空氣。", "competency": "能判斷用水滅火的原理。",
+      "prompt": "用水澆熄火焰，主要是利用水降低溫度來滅火。",
+      "options": ["正確", "錯誤"], "answer": 0,
+      "explanation": "水會吸收熱量降低溫度，使燃燒物無法維持燃點而熄滅。",
+      "knowledge": ["滅火原理"]
+    },
+    {
+      "grade": 5, "subject": "自然", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "自然科學領域", "learningTopic": "燃燒與滅火",
+      "learningPerformance": "能了解蠟燭燃燒的產物。", "learningContent": "蠟燭燃燒會產生二氧化碳與水。", "competency": "能說出蠟燭燃燒的主要產物。",
+      "prompt": "蠟燭燃燒時，主要的產物是什麼？",
+      "options": ["二氧化碳和水", "氧氣和水", "二氧化碳和氧氣", "氮氣和水"], "answer": 0,
+      "explanation": "蠟燭裡的蠟與空氣中的氧氣燃燒，主要產生二氧化碳和水。",
+      "knowledge": ["燃燒產物"]
+    },
+    {
+      "grade": 5, "subject": "自然", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "自然科學領域", "learningTopic": "溶解",
+      "learningPerformance": "能說明糖溶解在水中的現象。", "learningContent": "糖溶解後以極小的顆粒均勻分布在水中。", "competency": "能解釋糖水變甜的原因。",
+      "prompt": "把糖放進水中攪拌後整杯水都變甜，主要原因是什麼？",
+      "options": ["糖顆粒沉在杯底", "糖的顆粒均勻分布在水中", "水把糖變成水", "糖蒸發到空氣中"], "answer": 1,
+      "explanation": "糖溶解後，糖的顆粒會均勻散布在水中，所以整杯水都變甜。",
+      "knowledge": ["溶解"]
+    },
+    {
+      "grade": 5, "subject": "自然", "questionType": "是非題", "difficulty": "標準",
+      "curriculumDomain": "自然科學領域", "learningTopic": "溶解",
+      "learningPerformance": "能了解飽和溶液的意義。", "learningContent": "水溶解糖的量有極限，達到極限後無法再溶解更多。", "competency": "能判斷飽和溶液的現象。",
+      "prompt": "一杯水已經溶到不能再溶解更多糖時，再加入糖也不會再溶解。",
+      "options": ["正確", "錯誤"], "answer": 0,
+      "explanation": "在一定水量中能溶解的糖量有限，達到飽和後再加入糖就不會溶解。",
+      "knowledge": ["飽和溶液"]
+    },
+    {
+      "grade": 5, "subject": "自然", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "自然科學領域", "learningTopic": "溶解",
+      "learningPerformance": "能探討溫度對溶解量的影響。", "learningContent": "一般來說水溫升高，糖的溶解量會增加。", "competency": "能判斷溫度對糖溶解量的影響。",
+      "prompt": "下列哪一種情況，糖在水中的溶解量通常會比較多？",
+      "options": ["冰水", "溫水", "兩者一樣", "無法比較"], "answer": 1,
+      "explanation": "水溫升高時，糖的溶解量通常會增加，所以溫水中能溶的糖比較多。",
+      "knowledge": ["溶解與溫度"]
+    },
+    {
+      "grade": 5, "subject": "自然", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "自然科學領域", "learningTopic": "水溶液",
+      "learningPerformance": "能辨識常見水溶液的酸鹼性。", "learningContent": "醋、檸檬汁是酸性；肥皂水、小蘇打水是鹼性。", "competency": "能判斷醋的酸鹼性。",
+      "prompt": "下列哪一種水溶液是酸性？",
+      "options": ["肥皂水", "醋", "小蘇打水", "自來水"], "answer": 1,
+      "explanation": "醋含有醋酸，屬於酸性水溶液；肥皂水和小蘇打水屬於鹼性。",
+      "knowledge": ["酸鹼性"]
+    },
+    {
+      "grade": 5, "subject": "自然", "questionType": "選擇題", "difficulty": "挑戰",
+      "curriculumDomain": "自然科學領域", "learningTopic": "水溶液",
+      "learningPerformance": "能利用指示劑判斷酸鹼性。", "learningContent": "紫色高麗菜汁遇酸性變紅、遇鹼性變綠或藍。", "competency": "能判斷紫色高麗菜汁遇酸性溶液的變化。",
+      "prompt": "把紫色高麗菜汁滴入酸性溶液中，顏色會變成什麼顏色？",
+      "options": ["紅色", "藍色", "綠色", "不變色"], "answer": 0,
+      "explanation": "紫色高麗菜汁遇酸性溶液會變成偏紅色。",
+      "knowledge": ["酸鹼指示劑"]
+    },
+    {
+      "grade": 5, "subject": "自然", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "自然科學領域", "learningTopic": "觀測月亮",
+      "learningPerformance": "能了解月相變化的週期。", "learningContent": "月相變化大約以一個月為週期。", "competency": "能說出月相變化的週期長短。",
+      "prompt": "月相從新月到滿月再回到新月，大約需要多少時間？",
+      "options": ["一天", "一星期", "一個月", "一年"], "answer": 2,
+      "explanation": "月相變化大約以一個月（約 29.5 天）為週期。",
+      "knowledge": ["月相週期"]
+    },
+    {
+      "grade": 5, "subject": "自然", "questionType": "選擇題", "difficulty": "基礎",
+      "curriculumDomain": "自然科學領域", "learningTopic": "觀測月亮",
+      "learningPerformance": "能認識滿月的月相。", "learningContent": "農曆十五前後可見滿月，月亮亮面全部面向地球。", "competency": "能判斷農曆十五前後的月相。",
+      "prompt": "農曆十五前後，我們看到的月相是什麼？",
+      "options": ["新月", "滿月", "上弦月", "下弦月"], "answer": 1,
+      "explanation": "農曆十五前後月亮亮面全部面向地球，是滿月。",
+      "knowledge": ["滿月"]
+    },
+    {
+      "grade": 5, "subject": "自然", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "自然科學領域", "learningTopic": "觀測太陽",
+      "learningPerformance": "能了解一天中太陽位置與高度的變化。", "learningContent": "太陽在一天中從東邊升起、西邊落下，正午時高度最高。", "competency": "能判斷一天中太陽位置最高的時間。",
+      "prompt": "一天當中，太陽在天空中的位置最高的時間大約是什麼時候？",
+      "options": ["清晨", "正午", "傍晚", "半夜"], "answer": 1,
+      "explanation": "太陽從東方升起後高度逐漸升高，正午時位置最高，之後再逐漸西沉。",
+      "knowledge": ["太陽位置變化"]
+    },
+    {
+      "grade": 5, "subject": "自然", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "自然科學領域", "learningTopic": "觀測星星",
+      "learningPerformance": "能利用北極星辨認方向。", "learningContent": "北極星幾乎位在北方的天空，可用來辨認北方。", "competency": "能判斷北極星所在的方位。",
+      "prompt": "在臺灣的夜空找到北極星，它大致在哪一個方位？",
+      "options": ["東方", "南方", "西方", "北方"], "answer": 3,
+      "explanation": "北極星位於北方天空，找到它就可以確認北方。",
+      "knowledge": ["北極星", "方位"]
+    },
+    {
+      "grade": 5, "subject": "自然", "questionType": "選擇題", "difficulty": "挑戰",
+      "curriculumDomain": "自然科學領域", "learningTopic": "地球的構造",
+      "learningPerformance": "能認識地球的內部構造。", "learningContent": "地球由外而內可分為地殼、地函與地核。", "competency": "能說出地球最外層的構造名稱。",
+      "prompt": "地球由外而內可分為三層，其中最外層叫做什麼？",
+      "options": ["地核", "地函", "地殼", "地心"], "answer": 2,
+      "explanation": "地球由外而內依序是地殼、地函、地核，最外層是地殼。",
+      "knowledge": ["地球構造"]
+    },
+    {
+      "grade": 5, "subject": "自然", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "自然科學領域", "learningTopic": "岩石與礦物",
+      "learningPerformance": "能認識常見岩石的成因分類。", "learningContent": "花崗岩是岩漿冷卻形成的火成岩。", "competency": "能判斷花崗岩屬於哪一類岩石。",
+      "prompt": "花崗岩主要是由岩漿冷卻凝固形成的，它屬於哪一類岩石？",
+      "options": ["火成岩", "沉積岩", "變質岩", "化石岩"], "answer": 0,
+      "explanation": "岩漿冷卻凝固形成的岩石是火成岩，花崗岩是常見的火成岩。",
+      "knowledge": ["岩石分類"]
+    },
+    {
+      "grade": 5, "subject": "自然", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "自然科學領域", "learningTopic": "岩石與礦物",
+      "learningPerformance": "能認識硬度最高的礦物。", "learningContent": "鑽石是自然界中硬度最高的礦物。", "competency": "能說出硬度最高的礦物。",
+      "prompt": "下列哪一種礦物的硬度最高？",
+      "options": ["滑石", "鑽石", "石英", "方解石"], "answer": 1,
+      "explanation": "鑽石是自然界硬度最高的礦物，可以用來切割其他物質。",
+      "knowledge": ["礦物硬度"]
+    },
+    {
+      "grade": 5, "subject": "自然", "questionType": "選擇題", "difficulty": "挑戰",
+      "curriculumDomain": "自然科學領域", "learningTopic": "空氣",
+      "learningPerformance": "能了解空氣具有重量。", "learningContent": "空氣占有空間且有重量，可用氣球實驗證明。", "competency": "能判斷空氣是否具有重量。",
+      "prompt": "下列關於空氣的敘述，哪一項是正確的？",
+      "options": ["空氣沒有重量", "空氣占有空間", "空氣只有氧氣", "空氣無法被壓縮"], "answer": 1,
+      "explanation": "空氣占有空間也有重量，例如灌滿空氣的籃球會比洩氣的籃球重。",
+      "knowledge": ["空氣性質"]
+    },
+    {
+      "grade": 5, "subject": "自然", "questionType": "選擇題", "difficulty": "挑戰",
+      "curriculumDomain": "自然科學領域", "learningTopic": "鐵鏽",
+      "learningPerformance": "能探討鐵生鏽的條件。", "learningContent": "鐵生鏽需要同時接觸水與空氣。", "competency": "能判斷鐵生鏽需要的條件。",
+      "prompt": "鐵釘要生鏽，通常需要同時接觸哪兩種東西？",
+      "options": ["水和空氣", "火和泥土", "鹽和沙子", "光和高溫"], "answer": 0,
+      "explanation": "鐵生鏽需要水與空氣中的氧氣同時作用，所以潮溼的空氣最容易讓鐵生鏽。",
+      "knowledge": ["鐵鏽"]
+    },
+    {
+      "grade": 5, "subject": "自然", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "自然科學領域", "learningTopic": "水生生物",
+      "learningPerformance": "能認識不同水域的生物分布。", "learningContent": "河川上游水流湍急，常見溪哥等適應流水的魚類。", "competency": "能判斷河川上游常見的生物類型。",
+      "prompt": "下列哪一種環境，最適合生活在水流湍急的河川上游？",
+      "options": ["鯨魚", "溪哥", "珊瑚", "海藻"], "answer": 1,
+      "explanation": "溪哥等魚類身體細長、適應湍急水流，常分布在河川上游。",
+      "knowledge": ["水生生物"]
+    },
+    {
+      "grade": 6, "subject": "自然", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "自然科學領域", "learningTopic": "簡單機械",
+      "learningPerformance": "能認識槓桿的應用與省力原理。", "learningContent": "開瓶器利用槓桿原理，施力臂長時可以省力。", "competency": "能判斷開瓶器屬於哪一種槓桿應用。",
+      "prompt": "用開瓶器打開瓶蓋時，開瓶器主要應用哪一種原理？",
+      "options": ["槓桿原理", "輪軸原理", "齒輪原理", "滑輪原理"], "answer": 0,
+      "explanation": "開瓶器是省力的槓桿應用，施力點離支點較遠，可以省力。",
+      "knowledge": ["槓桿"]
+    },
+    {
+      "grade": 6, "subject": "自然", "questionType": "是非題", "difficulty": "基礎",
+      "curriculumDomain": "自然科學領域", "learningTopic": "簡單機械",
+      "learningPerformance": "能了解槓桿省力的條件。", "learningContent": "施力臂比抗力臂長時比較省力。", "competency": "能判斷施力臂與省力的關係。",
+      "prompt": "使用槓桿時，施力臂比抗力臂長，會比較省力。",
+      "options": ["正確", "錯誤"], "answer": 0,
+      "explanation": "施力臂越長，施力越小，所以施力臂長於抗力臂時較省力。",
+      "knowledge": ["槓桿原理"]
+    },
+    {
+      "grade": 6, "subject": "自然", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "自然科學領域", "learningTopic": "簡單機械",
+      "learningPerformance": "能認識腳踏車上的簡單機械。", "learningContent": "腳踏車的變速器運用齒輪與鏈條傳動。", "competency": "能說出腳踏車變速器使用的機械。",
+      "prompt": "腳踏車的變速器主要是利用哪一種裝置來改變速度？",
+      "options": ["齒輪", "彈簧", "磁鐵", "氣球"], "answer": 0,
+      "explanation": "腳踏車變速器利用不同大小的齒輪配合鏈條，改變踩踏的省力程度與速度。",
+      "knowledge": ["齒輪"]
+    },
+    {
+      "grade": 6, "subject": "自然", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "自然科學領域", "learningTopic": "聲音",
+      "learningPerformance": "能了解聲音產生的原因。", "learningContent": "聲音是由物體快速振動產生的。", "competency": "能說出聲音產生的原因。",
+      "prompt": "聲音是怎麼產生的？",
+      "options": ["物體振動", "物體發光", "空氣流動", "物體移動"], "answer": 0,
+      "explanation": "任何聲音都來自物體的振動，例如敲鼓時鼓面振動發出聲音。",
+      "knowledge": ["聲音的產生"]
+    },
+    {
+      "grade": 6, "subject": "自然", "questionType": "選擇題", "difficulty": "挑戰",
+      "curriculumDomain": "自然科學領域", "learningTopic": "聲音",
+      "learningPerformance": "能比較聲音在不同介質中的傳播速度。", "learningContent": "聲音在固體中傳播比在空氣中快。", "competency": "能判斷聲音在固體與空氣中的傳播快慢。",
+      "prompt": "同樣的距離，聲音在下列哪一種物質中傳播得最快？",
+      "options": ["空氣", "水", "鋼鐵", "真空"], "answer": 2,
+      "explanation": "聲音在固體中傳播最快，鋼鐵比水、空氣都快；聲音無法在真空中傳播。",
+      "knowledge": ["聲音傳播"]
+    },
+    {
+      "grade": 6, "subject": "自然", "questionType": "是非題", "difficulty": "基礎",
+      "curriculumDomain": "自然科學領域", "learningTopic": "光",
+      "learningPerformance": "能了解光直線前進的性質。", "learningContent": "光沿直線前進，影子就是光被物體擋住形成的。", "competency": "能判斷光是否沿直線前進。",
+      "prompt": "光沿直線前進，影子是因為光被物體擋住而產生的。",
+      "options": ["正確", "錯誤"], "answer": 0,
+      "explanation": "光沿直線傳播，遇到不透明的物體會被擋住，物體後方就形成影子。",
+      "knowledge": ["光的直進"]
+    },
+    {
+      "grade": 6, "subject": "自然", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "自然科學領域", "learningTopic": "光的反射",
+      "learningPerformance": "能了解平面鏡成像的性質。", "learningContent": "平面鏡中的影像左右相反。", "competency": "能判斷平面鏡成像的特性。",
+      "prompt": "站在平面鏡前，鏡中的影像有什麼特性？",
+      "options": ["左右相反", "上下顛倒", "顏色改變", "大小改變"], "answer": 0,
+      "explanation": "平面鏡所成的像左右相反，例如舉起右手，鏡中的人舉起左手。",
+      "knowledge": ["平面鏡"]
+    },
+    {
+      "grade": 6, "subject": "自然", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "自然科學領域", "learningTopic": "熱的傳播",
+      "learningPerformance": "能認識熱的傳導現象。", "learningContent": "熱會沿著物體從高溫處傳到低溫處，金屬傳熱快。", "competency": "能判斷金屬的導熱特性。",
+      "prompt": "把金屬湯匙放進熱湯中，湯匙柄也會變熱，這主要是什麼現象？",
+      "options": ["熱傳導", "熱對流", "熱輻射", "熱蒸發"], "answer": 0,
+      "explanation": "熱沿著湯匙從高溫端傳到低溫端，這種傳熱方式稱為熱傳導。",
+      "knowledge": ["熱傳導"]
+    },
+    {
+      "grade": 6, "subject": "自然", "questionType": "是非題", "difficulty": "基礎",
+      "curriculumDomain": "自然科學領域", "learningTopic": "熱的傳播",
+      "learningPerformance": "能比較不同材料的導熱快慢。", "learningContent": "金屬的導熱速度比木頭、塑膠快。", "competency": "能判斷金屬的導熱快慢。",
+      "prompt": "金屬的導熱速度通常比木頭和塑膠快。",
+      "options": ["正確", "錯誤"], "answer": 0,
+      "explanation": "金屬是良好的熱導體，導熱速度比木頭、塑膠等不良導體快很多。",
+      "knowledge": ["導熱性"]
+    },
+    {
+      "grade": 6, "subject": "自然", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "自然科學領域", "learningTopic": "熱的傳播",
+      "learningPerformance": "能認識熱的對流現象。", "learningContent": "液體與氣體受熱後會產生對流，熱水上升、冷水下降。", "competency": "能判斷水加熱時熱水移動的方向。",
+      "prompt": "燒杯底部加熱時，杯中的水會產生對流，熱水的移動方向為何？",
+      "options": ["向上移動", "向下移動", "原地不動", "向左右散開"], "answer": 0,
+      "explanation": "底部的水受熱變輕上升，上方的冷水下降，形成循環對流。",
+      "knowledge": ["熱對流"]
+    },
+    {
+      "grade": 6, "subject": "自然", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "自然科學領域", "learningTopic": "熱的傳播",
+      "learningPerformance": "能認識熱輻射的傳播方式。", "learningContent": "太陽的熱不需介質，以輻射方式傳到地球。", "competency": "能說出太陽熱傳到地球的方式。",
+      "prompt": "太陽的熱穿過太空傳到地球，主要是利用哪一種傳熱方式？",
+      "options": ["熱傳導", "熱對流", "熱輻射", "熱蒸發"], "answer": 2,
+      "explanation": "太空是真空，熱無法靠傳導或對流，只能以輻射方式傳到地球。",
+      "knowledge": ["熱輻射"]
+    },
+    {
+      "grade": 6, "subject": "自然", "questionType": "選擇題", "difficulty": "挑戰",
+      "curriculumDomain": "自然科學領域", "learningTopic": "大氣與天氣",
+      "learningPerformance": "能了解冷鋒過境時的天氣變化。", "learningContent": "冷鋒過境時常會下雨、氣溫下降。", "competency": "能判斷冷鋒過境時的天氣特徵。",
+      "prompt": "冷鋒過境時，天氣通常會出現什麼變化？",
+      "options": ["氣溫上升", "下雨且氣溫下降", "萬里無雲", "颳起颱風"], "answer": 1,
+      "explanation": "冷鋒過境時，冷空氣推擠暖空氣，常造成降雨與氣溫下降。",
+      "knowledge": ["鋒面"]
+    },
+    {
+      "grade": 6, "subject": "自然", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "自然科學領域", "learningTopic": "大氣與天氣",
+      "learningPerformance": "能了解臺灣颱風的好發季節。", "learningContent": "臺灣的颱風大多發生在夏季與秋季。", "competency": "能判斷臺灣颱風好發的季節。",
+      "prompt": "臺灣的颱風最常發生在哪一個季節？",
+      "options": ["春季和冬季", "夏季和秋季", "只有冬季", "只有春季"], "answer": 1,
+      "explanation": "夏季與秋季海溫較高，容易形成颱風，臺灣常在這個季節受到颱風影響。",
+      "knowledge": ["颱風"]
+    },
+    {
+      "grade": 6, "subject": "自然", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "自然科學領域", "learningTopic": "水循環",
+      "learningPerformance": "能了解水循環的過程。", "learningContent": "水蒸發成水蒸氣，遇冷凝結成雲，再降水回到地面。", "competency": "能說出水蒸氣遇冷凝結的現象。",
+      "prompt": "地面上的水蒸發成水蒸氣上升，遇冷後凝結成什麼？",
+      "options": ["小水滴（雲）", "冰塊", "岩石", "雪花"], "answer": 0,
+      "explanation": "水蒸氣上升到高空遇冷，凝結成許多小水滴，聚集形成雲。",
+      "knowledge": ["水循環"]
+    },
+    {
+      "grade": 6, "subject": "自然", "questionType": "選擇題", "difficulty": "基礎",
+      "curriculumDomain": "自然科學領域", "learningTopic": "生物與環境",
+      "learningPerformance": "能認識食物鏈中的生產者。", "learningContent": "綠色植物能進行光合作用製造養分，是生產者。", "competency": "能判斷食物鏈中的生產者。",
+      "prompt": "在一片草地上，下列哪一種生物是生產者？",
+      "options": ["蝗蟲", "青蛙", "青草", "老鷹"], "answer": 2,
+      "explanation": "青草能利用陽光進行光合作用製造養分，是食物鏈中的生產者。",
+      "knowledge": ["食物鏈", "生產者"]
+    },
+    {
+      "grade": 6, "subject": "自然", "questionType": "選擇題", "difficulty": "挑戰",
+      "curriculumDomain": "自然科學領域", "learningTopic": "生物與環境",
+      "learningPerformance": "能認識生態系中的分解者。", "learningContent": "細菌和黴菌把生物的遺體分解成養分，是分解者。", "competency": "能說出分解者對生態的重要性。",
+      "prompt": "落葉和動物遺體在自然界中會慢慢腐爛消失，主要靠什麼生物分解？",
+      "options": ["綠色植物", "細菌和黴菌", "大型哺乳動物", "鳥類"], "answer": 1,
+      "explanation": "細菌、黴菌等分解者把遺體分解成養分，讓養分回到土壤中循環。",
+      "knowledge": ["分解者"]
+    },
+    {
+      "grade": 6, "subject": "自然", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "自然科學領域", "learningTopic": "人類活動與環境",
+      "learningPerformance": "能了解溫室效應的主要氣體。", "learningContent": "燃燒化石燃料會產生大量二氧化碳，加劇溫室效應。", "competency": "能說出主要的溫室氣體。",
+      "prompt": "下列哪一種氣體大量增加，是造成地球溫室效應加劇的主要原因之一？",
+      "options": ["氧氣", "二氧化碳", "氮氣", "氫氣"], "answer": 1,
+      "explanation": "燃燒煤炭、石油等會排放大量二氧化碳，使溫室效應加劇、地球變暖。",
+      "knowledge": ["溫室效應"]
+    },
+    {
+      "grade": 6, "subject": "自然", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "自然科學領域", "learningTopic": "生物與環境",
+      "learningPerformance": "能認識臺灣的保育類動物。", "learningContent": "臺灣黑熊是臺灣特有的保育類動物。", "competency": "能辨識臺灣的保育類動物。",
+      "prompt": "下列哪一種動物是臺灣的保育類動物？",
+      "options": ["臺灣黑熊", "家貓", "白鷺鷥", "麻雀"], "answer": 0,
+      "explanation": "臺灣黑熊數量稀少，是臺灣重要的保育類動物。",
+      "knowledge": ["保育動物"]
+    },
+    {
+      "grade": 6, "subject": "自然", "questionType": "是非題", "difficulty": "基礎",
+      "curriculumDomain": "自然科學領域", "learningTopic": "人類活動與環境",
+      "learningPerformance": "能認識再生能源的應用。", "learningContent": "太陽能板可把光能轉換成電能。", "competency": "能判斷太陽能板的能量轉換。",
+      "prompt": "太陽能板可以將太陽的光能轉換成電能。",
+      "options": ["正確", "錯誤"], "answer": 0,
+      "explanation": "太陽能板是光電轉換裝置，能把太陽的光能轉換成電能供人使用。",
+      "knowledge": ["再生能源"]
+    }
+  ]
+}

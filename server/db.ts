@@ -154,7 +154,7 @@ export async function getQuestionBank(filters: QuestionBankFilters = {}) {
       .select()
       .from(questionBank)
       .where(conditions.length > 0 ? and(...conditions) : undefined)
-      .limit(Math.min(Math.max(filters.limit ?? 500, 1), 500));
+      .limit(Math.min(Math.max(filters.limit ?? 500, 1), 1200));
   } catch (err) {
     console.error("[DB] getQuestionBank failed:", err);
     throw err;

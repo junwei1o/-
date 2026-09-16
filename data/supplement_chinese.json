@@ -1,0 +1,302 @@
+{
+  "note": "五、六年級國語補充題（含是非題）。由助理依台灣國小 108 課綱內容撰寫，合併進主題庫前會先做格式與重複驗證。",
+  "questions": [
+    {
+      "grade": 5, "subject": "國語", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "語文領域", "learningTopic": "修辭",
+      "learningPerformance": "能辨識比喻的修辭技巧。", "learningContent": "比喻是用「像」「如同」等詞，把甲事物比作乙事物。", "competency": "能判斷「月亮像銀盤」使用的修辭。",
+      "prompt": "「圓圓的月亮像一個銀盤。」這句話使用了哪一種修辭技巧？",
+      "options": ["比喻", "擬人", "誇飾", "設問"], "answer": 0,
+      "explanation": "用「像」把月亮比作銀盤，是典型的比喻修辭。",
+      "knowledge": ["比喻"]
+    },
+    {
+      "grade": 5, "subject": "國語", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "語文領域", "learningTopic": "修辭",
+      "learningPerformance": "能辨識擬人的修辭技巧。", "learningContent": "擬人把事物當作人來描寫，賦予人的動作或情感。", "competency": "能判斷「花兒對我笑」使用的修辭。",
+      "prompt": "「路邊的花兒對著我微笑。」這句話使用了哪一種修辭技巧？",
+      "options": ["擬人", "比喻", "誇飾", "排比"], "answer": 0,
+      "explanation": "把花兒寫成會微笑的人，賦予花人的動作，是擬人修辭。",
+      "knowledge": ["擬人"]
+    },
+    {
+      "grade": 5, "subject": "國語", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "語文領域", "learningTopic": "修辭",
+      "learningPerformance": "能辨識誇飾的修辭技巧。", "learningContent": "誇飾是故意誇大或縮小事物的描述。", "competency": "能判斷「連針掉下都聽得見」使用的修辭。",
+      "prompt": "「教室裡安靜得連一根針掉下來都聽得見。」這句話使用了哪一種修辭技巧？",
+      "options": ["誇飾", "設問", "對偶", "映襯"], "answer": 0,
+      "explanation": "故意誇大教室的安靜程度，是誇飾修辭。",
+      "knowledge": ["誇飾"]
+    },
+    {
+      "grade": 5, "subject": "國語", "questionType": "選擇題", "difficulty": "基礎",
+      "curriculumDomain": "語文領域", "learningTopic": "記敘文",
+      "learningPerformance": "能認識記敘文的敘述要素。", "learningContent": "記敘文通常包含人、事、時、地等要素。", "competency": "能說出記敘文常包含的要素。",
+      "prompt": "一篇記敘文通常會交代哪些基本要素？",
+      "options": ["人、事、時、地", "只有景色", "只有心情", "只有對話"], "answer": 0,
+      "explanation": "記敘文敘述事件，通常包含人物、事件、時間、地點等要素。",
+      "knowledge": ["記敘文"]
+    },
+    {
+      "grade": 5, "subject": "國語", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "語文領域", "learningTopic": "寓言",
+      "learningPerformance": "能理解寓言的寓意。", "learningContent": "寓言藉由故事傳達道理，如龜兔賽跑告訴我們堅持的重要。", "competency": "能說出龜兔賽跑的寓意。",
+      "prompt": "龜兔賽跑的故事主要在告訴我們什麼道理？",
+      "options": ["做事要堅持到底", "跑得快一定贏", "睡覺很重要", "不要交朋友"], "answer": 0,
+      "explanation": "兔子雖然跑得快卻因驕傲睡覺而輸，烏龜靠堅持到底獲勝。",
+      "knowledge": ["寓言寓意"]
+    },
+    {
+      "grade": 5, "subject": "國語", "questionType": "選擇題", "difficulty": "挑戰",
+      "curriculumDomain": "語文領域", "learningTopic": "修辭",
+      "learningPerformance": "能辨識設問的修辭技巧。", "learningContent": "設問是明知故問或自問自答，引起注意。", "competency": "能判斷「這不是奇蹟嗎？」使用的修辭。",
+      "prompt": "「這難道不是一個奇蹟嗎？」這句話使用了哪一種修辭技巧？",
+      "options": ["設問", "比喻", "誇飾", "擬人"], "answer": 0,
+      "explanation": "以問句形式表達強烈語氣，答案就在句中，是設問修辭。",
+      "knowledge": ["設問"]
+    },
+    {
+      "grade": 5, "subject": "國語", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "語文領域", "learningTopic": "語詞",
+      "learningPerformance": "能辨識語詞的意思。", "learningContent": "「虎頭蛇尾」比喻做事有始無終、半途而廢。", "competency": "能選出形容半途而廢的成語。",
+      "prompt": "「做事做到一半就放棄」可以用下列哪一個成語形容？",
+      "options": ["虎頭蛇尾", "一鼓作氣", "有始有終", "腳踏實地"], "answer": 0,
+      "explanation": "虎頭蛇尾比喻做事開頭有氣勢，後來卻草草收場。",
+      "knowledge": ["成語"]
+    },
+    {
+      "grade": 5, "subject": "國語", "questionType": "選擇題", "difficulty": "基礎",
+      "curriculumDomain": "語文領域", "learningTopic": "語詞",
+      "learningPerformance": "能認識反義詞。", "learningContent": "「光明」的相反詞是「黑暗」。", "competency": "能找出「光明」的相反詞。",
+      "prompt": "下列哪一個詞是「光明」的相反詞？",
+      "options": ["黑暗", "明亮", "閃耀", "太陽"], "answer": 0,
+      "explanation": "光明指光亮，相反詞是黑暗。",
+      "knowledge": ["反義詞"]
+    },
+    {
+      "grade": 5, "subject": "國語", "questionType": "是非題", "difficulty": "基礎",
+      "curriculumDomain": "語文領域", "learningTopic": "標點符號",
+      "learningPerformance": "能正確使用引號。", "learningContent": "對話內容要用引號「」標示。", "competency": "能判斷對話是否該用引號。",
+      "prompt": "文章中人物的對話內容，應該用引號「」標示出來。",
+      "options": ["正確", "錯誤"], "answer": 0,
+      "explanation": "引號用來標示對話、引用語或特別強調的詞語。",
+      "knowledge": ["標點符號"]
+    },
+    {
+      "grade": 5, "subject": "國語", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "語文領域", "learningTopic": "說明文",
+      "learningPerformance": "能認識說明文的寫作方法。", "learningContent": "說明文常用下定義、舉例、分類等方法說明事物。", "competency": "能說出說明文常用的寫法。",
+      "prompt": "說明文在介紹事物時，下列哪一種方法最常見？",
+      "options": ["舉例說明", "只寫對話", "只描寫心情", "只寫時間"], "answer": 0,
+      "explanation": "說明文常用舉例、下定義、比較等方法，讓讀者清楚了解事物。",
+      "knowledge": ["說明文"]
+    },
+    {
+      "grade": 5, "subject": "國語", "questionType": "是非題", "difficulty": "基礎",
+      "curriculumDomain": "語文領域", "learningTopic": "狀聲詞",
+      "learningPerformance": "能認識狀聲詞的用法。", "learningContent": "「淅瀝」是形容雨聲的狀聲詞。", "competency": "能判斷「淅瀝」是否為狀聲詞。",
+      "prompt": "「淅瀝淅瀝」是形容下雨聲音的狀聲詞。",
+      "options": ["正確", "錯誤"], "answer": 0,
+      "explanation": "狀聲詞模仿事物發出的聲音，「淅瀝」正是形容雨聲。",
+      "knowledge": ["狀聲詞"]
+    },
+    {
+      "grade": 5, "subject": "國語", "questionType": "是非題", "difficulty": "基礎",
+      "curriculumDomain": "語文領域", "learningTopic": "量詞",
+      "learningPerformance": "能正確使用量詞。", "learningContent": "船的量詞可以用「艘」，如一艘船。", "competency": "能判斷「一艘船」的量詞用法。",
+      "prompt": "「一艘船」的量詞用法是正確的。",
+      "options": ["正確", "錯誤"], "answer": 0,
+      "explanation": "大型船隻的量詞可用「艘」，一「艘」船是正確用法。",
+      "knowledge": ["量詞"]
+    },
+    {
+      "grade": 5, "subject": "國語", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "語文領域", "learningTopic": "文字",
+      "learningPerformance": "能認識象形字的來源。", "learningContent": "象形字是用圖畫描摹事物形狀的文字，如日、月。", "competency": "能判斷「日」字的造字方式。",
+      "prompt": "「日」這個字是依照太陽的形狀畫出來的，這種造字方法叫做什麼？",
+      "options": ["象形", "形聲", "會意", "指事"], "answer": 0,
+      "explanation": "象形字用簡單圖畫表示事物形狀，「日」就像太陽的形狀。",
+      "knowledge": ["象形字"]
+    },
+    {
+      "grade": 5, "subject": "國語", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "語文領域", "learningTopic": "句子",
+      "learningPerformance": "能分辨句子的主語與謂語。", "learningContent": "句子通常包含主語（誰）與謂語（做什麼）。", "competency": "能找出「弟弟打球」中的主語。",
+      "prompt": "在「弟弟在操場打球」這句話中，主語是哪一個詞？",
+      "options": ["弟弟", "操場", "打球", "在"], "answer": 0,
+      "explanation": "主語是句子敘述的對象，「弟弟」是這句話的主語。",
+      "knowledge": ["句子結構"]
+    },
+    {
+      "grade": 5, "subject": "國語", "questionType": "選擇題", "difficulty": "基礎",
+      "curriculumDomain": "語文領域", "learningTopic": "部首",
+      "learningPerformance": "能認識常見的部首。", "learningContent": "「河」「海」都有水部，與水有關。", "competency": "能判斷「河」字的部首。",
+      "prompt": "「河」這個字的部首是什麼？",
+      "options": ["水部", "火部", "木部", "土部"], "answer": 0,
+      "explanation": "「河」的左邊是三點水，部首是水部，與水有關。",
+      "knowledge": ["部首"]
+    },
+    {
+      "grade": 5, "subject": "國語", "questionType": "選擇題", "difficulty": "挑戰",
+      "curriculumDomain": "語文領域", "learningTopic": "閱讀理解",
+      "learningPerformance": "能從短文找出因果關係。", "learningContent": "閱讀時找出事件的原因與結果。", "competency": "能判斷短文中的因果關係。",
+      "prompt": "「因為下雨，所以運動會延後舉行。」這段話的結果是什麼？",
+      "options": ["下雨", "運動會延後舉行", "天氣放晴", "大家很開心"], "answer": 1,
+      "explanation": "「因為下雨」是原因，「運動會延後舉行」是結果。",
+      "knowledge": ["因果關係"]
+    },
+    {
+      "grade": 5, "subject": "國語", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "語文領域", "learningTopic": "童詩",
+      "learningPerformance": "能認識童詩的特色。", "learningContent": "童詩語言簡短、有節奏與想像力。", "competency": "能說出童詩的特色。",
+      "prompt": "下列哪一項是童詩常見的特色？",
+      "options": ["句子簡短且有節奏", "篇幅很長", "只有對話", "必須押韻到最後"], "answer": 0,
+      "explanation": "童詩語言簡潔、節奏輕快、充滿想像力。",
+      "knowledge": ["童詩"]
+    },
+    {
+      "grade": 6, "subject": "國語", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "語文領域", "learningTopic": "議論文",
+      "learningPerformance": "能認識議論文的結構。", "learningContent": "議論文包含論點、論據與結論。", "competency": "能說出議論文的三大要素。",
+      "prompt": "一篇議論文通常包含哪三項主要元素？",
+      "options": ["論點、論據、結論", "人物、時間、地點", "開頭、插曲、結尾", "生字、語詞、造句"], "answer": 0,
+      "explanation": "議論文先提出論點，再用論據支持，最後歸納結論。",
+      "knowledge": ["議論文"]
+    },
+    {
+      "grade": 6, "subject": "國語", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "語文領域", "learningTopic": "修辭",
+      "learningPerformance": "能辨識排比的修辭技巧。", "learningContent": "排比是連續使用結構相似的句子，加強語氣。", "competency": "能判斷「山是畫、海是歌、風是詩」使用的修辭。",
+      "prompt": "「山是畫，海是歌，風是詩。」這句話使用了哪一種修辭技巧？",
+      "options": ["排比", "設問", "誇飾", "對偶"], "answer": 0,
+      "explanation": "連續三句結構相似的句子，加強氣勢，是排比修辭。",
+      "knowledge": ["排比"]
+    },
+    {
+      "grade": 6, "subject": "國語", "questionType": "選擇題", "difficulty": "挑戰",
+      "curriculumDomain": "語文領域", "learningTopic": "修辭",
+      "learningPerformance": "能辨識對偶的修辭技巧。", "learningContent": "對偶是上下兩句字數相等、結構相對。", "competency": "能判斷唐詩名句使用的對偶修辭。",
+      "prompt": "「兩個黃鸝鳴翠柳，一行白鷺上青天。」這兩句使用了哪一種修辭技巧？",
+      "options": ["對偶", "設問", "擬人", "雙關"], "answer": 0,
+      "explanation": "兩句字數相同、詞性相對、意義相關，是標準的對偶修辭。",
+      "knowledge": ["對偶"]
+    },
+    {
+      "grade": 6, "subject": "國語", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "語文領域", "learningTopic": "古詩",
+      "learningPerformance": "能認識唐詩與作者。", "learningContent": "《登鸛雀樓》的作者是王之渙。", "competency": "能說出《登鸛雀樓》的作者。",
+      "prompt": "「白日依山盡，黃河入海流」出自《登鸛雀樓》，作者是誰？",
+      "options": ["王之渙", "李白", "杜甫", "孟浩然"], "answer": 0,
+      "explanation": "《登鸛雀樓》是唐代詩人王之渙的作品。",
+      "knowledge": ["唐詩"]
+    },
+    {
+      "grade": 6, "subject": "國語", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "語文領域", "learningTopic": "古詩",
+      "learningPerformance": "能認識唐詩與作者。", "learningContent": "《春曉》的作者是孟浩然。", "competency": "能說出《春曉》的作者。",
+      "prompt": "「春眠不覺曉，處處聞啼鳥」出自哪一位詩人的作品？",
+      "options": ["孟浩然", "李白", "王維", "杜甫"], "answer": 0,
+      "explanation": "《春曉》是唐代詩人孟浩然的作品。",
+      "knowledge": ["唐詩"]
+    },
+    {
+      "grade": 6, "subject": "國語", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "語文領域", "learningTopic": "書信",
+      "learningPerformance": "能認識書信的格式。", "learningContent": "書信結尾要有敬語與署名。", "competency": "能判斷書信結尾的寫法。",
+      "prompt": "寫信給長輩時，結尾的敬語應該寫在哪裡？",
+      "options": ["寫在署名之後", "寫在開頭", "寫在中間", "不必寫敬語"], "answer": 0,
+      "explanation": "書信格式中，敬語（如「敬上」）寫在署名之後。",
+      "knowledge": ["書信格式"]
+    },
+    {
+      "grade": 6, "subject": "國語", "questionType": "選擇題", "difficulty": "挑戰",
+      "curriculumDomain": "語文領域", "learningTopic": "成語",
+      "learningPerformance": "能運用成語形容聲音。", "learningContent": "「震耳欲聾」形容聲音非常大。", "competency": "能選出形容聲音極大的成語。",
+      "prompt": "形容聲音大得幾乎要把耳朵震聾，可以用哪一個成語？",
+      "options": ["震耳欲聾", "鴉雀無聲", "輕聲細語", "萬籟俱寂"], "answer": 0,
+      "explanation": "震耳欲聾形容聲音非常大；其他三個都是形容安靜。",
+      "knowledge": ["成語"]
+    },
+    {
+      "grade": 6, "subject": "國語", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "語文領域", "learningTopic": "修辭",
+      "learningPerformance": "能辨識反問的語氣。", "learningContent": "反問句以問句形式表達肯定語氣，答案在句中。", "competency": "能判斷反問句表達的語氣。",
+      "prompt": "「難道我們不應該幫助別人嗎？」這句話主要在表達什麼？",
+      "options": ["應該幫助別人", "不應該幫助別人", "不知道要不要幫忙", "只是隨便問問"], "answer": 0,
+      "explanation": "反問句語氣強烈，答案就在句中，這裡表達「應該幫助別人」。",
+      "knowledge": ["反問句"]
+    },
+    {
+      "grade": 6, "subject": "國語", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "語文領域", "learningTopic": "文字",
+      "learningPerformance": "能認識形聲字的結構。", "learningContent": "形聲字由表音的聲旁與表意的形旁組成，如「河」。", "competency": "能判斷「河」字的結構。",
+      "prompt": "「河」字由「水」與「可」組成，這種造字方式叫做什麼？",
+      "options": ["形聲", "象形", "會意", "指事"], "answer": 0,
+      "explanation": "「河」左邊「氵」表意、右邊「可」表音，是形聲字。",
+      "knowledge": ["形聲字"]
+    },
+    {
+      "grade": 6, "subject": "國語", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "語文領域", "learningTopic": "經典",
+      "learningPerformance": "能認識《論語》與名言。", "learningContent": "「學而時習之」出自《論語》。", "competency": "能說出「學而時習之」的出處。",
+      "prompt": "「學而時習之，不亦說乎」出自哪一部經典？",
+      "options": ["《論語》", "《唐詩三百首》", "《西遊記》", "《山海經》"], "answer": 0,
+      "explanation": "「學而時習之」是《論語》開篇的名句，談論學習的樂趣。",
+      "knowledge": ["論語"]
+    },
+    {
+      "grade": 6, "subject": "國語", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "語文領域", "learningTopic": "應用文",
+      "learningPerformance": "能認識公告的格式。", "learningContent": "公告用來告知大眾事項，包含發布單位與日期。", "competency": "能判斷公告的必要內容。",
+      "prompt": "一張正式的公告，通常需要包含哪一項內容？",
+      "options": ["發布單位與日期", "只有插圖", "只有作者心情", "只有對話"], "answer": 0,
+      "explanation": "公告要清楚寫明事項、發布單位與日期，方便大眾了解。",
+      "knowledge": ["公告"]
+    },
+    {
+      "grade": 6, "subject": "國語", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "語文領域", "learningTopic": "修辭",
+      "learningPerformance": "能辨識雙關的修辭技巧。", "learningContent": "雙關是讓詞語同時有兩種意思的修辭。", "competency": "能理解雙關的語意。",
+      "prompt": "「你真是個『開心果』，讓大家笑得合不攏嘴。」句中的「開心果」除了是零食，還指什麼？",
+      "options": ["帶給大家快樂的人", "愛吃零食的人", "賣水果的老闆", "生氣的人"], "answer": 0,
+      "explanation": "「開心果」在此一語雙關，既像零食名，也指帶給大家歡笑的人。",
+      "knowledge": ["雙關"]
+    },
+    {
+      "grade": 6, "subject": "國語", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "語文領域", "learningTopic": "語詞",
+      "learningPerformance": "能認識疊字的用法。", "learningContent": "疊字如「綠油油」「白茫茫」可加強形容效果。", "competency": "能辨識疊字形容詞。",
+      "prompt": "下列哪一個詞是疊字形容詞？",
+      "options": ["綠油油", "電燈泡", "火車頭", "書桌"], "answer": 0,
+      "explanation": "「綠油油」是疊字形容詞，形容綠得很鮮亮。",
+      "knowledge": ["疊字"]
+    },
+    {
+      "grade": 6, "subject": "國語", "questionType": "選擇題", "difficulty": "挑戰",
+      "curriculumDomain": "語文領域", "learningTopic": "閱讀理解",
+      "learningPerformance": "能區分事實與意見。", "learningContent": "事實是可以查證的敘述，意見是個人看法。", "competency": "能判斷哪一句是意見。",
+      "prompt": "下列哪一句話是「意見」而不是「事實」？",
+      "options": ["這家書店是臺灣最美的書店", "書店在上午十點開門", "書店共有三層樓", "書店位於市中心"], "answer": 0,
+      "explanation": "「最美」是主觀看法，屬於意見；其餘都可以查證，屬於事實。",
+      "knowledge": ["事實與意見"]
+    },
+    {
+      "grade": 6, "subject": "國語", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "語文領域", "learningTopic": "標點符號",
+      "learningPerformance": "能認識破折號的用途。", "learningContent": "破折號可表示語氣的停頓、轉折或補充說明。", "competency": "能說出破折號的常見用途。",
+      "prompt": "「我最喜歡的水果——西瓜——又甜又多汁。」句中的破折號主要用來做什麼？",
+      "options": ["補充說明", "表示疑問", "表示結束", "表示引用"], "answer": 0,
+      "explanation": "破折號前後夾注「西瓜」，是用來補充說明的用法。",
+      "knowledge": ["標點符號"]
+    },
+    {
+      "grade": 6, "subject": "國語", "questionType": "選擇題", "difficulty": "挑戰",
+      "curriculumDomain": "語文領域", "learningTopic": "劇本",
+      "learningPerformance": "能認識劇本的基本要素。", "learningContent": "劇本包含人物、對話與舞台指示。", "competency": "能說出劇本常包含的內容。",
+      "prompt": "劇本中除了人物和對話，通常還包含哪一項內容？",
+      "options": ["舞台指示", "食譜步驟", "地圖比例尺", "氣象預報"], "answer": 0,
+      "explanation": "劇本除了人物與對話，還會有舞台指示說明動作與場景。",
+      "knowledge": ["劇本"]
+    }
+  ]
+}

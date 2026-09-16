@@ -1,0 +1,329 @@
+{
+  "note": "五、六年級社會補充題（含是非題）。由助理依台灣國小 108 課綱內容撰寫，合併進主題庫前會先做格式與重複驗證。",
+  "questions": [
+    {
+      "grade": 5, "subject": "社會", "questionType": "選擇題", "difficulty": "基礎",
+      "curriculumDomain": "社會領域", "learningTopic": "臺灣的位置與地理",
+      "learningPerformance": "能認識臺灣的地理位置與地勢。", "learningContent": "臺灣位於亞洲東部，地勢以山脈為主，最高峰是玉山。", "competency": "能說出臺灣的最高山。",
+      "prompt": "臺灣最高的山是哪一座？",
+      "options": ["阿里山", "玉山", "陽明山", "合歡山"], "answer": 1,
+      "explanation": "玉山高約 3952 公尺，是臺灣也是東亞的最高峰。",
+      "knowledge": ["臺灣地理"]
+    },
+    {
+      "grade": 5, "subject": "社會", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "社會領域", "learningTopic": "臺灣的位置與地理",
+      "learningPerformance": "能認識臺灣的主要河川。", "learningContent": "濁水溪是臺灣最長的河川。", "competency": "能說出臺灣最長的河川。",
+      "prompt": "下列哪一條是臺灣最長的河川？",
+      "options": ["淡水河", "高屏溪", "濁水溪", "大甲溪"], "answer": 2,
+      "explanation": "濁水溪全長約 186 公里，是臺灣最長的河川。",
+      "knowledge": ["臺灣河川"]
+    },
+    {
+      "grade": 5, "subject": "社會", "questionType": "選擇題", "difficulty": "基礎",
+      "curriculumDomain": "社會領域", "learningTopic": "臺灣的位置與地理",
+      "learningPerformance": "能認識臺灣所在的洲。", "learningContent": "臺灣是位於亞洲東部的島嶼。", "competency": "能判斷臺灣位於哪一個洲。",
+      "prompt": "臺灣位於哪一個洲？",
+      "options": ["歐洲", "亞洲", "非洲", "美洲"], "answer": 1,
+      "explanation": "臺灣位於亞洲東部，隔臺灣海峽與中國大陸相望。",
+      "knowledge": ["臺灣位置"]
+    },
+    {
+      "grade": 5, "subject": "社會", "questionType": "選擇題", "difficulty": "挑戰",
+      "curriculumDomain": "社會領域", "learningTopic": "臺灣的位置與地理",
+      "learningPerformance": "能認識臺灣的板塊與地震。", "learningContent": "臺灣位在歐亞板塊與菲律賓海板塊交界，地震頻繁。", "competency": "能解釋臺灣地震頻繁的原因。",
+      "prompt": "臺灣地震特別頻繁，主要原因與下列哪一項最有關係？",
+      "options": ["位於板塊交界處", "靠近海邊", "山脈很多", "雨量很多"], "answer": 0,
+      "explanation": "臺灣位在歐亞板塊與菲律賓海板塊的交界，板塊擠壓造成地震頻繁。",
+      "knowledge": ["板塊運動"]
+    },
+    {
+      "grade": 5, "subject": "社會", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "社會領域", "learningTopic": "臺灣的產業",
+      "learningPerformance": "能認識臺灣西部平原的主要農業。", "learningContent": "西部平原土地肥沃、水源充足，是稻米主要產區。", "competency": "能說出臺灣西部平原主要的農作物。",
+      "prompt": "臺灣西部平原最適合種植的主要糧食作物是什麼？",
+      "options": ["小麥", "水稻", "玉米", "高粱"], "answer": 1,
+      "explanation": "西部平原水源充足、土壤肥沃，是臺灣稻米的主要產區。",
+      "knowledge": ["臺灣農業"]
+    },
+    {
+      "grade": 5, "subject": "社會", "questionType": "是非題", "difficulty": "基礎",
+      "curriculumDomain": "社會領域", "learningTopic": "臺灣的產業",
+      "learningPerformance": "能認識臺灣稻米的一年收穫次數。", "learningContent": "氣候溫暖，臺灣中南部稻米一年可收穫兩次。", "competency": "能判斷臺灣稻米的收穫次數。",
+      "prompt": "由於氣候溫暖，臺灣的稻米一年通常可以收穫兩次。",
+      "options": ["正確", "錯誤"], "answer": 0,
+      "explanation": "臺灣氣候溫暖，中南部稻米一年可種植並收穫兩期。",
+      "knowledge": ["稻作文化"]
+    },
+    {
+      "grade": 5, "subject": "社會", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "社會領域", "learningTopic": "臺灣的歷史",
+      "learningPerformance": "能認識荷蘭人統治臺灣的時期與地點。", "learningContent": "荷蘭人於 1624 年在臺南建立熱蘭遮城（安平古堡）。", "competency": "能說出荷蘭人在臺灣建立的城堡。",
+      "prompt": "荷蘭人統治臺灣時，在臺南建造了哪一座城堡？",
+      "options": ["赤崁樓", "安平古堡（熱蘭遮城）", "億載金城", "紅毛城"], "answer": 1,
+      "explanation": "1624 年荷蘭人在臺南安平建造熱蘭遮城，就是現在的安平古堡。",
+      "knowledge": ["荷治時期"]
+    },
+    {
+      "grade": 5, "subject": "社會", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "社會領域", "learningTopic": "臺灣的歷史",
+      "learningPerformance": "能認識鄭成功來臺的年代。", "learningContent": "1661 年鄭成功率軍來臺，驅逐荷蘭人。", "competency": "能說出鄭成功來臺的年代。",
+      "prompt": "鄭成功率軍來臺、驅逐荷蘭人的年代是哪一年？",
+      "options": ["1624 年", "1661 年", "1895 年", "1945 年"], "answer": 1,
+      "explanation": "1661 年鄭成功率軍渡海來臺，隔年驅逐荷蘭人。",
+      "knowledge": ["明鄭時期"]
+    },
+    {
+      "grade": 5, "subject": "社會", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "社會領域", "learningTopic": "臺灣的歷史",
+      "learningPerformance": "能認識清領時期的移民來源。", "learningContent": "清朝統治臺灣期間，大量移民來自福建與廣東。", "competency": "能說出清領時期移民的主要來源。",
+      "prompt": "清朝統治臺灣時期，渡海來臺的移民大多來自哪裡？",
+      "options": ["福建和廣東", "江蘇和浙江", "山東和河北", "四川和雲南"], "answer": 0,
+      "explanation": "清代移民大多來自鄰近的福建、廣東兩省，先後開發臺灣西部平原。",
+      "knowledge": ["清領移民"]
+    },
+    {
+      "grade": 5, "subject": "社會", "questionType": "選擇題", "difficulty": "挑戰",
+      "curriculumDomain": "社會領域", "learningTopic": "臺灣的歷史",
+      "learningPerformance": "能認識清領時期臺灣的出口物產。", "learningContent": "清代臺灣曾大量出口糖、茶與樟腦。", "competency": "能說出清代臺灣的重要出口物產。",
+      "prompt": "清朝時期，臺灣曾大量出口到世界市場的物產包括下列哪一項？",
+      "options": ["樟腦", "煤炭", "石油", "稻米種子"], "answer": 0,
+      "explanation": "清代臺灣的糖、茶與樟腦銷往世界各地，是重要的出口物產。",
+      "knowledge": ["清代產業"]
+    },
+    {
+      "grade": 5, "subject": "社會", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "社會領域", "learningTopic": "家鄉與文化",
+      "learningPerformance": "能認識臺灣原住民族的傳統祭典。", "learningContent": "阿美族等原住民族有豐年祭等傳統祭典。", "competency": "能說出臺灣原住民族的傳統祭典。",
+      "prompt": "下列哪一個是臺灣原住民族的傳統祭典？",
+      "options": ["豐年祭", "中元普渡", "端午龍舟", "元宵燈會"], "answer": 0,
+      "explanation": "阿美族等原住民族在每年收穫季節舉辦豐年祭，感謝上天與祖先。",
+      "knowledge": ["原住民族"]
+    },
+    {
+      "grade": 5, "subject": "社會", "questionType": "是非題", "difficulty": "基礎",
+      "curriculumDomain": "社會領域", "learningTopic": "家鄉與文化",
+      "learningPerformance": "能認識臺灣的原住民族。", "learningContent": "臺灣是南島語系分布的最北端，原住民族屬南島語系。", "competency": "能判斷原住民族與南島語系的關係。",
+      "prompt": "臺灣的原住民族屬於南島語系民族。",
+      "options": ["正確", "錯誤"], "answer": 0,
+      "explanation": "臺灣原住民族的語言屬於南島語系，臺灣也是南島語系分布的最北端。",
+      "knowledge": ["原住民族"]
+    },
+    {
+      "grade": 5, "subject": "社會", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "社會領域", "learningTopic": "臺灣的位置與地理",
+      "learningPerformance": "能認識臺灣的地形分布。", "learningContent": "花東縱谷位於中央山脈與海岸山脈之間。", "competency": "能判斷花東縱谷的位置。",
+      "prompt": "花東縱谷位於哪兩個山脈之間？",
+      "options": ["中央山脈與海岸山脈", "雪山山脈與玉山山脈", "阿里山山脈與雪山山脈", "海岸山脈與雪山山脈"], "answer": 0,
+      "explanation": "花東縱谷位在中央山脈與海岸山脈之間的狹長平原。",
+      "knowledge": ["臺灣地形"]
+    },
+    {
+      "grade": 5, "subject": "社會", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "社會領域", "learningTopic": "臺灣的位置與地理",
+      "learningPerformance": "能認識臺灣的重要平原。", "learningContent": "嘉南平原位於臺灣西南部，是最大的平原。", "competency": "能說出嘉南平原的位置。",
+      "prompt": "嘉南平原位在臺灣的哪一個地區？",
+      "options": ["東北部", "西南部", "東南部", "西北部"], "answer": 1,
+      "explanation": "嘉南平原位於臺灣西南部，是臺灣面積最大的平原。",
+      "knowledge": ["嘉南平原"]
+    },
+    {
+      "grade": 5, "subject": "社會", "questionType": "選擇題", "difficulty": "基礎",
+      "curriculumDomain": "社會領域", "learningTopic": "臺灣的位置與地理",
+      "learningPerformance": "能認識臺灣的面積。", "learningContent": "臺灣面積約三萬六千平方公里。", "competency": "能說出臺灣的面積大小。",
+      "prompt": "臺灣的面積大約是多少？",
+      "options": ["3.6 萬平方公里", "36 萬平方公里", "360 萬平方公里", "0.36 萬平方公里"], "answer": 0,
+      "explanation": "臺灣本島面積約 3.6 萬平方公里。",
+      "knowledge": ["臺灣面積"]
+    },
+    {
+      "grade": 5, "subject": "社會", "questionType": "選擇題", "difficulty": "挑戰",
+      "curriculumDomain": "社會領域", "learningTopic": "臺灣的產業",
+      "learningPerformance": "能認識臺灣的漁業發展。", "learningContent": "高雄、基隆是臺灣的重要漁港。", "competency": "能說出臺灣的重要漁港。",
+      "prompt": "下列哪一個城市是臺灣的重要漁港之一？",
+      "options": ["高雄", "新竹", "彰化", "雲林"], "answer": 0,
+      "explanation": "高雄、基隆等港口漁業發達，是臺灣重要的遠洋漁業基地。",
+      "knowledge": ["臺灣漁業"]
+    },
+    {
+      "grade": 5, "subject": "社會", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "社會領域", "learningTopic": "臺灣的位置與地理",
+      "learningPerformance": "能認識臺灣的河川分布。", "learningContent": "基隆河是北部的重要河川，流經臺北盆地。", "competency": "能判斷基隆河的位置。",
+      "prompt": "基隆河主要流經臺灣的哪一個地區？",
+      "options": ["北部", "南部", "東部", "離島"], "answer": 0,
+      "explanation": "基隆河發源於北部山區，流經基隆與臺北盆地。",
+      "knowledge": ["臺灣河川"]
+    },
+    {
+      "grade": 5, "subject": "社會", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "社會領域", "learningTopic": "家鄉與文化",
+      "learningPerformance": "能認識臺灣的著名高山與觀光資源。", "learningContent": "阿里山位於嘉義縣，以森林鐵路與日出聞名。", "competency": "能判斷阿里山所在的位置。",
+      "prompt": "阿里山森林遊樂區位於哪一個縣市附近？",
+      "options": ["嘉義縣", "屏東縣", "宜蘭縣", "花蓮縣"], "answer": 0,
+      "explanation": "阿里山位在嘉義縣山區，以雲海、日出和森林小火車聞名。",
+      "knowledge": ["臺灣觀光"]
+    },
+    {
+      "grade": 6, "subject": "社會", "questionType": "是非題", "difficulty": "基礎",
+      "curriculumDomain": "社會領域", "learningTopic": "臺灣的歷史",
+      "learningPerformance": "能認識日治時期的時間範圍。", "learningContent": "1895 年清朝將臺灣割讓給日本，到 1945 年日本戰敗。", "competency": "能判斷日治時期的起訖年代。",
+      "prompt": "臺灣的日治時期大約是從 1895 年到 1945 年。",
+      "options": ["正確", "錯誤"], "answer": 0,
+      "explanation": "1895 年甲午戰爭後清朝割讓臺灣，1945 年日本戰敗後臺灣結束日治。",
+      "knowledge": ["日治時期"]
+    },
+    {
+      "grade": 6, "subject": "社會", "questionType": "選擇題", "difficulty": "基礎",
+      "curriculumDomain": "社會領域", "learningTopic": "臺灣的歷史",
+      "learningPerformance": "能認識臺灣光復的年代。", "learningContent": "1945 年日本戰敗，臺灣結束日治時期。", "competency": "能說出臺灣光復的年代。",
+      "prompt": "臺灣結束日本統治、回歸中華民國的年代是哪一年？",
+      "options": ["1895 年", "1911 年", "1945 年", "1987 年"], "answer": 2,
+      "explanation": "1945 年日本戰敗投降，臺灣結束 50 年的日治時期。",
+      "knowledge": ["臺灣光復"]
+    },
+    {
+      "grade": 6, "subject": "社會", "questionType": "選擇題", "difficulty": "挑戰",
+      "curriculumDomain": "社會領域", "learningTopic": "臺灣的歷史",
+      "learningPerformance": "能認識臺灣解嚴的年代。", "learningContent": "1987 年臺灣宣布解除戒嚴，走向民主化。", "competency": "能說出臺灣宣布解嚴的年代。",
+      "prompt": "臺灣宣布解除戒嚴令是在哪一年？",
+      "options": ["1975 年", "1987 年", "1996 年", "2000 年"], "answer": 1,
+      "explanation": "1987 年政府宣布解除戒嚴，臺灣社會開始全面民主化。",
+      "knowledge": ["解嚴"]
+    },
+    {
+      "grade": 6, "subject": "社會", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "社會領域", "learningTopic": "臺灣的政治",
+      "learningPerformance": "能認識總統直接民選的年代。", "learningContent": "1996 年臺灣第一次總統直接民選。", "competency": "能說出第一次總統直接民選的年代。",
+      "prompt": "臺灣第一次由人民直接選舉總統是在哪一年？",
+      "options": ["1987 年", "1992 年", "1996 年", "2000 年"], "answer": 2,
+      "explanation": "1996 年舉行第一次總統直接民選，人民可以投票選出總統。",
+      "knowledge": ["總統民選"]
+    },
+    {
+      "grade": 6, "subject": "社會", "questionType": "是非題", "difficulty": "基礎",
+      "curriculumDomain": "社會領域", "learningTopic": "臺灣的位置與地理",
+      "learningPerformance": "能認識臺灣海峽的位置。", "learningContent": "臺灣海峽位於臺灣與中國大陸之間。", "competency": "能判斷臺灣海峽的位置。",
+      "prompt": "臺灣海峽位在臺灣本島的西側。",
+      "options": ["正確", "錯誤"], "answer": 0,
+      "explanation": "臺灣海峽位於臺灣本島與中國大陸之間，所以在本島西側。",
+      "knowledge": ["臺灣海峽"]
+    },
+    {
+      "grade": 6, "subject": "社會", "questionType": "選擇題", "difficulty": "基礎",
+      "curriculumDomain": "社會領域", "learningTopic": "世界地理",
+      "learningPerformance": "能認識世界面積最大的洲。", "learningContent": "亞洲是世界上面積最大的洲。", "competency": "能說出世界面積最大的洲。",
+      "prompt": "世界上面積最大的洲是哪一個？",
+      "options": ["非洲", "亞洲", "歐洲", "南美洲"], "answer": 1,
+      "explanation": "亞洲是世界上面積最大、人口最多的洲。",
+      "knowledge": ["世界地理"]
+    },
+    {
+      "grade": 6, "subject": "社會", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "社會領域", "learningTopic": "國際組織",
+      "learningPerformance": "能認識聯合國總部的位置。", "learningContent": "聯合國總部位於美國紐約。", "competency": "能說出聯合國總部所在的城市。",
+      "prompt": "聯合國總部設在哪一個城市？",
+      "options": ["美國紐約", "英國倫敦", "法國巴黎", "日本東京"], "answer": 0,
+      "explanation": "聯合國總部設在美國紐約，是國際間重要的組織。",
+      "knowledge": ["國際組織"]
+    },
+    {
+      "grade": 6, "subject": "社會", "questionType": "選擇題", "difficulty": "挑戰",
+      "curriculumDomain": "社會領域", "learningTopic": "國際交流",
+      "learningPerformance": "能認識臺灣參與的國際經貿組織。", "learningContent": "臺灣以「臺澎金馬個別關稅領域」名義加入 WTO。", "competency": "能說出臺灣參與的國際經貿組織。",
+      "prompt": "臺灣以臺澎金馬個別關稅領域的名義，加入了哪一個國際經貿組織？",
+      "options": ["世界貿易組織（WTO）", "聯合國", "世界衛生組織（WHO）", "國際奧會（IOC）"], "answer": 0,
+      "explanation": "臺灣以臺澎金馬個別關稅領域的名義加入世界貿易組織（WTO）。",
+      "knowledge": ["國際組織"]
+    },
+    {
+      "grade": 6, "subject": "社會", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "社會領域", "learningTopic": "臺灣的產業",
+      "learningPerformance": "能認識臺灣的經濟發展特色。", "learningContent": "臺灣的科技產業以半導體、電子資訊為主。", "competency": "能說出臺灣重要的出口產業。",
+      "prompt": "下列哪一個產業是臺灣近年最重要的出口產業之一？",
+      "options": ["半導體科技業", "石油開採業", "紡織手工業", "木材加工業"], "answer": 0,
+      "explanation": "臺灣的半導體與電子資訊產業在全球供應鏈中占有重要地位。",
+      "knowledge": ["臺灣產業"]
+    },
+    {
+      "grade": 6, "subject": "社會", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "社會領域", "learningTopic": "臺灣的產業",
+      "learningPerformance": "能認識臺灣經濟發展的歷程。", "learningContent": "1960 年代後臺灣設立加工出口區，帶動經濟起飛。", "competency": "能說出帶動臺灣經濟起飛的政策之一。",
+      "prompt": "1960 年代以後，政府設立了什麼來吸引投資、帶動臺灣經濟發展？",
+      "options": ["加工出口區", "國家公園", "科學博物館", "保稅漁港"], "answer": 0,
+      "explanation": "加工出口區提供優惠吸引外資設廠，帶動臺灣外銷產業快速成長。",
+      "knowledge": ["經濟發展"]
+    },
+    {
+      "grade": 6, "subject": "社會", "questionType": "選擇題", "difficulty": "挑戰",
+      "curriculumDomain": "社會領域", "learningTopic": "家鄉與文化",
+      "learningPerformance": "能認識臺灣原住民族群的數量。", "learningContent": "目前政府認定的原住民族共有 16 族。", "competency": "能說出目前官方認定的原住民族數目。",
+      "prompt": "目前政府正式認定的臺灣原住民族共有多少族？",
+      "options": ["10 族", "12 族", "16 族", "20 族"], "answer": 2,
+      "explanation": "目前官方認定的原住民族共有 16 族，是多元文化的重要部分。",
+      "knowledge": ["原住民族"]
+    },
+    {
+      "grade": 6, "subject": "社會", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "社會領域", "learningTopic": "臺灣的政治",
+      "learningPerformance": "能認識臺灣的行政區劃。", "learningContent": "臺灣有六個直轄市。", "competency": "能判斷臺灣直轄市的數量。",
+      "prompt": "目前臺灣的直轄市共有幾個？",
+      "options": ["三個", "四個", "六個", "八個"], "answer": 2,
+      "explanation": "目前臺灣有臺北、新北、桃園、臺中、臺南、高雄共六個直轄市。",
+      "knowledge": ["行政區"]
+    },
+    {
+      "grade": 6, "subject": "社會", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "社會領域", "learningTopic": "世界地理",
+      "learningPerformance": "能認識氣候帶與國家分布。", "learningContent": "日本、韓國位於溫帶地區。", "competency": "能判斷日本、韓國屬於哪一個氣候帶。",
+      "prompt": "日本和韓國大部分地區屬於哪一個氣候帶？",
+      "options": ["溫帶", "熱帶", "寒帶", "副極地"], "answer": 0,
+      "explanation": "日本與韓國位於中緯度，大部分地區屬於溫帶氣候。",
+      "knowledge": ["世界地理", "氣候帶"]
+    },
+    {
+      "grade": 6, "subject": "社會", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "社會領域", "learningTopic": "世界地理",
+      "learningPerformance": "能認識赤道附近的地區。", "learningContent": "赤道附近主要為熱帶地區，如東南亞。", "competency": "能判斷赤道穿過的地區。",
+      "prompt": "赤道附近主要屬於哪一種氣候？",
+      "options": ["熱帶氣候", "溫帶氣候", "寒帶氣候", "沙漠氣候"], "answer": 0,
+      "explanation": "赤道附近陽光強烈、終年高溫多雨，多為熱帶氣候。",
+      "knowledge": ["赤道"]
+    },
+    {
+      "grade": 6, "subject": "社會", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "社會領域", "learningTopic": "權利與責任",
+      "learningPerformance": "能認識保障人民基本權利的文件。", "learningContent": "《世界人權宣言》保障人民的基本權利。", "competency": "能說出保障基本人權的重要文件。",
+      "prompt": "聯合國通過、用來保障全世界人民基本權利的重要文件是什麼？",
+      "options": ["世界人權宣言", "和平條約", "環境公約", "航海憲章"], "answer": 0,
+      "explanation": "1948 年聯合國通過《世界人權宣言》，宣告人人享有基本權利。",
+      "knowledge": ["人權"]
+    },
+    {
+      "grade": 6, "subject": "社會", "questionType": "是非題", "difficulty": "基礎",
+      "curriculumDomain": "社會領域", "learningTopic": "權利與責任",
+      "learningPerformance": "能認識憲法與基本人權。", "learningContent": "憲法保障人民的基本權利。", "competency": "能判斷憲法與人權的關係。",
+      "prompt": "憲法是國家的根本大法，用來保障人民的基本權利。",
+      "options": ["正確", "錯誤"], "answer": 0,
+      "explanation": "憲法規定政府的組織與人民的基本權利義務，是國家的根本大法。",
+      "knowledge": ["憲法"]
+    },
+    {
+      "grade": 6, "subject": "社會", "questionType": "選擇題", "difficulty": "標準",
+      "curriculumDomain": "社會領域", "learningTopic": "國際交流",
+      "learningPerformance": "能認識臺灣的國際角色。", "learningContent": "臺灣曾與韓國、香港、新加坡並稱亞洲四小龍。", "competency": "能說出亞洲四小龍包含的地區。",
+      "prompt": "亞洲四小龍除了臺灣、韓國、新加坡之外，還包括哪一個地區？",
+      "options": ["香港", "澳門", "日本", "泰國"], "answer": 0,
+      "explanation": "亞洲四小龍是指臺灣、韓國、新加坡與香港，經濟發展快速。",
+      "knowledge": ["亞洲四小龍"]
+    },
+    {
+      "grade": 6, "subject": "社會", "questionType": "是非題", "difficulty": "基礎",
+      "curriculumDomain": "社會領域", "learningTopic": "臺灣的政治",
+      "learningPerformance": "能認識民主政治的特色。", "learningContent": "民主國家透過定期選舉由人民選出代表。", "competency": "能判斷定期選舉與民主政治的關係。",
+      "prompt": "在民主國家，人民可以透過定期選舉選出民意代表和政府首長。",
+      "options": ["正確", "錯誤"], "answer": 0,
+      "explanation": "定期舉辦選舉、人民投票決定代表，是民主政治的重要特徵。",
+      "knowledge": ["民主政治"]
+    }
+  ]
+}

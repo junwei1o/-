@@ -20,7 +20,7 @@
     "標準",
     "挑戰"
   ],
-  "questionCount": 948,
+  "questionCount": 1090,
   "questions": [
     {
       "id": "q001",
@@ -22857,6 +22857,3385 @@
         "樣本數"
       ],
       "id": "q948"
+    },
+    {
+      "id": "q949",
+      "grade": 5,
+      "subject": "數學",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "數學領域",
+      "learningTopic": "因數與倍數",
+      "learningPerformance": "能辨識質數與合數並說明差異。",
+      "learningContent": "分辨質數與合數的定義，並判斷一個數的質數性。",
+      "competency": "能正確判斷一個數是否為質數。",
+      "prompt": "下列哪一個數是質數？",
+      "options": [
+        "21",
+        "33",
+        "37",
+        "49"
+      ],
+      "answer": 2,
+      "explanation": "37 只能被 1 和 37 整除，是質數；21＝3×7、33＝3×11、49＝7×7 都是合數。",
+      "knowledge": [
+        "質數",
+        "合數"
+      ]
+    },
+    {
+      "id": "q950",
+      "grade": 5,
+      "subject": "數學",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "數學領域",
+      "learningTopic": "因數與倍數",
+      "learningPerformance": "能求出兩個數的最大公因數。",
+      "learningContent": "用列舉法或短除法找出最大公因數。",
+      "competency": "能求出 12 和 18 的最大公因數。",
+      "prompt": "12 和 18 的最大公因數是多少？",
+      "options": [
+        "3",
+        "6",
+        "9",
+        "36"
+      ],
+      "answer": 1,
+      "explanation": "12 的因數有 1、2、3、4、6、12；18 的因數有 1、2、3、6、9、18。共同的因數中最大的是 6。",
+      "knowledge": [
+        "最大公因數"
+      ]
+    },
+    {
+      "id": "q951",
+      "grade": 5,
+      "subject": "數學",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "數學領域",
+      "learningTopic": "因數與倍數",
+      "learningPerformance": "能求出兩個數的最小公倍數。",
+      "learningContent": "用列舉法或短除法找出最小公倍數。",
+      "competency": "能求出 6 和 8 的最小公倍數。",
+      "prompt": "6 和 8 的最小公倍數是多少？",
+      "options": [
+        "14",
+        "24",
+        "48",
+        "96"
+      ],
+      "answer": 1,
+      "explanation": "6 的倍數有 6、12、18、24、30…；8 的倍數有 8、16、24、32…。最小的共同倍數是 24。",
+      "knowledge": [
+        "最小公倍數"
+      ]
+    },
+    {
+      "id": "q952",
+      "grade": 5,
+      "subject": "數學",
+      "questionType": "是非題",
+      "difficulty": "基礎",
+      "curriculumDomain": "數學領域",
+      "learningTopic": "因數與倍數",
+      "learningPerformance": "能利用整除規則判斷倍數。",
+      "learningContent": "應用 3 的倍數判別法判斷一個數是否為 3 的倍數。",
+      "competency": "能判斷 72 是否為 3 的倍數。",
+      "prompt": "72 是 3 的倍數。",
+      "options": [
+        "正確",
+        "錯誤"
+      ],
+      "answer": 0,
+      "explanation": "72 的數字和是 7＋2＝9，9 是 3 的倍數，所以 72 是 3 的倍數。",
+      "knowledge": [
+        "倍數判別"
+      ]
+    },
+    {
+      "id": "q953",
+      "grade": 5,
+      "subject": "數學",
+      "questionType": "選擇題",
+      "difficulty": "基礎",
+      "curriculumDomain": "數學領域",
+      "learningTopic": "分數",
+      "learningPerformance": "能做異分母分數的加法。",
+      "learningContent": "先通分再相加，並將結果化成最簡分數。",
+      "competency": "能計算 1/2＋1/3 的結果。",
+      "prompt": "1/2＋1/3 的結果是多少？",
+      "options": [
+        "2/5",
+        "5/6",
+        "2/6",
+        "1/6"
+      ],
+      "answer": 1,
+      "explanation": "先通分成 3/6＋2/6＝5/6，不能再約分，所以答案是 5/6。",
+      "knowledge": [
+        "異分母加法",
+        "通分"
+      ]
+    },
+    {
+      "id": "q954",
+      "grade": 5,
+      "subject": "數學",
+      "questionType": "選擇題",
+      "difficulty": "基礎",
+      "curriculumDomain": "數學領域",
+      "learningTopic": "分數",
+      "learningPerformance": "能將分數約分成最簡分數。",
+      "learningContent": "找出分子與分母的最大公因數並約分。",
+      "competency": "能將 12/18 約分成最簡分數。",
+      "prompt": "12/18 約分後的最簡分數是多少？",
+      "options": [
+        "4/6",
+        "2/3",
+        "6/9",
+        "1/2"
+      ],
+      "answer": 1,
+      "explanation": "12 和 18 的最大公因數是 6，分子分母同除以 6 得 2/3。",
+      "knowledge": [
+        "約分",
+        "最簡分數"
+      ]
+    },
+    {
+      "id": "q955",
+      "grade": 5,
+      "subject": "數學",
+      "questionType": "是非題",
+      "difficulty": "基礎",
+      "curriculumDomain": "數學領域",
+      "learningTopic": "分數",
+      "learningPerformance": "能進行分數的擴分。",
+      "learningContent": "將分子分母同乘以一個數得到等值分數。",
+      "competency": "能判斷擴分後的分數是否等值。",
+      "prompt": "3/4 擴分成以 12 為分母後是 9/12。",
+      "options": [
+        "正確",
+        "錯誤"
+      ],
+      "answer": 0,
+      "explanation": "分母 4 擴成 12 要乘以 3，分子 3 也要乘以 3 得 9，所以 3/4＝9/12。",
+      "knowledge": [
+        "擴分"
+      ]
+    },
+    {
+      "id": "q956",
+      "grade": 5,
+      "subject": "數學",
+      "questionType": "選擇題",
+      "difficulty": "挑戰",
+      "curriculumDomain": "數學領域",
+      "learningTopic": "分數",
+      "learningPerformance": "能比較異分母分數的大小。",
+      "learningContent": "通分後比較分子大小。",
+      "competency": "能比較 1/3 與 2/5 的大小。",
+      "prompt": "下列哪一個分數比較大？",
+      "options": [
+        "1/3",
+        "2/5",
+        "一樣大",
+        "無法比較"
+      ],
+      "answer": 1,
+      "explanation": "通分成 5/15 和 6/15，6/15 較大，所以 2/5 比較大。",
+      "knowledge": [
+        "分數比較",
+        "通分"
+      ]
+    },
+    {
+      "id": "q957",
+      "grade": 5,
+      "subject": "數學",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "數學領域",
+      "learningTopic": "小數乘法",
+      "learningPerformance": "能計算小數的乘法。",
+      "learningContent": "先忽略小數點相乘，再依小數位數點上小數點。",
+      "competency": "能計算 0.3×0.4 的結果。",
+      "prompt": "0.3×0.4 的結果是多少？",
+      "options": [
+        "1.2",
+        "0.12",
+        "0.012",
+        "12"
+      ],
+      "answer": 1,
+      "explanation": "3×4＝12，兩個乘數共有兩位小數，所以答案是 0.12。",
+      "knowledge": [
+        "小數乘法"
+      ]
+    },
+    {
+      "id": "q958",
+      "grade": 5,
+      "subject": "數學",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "數學領域",
+      "learningTopic": "面積計算",
+      "learningPerformance": "能運用平行四邊形面積公式。",
+      "learningContent": "平行四邊形面積＝底×高。",
+      "competency": "能求出底 8、高 5 的平行四邊形面積。",
+      "prompt": "底邊長 8 公分、高 5 公分的平行四邊形，面積是多少平方公分？",
+      "options": [
+        "20",
+        "26",
+        "40",
+        "80"
+      ],
+      "answer": 2,
+      "explanation": "平行四邊形面積＝底×高＝8×5＝40 平方公分。",
+      "knowledge": [
+        "平行四邊形面積"
+      ]
+    },
+    {
+      "id": "q959",
+      "grade": 5,
+      "subject": "數學",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "數學領域",
+      "learningTopic": "面積計算",
+      "learningPerformance": "能運用三角形面積公式。",
+      "learningContent": "三角形面積＝底×高÷2。",
+      "competency": "能求出底 10、高 6 的三角形面積。",
+      "prompt": "底邊長 10 公分、高 6 公分的三角形，面積是多少平方公分？",
+      "options": [
+        "60",
+        "30",
+        "16",
+        "15"
+      ],
+      "answer": 1,
+      "explanation": "三角形面積＝底×高÷2＝10×6÷2＝30 平方公分。",
+      "knowledge": [
+        "三角形面積"
+      ]
+    },
+    {
+      "id": "q960",
+      "grade": 5,
+      "subject": "數學",
+      "questionType": "選擇題",
+      "difficulty": "挑戰",
+      "curriculumDomain": "數學領域",
+      "learningTopic": "面積計算",
+      "learningPerformance": "能運用梯形面積公式。",
+      "learningContent": "梯形面積＝（上底＋下底）×高÷2。",
+      "competency": "能求出上底 3、下底 7、高 4 的梯形面積。",
+      "prompt": "上底 3 公分、下底 7 公分、高 4 公分的梯形，面積是多少平方公分？",
+      "options": [
+        "20",
+        "40",
+        "14",
+        "10"
+      ],
+      "answer": 0,
+      "explanation": "（上底＋下底）×高÷2＝（3＋7）×4÷2＝20 平方公分。",
+      "knowledge": [
+        "梯形面積"
+      ]
+    },
+    {
+      "id": "q961",
+      "grade": 5,
+      "subject": "數學",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "數學領域",
+      "learningTopic": "體積",
+      "learningPerformance": "能計算長方體的體積。",
+      "learningContent": "長方體體積＝長×寬×高。",
+      "competency": "能求出長 4、寬 3、高 2 的長方體體積。",
+      "prompt": "長 4 公分、寬 3 公分、高 2 公分的長方體，體積是多少立方公分？",
+      "options": [
+        "9",
+        "24",
+        "20",
+        "12"
+      ],
+      "answer": 1,
+      "explanation": "長方體體積＝長×寬×高＝4×3×2＝24 立方公分。",
+      "knowledge": [
+        "長方體體積"
+      ]
+    },
+    {
+      "id": "q962",
+      "grade": 5,
+      "subject": "數學",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "數學領域",
+      "learningTopic": "體積",
+      "learningPerformance": "能計算正方體的體積。",
+      "learningContent": "正方體體積＝邊長×邊長×邊長。",
+      "competency": "能求出邊長 5 公分的正方體體積。",
+      "prompt": "邊長 5 公分的正方體，體積是多少立方公分？",
+      "options": [
+        "15",
+        "25",
+        "125",
+        "250"
+      ],
+      "answer": 2,
+      "explanation": "5×5×5＝125 立方公分。",
+      "knowledge": [
+        "正方體體積"
+      ]
+    },
+    {
+      "id": "q963",
+      "grade": 5,
+      "subject": "數學",
+      "questionType": "選擇題",
+      "difficulty": "基礎",
+      "curriculumDomain": "數學領域",
+      "learningTopic": "時間計算",
+      "learningPerformance": "能進行時間單位的換算。",
+      "learningContent": "1 小時＝60 分鐘，將分鐘換算成幾小時幾分鐘。",
+      "competency": "能將 150 分鐘換算成幾小時幾分鐘。",
+      "prompt": "150 分鐘等於幾小時幾分鐘？",
+      "options": [
+        "1 小時 50 分",
+        "2 小時 30 分",
+        "1 小時 30 分",
+        "2 小時 50 分"
+      ],
+      "answer": 1,
+      "explanation": "150 分鐘＝120 分鐘＋30 分鐘＝2 小時 30 分。",
+      "knowledge": [
+        "時間換算"
+      ]
+    },
+    {
+      "id": "q964",
+      "grade": 5,
+      "subject": "數學",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "數學領域",
+      "learningTopic": "百分比與生活應用",
+      "learningPerformance": "能理解百分率的意義並進行換算。",
+      "learningContent": "百分率表示分母為 100 的分數。",
+      "competency": "能將 25% 換算成分數。",
+      "prompt": "25% 換算成分數是多少？",
+      "options": [
+        "1/2",
+        "1/4",
+        "1/5",
+        "1/25"
+      ],
+      "answer": 1,
+      "explanation": "25%＝25/100，約分後是 1/4。",
+      "knowledge": [
+        "百分率",
+        "分數換算"
+      ]
+    },
+    {
+      "id": "q965",
+      "grade": 5,
+      "subject": "數學",
+      "questionType": "選擇題",
+      "difficulty": "挑戰",
+      "curriculumDomain": "數學領域",
+      "learningTopic": "百分比與生活應用",
+      "learningPerformance": "能應用百分率解決生活問題。",
+      "learningContent": "求某數的百分之幾是多少。",
+      "competency": "能算出全班 40 人中男生占 45% 的人數。",
+      "prompt": "全班有 40 人，男生占 45%，男生有多少人？",
+      "options": [
+        "18 人",
+        "20 人",
+        "16 人",
+        "22 人"
+      ],
+      "answer": 0,
+      "explanation": "40×45%＝40×0.45＝18 人。",
+      "knowledge": [
+        "百分率應用"
+      ]
+    },
+    {
+      "id": "q966",
+      "grade": 5,
+      "subject": "數學",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "數學領域",
+      "learningTopic": "速率",
+      "learningPerformance": "能利用速率公式計算距離。",
+      "learningContent": "距離＝速率×時間。",
+      "competency": "能算出時速 60 公里、行駛 2.5 小時的距離。",
+      "prompt": "一輛車以時速 60 公里行駛 2.5 小時，共行駛多少公里？",
+      "options": [
+        "120 公里",
+        "150 公里",
+        "160 公里",
+        "180 公里"
+      ],
+      "answer": 1,
+      "explanation": "距離＝速率×時間＝60×2.5＝150 公里。",
+      "knowledge": [
+        "速率"
+      ]
+    },
+    {
+      "id": "q967",
+      "grade": 6,
+      "subject": "數學",
+      "questionType": "選擇題",
+      "difficulty": "基礎",
+      "curriculumDomain": "數學領域",
+      "learningTopic": "比例",
+      "learningPerformance": "能將比化成最簡單整數比。",
+      "learningContent": "比的前項與後項同除以公因數化簡。",
+      "competency": "能將 12:18 化簡成最簡單整數比。",
+      "prompt": "12:18 化成最簡單整數比是多少？",
+      "options": [
+        "2:3",
+        "3:2",
+        "6:9",
+        "4:6"
+      ],
+      "answer": 0,
+      "explanation": "12 和 18 的最大公因數是 6，同除以 6 得 2:3。",
+      "knowledge": [
+        "比的化簡"
+      ]
+    },
+    {
+      "id": "q968",
+      "grade": 6,
+      "subject": "數學",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "數學領域",
+      "learningTopic": "比例",
+      "learningPerformance": "能解比例式中的未知數。",
+      "learningContent": "利用比例式中外項乘積等於內項乘積來求解。",
+      "competency": "能求出比例式 x:6＝2:3 中的 x。",
+      "prompt": "比例式 x:6＝2:3，x 是多少？",
+      "options": [
+        "3",
+        "4",
+        "6",
+        "9"
+      ],
+      "answer": 1,
+      "explanation": "外項乘積＝內項乘積：3x＝12，所以 x＝4。",
+      "knowledge": [
+        "比例式"
+      ]
+    },
+    {
+      "id": "q969",
+      "grade": 6,
+      "subject": "數學",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "數學領域",
+      "learningTopic": "周長計算",
+      "learningPerformance": "能運用圓周長公式。",
+      "learningContent": "圓周長＝直徑×圓周率（π≈3.14）。",
+      "competency": "能算出直徑 10 公分的圓周長。",
+      "prompt": "直徑 10 公分的圓，圓周長大約是多少公分？（圓周率用 3.14）",
+      "options": [
+        "31.4",
+        "62.8",
+        "15.7",
+        "78.5"
+      ],
+      "answer": 0,
+      "explanation": "圓周長＝直徑×3.14＝10×3.14＝31.4 公分。",
+      "knowledge": [
+        "圓周長",
+        "圓周率"
+      ]
+    },
+    {
+      "id": "q970",
+      "grade": 6,
+      "subject": "數學",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "數學領域",
+      "learningTopic": "周長計算",
+      "learningPerformance": "能運用圓面積公式。",
+      "learningContent": "圓面積＝半徑×半徑×圓周率。",
+      "competency": "能算出半徑 5 公分的圓面積。",
+      "prompt": "半徑 5 公分的圓，面積大約是多少平方公分？（圓周率用 3.14）",
+      "options": [
+        "78.5",
+        "31.4",
+        "157",
+        "25"
+      ],
+      "answer": 0,
+      "explanation": "圓面積＝5×5×3.14＝78.5 平方公分。",
+      "knowledge": [
+        "圓面積"
+      ]
+    },
+    {
+      "id": "q971",
+      "grade": 6,
+      "subject": "數學",
+      "questionType": "選擇題",
+      "difficulty": "挑戰",
+      "curriculumDomain": "數學領域",
+      "learningTopic": "面積計算",
+      "learningPerformance": "能計算扇形的面積。",
+      "learningContent": "扇形面積＝圓面積×圓心角/360。",
+      "competency": "能算出半徑 4、圓心角 90° 的扇形面積。",
+      "prompt": "半徑 4 公分、圓心角 90° 的扇形，面積大約是多少平方公分？（圓周率用 3.14）",
+      "options": [
+        "12.56",
+        "25.12",
+        "50.24",
+        "6.28"
+      ],
+      "answer": 0,
+      "explanation": "圓面積＝4×4×3.14＝50.24，90° 是 360° 的 1/4，所以扇形面積＝50.24÷4＝12.56 平方公分。",
+      "knowledge": [
+        "扇形面積"
+      ]
+    },
+    {
+      "id": "q972",
+      "grade": 6,
+      "subject": "數學",
+      "questionType": "選擇題",
+      "difficulty": "基礎",
+      "curriculumDomain": "數學領域",
+      "learningTopic": "比例",
+      "learningPerformance": "能解決正比關係的問題。",
+      "learningContent": "兩量成正比時，一量增加另一量也依固定比例增加。",
+      "competency": "能依筆的價錢算出 5 枝筆的價錢。",
+      "prompt": "2 枝筆賣 30 元，照同樣價錢，5 枝筆賣多少元？",
+      "options": [
+        "60 元",
+        "75 元",
+        "90 元",
+        "80 元"
+      ],
+      "answer": 1,
+      "explanation": "1 枝筆 15 元，5 枝筆＝15×5＝75 元。",
+      "knowledge": [
+        "正比"
+      ]
+    },
+    {
+      "id": "q973",
+      "grade": 6,
+      "subject": "數學",
+      "questionType": "是非題",
+      "difficulty": "基礎",
+      "curriculumDomain": "數學領域",
+      "learningTopic": "比例",
+      "learningPerformance": "能辨識反比關係。",
+      "learningContent": "面積固定時，長變大則寬變小，兩量成反比。",
+      "competency": "能判斷長方形的長與寬是否成反比。",
+      "prompt": "長方形面積固定時，長越長，寬就越短，兩者成反比。",
+      "options": [
+        "正確",
+        "錯誤"
+      ],
+      "answer": 0,
+      "explanation": "面積＝長×寬固定時，長增加多少倍，寬就縮小多少倍，這是反比關係。",
+      "knowledge": [
+        "反比"
+      ]
+    },
+    {
+      "id": "q974",
+      "grade": 6,
+      "subject": "數學",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "數學領域",
+      "learningTopic": "百分比與生活應用",
+      "learningPerformance": "能計算折扣後的價錢。",
+      "learningContent": "打八折表示售價為原價的 80%。",
+      "competency": "能算出原價 200 元打八折的價錢。",
+      "prompt": "一件原價 200 元的衣服打八折，售價是多少元？",
+      "options": [
+        "160 元",
+        "180 元",
+        "140 元",
+        "120 元"
+      ],
+      "answer": 0,
+      "explanation": "打八折＝原價×80%＝200×0.8＝160 元。",
+      "knowledge": [
+        "折扣"
+      ]
+    },
+    {
+      "id": "q975",
+      "grade": 6,
+      "subject": "數學",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "數學領域",
+      "learningTopic": "折扣與順序運算",
+      "learningPerformance": "能計算加成後的價錢。",
+      "learningContent": "加三成表示在原價上再多 30%。",
+      "competency": "能算出成本 500 元加三成的售價。",
+      "prompt": "老闆把成本 500 元的商品加三成賣出，售價是多少元？",
+      "options": [
+        "530 元",
+        "650 元",
+        "600 元",
+        "550 元"
+      ],
+      "answer": 1,
+      "explanation": "加三成＝成本×（1＋30%）＝500×1.3＝650 元。",
+      "knowledge": [
+        "加成"
+      ]
+    },
+    {
+      "id": "q976",
+      "grade": 6,
+      "subject": "數學",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "數學領域",
+      "learningTopic": "速率",
+      "learningPerformance": "能進行速率單位的換算。",
+      "learningContent": "1 分鐘＝60 秒，秒速乘 60 即為分速。",
+      "competency": "能把秒速 5 公尺換算成分速。",
+      "prompt": "秒速 5 公尺等於分速多少公尺？",
+      "options": [
+        "60 公尺",
+        "300 公尺",
+        "500 公尺",
+        "30 公尺"
+      ],
+      "answer": 1,
+      "explanation": "1 分鐘有 60 秒，5×60＝300，所以是分速 300 公尺。",
+      "knowledge": [
+        "速率換算"
+      ]
+    },
+    {
+      "id": "q977",
+      "grade": 6,
+      "subject": "數學",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "數學領域",
+      "learningTopic": "平均數",
+      "learningPerformance": "能利用平均數反推總和。",
+      "learningContent": "總和＝平均數×個數。",
+      "competency": "能算出 5 個數平均 12 時的總和。",
+      "prompt": "5 個數的平均數是 12，這 5 個數的總和是多少？",
+      "options": [
+        "50",
+        "60",
+        "72",
+        "17"
+      ],
+      "answer": 1,
+      "explanation": "總和＝平均數×個數＝12×5＝60。",
+      "knowledge": [
+        "平均數"
+      ]
+    },
+    {
+      "id": "q978",
+      "grade": 6,
+      "subject": "數學",
+      "questionType": "選擇題",
+      "difficulty": "挑戰",
+      "curriculumDomain": "數學領域",
+      "learningTopic": "資料與不確定性",
+      "learningPerformance": "能找出資料的中位數。",
+      "learningContent": "將資料由小到大排列，取正中間的數。",
+      "competency": "能找出 1、3、3、5、8 的中位數。",
+      "prompt": "資料 1、3、3、5、8 的中位數是多少？",
+      "options": [
+        "1",
+        "3",
+        "5",
+        "4"
+      ],
+      "answer": 1,
+      "explanation": "共有 5 個數，排第 3 個的是正中間，數值是 3。",
+      "knowledge": [
+        "中位數"
+      ]
+    },
+    {
+      "id": "q979",
+      "grade": 6,
+      "subject": "數學",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "數學領域",
+      "learningTopic": "百分比與生活應用",
+      "learningPerformance": "能將分數換算成百分率。",
+      "learningContent": "將分數化成分母為 100 的形式。",
+      "competency": "能將 18/24 換算成百分率。",
+      "prompt": "18/24 換算成百分率是多少？",
+      "options": [
+        "60%",
+        "75%",
+        "80%",
+        "65%"
+      ],
+      "answer": 1,
+      "explanation": "18÷24＝0.75＝75%。",
+      "knowledge": [
+        "百分率換算"
+      ]
+    },
+    {
+      "id": "q980",
+      "grade": 6,
+      "subject": "數學",
+      "questionType": "是非題",
+      "difficulty": "基礎",
+      "curriculumDomain": "數學領域",
+      "learningTopic": "周長計算",
+      "learningPerformance": "能理解圓周率的意義。",
+      "learningContent": "圓周長除以直徑的商固定是圓周率。",
+      "competency": "能判斷圓周率的定義是否正確。",
+      "prompt": "任意圓的圓周長除以直徑，得到的商大約都是 3.14。",
+      "options": [
+        "正確",
+        "錯誤"
+      ],
+      "answer": 0,
+      "explanation": "圓周長÷直徑＝圓周率，任何圓的圓周率都相同，約為 3.14。",
+      "knowledge": [
+        "圓周率"
+      ]
+    },
+    {
+      "id": "q981",
+      "grade": 6,
+      "subject": "數學",
+      "questionType": "選擇題",
+      "difficulty": "基礎",
+      "curriculumDomain": "數學領域",
+      "learningTopic": "比例",
+      "learningPerformance": "能求出比的比值。",
+      "learningContent": "比值＝前項÷後項。",
+      "competency": "能求出 3:5 的比值。",
+      "prompt": "3:5 的比值是多少？",
+      "options": [
+        "3/5",
+        "5/3",
+        "2/5",
+        "3/8"
+      ],
+      "answer": 0,
+      "explanation": "比值＝前項÷後項＝3÷5＝3/5。",
+      "knowledge": [
+        "比值"
+      ]
+    },
+    {
+      "id": "q982",
+      "grade": 6,
+      "subject": "數學",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "數學領域",
+      "learningTopic": "資料與不確定性",
+      "learningPerformance": "能找出資料的眾數。",
+      "learningContent": "出現次數最多的數稱為眾數。",
+      "competency": "能找出資料 2、2、3、3、3、4 的眾數。",
+      "prompt": "資料 2、2、3、3、3、4 中，眾數是多少？",
+      "options": [
+        "2",
+        "3",
+        "4",
+        "沒有眾數"
+      ],
+      "answer": 1,
+      "explanation": "3 出現 3 次最多，所以眾數是 3。",
+      "knowledge": [
+        "眾數"
+      ]
+    },
+    {
+      "id": "q983",
+      "grade": 5,
+      "subject": "自然",
+      "questionType": "選擇題",
+      "difficulty": "基礎",
+      "curriculumDomain": "自然科學領域",
+      "learningTopic": "物質特性",
+      "learningPerformance": "能說出燃燒所需要的三個條件。",
+      "learningContent": "燃燒需要可燃物、助燃物（空氣）與達到燃點。",
+      "competency": "能辨識燃燒的三要素。",
+      "prompt": "燃燒需要三個條件，下列哪一項不是燃燒的必要條件？",
+      "options": [
+        "可燃物",
+        "助燃物",
+        "達到燃點",
+        "用水澆溼"
+      ],
+      "answer": 3,
+      "explanation": "燃燒需要可燃物、助燃物與達到燃點；用水澆溼是滅火的方法，不是燃燒的條件。",
+      "knowledge": [
+        "燃燒條件"
+      ]
+    },
+    {
+      "id": "q984",
+      "grade": 5,
+      "subject": "自然",
+      "questionType": "是非題",
+      "difficulty": "基礎",
+      "curriculumDomain": "自然科學領域",
+      "learningTopic": "物質特性",
+      "learningPerformance": "能了解滅火的基本原理。",
+      "learningContent": "用水滅火主要靠降溫與隔絕空氣。",
+      "competency": "能判斷用水滅火的原理。",
+      "prompt": "用水澆熄火焰，主要是利用水降低溫度來滅火。",
+      "options": [
+        "正確",
+        "錯誤"
+      ],
+      "answer": 0,
+      "explanation": "水會吸收熱量降低溫度，使燃燒物無法維持燃點而熄滅。",
+      "knowledge": [
+        "滅火原理"
+      ]
+    },
+    {
+      "id": "q985",
+      "grade": 5,
+      "subject": "自然",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "自然科學領域",
+      "learningTopic": "物質特性",
+      "learningPerformance": "能了解蠟燭燃燒的產物。",
+      "learningContent": "蠟燭燃燒會產生二氧化碳與水。",
+      "competency": "能說出蠟燭燃燒的主要產物。",
+      "prompt": "蠟燭燃燒時，主要的產物是什麼？",
+      "options": [
+        "二氧化碳和水",
+        "氧氣和水",
+        "二氧化碳和氧氣",
+        "氮氣和水"
+      ],
+      "answer": 0,
+      "explanation": "蠟燭裡的蠟與空氣中的氧氣燃燒，主要產生二氧化碳和水。",
+      "knowledge": [
+        "燃燒產物"
+      ]
+    },
+    {
+      "id": "q986",
+      "grade": 5,
+      "subject": "自然",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "自然科學領域",
+      "learningTopic": "溶解",
+      "learningPerformance": "能說明糖溶解在水中的現象。",
+      "learningContent": "糖溶解後以極小的顆粒均勻分布在水中。",
+      "competency": "能解釋糖水變甜的原因。",
+      "prompt": "把糖放進水中攪拌後整杯水都變甜，主要原因是什麼？",
+      "options": [
+        "糖顆粒沉在杯底",
+        "糖的顆粒均勻分布在水中",
+        "水把糖變成水",
+        "糖蒸發到空氣中"
+      ],
+      "answer": 1,
+      "explanation": "糖溶解後，糖的顆粒會均勻散布在水中，所以整杯水都變甜。",
+      "knowledge": [
+        "溶解"
+      ]
+    },
+    {
+      "id": "q987",
+      "grade": 5,
+      "subject": "自然",
+      "questionType": "是非題",
+      "difficulty": "標準",
+      "curriculumDomain": "自然科學領域",
+      "learningTopic": "溶解",
+      "learningPerformance": "能了解飽和溶液的意義。",
+      "learningContent": "水溶解糖的量有極限，達到極限後無法再溶解更多。",
+      "competency": "能判斷飽和溶液的現象。",
+      "prompt": "一杯水已經溶到不能再溶解更多糖時，再加入糖也不會再溶解。",
+      "options": [
+        "正確",
+        "錯誤"
+      ],
+      "answer": 0,
+      "explanation": "在一定水量中能溶解的糖量有限，達到飽和後再加入糖就不會溶解。",
+      "knowledge": [
+        "飽和溶液"
+      ]
+    },
+    {
+      "id": "q988",
+      "grade": 5,
+      "subject": "自然",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "自然科學領域",
+      "learningTopic": "溶解",
+      "learningPerformance": "能探討溫度對溶解量的影響。",
+      "learningContent": "一般來說水溫升高，糖的溶解量會增加。",
+      "competency": "能判斷溫度對糖溶解量的影響。",
+      "prompt": "下列哪一種情況，糖在水中的溶解量通常會比較多？",
+      "options": [
+        "冰水",
+        "溫水",
+        "兩者一樣",
+        "無法比較"
+      ],
+      "answer": 1,
+      "explanation": "水溫升高時，糖的溶解量通常會增加，所以溫水中能溶的糖比較多。",
+      "knowledge": [
+        "溶解與溫度"
+      ]
+    },
+    {
+      "id": "q989",
+      "grade": 5,
+      "subject": "自然",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "自然科學領域",
+      "learningTopic": "混合物與溶液",
+      "learningPerformance": "能辨識常見水溶液的酸鹼性。",
+      "learningContent": "醋、檸檬汁是酸性；肥皂水、小蘇打水是鹼性。",
+      "competency": "能判斷醋的酸鹼性。",
+      "prompt": "下列哪一種水溶液是酸性？",
+      "options": [
+        "肥皂水",
+        "醋",
+        "小蘇打水",
+        "自來水"
+      ],
+      "answer": 1,
+      "explanation": "醋含有醋酸，屬於酸性水溶液；肥皂水和小蘇打水屬於鹼性。",
+      "knowledge": [
+        "酸鹼性"
+      ]
+    },
+    {
+      "id": "q990",
+      "grade": 5,
+      "subject": "自然",
+      "questionType": "選擇題",
+      "difficulty": "挑戰",
+      "curriculumDomain": "自然科學領域",
+      "learningTopic": "混合物與溶液",
+      "learningPerformance": "能利用指示劑判斷酸鹼性。",
+      "learningContent": "紫色高麗菜汁遇酸性變紅、遇鹼性變綠或藍。",
+      "competency": "能判斷紫色高麗菜汁遇酸性溶液的變化。",
+      "prompt": "把紫色高麗菜汁滴入酸性溶液中，顏色會變成什麼顏色？",
+      "options": [
+        "紅色",
+        "藍色",
+        "綠色",
+        "不變色"
+      ],
+      "answer": 0,
+      "explanation": "紫色高麗菜汁遇酸性溶液會變成偏紅色。",
+      "knowledge": [
+        "酸鹼指示劑"
+      ]
+    },
+    {
+      "id": "q991",
+      "grade": 5,
+      "subject": "自然",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "自然科學領域",
+      "learningTopic": "天文觀測",
+      "learningPerformance": "能了解月相變化的週期。",
+      "learningContent": "月相變化大約以一個月為週期。",
+      "competency": "能說出月相變化的週期長短。",
+      "prompt": "月相從新月到滿月再回到新月，大約需要多少時間？",
+      "options": [
+        "一天",
+        "一星期",
+        "一個月",
+        "一年"
+      ],
+      "answer": 2,
+      "explanation": "月相變化大約以一個月（約 29.5 天）為週期。",
+      "knowledge": [
+        "月相週期"
+      ]
+    },
+    {
+      "id": "q992",
+      "grade": 5,
+      "subject": "自然",
+      "questionType": "選擇題",
+      "difficulty": "基礎",
+      "curriculumDomain": "自然科學領域",
+      "learningTopic": "天文觀測",
+      "learningPerformance": "能認識滿月的月相。",
+      "learningContent": "農曆十五前後可見滿月，月亮亮面全部面向地球。",
+      "competency": "能判斷農曆十五前後的月相。",
+      "prompt": "農曆十五前後，我們看到的月相是什麼？",
+      "options": [
+        "新月",
+        "滿月",
+        "上弦月",
+        "下弦月"
+      ],
+      "answer": 1,
+      "explanation": "農曆十五前後月亮亮面全部面向地球，是滿月。",
+      "knowledge": [
+        "滿月"
+      ]
+    },
+    {
+      "id": "q993",
+      "grade": 5,
+      "subject": "自然",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "自然科學領域",
+      "learningTopic": "天文觀測",
+      "learningPerformance": "能了解一天中太陽位置與高度的變化。",
+      "learningContent": "太陽在一天中從東邊升起、西邊落下，正午時高度最高。",
+      "competency": "能判斷一天中太陽位置最高的時間。",
+      "prompt": "一天當中，太陽在天空中的位置最高的時間大約是什麼時候？",
+      "options": [
+        "清晨",
+        "正午",
+        "傍晚",
+        "半夜"
+      ],
+      "answer": 1,
+      "explanation": "太陽從東方升起後高度逐漸升高，正午時位置最高，之後再逐漸西沉。",
+      "knowledge": [
+        "太陽位置變化"
+      ]
+    },
+    {
+      "id": "q994",
+      "grade": 5,
+      "subject": "自然",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "自然科學領域",
+      "learningTopic": "天文觀測",
+      "learningPerformance": "能利用北極星辨認方向。",
+      "learningContent": "北極星幾乎位在北方的天空，可用來辨認北方。",
+      "competency": "能判斷北極星所在的方位。",
+      "prompt": "在臺灣的夜空找到北極星，它大致在哪一個方位？",
+      "options": [
+        "東方",
+        "南方",
+        "西方",
+        "北方"
+      ],
+      "answer": 3,
+      "explanation": "北極星位於北方天空，找到它就可以確認北方。",
+      "knowledge": [
+        "北極星",
+        "方位"
+      ]
+    },
+    {
+      "id": "q995",
+      "grade": 5,
+      "subject": "自然",
+      "questionType": "選擇題",
+      "difficulty": "挑戰",
+      "curriculumDomain": "自然科學領域",
+      "learningTopic": "地震與防災",
+      "learningPerformance": "能認識地球的內部構造。",
+      "learningContent": "地球由外而內可分為地殼、地函與地核。",
+      "competency": "能說出地球最外層的構造名稱。",
+      "prompt": "地球由外而內可分為三層，其中最外層叫做什麼？",
+      "options": [
+        "地核",
+        "地函",
+        "地殼",
+        "地心"
+      ],
+      "answer": 2,
+      "explanation": "地球由外而內依序是地殼、地函、地核，最外層是地殼。",
+      "knowledge": [
+        "地球構造"
+      ]
+    },
+    {
+      "id": "q996",
+      "grade": 5,
+      "subject": "自然",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "自然科學領域",
+      "learningTopic": "岩石",
+      "learningPerformance": "能認識常見岩石的成因分類。",
+      "learningContent": "花崗岩是岩漿冷卻形成的火成岩。",
+      "competency": "能判斷花崗岩屬於哪一類岩石。",
+      "prompt": "花崗岩主要是由岩漿冷卻凝固形成的，它屬於哪一類岩石？",
+      "options": [
+        "火成岩",
+        "沉積岩",
+        "變質岩",
+        "化石岩"
+      ],
+      "answer": 0,
+      "explanation": "岩漿冷卻凝固形成的岩石是火成岩，花崗岩是常見的火成岩。",
+      "knowledge": [
+        "岩石分類"
+      ]
+    },
+    {
+      "id": "q997",
+      "grade": 5,
+      "subject": "自然",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "自然科學領域",
+      "learningTopic": "岩石",
+      "learningPerformance": "能認識硬度最高的礦物。",
+      "learningContent": "鑽石是自然界中硬度最高的礦物。",
+      "competency": "能說出硬度最高的礦物。",
+      "prompt": "下列哪一種礦物的硬度最高？",
+      "options": [
+        "滑石",
+        "鑽石",
+        "石英",
+        "方解石"
+      ],
+      "answer": 1,
+      "explanation": "鑽石是自然界硬度最高的礦物，可以用來切割其他物質。",
+      "knowledge": [
+        "礦物硬度"
+      ]
+    },
+    {
+      "id": "q998",
+      "grade": 5,
+      "subject": "自然",
+      "questionType": "選擇題",
+      "difficulty": "挑戰",
+      "curriculumDomain": "自然科學領域",
+      "learningTopic": "物質特性",
+      "learningPerformance": "能了解空氣具有重量。",
+      "learningContent": "空氣占有空間且有重量，可用氣球實驗證明。",
+      "competency": "能判斷空氣是否具有重量。",
+      "prompt": "下列關於空氣的敘述，哪一項是正確的？",
+      "options": [
+        "空氣沒有重量",
+        "空氣占有空間",
+        "空氣只有氧氣",
+        "空氣無法被壓縮"
+      ],
+      "answer": 1,
+      "explanation": "空氣占有空間也有重量，例如灌滿空氣的籃球會比洩氣的籃球重。",
+      "knowledge": [
+        "空氣性質"
+      ]
+    },
+    {
+      "id": "q999",
+      "grade": 5,
+      "subject": "自然",
+      "questionType": "選擇題",
+      "difficulty": "挑戰",
+      "curriculumDomain": "自然科學領域",
+      "learningTopic": "物質特性",
+      "learningPerformance": "能探討鐵生鏽的條件。",
+      "learningContent": "鐵生鏽需要同時接觸水與空氣。",
+      "competency": "能判斷鐵生鏽需要的條件。",
+      "prompt": "鐵釘要生鏽，通常需要同時接觸哪兩種東西？",
+      "options": [
+        "水和空氣",
+        "火和泥土",
+        "鹽和沙子",
+        "光和高溫"
+      ],
+      "answer": 0,
+      "explanation": "鐵生鏽需要水與空氣中的氧氣同時作用，所以潮溼的空氣最容易讓鐵生鏽。",
+      "knowledge": [
+        "鐵鏽"
+      ]
+    },
+    {
+      "id": "q1000",
+      "grade": 5,
+      "subject": "自然",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "自然科學領域",
+      "learningTopic": "河川",
+      "learningPerformance": "能認識不同水域的生物分布。",
+      "learningContent": "河川上游水流湍急，常見溪哥等適應流水的魚類。",
+      "competency": "能判斷河川上游常見的生物類型。",
+      "prompt": "下列哪一種環境，最適合生活在水流湍急的河川上游？",
+      "options": [
+        "鯨魚",
+        "溪哥",
+        "珊瑚",
+        "海藻"
+      ],
+      "answer": 1,
+      "explanation": "溪哥等魚類身體細長、適應湍急水流，常分布在河川上游。",
+      "knowledge": [
+        "水生生物"
+      ]
+    },
+    {
+      "id": "q1001",
+      "grade": 6,
+      "subject": "自然",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "自然科學領域",
+      "learningTopic": "簡單機械",
+      "learningPerformance": "能認識槓桿的應用與省力原理。",
+      "learningContent": "開瓶器利用槓桿原理，施力臂長時可以省力。",
+      "competency": "能判斷開瓶器屬於哪一種槓桿應用。",
+      "prompt": "用開瓶器打開瓶蓋時，開瓶器主要應用哪一種原理？",
+      "options": [
+        "槓桿原理",
+        "輪軸原理",
+        "齒輪原理",
+        "滑輪原理"
+      ],
+      "answer": 0,
+      "explanation": "開瓶器是省力的槓桿應用，施力點離支點較遠，可以省力。",
+      "knowledge": [
+        "槓桿"
+      ]
+    },
+    {
+      "id": "q1002",
+      "grade": 6,
+      "subject": "自然",
+      "questionType": "是非題",
+      "difficulty": "基礎",
+      "curriculumDomain": "自然科學領域",
+      "learningTopic": "簡單機械",
+      "learningPerformance": "能了解槓桿省力的條件。",
+      "learningContent": "施力臂比抗力臂長時比較省力。",
+      "competency": "能判斷施力臂與省力的關係。",
+      "prompt": "使用槓桿時，施力臂比抗力臂長，會比較省力。",
+      "options": [
+        "正確",
+        "錯誤"
+      ],
+      "answer": 0,
+      "explanation": "施力臂越長，施力越小，所以施力臂長於抗力臂時較省力。",
+      "knowledge": [
+        "槓桿原理"
+      ]
+    },
+    {
+      "id": "q1003",
+      "grade": 6,
+      "subject": "自然",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "自然科學領域",
+      "learningTopic": "簡單機械",
+      "learningPerformance": "能認識腳踏車上的簡單機械。",
+      "learningContent": "腳踏車的變速器運用齒輪與鏈條傳動。",
+      "competency": "能說出腳踏車變速器使用的機械。",
+      "prompt": "腳踏車的變速器主要是利用哪一種裝置來改變速度？",
+      "options": [
+        "齒輪",
+        "彈簧",
+        "磁鐵",
+        "氣球"
+      ],
+      "answer": 0,
+      "explanation": "腳踏車變速器利用不同大小的齒輪配合鏈條，改變踩踏的省力程度與速度。",
+      "knowledge": [
+        "齒輪"
+      ]
+    },
+    {
+      "id": "q1004",
+      "grade": 6,
+      "subject": "自然",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "自然科學領域",
+      "learningTopic": "聲音",
+      "learningPerformance": "能了解聲音產生的原因。",
+      "learningContent": "聲音是由物體快速振動產生的。",
+      "competency": "能說出聲音產生的原因。",
+      "prompt": "聲音是怎麼產生的？",
+      "options": [
+        "物體振動",
+        "物體發光",
+        "空氣流動",
+        "物體移動"
+      ],
+      "answer": 0,
+      "explanation": "任何聲音都來自物體的振動，例如敲鼓時鼓面振動發出聲音。",
+      "knowledge": [
+        "聲音的產生"
+      ]
+    },
+    {
+      "id": "q1005",
+      "grade": 6,
+      "subject": "自然",
+      "questionType": "選擇題",
+      "difficulty": "挑戰",
+      "curriculumDomain": "自然科學領域",
+      "learningTopic": "聲音",
+      "learningPerformance": "能比較聲音在不同介質中的傳播速度。",
+      "learningContent": "聲音在固體中傳播比在空氣中快。",
+      "competency": "能判斷聲音在固體與空氣中的傳播快慢。",
+      "prompt": "同樣的距離，聲音在下列哪一種物質中傳播得最快？",
+      "options": [
+        "空氣",
+        "水",
+        "鋼鐵",
+        "真空"
+      ],
+      "answer": 2,
+      "explanation": "聲音在固體中傳播最快，鋼鐵比水、空氣都快；聲音無法在真空中傳播。",
+      "knowledge": [
+        "聲音傳播"
+      ]
+    },
+    {
+      "id": "q1006",
+      "grade": 6,
+      "subject": "自然",
+      "questionType": "是非題",
+      "difficulty": "基礎",
+      "curriculumDomain": "自然科學領域",
+      "learningTopic": "光與影",
+      "learningPerformance": "能了解光直線前進的性質。",
+      "learningContent": "光沿直線前進，影子就是光被物體擋住形成的。",
+      "competency": "能判斷光是否沿直線前進。",
+      "prompt": "光沿直線前進，影子是因為光被物體擋住而產生的。",
+      "options": [
+        "正確",
+        "錯誤"
+      ],
+      "answer": 0,
+      "explanation": "光沿直線傳播，遇到不透明的物體會被擋住，物體後方就形成影子。",
+      "knowledge": [
+        "光的直進"
+      ]
+    },
+    {
+      "id": "q1007",
+      "grade": 6,
+      "subject": "自然",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "自然科學領域",
+      "learningTopic": "光與影",
+      "learningPerformance": "能了解平面鏡成像的性質。",
+      "learningContent": "平面鏡中的影像左右相反。",
+      "competency": "能判斷平面鏡成像的特性。",
+      "prompt": "站在平面鏡前，鏡中的影像有什麼特性？",
+      "options": [
+        "左右相反",
+        "上下顛倒",
+        "顏色改變",
+        "大小改變"
+      ],
+      "answer": 0,
+      "explanation": "平面鏡所成的像左右相反，例如舉起右手，鏡中的人舉起左手。",
+      "knowledge": [
+        "平面鏡"
+      ]
+    },
+    {
+      "id": "q1008",
+      "grade": 6,
+      "subject": "自然",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "自然科學領域",
+      "learningTopic": "熱的傳播",
+      "learningPerformance": "能認識熱的傳導現象。",
+      "learningContent": "熱會沿著物體從高溫處傳到低溫處，金屬傳熱快。",
+      "competency": "能判斷金屬的導熱特性。",
+      "prompt": "把金屬湯匙放進熱湯中，湯匙柄也會變熱，這主要是什麼現象？",
+      "options": [
+        "熱傳導",
+        "熱對流",
+        "熱輻射",
+        "熱蒸發"
+      ],
+      "answer": 0,
+      "explanation": "熱沿著湯匙從高溫端傳到低溫端，這種傳熱方式稱為熱傳導。",
+      "knowledge": [
+        "熱傳導"
+      ]
+    },
+    {
+      "id": "q1009",
+      "grade": 6,
+      "subject": "自然",
+      "questionType": "是非題",
+      "difficulty": "基礎",
+      "curriculumDomain": "自然科學領域",
+      "learningTopic": "熱的傳播",
+      "learningPerformance": "能比較不同材料的導熱快慢。",
+      "learningContent": "金屬的導熱速度比木頭、塑膠快。",
+      "competency": "能判斷金屬的導熱快慢。",
+      "prompt": "金屬的導熱速度通常比木頭和塑膠快。",
+      "options": [
+        "正確",
+        "錯誤"
+      ],
+      "answer": 0,
+      "explanation": "金屬是良好的熱導體，導熱速度比木頭、塑膠等不良導體快很多。",
+      "knowledge": [
+        "導熱性"
+      ]
+    },
+    {
+      "id": "q1010",
+      "grade": 6,
+      "subject": "自然",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "自然科學領域",
+      "learningTopic": "熱的傳播",
+      "learningPerformance": "能認識熱的對流現象。",
+      "learningContent": "液體與氣體受熱後會產生對流，熱水上升、冷水下降。",
+      "competency": "能判斷水加熱時熱水移動的方向。",
+      "prompt": "燒杯底部加熱時，杯中的水會產生對流，熱水的移動方向為何？",
+      "options": [
+        "向上移動",
+        "向下移動",
+        "原地不動",
+        "向左右散開"
+      ],
+      "answer": 0,
+      "explanation": "底部的水受熱變輕上升，上方的冷水下降，形成循環對流。",
+      "knowledge": [
+        "熱對流"
+      ]
+    },
+    {
+      "id": "q1011",
+      "grade": 6,
+      "subject": "自然",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "自然科學領域",
+      "learningTopic": "熱的傳播",
+      "learningPerformance": "能認識熱輻射的傳播方式。",
+      "learningContent": "太陽的熱不需介質，以輻射方式傳到地球。",
+      "competency": "能說出太陽熱傳到地球的方式。",
+      "prompt": "太陽的熱穿過太空傳到地球，主要是利用哪一種傳熱方式？",
+      "options": [
+        "熱傳導",
+        "熱對流",
+        "熱輻射",
+        "熱蒸發"
+      ],
+      "answer": 2,
+      "explanation": "太空是真空，熱無法靠傳導或對流，只能以輻射方式傳到地球。",
+      "knowledge": [
+        "熱輻射"
+      ]
+    },
+    {
+      "id": "q1012",
+      "grade": 6,
+      "subject": "自然",
+      "questionType": "選擇題",
+      "difficulty": "挑戰",
+      "curriculumDomain": "自然科學領域",
+      "learningTopic": "天氣",
+      "learningPerformance": "能了解冷鋒過境時的天氣變化。",
+      "learningContent": "冷鋒過境時常會下雨、氣溫下降。",
+      "competency": "能判斷冷鋒過境時的天氣特徵。",
+      "prompt": "冷鋒過境時，天氣通常會出現什麼變化？",
+      "options": [
+        "氣溫上升",
+        "下雨且氣溫下降",
+        "萬里無雲",
+        "颳起颱風"
+      ],
+      "answer": 1,
+      "explanation": "冷鋒過境時，冷空氣推擠暖空氣，常造成降雨與氣溫下降。",
+      "knowledge": [
+        "鋒面"
+      ]
+    },
+    {
+      "id": "q1013",
+      "grade": 6,
+      "subject": "自然",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "自然科學領域",
+      "learningTopic": "天氣",
+      "learningPerformance": "能了解臺灣颱風的好發季節。",
+      "learningContent": "臺灣的颱風大多發生在夏季與秋季。",
+      "competency": "能判斷臺灣颱風好發的季節。",
+      "prompt": "臺灣的颱風最常發生在哪一個季節？",
+      "options": [
+        "春季和冬季",
+        "夏季和秋季",
+        "只有冬季",
+        "只有春季"
+      ],
+      "answer": 1,
+      "explanation": "夏季與秋季海溫較高，容易形成颱風，臺灣常在這個季節受到颱風影響。",
+      "knowledge": [
+        "颱風"
+      ]
+    },
+    {
+      "id": "q1014",
+      "grade": 6,
+      "subject": "自然",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "自然科學領域",
+      "learningTopic": "水循環",
+      "learningPerformance": "能了解水循環的過程。",
+      "learningContent": "水蒸發成水蒸氣，遇冷凝結成雲，再降水回到地面。",
+      "competency": "能說出水蒸氣遇冷凝結的現象。",
+      "prompt": "地面上的水蒸發成水蒸氣上升，遇冷後凝結成什麼？",
+      "options": [
+        "小水滴（雲）",
+        "冰塊",
+        "岩石",
+        "雪花"
+      ],
+      "answer": 0,
+      "explanation": "水蒸氣上升到高空遇冷，凝結成許多小水滴，聚集形成雲。",
+      "knowledge": [
+        "水循環"
+      ]
+    },
+    {
+      "id": "q1015",
+      "grade": 6,
+      "subject": "自然",
+      "questionType": "選擇題",
+      "difficulty": "基礎",
+      "curriculumDomain": "自然科學領域",
+      "learningTopic": "食物鏈",
+      "learningPerformance": "能認識食物鏈中的生產者。",
+      "learningContent": "綠色植物能進行光合作用製造養分，是生產者。",
+      "competency": "能判斷食物鏈中的生產者。",
+      "prompt": "在一片草地上，下列哪一種生物是生產者？",
+      "options": [
+        "蝗蟲",
+        "青蛙",
+        "青草",
+        "老鷹"
+      ],
+      "answer": 2,
+      "explanation": "青草能利用陽光進行光合作用製造養分，是食物鏈中的生產者。",
+      "knowledge": [
+        "食物鏈",
+        "生產者"
+      ]
+    },
+    {
+      "id": "q1016",
+      "grade": 6,
+      "subject": "自然",
+      "questionType": "選擇題",
+      "difficulty": "挑戰",
+      "curriculumDomain": "自然科學領域",
+      "learningTopic": "食物鏈",
+      "learningPerformance": "能認識生態系中的分解者。",
+      "learningContent": "細菌和黴菌把生物的遺體分解成養分，是分解者。",
+      "competency": "能說出分解者對生態的重要性。",
+      "prompt": "落葉和動物遺體在自然界中會慢慢腐爛消失，主要靠什麼生物分解？",
+      "options": [
+        "綠色植物",
+        "細菌和黴菌",
+        "大型哺乳動物",
+        "鳥類"
+      ],
+      "answer": 1,
+      "explanation": "細菌、黴菌等分解者把遺體分解成養分，讓養分回到土壤中循環。",
+      "knowledge": [
+        "分解者"
+      ]
+    },
+    {
+      "id": "q1017",
+      "grade": 6,
+      "subject": "自然",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "自然科學領域",
+      "learningTopic": "能源與永續",
+      "learningPerformance": "能了解溫室效應的主要氣體。",
+      "learningContent": "燃燒化石燃料會產生大量二氧化碳，加劇溫室效應。",
+      "competency": "能說出主要的溫室氣體。",
+      "prompt": "下列哪一種氣體大量增加，是造成地球溫室效應加劇的主要原因之一？",
+      "options": [
+        "氧氣",
+        "二氧化碳",
+        "氮氣",
+        "氫氣"
+      ],
+      "answer": 1,
+      "explanation": "燃燒煤炭、石油等會排放大量二氧化碳，使溫室效應加劇、地球變暖。",
+      "knowledge": [
+        "溫室效應"
+      ]
+    },
+    {
+      "id": "q1018",
+      "grade": 6,
+      "subject": "自然",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "自然科學領域",
+      "learningTopic": "保育",
+      "learningPerformance": "能認識臺灣的保育類動物。",
+      "learningContent": "臺灣黑熊是臺灣特有的保育類動物。",
+      "competency": "能辨識臺灣的保育類動物。",
+      "prompt": "下列哪一種動物是臺灣的保育類動物？",
+      "options": [
+        "臺灣黑熊",
+        "家貓",
+        "白鷺鷥",
+        "麻雀"
+      ],
+      "answer": 0,
+      "explanation": "臺灣黑熊數量稀少，是臺灣重要的保育類動物。",
+      "knowledge": [
+        "保育動物"
+      ]
+    },
+    {
+      "id": "q1019",
+      "grade": 6,
+      "subject": "自然",
+      "questionType": "是非題",
+      "difficulty": "基礎",
+      "curriculumDomain": "自然科學領域",
+      "learningTopic": "能源與永續",
+      "learningPerformance": "能認識再生能源的應用。",
+      "learningContent": "太陽能板可把光能轉換成電能。",
+      "competency": "能判斷太陽能板的能量轉換。",
+      "prompt": "太陽能板可以將太陽的光能轉換成電能。",
+      "options": [
+        "正確",
+        "錯誤"
+      ],
+      "answer": 0,
+      "explanation": "太陽能板是光電轉換裝置，能把太陽的光能轉換成電能供人使用。",
+      "knowledge": [
+        "再生能源"
+      ]
+    },
+    {
+      "id": "q1020",
+      "grade": 5,
+      "subject": "社會",
+      "questionType": "選擇題",
+      "difficulty": "基礎",
+      "curriculumDomain": "社會領域",
+      "learningTopic": "臺灣的位置與地理",
+      "learningPerformance": "能認識臺灣的地理位置與地勢。",
+      "learningContent": "臺灣位於亞洲東部，地勢以山脈為主，最高峰是玉山。",
+      "competency": "能說出臺灣的最高山。",
+      "prompt": "臺灣最高的山是哪一座？",
+      "options": [
+        "阿里山",
+        "玉山",
+        "陽明山",
+        "合歡山"
+      ],
+      "answer": 1,
+      "explanation": "玉山高約 3952 公尺，是臺灣也是東亞的最高峰。",
+      "knowledge": [
+        "臺灣地理"
+      ]
+    },
+    {
+      "id": "q1021",
+      "grade": 5,
+      "subject": "社會",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "社會領域",
+      "learningTopic": "臺灣的位置與地理",
+      "learningPerformance": "能認識臺灣的主要河川。",
+      "learningContent": "濁水溪是臺灣最長的河川。",
+      "competency": "能說出臺灣最長的河川。",
+      "prompt": "下列哪一條是臺灣最長的河川？",
+      "options": [
+        "淡水河",
+        "高屏溪",
+        "濁水溪",
+        "大甲溪"
+      ],
+      "answer": 2,
+      "explanation": "濁水溪全長約 186 公里，是臺灣最長的河川。",
+      "knowledge": [
+        "臺灣河川"
+      ]
+    },
+    {
+      "id": "q1022",
+      "grade": 5,
+      "subject": "社會",
+      "questionType": "選擇題",
+      "difficulty": "基礎",
+      "curriculumDomain": "社會領域",
+      "learningTopic": "臺灣的位置與地理",
+      "learningPerformance": "能認識臺灣所在的洲。",
+      "learningContent": "臺灣是位於亞洲東部的島嶼。",
+      "competency": "能判斷臺灣位於哪一個洲。",
+      "prompt": "臺灣位於哪一個洲？",
+      "options": [
+        "歐洲",
+        "亞洲",
+        "非洲",
+        "美洲"
+      ],
+      "answer": 1,
+      "explanation": "臺灣位於亞洲東部，隔臺灣海峽與中國大陸相望。",
+      "knowledge": [
+        "臺灣位置"
+      ]
+    },
+    {
+      "id": "q1023",
+      "grade": 5,
+      "subject": "社會",
+      "questionType": "選擇題",
+      "difficulty": "挑戰",
+      "curriculumDomain": "社會領域",
+      "learningTopic": "臺灣的位置與地理",
+      "learningPerformance": "能認識臺灣的板塊與地震。",
+      "learningContent": "臺灣位在歐亞板塊與菲律賓海板塊交界，地震頻繁。",
+      "competency": "能解釋臺灣地震頻繁的原因。",
+      "prompt": "臺灣地震特別頻繁，主要原因與下列哪一項最有關係？",
+      "options": [
+        "位於板塊交界處",
+        "靠近海邊",
+        "山脈很多",
+        "雨量很多"
+      ],
+      "answer": 0,
+      "explanation": "臺灣位在歐亞板塊與菲律賓海板塊的交界，板塊擠壓造成地震頻繁。",
+      "knowledge": [
+        "板塊運動"
+      ]
+    },
+    {
+      "id": "q1024",
+      "grade": 5,
+      "subject": "社會",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "社會領域",
+      "learningTopic": "臺灣的產業",
+      "learningPerformance": "能認識臺灣西部平原的主要農業。",
+      "learningContent": "西部平原土地肥沃、水源充足，是稻米主要產區。",
+      "competency": "能說出臺灣西部平原主要的農作物。",
+      "prompt": "臺灣西部平原最適合種植的主要糧食作物是什麼？",
+      "options": [
+        "小麥",
+        "水稻",
+        "玉米",
+        "高粱"
+      ],
+      "answer": 1,
+      "explanation": "西部平原水源充足、土壤肥沃，是臺灣稻米的主要產區。",
+      "knowledge": [
+        "臺灣農業"
+      ]
+    },
+    {
+      "id": "q1025",
+      "grade": 5,
+      "subject": "社會",
+      "questionType": "是非題",
+      "difficulty": "基礎",
+      "curriculumDomain": "社會領域",
+      "learningTopic": "臺灣的產業",
+      "learningPerformance": "能認識臺灣稻米的一年收穫次數。",
+      "learningContent": "氣候溫暖，臺灣中南部稻米一年可收穫兩次。",
+      "competency": "能判斷臺灣稻米的收穫次數。",
+      "prompt": "由於氣候溫暖，臺灣的稻米一年通常可以收穫兩次。",
+      "options": [
+        "正確",
+        "錯誤"
+      ],
+      "answer": 0,
+      "explanation": "臺灣氣候溫暖，中南部稻米一年可種植並收穫兩期。",
+      "knowledge": [
+        "稻作文化"
+      ]
+    },
+    {
+      "id": "q1026",
+      "grade": 5,
+      "subject": "社會",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "社會領域",
+      "learningTopic": "臺灣的歷史",
+      "learningPerformance": "能認識荷蘭人統治臺灣的時期與地點。",
+      "learningContent": "荷蘭人於 1624 年在臺南建立熱蘭遮城（安平古堡）。",
+      "competency": "能說出荷蘭人在臺灣建立的城堡。",
+      "prompt": "荷蘭人統治臺灣時，在臺南建造了哪一座城堡？",
+      "options": [
+        "赤崁樓",
+        "安平古堡（熱蘭遮城）",
+        "億載金城",
+        "紅毛城"
+      ],
+      "answer": 1,
+      "explanation": "1624 年荷蘭人在臺南安平建造熱蘭遮城，就是現在的安平古堡。",
+      "knowledge": [
+        "荷治時期"
+      ]
+    },
+    {
+      "id": "q1027",
+      "grade": 5,
+      "subject": "社會",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "社會領域",
+      "learningTopic": "臺灣的歷史",
+      "learningPerformance": "能認識鄭成功來臺的年代。",
+      "learningContent": "1661 年鄭成功率軍來臺，驅逐荷蘭人。",
+      "competency": "能說出鄭成功來臺的年代。",
+      "prompt": "鄭成功率軍來臺、驅逐荷蘭人的年代是哪一年？",
+      "options": [
+        "1624 年",
+        "1661 年",
+        "1895 年",
+        "1945 年"
+      ],
+      "answer": 1,
+      "explanation": "1661 年鄭成功率軍渡海來臺，隔年驅逐荷蘭人。",
+      "knowledge": [
+        "明鄭時期"
+      ]
+    },
+    {
+      "id": "q1028",
+      "grade": 5,
+      "subject": "社會",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "社會領域",
+      "learningTopic": "臺灣的歷史",
+      "learningPerformance": "能認識清領時期的移民來源。",
+      "learningContent": "清朝統治臺灣期間，大量移民來自福建與廣東。",
+      "competency": "能說出清領時期移民的主要來源。",
+      "prompt": "清朝統治臺灣時期，渡海來臺的移民大多來自哪裡？",
+      "options": [
+        "福建和廣東",
+        "江蘇和浙江",
+        "山東和河北",
+        "四川和雲南"
+      ],
+      "answer": 0,
+      "explanation": "清代移民大多來自鄰近的福建、廣東兩省，先後開發臺灣西部平原。",
+      "knowledge": [
+        "清領移民"
+      ]
+    },
+    {
+      "id": "q1029",
+      "grade": 5,
+      "subject": "社會",
+      "questionType": "選擇題",
+      "difficulty": "挑戰",
+      "curriculumDomain": "社會領域",
+      "learningTopic": "臺灣的歷史",
+      "learningPerformance": "能認識清領時期臺灣的出口物產。",
+      "learningContent": "清代臺灣曾大量出口糖、茶與樟腦。",
+      "competency": "能說出清代臺灣的重要出口物產。",
+      "prompt": "清朝時期，臺灣曾大量出口到世界市場的物產包括下列哪一項？",
+      "options": [
+        "樟腦",
+        "煤炭",
+        "石油",
+        "稻米種子"
+      ],
+      "answer": 0,
+      "explanation": "清代臺灣的糖、茶與樟腦銷往世界各地，是重要的出口物產。",
+      "knowledge": [
+        "清代產業"
+      ]
+    },
+    {
+      "id": "q1030",
+      "grade": 5,
+      "subject": "社會",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "社會領域",
+      "learningTopic": "家鄉與文化",
+      "learningPerformance": "能認識臺灣原住民族的傳統祭典。",
+      "learningContent": "阿美族等原住民族有豐年祭等傳統祭典。",
+      "competency": "能說出臺灣原住民族的傳統祭典。",
+      "prompt": "下列哪一個是臺灣原住民族的傳統祭典？",
+      "options": [
+        "豐年祭",
+        "中元普渡",
+        "端午龍舟",
+        "元宵燈會"
+      ],
+      "answer": 0,
+      "explanation": "阿美族等原住民族在每年收穫季節舉辦豐年祭，感謝上天與祖先。",
+      "knowledge": [
+        "原住民族"
+      ]
+    },
+    {
+      "id": "q1031",
+      "grade": 5,
+      "subject": "社會",
+      "questionType": "是非題",
+      "difficulty": "基礎",
+      "curriculumDomain": "社會領域",
+      "learningTopic": "家鄉與文化",
+      "learningPerformance": "能認識臺灣的原住民族。",
+      "learningContent": "臺灣是南島語系分布的最北端，原住民族屬南島語系。",
+      "competency": "能判斷原住民族與南島語系的關係。",
+      "prompt": "臺灣的原住民族屬於南島語系民族。",
+      "options": [
+        "正確",
+        "錯誤"
+      ],
+      "answer": 0,
+      "explanation": "臺灣原住民族的語言屬於南島語系，臺灣也是南島語系分布的最北端。",
+      "knowledge": [
+        "原住民族"
+      ]
+    },
+    {
+      "id": "q1032",
+      "grade": 5,
+      "subject": "社會",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "社會領域",
+      "learningTopic": "臺灣的位置與地理",
+      "learningPerformance": "能認識臺灣的地形分布。",
+      "learningContent": "花東縱谷位於中央山脈與海岸山脈之間。",
+      "competency": "能判斷花東縱谷的位置。",
+      "prompt": "花東縱谷位於哪兩個山脈之間？",
+      "options": [
+        "中央山脈與海岸山脈",
+        "雪山山脈與玉山山脈",
+        "阿里山山脈與雪山山脈",
+        "海岸山脈與雪山山脈"
+      ],
+      "answer": 0,
+      "explanation": "花東縱谷位在中央山脈與海岸山脈之間的狹長平原。",
+      "knowledge": [
+        "臺灣地形"
+      ]
+    },
+    {
+      "id": "q1033",
+      "grade": 5,
+      "subject": "社會",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "社會領域",
+      "learningTopic": "臺灣的位置與地理",
+      "learningPerformance": "能認識臺灣的重要平原。",
+      "learningContent": "嘉南平原位於臺灣西南部，是最大的平原。",
+      "competency": "能說出嘉南平原的位置。",
+      "prompt": "嘉南平原位在臺灣的哪一個地區？",
+      "options": [
+        "東北部",
+        "西南部",
+        "東南部",
+        "西北部"
+      ],
+      "answer": 1,
+      "explanation": "嘉南平原位於臺灣西南部，是臺灣面積最大的平原。",
+      "knowledge": [
+        "嘉南平原"
+      ]
+    },
+    {
+      "id": "q1034",
+      "grade": 5,
+      "subject": "社會",
+      "questionType": "選擇題",
+      "difficulty": "基礎",
+      "curriculumDomain": "社會領域",
+      "learningTopic": "臺灣的位置與地理",
+      "learningPerformance": "能認識臺灣的面積。",
+      "learningContent": "臺灣面積約三萬六千平方公里。",
+      "competency": "能說出臺灣的面積大小。",
+      "prompt": "臺灣的面積大約是多少？",
+      "options": [
+        "3.6 萬平方公里",
+        "36 萬平方公里",
+        "360 萬平方公里",
+        "0.36 萬平方公里"
+      ],
+      "answer": 0,
+      "explanation": "臺灣本島面積約 3.6 萬平方公里。",
+      "knowledge": [
+        "臺灣面積"
+      ]
+    },
+    {
+      "id": "q1035",
+      "grade": 5,
+      "subject": "社會",
+      "questionType": "選擇題",
+      "difficulty": "挑戰",
+      "curriculumDomain": "社會領域",
+      "learningTopic": "臺灣的產業",
+      "learningPerformance": "能認識臺灣的漁業發展。",
+      "learningContent": "高雄、基隆是臺灣的重要漁港。",
+      "competency": "能說出臺灣的重要漁港。",
+      "prompt": "下列哪一個城市是臺灣的重要漁港之一？",
+      "options": [
+        "高雄",
+        "新竹",
+        "彰化",
+        "雲林"
+      ],
+      "answer": 0,
+      "explanation": "高雄、基隆等港口漁業發達，是臺灣重要的遠洋漁業基地。",
+      "knowledge": [
+        "臺灣漁業"
+      ]
+    },
+    {
+      "id": "q1036",
+      "grade": 5,
+      "subject": "社會",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "社會領域",
+      "learningTopic": "臺灣的位置與地理",
+      "learningPerformance": "能認識臺灣的河川分布。",
+      "learningContent": "基隆河是北部的重要河川，流經臺北盆地。",
+      "competency": "能判斷基隆河的位置。",
+      "prompt": "基隆河主要流經臺灣的哪一個地區？",
+      "options": [
+        "北部",
+        "南部",
+        "東部",
+        "離島"
+      ],
+      "answer": 0,
+      "explanation": "基隆河發源於北部山區，流經基隆與臺北盆地。",
+      "knowledge": [
+        "臺灣河川"
+      ]
+    },
+    {
+      "id": "q1037",
+      "grade": 5,
+      "subject": "社會",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "社會領域",
+      "learningTopic": "家鄉與文化",
+      "learningPerformance": "能認識臺灣的著名高山與觀光資源。",
+      "learningContent": "阿里山位於嘉義縣，以森林鐵路與日出聞名。",
+      "competency": "能判斷阿里山所在的位置。",
+      "prompt": "阿里山森林遊樂區位於哪一個縣市附近？",
+      "options": [
+        "嘉義縣",
+        "屏東縣",
+        "宜蘭縣",
+        "花蓮縣"
+      ],
+      "answer": 0,
+      "explanation": "阿里山位在嘉義縣山區，以雲海、日出和森林小火車聞名。",
+      "knowledge": [
+        "臺灣觀光"
+      ]
+    },
+    {
+      "id": "q1038",
+      "grade": 6,
+      "subject": "社會",
+      "questionType": "是非題",
+      "difficulty": "基礎",
+      "curriculumDomain": "社會領域",
+      "learningTopic": "臺灣的歷史",
+      "learningPerformance": "能認識日治時期的時間範圍。",
+      "learningContent": "1895 年清朝將臺灣割讓給日本，到 1945 年日本戰敗。",
+      "competency": "能判斷日治時期的起訖年代。",
+      "prompt": "臺灣的日治時期大約是從 1895 年到 1945 年。",
+      "options": [
+        "正確",
+        "錯誤"
+      ],
+      "answer": 0,
+      "explanation": "1895 年甲午戰爭後清朝割讓臺灣，1945 年日本戰敗後臺灣結束日治。",
+      "knowledge": [
+        "日治時期"
+      ]
+    },
+    {
+      "id": "q1039",
+      "grade": 6,
+      "subject": "社會",
+      "questionType": "選擇題",
+      "difficulty": "基礎",
+      "curriculumDomain": "社會領域",
+      "learningTopic": "臺灣的歷史",
+      "learningPerformance": "能認識臺灣光復的年代。",
+      "learningContent": "1945 年日本戰敗，臺灣結束日治時期。",
+      "competency": "能說出臺灣光復的年代。",
+      "prompt": "臺灣結束日本統治、回歸中華民國的年代是哪一年？",
+      "options": [
+        "1895 年",
+        "1911 年",
+        "1945 年",
+        "1987 年"
+      ],
+      "answer": 2,
+      "explanation": "1945 年日本戰敗投降，臺灣結束 50 年的日治時期。",
+      "knowledge": [
+        "臺灣光復"
+      ]
+    },
+    {
+      "id": "q1040",
+      "grade": 6,
+      "subject": "社會",
+      "questionType": "選擇題",
+      "difficulty": "挑戰",
+      "curriculumDomain": "社會領域",
+      "learningTopic": "臺灣的歷史",
+      "learningPerformance": "能認識臺灣解嚴的年代。",
+      "learningContent": "1987 年臺灣宣布解除戒嚴，走向民主化。",
+      "competency": "能說出臺灣宣布解嚴的年代。",
+      "prompt": "臺灣宣布解除戒嚴令是在哪一年？",
+      "options": [
+        "1975 年",
+        "1987 年",
+        "1996 年",
+        "2000 年"
+      ],
+      "answer": 1,
+      "explanation": "1987 年政府宣布解除戒嚴，臺灣社會開始全面民主化。",
+      "knowledge": [
+        "解嚴"
+      ]
+    },
+    {
+      "id": "q1041",
+      "grade": 6,
+      "subject": "社會",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "社會領域",
+      "learningTopic": "民主",
+      "learningPerformance": "能認識總統直接民選的年代。",
+      "learningContent": "1996 年臺灣第一次總統直接民選。",
+      "competency": "能說出第一次總統直接民選的年代。",
+      "prompt": "臺灣第一次由人民直接選舉總統是在哪一年？",
+      "options": [
+        "1987 年",
+        "1992 年",
+        "1996 年",
+        "2000 年"
+      ],
+      "answer": 2,
+      "explanation": "1996 年舉行第一次總統直接民選，人民可以投票選出總統。",
+      "knowledge": [
+        "總統民選"
+      ]
+    },
+    {
+      "id": "q1042",
+      "grade": 6,
+      "subject": "社會",
+      "questionType": "是非題",
+      "difficulty": "基礎",
+      "curriculumDomain": "社會領域",
+      "learningTopic": "臺灣的位置與地理",
+      "learningPerformance": "能認識臺灣海峽的位置。",
+      "learningContent": "臺灣海峽位於臺灣與中國大陸之間。",
+      "competency": "能判斷臺灣海峽的位置。",
+      "prompt": "臺灣海峽位在臺灣本島的西側。",
+      "options": [
+        "正確",
+        "錯誤"
+      ],
+      "answer": 0,
+      "explanation": "臺灣海峽位於臺灣本島與中國大陸之間，所以在本島西側。",
+      "knowledge": [
+        "臺灣海峽"
+      ]
+    },
+    {
+      "id": "q1043",
+      "grade": 6,
+      "subject": "社會",
+      "questionType": "選擇題",
+      "difficulty": "基礎",
+      "curriculumDomain": "社會領域",
+      "learningTopic": "世界地理",
+      "learningPerformance": "能認識世界面積最大的洲。",
+      "learningContent": "亞洲是世界上面積最大的洲。",
+      "competency": "能說出世界面積最大的洲。",
+      "prompt": "世界上面積最大的洲是哪一個？",
+      "options": [
+        "非洲",
+        "亞洲",
+        "歐洲",
+        "南美洲"
+      ],
+      "answer": 1,
+      "explanation": "亞洲是世界上面積最大、人口最多的洲。",
+      "knowledge": [
+        "世界地理"
+      ]
+    },
+    {
+      "id": "q1044",
+      "grade": 6,
+      "subject": "社會",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "社會領域",
+      "learningTopic": "全球連結與貿易政策",
+      "learningPerformance": "能認識聯合國總部的位置。",
+      "learningContent": "聯合國總部位於美國紐約。",
+      "competency": "能說出聯合國總部所在的城市。",
+      "prompt": "聯合國總部設在哪一個城市？",
+      "options": [
+        "美國紐約",
+        "英國倫敦",
+        "法國巴黎",
+        "日本東京"
+      ],
+      "answer": 0,
+      "explanation": "聯合國總部設在美國紐約，是國際間重要的組織。",
+      "knowledge": [
+        "國際組織"
+      ]
+    },
+    {
+      "id": "q1045",
+      "grade": 6,
+      "subject": "社會",
+      "questionType": "選擇題",
+      "difficulty": "挑戰",
+      "curriculumDomain": "社會領域",
+      "learningTopic": "全球連結與貿易政策",
+      "learningPerformance": "能認識臺灣參與的國際經貿組織。",
+      "learningContent": "臺灣以「臺澎金馬個別關稅領域」名義加入 WTO。",
+      "competency": "能說出臺灣參與的國際經貿組織。",
+      "prompt": "臺灣以臺澎金馬個別關稅領域的名義，加入了哪一個國際經貿組織？",
+      "options": [
+        "世界貿易組織（WTO）",
+        "聯合國",
+        "世界衛生組織（WHO）",
+        "國際奧會（IOC）"
+      ],
+      "answer": 0,
+      "explanation": "臺灣以臺澎金馬個別關稅領域的名義加入世界貿易組織（WTO）。",
+      "knowledge": [
+        "國際組織"
+      ]
+    },
+    {
+      "id": "q1046",
+      "grade": 6,
+      "subject": "社會",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "社會領域",
+      "learningTopic": "臺灣的產業",
+      "learningPerformance": "能認識臺灣的經濟發展特色。",
+      "learningContent": "臺灣的科技產業以半導體、電子資訊為主。",
+      "competency": "能說出臺灣重要的出口產業。",
+      "prompt": "下列哪一個產業是臺灣近年最重要的出口產業之一？",
+      "options": [
+        "半導體科技業",
+        "石油開採業",
+        "紡織手工業",
+        "木材加工業"
+      ],
+      "answer": 0,
+      "explanation": "臺灣的半導體與電子資訊產業在全球供應鏈中占有重要地位。",
+      "knowledge": [
+        "臺灣產業"
+      ]
+    },
+    {
+      "id": "q1047",
+      "grade": 6,
+      "subject": "社會",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "社會領域",
+      "learningTopic": "臺灣的產業",
+      "learningPerformance": "能認識臺灣經濟發展的歷程。",
+      "learningContent": "1960 年代後臺灣設立加工出口區，帶動經濟起飛。",
+      "competency": "能說出帶動臺灣經濟起飛的政策之一。",
+      "prompt": "1960 年代以後，政府設立了什麼來吸引投資、帶動臺灣經濟發展？",
+      "options": [
+        "加工出口區",
+        "國家公園",
+        "科學博物館",
+        "保稅漁港"
+      ],
+      "answer": 0,
+      "explanation": "加工出口區提供優惠吸引外資設廠，帶動臺灣外銷產業快速成長。",
+      "knowledge": [
+        "經濟發展"
+      ]
+    },
+    {
+      "id": "q1048",
+      "grade": 6,
+      "subject": "社會",
+      "questionType": "選擇題",
+      "difficulty": "挑戰",
+      "curriculumDomain": "社會領域",
+      "learningTopic": "家鄉與文化",
+      "learningPerformance": "能認識臺灣原住民族群的數量。",
+      "learningContent": "目前政府認定的原住民族共有 16 族。",
+      "competency": "能說出目前官方認定的原住民族數目。",
+      "prompt": "目前政府正式認定的臺灣原住民族共有多少族？",
+      "options": [
+        "10 族",
+        "12 族",
+        "16 族",
+        "20 族"
+      ],
+      "answer": 2,
+      "explanation": "目前官方認定的原住民族共有 16 族，是多元文化的重要部分。",
+      "knowledge": [
+        "原住民族"
+      ]
+    },
+    {
+      "id": "q1049",
+      "grade": 6,
+      "subject": "社會",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "社會領域",
+      "learningTopic": "民主",
+      "learningPerformance": "能認識臺灣的行政區劃。",
+      "learningContent": "臺灣有六個直轄市。",
+      "competency": "能判斷臺灣直轄市的數量。",
+      "prompt": "目前臺灣的直轄市共有幾個？",
+      "options": [
+        "三個",
+        "四個",
+        "六個",
+        "八個"
+      ],
+      "answer": 2,
+      "explanation": "目前臺灣有臺北、新北、桃園、臺中、臺南、高雄共六個直轄市。",
+      "knowledge": [
+        "行政區"
+      ]
+    },
+    {
+      "id": "q1050",
+      "grade": 6,
+      "subject": "社會",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "社會領域",
+      "learningTopic": "世界地理",
+      "learningPerformance": "能認識氣候帶與國家分布。",
+      "learningContent": "日本、韓國位於溫帶地區。",
+      "competency": "能判斷日本、韓國屬於哪一個氣候帶。",
+      "prompt": "日本和韓國大部分地區屬於哪一個氣候帶？",
+      "options": [
+        "溫帶",
+        "熱帶",
+        "寒帶",
+        "副極地"
+      ],
+      "answer": 0,
+      "explanation": "日本與韓國位於中緯度，大部分地區屬於溫帶氣候。",
+      "knowledge": [
+        "世界地理",
+        "氣候帶"
+      ]
+    },
+    {
+      "id": "q1051",
+      "grade": 6,
+      "subject": "社會",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "社會領域",
+      "learningTopic": "世界地理",
+      "learningPerformance": "能認識赤道附近的地區。",
+      "learningContent": "赤道附近主要為熱帶地區，如東南亞。",
+      "competency": "能判斷赤道穿過的地區。",
+      "prompt": "赤道附近主要屬於哪一種氣候？",
+      "options": [
+        "熱帶氣候",
+        "溫帶氣候",
+        "寒帶氣候",
+        "沙漠氣候"
+      ],
+      "answer": 0,
+      "explanation": "赤道附近陽光強烈、終年高溫多雨，多為熱帶氣候。",
+      "knowledge": [
+        "赤道"
+      ]
+    },
+    {
+      "id": "q1052",
+      "grade": 6,
+      "subject": "社會",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "社會領域",
+      "learningTopic": "權利",
+      "learningPerformance": "能認識保障人民基本權利的文件。",
+      "learningContent": "《世界人權宣言》保障人民的基本權利。",
+      "competency": "能說出保障基本人權的重要文件。",
+      "prompt": "聯合國通過、用來保障全世界人民基本權利的重要文件是什麼？",
+      "options": [
+        "世界人權宣言",
+        "和平條約",
+        "環境公約",
+        "航海憲章"
+      ],
+      "answer": 0,
+      "explanation": "1948 年聯合國通過《世界人權宣言》，宣告人人享有基本權利。",
+      "knowledge": [
+        "人權"
+      ]
+    },
+    {
+      "id": "q1053",
+      "grade": 6,
+      "subject": "社會",
+      "questionType": "是非題",
+      "difficulty": "基礎",
+      "curriculumDomain": "社會領域",
+      "learningTopic": "權利",
+      "learningPerformance": "能認識憲法與基本人權。",
+      "learningContent": "憲法保障人民的基本權利。",
+      "competency": "能判斷憲法與人權的關係。",
+      "prompt": "憲法是國家的根本大法，用來保障人民的基本權利。",
+      "options": [
+        "正確",
+        "錯誤"
+      ],
+      "answer": 0,
+      "explanation": "憲法規定政府的組織與人民的基本權利義務，是國家的根本大法。",
+      "knowledge": [
+        "憲法"
+      ]
+    },
+    {
+      "id": "q1054",
+      "grade": 6,
+      "subject": "社會",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "社會領域",
+      "learningTopic": "全球連結與貿易政策",
+      "learningPerformance": "能認識臺灣的國際角色。",
+      "learningContent": "臺灣曾與韓國、香港、新加坡並稱亞洲四小龍。",
+      "competency": "能說出亞洲四小龍包含的地區。",
+      "prompt": "亞洲四小龍除了臺灣、韓國、新加坡之外，還包括哪一個地區？",
+      "options": [
+        "香港",
+        "澳門",
+        "日本",
+        "泰國"
+      ],
+      "answer": 0,
+      "explanation": "亞洲四小龍是指臺灣、韓國、新加坡與香港，經濟發展快速。",
+      "knowledge": [
+        "亞洲四小龍"
+      ]
+    },
+    {
+      "id": "q1055",
+      "grade": 6,
+      "subject": "社會",
+      "questionType": "是非題",
+      "difficulty": "基礎",
+      "curriculumDomain": "社會領域",
+      "learningTopic": "民主",
+      "learningPerformance": "能認識民主政治的特色。",
+      "learningContent": "民主國家透過定期選舉由人民選出代表。",
+      "competency": "能判斷定期選舉與民主政治的關係。",
+      "prompt": "在民主國家，人民可以透過定期選舉選出民意代表和政府首長。",
+      "options": [
+        "正確",
+        "錯誤"
+      ],
+      "answer": 0,
+      "explanation": "定期舉辦選舉、人民投票決定代表，是民主政治的重要特徵。",
+      "knowledge": [
+        "民主政治"
+      ]
+    },
+    {
+      "id": "q1056",
+      "grade": 5,
+      "subject": "國語",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "語文領域",
+      "learningTopic": "修辭",
+      "learningPerformance": "能辨識比喻的修辭技巧。",
+      "learningContent": "比喻是用「像」「如同」等詞，把甲事物比作乙事物。",
+      "competency": "能判斷「月亮像銀盤」使用的修辭。",
+      "prompt": "「圓圓的月亮像一個銀盤。」這句話使用了哪一種修辭技巧？",
+      "options": [
+        "比喻",
+        "擬人",
+        "誇飾",
+        "設問"
+      ],
+      "answer": 0,
+      "explanation": "用「像」把月亮比作銀盤，是典型的比喻修辭。",
+      "knowledge": [
+        "比喻"
+      ]
+    },
+    {
+      "id": "q1057",
+      "grade": 5,
+      "subject": "國語",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "語文領域",
+      "learningTopic": "修辭",
+      "learningPerformance": "能辨識擬人的修辭技巧。",
+      "learningContent": "擬人把事物當作人來描寫，賦予人的動作或情感。",
+      "competency": "能判斷「花兒對我笑」使用的修辭。",
+      "prompt": "「路邊的花兒對著我微笑。」這句話使用了哪一種修辭技巧？",
+      "options": [
+        "擬人",
+        "比喻",
+        "誇飾",
+        "排比"
+      ],
+      "answer": 0,
+      "explanation": "把花兒寫成會微笑的人，賦予花人的動作，是擬人修辭。",
+      "knowledge": [
+        "擬人"
+      ]
+    },
+    {
+      "id": "q1058",
+      "grade": 5,
+      "subject": "國語",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "語文領域",
+      "learningTopic": "修辭",
+      "learningPerformance": "能辨識誇飾的修辭技巧。",
+      "learningContent": "誇飾是故意誇大或縮小事物的描述。",
+      "competency": "能判斷「連針掉下都聽得見」使用的修辭。",
+      "prompt": "「教室裡安靜得連一根針掉下來都聽得見。」這句話使用了哪一種修辭技巧？",
+      "options": [
+        "誇飾",
+        "設問",
+        "對偶",
+        "映襯"
+      ],
+      "answer": 0,
+      "explanation": "故意誇大教室的安靜程度，是誇飾修辭。",
+      "knowledge": [
+        "誇飾"
+      ]
+    },
+    {
+      "id": "q1059",
+      "grade": 5,
+      "subject": "國語",
+      "questionType": "選擇題",
+      "difficulty": "基礎",
+      "curriculumDomain": "語文領域",
+      "learningTopic": "記敘文",
+      "learningPerformance": "能認識記敘文的敘述要素。",
+      "learningContent": "記敘文通常包含人、事、時、地等要素。",
+      "competency": "能說出記敘文常包含的要素。",
+      "prompt": "一篇記敘文通常會交代哪些基本要素？",
+      "options": [
+        "人、事、時、地",
+        "只有景色",
+        "只有心情",
+        "只有對話"
+      ],
+      "answer": 0,
+      "explanation": "記敘文敘述事件，通常包含人物、事件、時間、地點等要素。",
+      "knowledge": [
+        "記敘文"
+      ]
+    },
+    {
+      "id": "q1060",
+      "grade": 5,
+      "subject": "國語",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "語文領域",
+      "learningTopic": "寓言寓意",
+      "learningPerformance": "能理解寓言的寓意。",
+      "learningContent": "寓言藉由故事傳達道理，如龜兔賽跑告訴我們堅持的重要。",
+      "competency": "能說出龜兔賽跑的寓意。",
+      "prompt": "龜兔賽跑的故事主要在告訴我們什麼道理？",
+      "options": [
+        "做事要堅持到底",
+        "跑得快一定贏",
+        "睡覺很重要",
+        "不要交朋友"
+      ],
+      "answer": 0,
+      "explanation": "兔子雖然跑得快卻因驕傲睡覺而輸，烏龜靠堅持到底獲勝。",
+      "knowledge": [
+        "寓言寓意"
+      ]
+    },
+    {
+      "id": "q1061",
+      "grade": 5,
+      "subject": "國語",
+      "questionType": "選擇題",
+      "difficulty": "挑戰",
+      "curriculumDomain": "語文領域",
+      "learningTopic": "修辭",
+      "learningPerformance": "能辨識設問的修辭技巧。",
+      "learningContent": "設問是明知故問或自問自答，引起注意。",
+      "competency": "能判斷「這不是奇蹟嗎？」使用的修辭。",
+      "prompt": "「這難道不是一個奇蹟嗎？」這句話使用了哪一種修辭技巧？",
+      "options": [
+        "設問",
+        "比喻",
+        "誇飾",
+        "擬人"
+      ],
+      "answer": 0,
+      "explanation": "以問句形式表達強烈語氣，答案就在句中，是設問修辭。",
+      "knowledge": [
+        "設問"
+      ]
+    },
+    {
+      "id": "q1062",
+      "grade": 5,
+      "subject": "國語",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "語文領域",
+      "learningTopic": "詞語理解",
+      "learningPerformance": "能辨識語詞的意思。",
+      "learningContent": "「虎頭蛇尾」比喻做事有始無終、半途而廢。",
+      "competency": "能選出形容半途而廢的成語。",
+      "prompt": "「做事做到一半就放棄」可以用下列哪一個成語形容？",
+      "options": [
+        "虎頭蛇尾",
+        "一鼓作氣",
+        "有始有終",
+        "腳踏實地"
+      ],
+      "answer": 0,
+      "explanation": "虎頭蛇尾比喻做事開頭有氣勢，後來卻草草收場。",
+      "knowledge": [
+        "成語"
+      ]
+    },
+    {
+      "id": "q1063",
+      "grade": 5,
+      "subject": "國語",
+      "questionType": "選擇題",
+      "difficulty": "基礎",
+      "curriculumDomain": "語文領域",
+      "learningTopic": "詞語理解",
+      "learningPerformance": "能認識反義詞。",
+      "learningContent": "「光明」的相反詞是「黑暗」。",
+      "competency": "能找出「光明」的相反詞。",
+      "prompt": "下列哪一個詞是「光明」的相反詞？",
+      "options": [
+        "黑暗",
+        "明亮",
+        "閃耀",
+        "太陽"
+      ],
+      "answer": 0,
+      "explanation": "光明指光亮，相反詞是黑暗。",
+      "knowledge": [
+        "反義詞"
+      ]
+    },
+    {
+      "id": "q1064",
+      "grade": 5,
+      "subject": "國語",
+      "questionType": "是非題",
+      "difficulty": "基礎",
+      "curriculumDomain": "語文領域",
+      "learningTopic": "標點符號",
+      "learningPerformance": "能正確使用引號。",
+      "learningContent": "對話內容要用引號「」標示。",
+      "competency": "能判斷對話是否該用引號。",
+      "prompt": "文章中人物的對話內容，應該用引號「」標示出來。",
+      "options": [
+        "正確",
+        "錯誤"
+      ],
+      "answer": 0,
+      "explanation": "引號用來標示對話、引用語或特別強調的詞語。",
+      "knowledge": [
+        "標點符號"
+      ]
+    },
+    {
+      "id": "q1065",
+      "grade": 5,
+      "subject": "國語",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "語文領域",
+      "learningTopic": "說明文",
+      "learningPerformance": "能認識說明文的寫作方法。",
+      "learningContent": "說明文常用下定義、舉例、分類等方法說明事物。",
+      "competency": "能說出說明文常用的寫法。",
+      "prompt": "說明文在介紹事物時，下列哪一種方法最常見？",
+      "options": [
+        "舉例說明",
+        "只寫對話",
+        "只描寫心情",
+        "只寫時間"
+      ],
+      "answer": 0,
+      "explanation": "說明文常用舉例、下定義、比較等方法，讓讀者清楚了解事物。",
+      "knowledge": [
+        "說明文"
+      ]
+    },
+    {
+      "id": "q1066",
+      "grade": 5,
+      "subject": "國語",
+      "questionType": "是非題",
+      "difficulty": "基礎",
+      "curriculumDomain": "語文領域",
+      "learningTopic": "詞語理解",
+      "learningPerformance": "能認識狀聲詞的用法。",
+      "learningContent": "「淅瀝」是形容雨聲的狀聲詞。",
+      "competency": "能判斷「淅瀝」是否為狀聲詞。",
+      "prompt": "「淅瀝淅瀝」是形容下雨聲音的狀聲詞。",
+      "options": [
+        "正確",
+        "錯誤"
+      ],
+      "answer": 0,
+      "explanation": "狀聲詞模仿事物發出的聲音，「淅瀝」正是形容雨聲。",
+      "knowledge": [
+        "狀聲詞"
+      ]
+    },
+    {
+      "id": "q1067",
+      "grade": 5,
+      "subject": "國語",
+      "questionType": "是非題",
+      "difficulty": "基礎",
+      "curriculumDomain": "語文領域",
+      "learningTopic": "詞語理解",
+      "learningPerformance": "能正確使用量詞。",
+      "learningContent": "船的量詞可以用「艘」，如一艘船。",
+      "competency": "能判斷「一艘船」的量詞用法。",
+      "prompt": "「一艘船」的量詞用法是正確的。",
+      "options": [
+        "正確",
+        "錯誤"
+      ],
+      "answer": 0,
+      "explanation": "大型船隻的量詞可用「艘」，一「艘」船是正確用法。",
+      "knowledge": [
+        "量詞"
+      ]
+    },
+    {
+      "id": "q1068",
+      "grade": 5,
+      "subject": "國語",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "語文領域",
+      "learningTopic": "字形判讀",
+      "learningPerformance": "能認識象形字的來源。",
+      "learningContent": "象形字是用圖畫描摹事物形狀的文字，如日、月。",
+      "competency": "能判斷「日」字的造字方式。",
+      "prompt": "「日」這個字是依照太陽的形狀畫出來的，這種造字方法叫做什麼？",
+      "options": [
+        "象形",
+        "形聲",
+        "會意",
+        "指事"
+      ],
+      "answer": 0,
+      "explanation": "象形字用簡單圖畫表示事物形狀，「日」就像太陽的形狀。",
+      "knowledge": [
+        "象形字"
+      ]
+    },
+    {
+      "id": "q1069",
+      "grade": 5,
+      "subject": "國語",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "語文領域",
+      "learningTopic": "句構",
+      "learningPerformance": "能分辨句子的主語與謂語。",
+      "learningContent": "句子通常包含主語（誰）與謂語（做什麼）。",
+      "competency": "能找出「弟弟打球」中的主語。",
+      "prompt": "在「弟弟在操場打球」這句話中，主語是哪一個詞？",
+      "options": [
+        "弟弟",
+        "操場",
+        "打球",
+        "在"
+      ],
+      "answer": 0,
+      "explanation": "主語是句子敘述的對象，「弟弟」是這句話的主語。",
+      "knowledge": [
+        "句子結構"
+      ]
+    },
+    {
+      "id": "q1070",
+      "grade": 5,
+      "subject": "國語",
+      "questionType": "選擇題",
+      "difficulty": "基礎",
+      "curriculumDomain": "語文領域",
+      "learningTopic": "字形判讀",
+      "learningPerformance": "能認識常見的部首。",
+      "learningContent": "「河」「海」都有水部，與水有關。",
+      "competency": "能判斷「河」字的部首。",
+      "prompt": "「河」這個字的部首是什麼？",
+      "options": [
+        "水部",
+        "火部",
+        "木部",
+        "土部"
+      ],
+      "answer": 0,
+      "explanation": "「河」的左邊是三點水，部首是水部，與水有關。",
+      "knowledge": [
+        "部首"
+      ]
+    },
+    {
+      "id": "q1071",
+      "grade": 5,
+      "subject": "國語",
+      "questionType": "選擇題",
+      "difficulty": "挑戰",
+      "curriculumDomain": "語文領域",
+      "learningTopic": "閱讀推論",
+      "learningPerformance": "能從短文找出因果關係。",
+      "learningContent": "閱讀時找出事件的原因與結果。",
+      "competency": "能判斷短文中的因果關係。",
+      "prompt": "「因為下雨，所以運動會延後舉行。」這段話的結果是什麼？",
+      "options": [
+        "下雨",
+        "運動會延後舉行",
+        "天氣放晴",
+        "大家很開心"
+      ],
+      "answer": 1,
+      "explanation": "「因為下雨」是原因，「運動會延後舉行」是結果。",
+      "knowledge": [
+        "因果關係"
+      ]
+    },
+    {
+      "id": "q1072",
+      "grade": 5,
+      "subject": "國語",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "語文領域",
+      "learningTopic": "修辭與意象",
+      "learningPerformance": "能認識童詩的特色。",
+      "learningContent": "童詩語言簡短、有節奏與想像力。",
+      "competency": "能說出童詩的特色。",
+      "prompt": "下列哪一項是童詩常見的特色？",
+      "options": [
+        "句子簡短且有節奏",
+        "篇幅很長",
+        "只有對話",
+        "必須押韻到最後"
+      ],
+      "answer": 0,
+      "explanation": "童詩語言簡潔、節奏輕快、充滿想像力。",
+      "knowledge": [
+        "童詩"
+      ]
+    },
+    {
+      "id": "q1073",
+      "grade": 6,
+      "subject": "國語",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "語文領域",
+      "learningTopic": "議論文",
+      "learningPerformance": "能認識議論文的結構。",
+      "learningContent": "議論文包含論點、論據與結論。",
+      "competency": "能說出議論文的三大要素。",
+      "prompt": "一篇議論文通常包含哪三項主要元素？",
+      "options": [
+        "論點、論據、結論",
+        "人物、時間、地點",
+        "開頭、插曲、結尾",
+        "生字、語詞、造句"
+      ],
+      "answer": 0,
+      "explanation": "議論文先提出論點，再用論據支持，最後歸納結論。",
+      "knowledge": [
+        "議論文"
+      ]
+    },
+    {
+      "id": "q1074",
+      "grade": 6,
+      "subject": "國語",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "語文領域",
+      "learningTopic": "修辭",
+      "learningPerformance": "能辨識排比的修辭技巧。",
+      "learningContent": "排比是連續使用結構相似的句子，加強語氣。",
+      "competency": "能判斷「山是畫、海是歌、風是詩」使用的修辭。",
+      "prompt": "「山是畫，海是歌，風是詩。」這句話使用了哪一種修辭技巧？",
+      "options": [
+        "排比",
+        "設問",
+        "誇飾",
+        "對偶"
+      ],
+      "answer": 0,
+      "explanation": "連續三句結構相似的句子，加強氣勢，是排比修辭。",
+      "knowledge": [
+        "排比"
+      ]
+    },
+    {
+      "id": "q1075",
+      "grade": 6,
+      "subject": "國語",
+      "questionType": "選擇題",
+      "difficulty": "挑戰",
+      "curriculumDomain": "語文領域",
+      "learningTopic": "修辭",
+      "learningPerformance": "能辨識對偶的修辭技巧。",
+      "learningContent": "對偶是上下兩句字數相等、結構相對。",
+      "competency": "能判斷唐詩名句使用的對偶修辭。",
+      "prompt": "「兩個黃鸝鳴翠柳，一行白鷺上青天。」這兩句使用了哪一種修辭技巧？",
+      "options": [
+        "對偶",
+        "設問",
+        "擬人",
+        "雙關"
+      ],
+      "answer": 0,
+      "explanation": "兩句字數相同、詞性相對、意義相關，是標準的對偶修辭。",
+      "knowledge": [
+        "對偶"
+      ]
+    },
+    {
+      "id": "q1076",
+      "grade": 6,
+      "subject": "國語",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "語文領域",
+      "learningTopic": "古典語句與文化理解",
+      "learningPerformance": "能認識唐詩與作者。",
+      "learningContent": "《登鸛雀樓》的作者是王之渙。",
+      "competency": "能說出《登鸛雀樓》的作者。",
+      "prompt": "「白日依山盡，黃河入海流」出自《登鸛雀樓》，作者是誰？",
+      "options": [
+        "王之渙",
+        "李白",
+        "杜甫",
+        "孟浩然"
+      ],
+      "answer": 0,
+      "explanation": "《登鸛雀樓》是唐代詩人王之渙的作品。",
+      "knowledge": [
+        "唐詩"
+      ]
+    },
+    {
+      "id": "q1077",
+      "grade": 6,
+      "subject": "國語",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "語文領域",
+      "learningTopic": "古典語句與文化理解",
+      "learningPerformance": "能認識唐詩與作者。",
+      "learningContent": "《春曉》的作者是孟浩然。",
+      "competency": "能說出《春曉》的作者。",
+      "prompt": "「春眠不覺曉，處處聞啼鳥」出自哪一位詩人的作品？",
+      "options": [
+        "孟浩然",
+        "李白",
+        "王維",
+        "杜甫"
+      ],
+      "answer": 0,
+      "explanation": "《春曉》是唐代詩人孟浩然的作品。",
+      "knowledge": [
+        "唐詩"
+      ]
+    },
+    {
+      "id": "q1078",
+      "grade": 6,
+      "subject": "國語",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "語文領域",
+      "learningTopic": "資訊文本",
+      "learningPerformance": "能認識書信的格式。",
+      "learningContent": "書信結尾要有敬語與署名。",
+      "competency": "能判斷書信結尾的寫法。",
+      "prompt": "寫信給長輩時，結尾的敬語應該寫在哪裡？",
+      "options": [
+        "寫在署名之後",
+        "寫在開頭",
+        "寫在中間",
+        "不必寫敬語"
+      ],
+      "answer": 0,
+      "explanation": "書信格式中，敬語（如「敬上」）寫在署名之後。",
+      "knowledge": [
+        "書信格式"
+      ]
+    },
+    {
+      "id": "q1079",
+      "grade": 6,
+      "subject": "國語",
+      "questionType": "選擇題",
+      "difficulty": "挑戰",
+      "curriculumDomain": "語文領域",
+      "learningTopic": "詞語與成語",
+      "learningPerformance": "能運用成語形容聲音。",
+      "learningContent": "「震耳欲聾」形容聲音非常大。",
+      "competency": "能選出形容聲音極大的成語。",
+      "prompt": "形容聲音大得幾乎要把耳朵震聾，可以用哪一個成語？",
+      "options": [
+        "震耳欲聾",
+        "鴉雀無聲",
+        "輕聲細語",
+        "萬籟俱寂"
+      ],
+      "answer": 0,
+      "explanation": "震耳欲聾形容聲音非常大；其他三個都是形容安靜。",
+      "knowledge": [
+        "成語"
+      ]
+    },
+    {
+      "id": "q1080",
+      "grade": 6,
+      "subject": "國語",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "語文領域",
+      "learningTopic": "修辭",
+      "learningPerformance": "能辨識反問的語氣。",
+      "learningContent": "反問句以問句形式表達肯定語氣，答案在句中。",
+      "competency": "能判斷反問句表達的語氣。",
+      "prompt": "「難道我們不應該幫助別人嗎？」這句話主要在表達什麼？",
+      "options": [
+        "應該幫助別人",
+        "不應該幫助別人",
+        "不知道要不要幫忙",
+        "只是隨便問問"
+      ],
+      "answer": 0,
+      "explanation": "反問句語氣強烈，答案就在句中，這裡表達「應該幫助別人」。",
+      "knowledge": [
+        "反問句"
+      ]
+    },
+    {
+      "id": "q1081",
+      "grade": 6,
+      "subject": "國語",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "語文領域",
+      "learningTopic": "字形判讀",
+      "learningPerformance": "能認識形聲字的結構。",
+      "learningContent": "形聲字由表音的聲旁與表意的形旁組成，如「河」。",
+      "competency": "能判斷「河」字的結構。",
+      "prompt": "「河」字由「水」與「可」組成，這種造字方式叫做什麼？",
+      "options": [
+        "形聲",
+        "象形",
+        "會意",
+        "指事"
+      ],
+      "answer": 0,
+      "explanation": "「河」左邊「氵」表意、右邊「可」表音，是形聲字。",
+      "knowledge": [
+        "形聲字"
+      ]
+    },
+    {
+      "id": "q1082",
+      "grade": 6,
+      "subject": "國語",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "語文領域",
+      "learningTopic": "古典語句與文化理解",
+      "learningPerformance": "能認識《論語》與名言。",
+      "learningContent": "「學而時習之」出自《論語》。",
+      "competency": "能說出「學而時習之」的出處。",
+      "prompt": "「學而時習之，不亦說乎」出自哪一部經典？",
+      "options": [
+        "《論語》",
+        "《唐詩三百首》",
+        "《西遊記》",
+        "《山海經》"
+      ],
+      "answer": 0,
+      "explanation": "「學而時習之」是《論語》開篇的名句，談論學習的樂趣。",
+      "knowledge": [
+        "論語"
+      ]
+    },
+    {
+      "id": "q1083",
+      "grade": 6,
+      "subject": "國語",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "語文領域",
+      "learningTopic": "資訊文本",
+      "learningPerformance": "能認識公告的格式。",
+      "learningContent": "公告用來告知大眾事項，包含發布單位與日期。",
+      "competency": "能判斷公告的必要內容。",
+      "prompt": "一張正式的公告，通常需要包含哪一項內容？",
+      "options": [
+        "發布單位與日期",
+        "只有插圖",
+        "只有作者心情",
+        "只有對話"
+      ],
+      "answer": 0,
+      "explanation": "公告要清楚寫明事項、發布單位與日期，方便大眾了解。",
+      "knowledge": [
+        "公告"
+      ]
+    },
+    {
+      "id": "q1084",
+      "grade": 6,
+      "subject": "國語",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "語文領域",
+      "learningTopic": "修辭",
+      "learningPerformance": "能辨識雙關的修辭技巧。",
+      "learningContent": "雙關是讓詞語同時有兩種意思的修辭。",
+      "competency": "能理解雙關的語意。",
+      "prompt": "「你真是個『開心果』，讓大家笑得合不攏嘴。」句中的「開心果」除了是零食，還指什麼？",
+      "options": [
+        "帶給大家快樂的人",
+        "愛吃零食的人",
+        "賣水果的老闆",
+        "生氣的人"
+      ],
+      "answer": 0,
+      "explanation": "「開心果」在此一語雙關，既像零食名，也指帶給大家歡笑的人。",
+      "knowledge": [
+        "雙關"
+      ]
+    },
+    {
+      "id": "q1085",
+      "grade": 6,
+      "subject": "國語",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "語文領域",
+      "learningTopic": "詞語理解",
+      "learningPerformance": "能認識疊字的用法。",
+      "learningContent": "疊字如「綠油油」「白茫茫」可加強形容效果。",
+      "competency": "能辨識疊字形容詞。",
+      "prompt": "下列哪一個詞是疊字形容詞？",
+      "options": [
+        "綠油油",
+        "電燈泡",
+        "火車頭",
+        "書桌"
+      ],
+      "answer": 0,
+      "explanation": "「綠油油」是疊字形容詞，形容綠得很鮮亮。",
+      "knowledge": [
+        "疊字"
+      ]
+    },
+    {
+      "id": "q1086",
+      "grade": 6,
+      "subject": "國語",
+      "questionType": "選擇題",
+      "difficulty": "挑戰",
+      "curriculumDomain": "語文領域",
+      "learningTopic": "閱讀推論",
+      "learningPerformance": "能區分事實與意見。",
+      "learningContent": "事實是可以查證的敘述，意見是個人看法。",
+      "competency": "能判斷哪一句是意見。",
+      "prompt": "下列哪一句話是「意見」而不是「事實」？",
+      "options": [
+        "這家書店是臺灣最美的書店",
+        "書店在上午十點開門",
+        "書店共有三層樓",
+        "書店位於市中心"
+      ],
+      "answer": 0,
+      "explanation": "「最美」是主觀看法，屬於意見；其餘都可以查證，屬於事實。",
+      "knowledge": [
+        "事實與意見"
+      ]
+    },
+    {
+      "id": "q1087",
+      "grade": 6,
+      "subject": "國語",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "語文領域",
+      "learningTopic": "標點符號",
+      "learningPerformance": "能認識破折號的用途。",
+      "learningContent": "破折號可表示語氣的停頓、轉折或補充說明。",
+      "competency": "能說出破折號的常見用途。",
+      "prompt": "「我最喜歡的水果——西瓜——又甜又多汁。」句中的破折號主要用來做什麼？",
+      "options": [
+        "補充說明",
+        "表示疑問",
+        "表示結束",
+        "表示引用"
+      ],
+      "answer": 0,
+      "explanation": "破折號前後夾注「西瓜」，是用來補充說明的用法。",
+      "knowledge": [
+        "標點符號"
+      ]
+    },
+    {
+      "id": "q1088",
+      "grade": 6,
+      "subject": "國語",
+      "questionType": "選擇題",
+      "difficulty": "挑戰",
+      "curriculumDomain": "語文領域",
+      "learningTopic": "閱讀",
+      "learningPerformance": "能認識劇本的基本要素。",
+      "learningContent": "劇本包含人物、對話與舞台指示。",
+      "competency": "能說出劇本常包含的內容。",
+      "prompt": "劇本中除了人物和對話，通常還包含哪一項內容？",
+      "options": [
+        "舞台指示",
+        "食譜步驟",
+        "地圖比例尺",
+        "氣象預報"
+      ],
+      "answer": 0,
+      "explanation": "劇本除了人物與對話，還會有舞台指示說明動作與場景。",
+      "knowledge": [
+        "劇本"
+      ]
+    },
+    {
+      "id": "q1089",
+      "grade": 6,
+      "subject": "自然",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "自然科學領域",
+      "learningTopic": "簡單機械",
+      "learningPerformance": "能認識輪軸的應用。",
+      "learningContent": "門把是輪軸的應用，轉動軸心可以省力。",
+      "competency": "能說出生活中輪軸的應用。",
+      "prompt": "旋轉圓形的門把就可以打開門，門把主要應用哪一種簡單機械？",
+      "options": [
+        "輪軸",
+        "彈簧",
+        "滑輪",
+        "齒輪"
+      ],
+      "answer": 0,
+      "explanation": "門把是輪軸的應用，轉動較大的圓盤（輪）可以帶動較小的軸心省力。",
+      "knowledge": [
+        "輪軸"
+      ]
+    },
+    {
+      "id": "q1090",
+      "grade": 6,
+      "subject": "社會",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "社會領域",
+      "learningTopic": "世界地理",
+      "learningPerformance": "能認識世界的主要海洋。",
+      "learningContent": "太平洋是世界上面積最大的海洋，臺灣位於太平洋西岸。",
+      "competency": "能說出世界上面積最大的海洋。",
+      "prompt": "世界上面積最大的海洋是哪一個？",
+      "options": [
+        "太平洋",
+        "大西洋",
+        "印度洋",
+        "北冰洋"
+      ],
+      "answer": 0,
+      "explanation": "太平洋是世界上面積最大的海洋，臺灣東側就是太平洋。",
+      "knowledge": [
+        "海洋"
+      ]
     }
   ]
 }
