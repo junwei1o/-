@@ -1,4 +1,4 @@
-import { and, count, desc, eq, gte, sql } from "drizzle-orm";
+import { and, asc, count, desc, eq, gt, gte, inArray, lt, lte, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import mysql from "mysql2/promise";
 import {
@@ -17,9 +17,17 @@ import {
   InsertClassMember,
   InsertCloudSave,
   InsertExamRecord,
+  InsertLeagueGroup,
+  InsertLeagueReward,
+  InsertLeagueSeason,
   InsertQuestion,
   InsertUser,
   InsertWeeklyQuiz,
+  leagueGroups,
+  leagueRewards,
+  leagueSeasons,
+  LeagueGroupType,
+  LeagueSeason,
   pkChallenges,
   questionBank,
   users,
@@ -305,6 +313,36 @@ const ENSURE_TABLE_STATEMENTS = [
     \`updatedAt\` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (\`code\`),
     KEY \`pk_challenges_status_idx\` (\`status\`)
+  )`,
+  `CREATE TABLE IF NOT EXISTS \`league_seasons\` (
+    \`id\` int NOT NULL AUTO_INCREMENT,
+    \`seasonNumber\` int NOT NULL,
+    \`startAt\` timestamp NOT NULL,
+    \`endAt\` timestamp NOT NULL,
+    \`isSettled\` enum('0','1') NOT NULL DEFAULT '0',
+    \`createdAt\` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (\`id\`),
+    KEY \`league_seasons_number_idx\` (\`seasonNumber\`)
+  )`,
+  `CREATE TABLE IF NOT EXISTS \`league_groups\` (
+    \`id\` int NOT NULL AUTO_INCREMENT,
+    \`seasonId\` int NOT NULL,
+    \`name\` varchar(24) NOT NULL,
+    \`groupType\` enum('bronze','silver','gold','diamond') NOT NULL,
+    \`createdAt\` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (\`id\`),
+    KEY \`league_groups_season_name_idx\` (\`seasonId\`, \`name\`),
+    KEY \`league_groups_season_group_idx\` (\`seasonId\`, \`groupType\`)
+  )`,
+  `CREATE TABLE IF NOT EXISTS \`league_rewards\` (
+    \`id\` int NOT NULL AUTO_INCREMENT,
+    \`seasonId\` int NOT NULL,
+    \`name\` varchar(24) NOT NULL,
+    \`rewardType\` enum('participate','rank') NOT NULL,
+    \`rank\` int,
+    \`claimedAt\` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (\`id\`),
+    KEY \`league_rewards_season_name_type_idx\` (\`seasonId\`, \`name\`, \`rewardType\`)
   )`,
 ];
 
@@ -800,6 +838,254 @@ export async function listWeeklyLeaderboard(weekStart: Date, limit = 30) {
     accuracy: Number(row.totalQuestions) > 0 ? Math.round((Number(row.correctCount) / Number(row.totalQuestions)) * 100) : 0,
     lastActiveAt: row.lastActiveAt instanceof Date ? row.lastActiveAt.getTime() : Date.now(),
   }));
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 聯盟賽：賽季／分組／升降級／獎勵
+// ─────────────────────────────────────────────────────────────────────────────
+
+const LEAGUE_GROUP_ORDER: LeagueGroupType[] = ["bronze", "silver", "gold", "diamond"];
+
+/**
+ * 升降級純函數：每組依 score 降序，前 upRate 升一級、後 downRate 降一級。
+ * 青銅不降、鑽石不升。回傳 name → 下一季組別。
+ */
+export function computeLeaguePromotionDemotion(
+  entries: Array<{ name: string; groupType: LeagueGroupType; score: number }>,
+  options?: { upRate?: number; downRate?: number },
+): Map<string, LeagueGroupType> {
+  const upRate = options?.upRate ?? 0.3;
+  const downRate = options?.downRate ?? 0.3;
+  const byGroup = new Map<LeagueGroupType, Array<{ name: string; groupType: LeagueGroupType; score: number }>>();
+  for (const entry of entries) {
+    const list = byGroup.get(entry.groupType) ?? [];
+    list.push(entry);
+    byGroup.set(entry.groupType, list);
+  }
+  const next = new Map<string, LeagueGroupType>();
+  for (const group of LEAGUE_GROUP_ORDER) {
+    const list = byGroup.get(group);
+    if (!list || list.length === 0) continue;
+    const sorted = [...list].sort((a, b) => b.score - a.score);
+    const total = sorted.length;
+    const idx = LEAGUE_GROUP_ORDER.indexOf(group);
+    const upCount = Math.floor(total * upRate);
+    const downCount = Math.floor(total * downRate);
+    sorted.forEach((entry, i) => {
+      let nextGroup: LeagueGroupType = group;
+      if (idx < LEAGUE_GROUP_ORDER.length - 1 && i < upCount) {
+        nextGroup = LEAGUE_GROUP_ORDER[idx + 1]!;
+      } else if (idx > 0 && i >= total - downCount) {
+        nextGroup = LEAGUE_GROUP_ORDER[idx - 1]!;
+      }
+      next.set(entry.name, nextGroup);
+    });
+  }
+  return next;
+}
+
+export type LeagueRankReward = { coins: number; badge: string | null; title: string };
+
+/** 排名獎純函數：依組內名次比例給金幣與限定徽章。 */
+export function computeLeagueRankReward(groupType: LeagueGroupType, rank: number, total: number): LeagueRankReward {
+  if (rank <= 0 || total <= 0) return { coins: 0, badge: null, title: "" };
+  const rate = rank / total;
+  if (rate <= 0.1) return { coins: 500, badge: `league-${groupType}-top10`, title: `${groupType}組前 10%` };
+  if (rate <= 0.25) return { coins: 300, badge: `league-${groupType}-top25`, title: `${groupType}組前 25%` };
+  if (rate <= 0.5) return { coins: 150, badge: null, title: `${groupType}組前半` };
+  return { coins: 50, badge: null, title: `${groupType}組參賽` };
+}
+
+/** 賽季期間該玩家累計作答數（與週榜同來源：exam_records 即時聚合）。 */
+async function leagueSeasonScore(name: string, season: Pick<LeagueSeason, "startAt" | "endAt">) {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  const rows = await db
+    .select({ totalQuestions: sql`COALESCE(SUM(${examRecords.totalQuestions}), 0)` })
+    .from(examRecords)
+    .where(and(
+      gte(examRecords.createdAt, season.startAt),
+      lt(examRecords.createdAt, season.endAt),
+      eq(examRecords.name, name),
+    ));
+  return Number(rows[0]?.totalQuestions ?? 0);
+}
+
+/**
+ * 取得當前賽季；若上季已結束未結算會先結算並建立下一季（惰性結算）。
+ * 完全沒有賽季時建立第一季。
+ */
+export async function ensureLeagueSeason(now = new Date()): Promise<{ season: LeagueSeason; settledPrevious: boolean }> {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  const active = await db
+    .select()
+    .from(leagueSeasons)
+    .where(and(lte(leagueSeasons.startAt, now), gt(leagueSeasons.endAt, now), eq(leagueSeasons.isSettled, "0")))
+    .orderBy(desc(leagueSeasons.id))
+    .limit(1);
+  if (active.length > 0) return { season: active[0]!, settledPrevious: false };
+
+  const expired = await db
+    .select()
+    .from(leagueSeasons)
+    .where(and(lt(leagueSeasons.endAt, now), eq(leagueSeasons.isSettled, "0")))
+    .orderBy(asc(leagueSeasons.id))
+    .limit(1);
+  if (expired.length > 0) {
+    const nextSeason = await settleLeagueSeason(expired[0]!.id, now);
+    return { season: nextSeason, settledPrevious: true };
+  }
+
+  const [created] = await db.insert(leagueSeasons).values({
+    seasonNumber: 1,
+    startAt: now,
+    endAt: new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000),
+    isSettled: "0",
+  });
+  const inserted = await db.select().from(leagueSeasons).where(eq(leagueSeasons.id, created.insertId)).limit(1);
+  return { season: inserted[0]!, settledPrevious: false };
+}
+
+/** 結算某賽季：依各組作答數做升降級、建立下一季分組、標記本季已結算。回傳下一季。 */
+export async function settleLeagueSeason(seasonId: number, now = new Date()): Promise<LeagueSeason> {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  const rows = await db.select().from(leagueSeasons).where(eq(leagueSeasons.id, seasonId)).limit(1);
+  const season = rows[0];
+  if (!season) throw new Error("賽季不存在");
+  if (season.isSettled === "1") throw new Error("賽季已結算");
+
+  const groupRows = await db.select().from(leagueGroups).where(eq(leagueGroups.seasonId, seasonId));
+  const members = groupRows.filter((row) => !row.name.startsWith("__teacher_"));
+  const scored: Array<{ name: string; groupType: LeagueGroupType; score: number }> = [];
+  for (const member of members) {
+    const score = await leagueSeasonScore(member.name, season);
+    if (score > 0) scored.push({ name: member.name, groupType: member.groupType as LeagueGroupType, score });
+  }
+  const nextGroupMap = computeLeaguePromotionDemotion(scored);
+
+  const nextStart = season.endAt;
+  const nextEnd = new Date(season.endAt.getTime() + 7 * 24 * 60 * 60 * 1000);
+  const [created] = await db.insert(leagueSeasons).values({
+    seasonNumber: season.seasonNumber + 1,
+    startAt: nextStart,
+    endAt: nextEnd,
+    isSettled: "0",
+  });
+  const nextSeasonId = created.insertId;
+
+  if (nextGroupMap.size > 0) {
+    const values: InsertLeagueGroup[] = Array.from(nextGroupMap.entries()).map(([name, groupType]) => ({
+      seasonId: nextSeasonId,
+      name,
+      groupType,
+    }));
+    for (const value of values) await db.insert(leagueGroups).values(value);
+  }
+
+  await db.update(leagueSeasons).set({ isSettled: "1" }).where(eq(leagueSeasons.id, seasonId));
+  const nextRows = await db.select().from(leagueSeasons).where(eq(leagueSeasons.id, nextSeasonId)).limit(1);
+  return nextRows[0]!;
+}
+
+/** 新玩家分組：該季無分組 → 青銅；已有 → 回傳原組別。 */
+export async function getOrCreateLeagueGroup(name: string, seasonId: number): Promise<LeagueGroupType> {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  const rows = await db
+    .select({ groupType: leagueGroups.groupType })
+    .from(leagueGroups)
+    .where(and(eq(leagueGroups.seasonId, seasonId), eq(leagueGroups.name, name)))
+    .limit(1);
+  if (rows.length > 0) return rows[0]!.groupType as LeagueGroupType;
+  await db.insert(leagueGroups).values({ seasonId, name, groupType: "bronze" });
+  return "bronze";
+}
+
+export type LeagueStandingRow = { name: string; totalQuestions: number; accuracy: number };
+
+/** 某組別（或全站）即時榜：賽季起訖內聚合作答數。 */
+export async function listLeagueStandings(
+  season: Pick<LeagueSeason, "id" | "startAt" | "endAt">,
+  groupType?: LeagueGroupType,
+  limit = 50,
+): Promise<LeagueStandingRow[]> {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  let names: string[] | null = null;
+  if (groupType) {
+    const rows = await db
+      .select({ name: leagueGroups.name })
+      .from(leagueGroups)
+      .where(and(eq(leagueGroups.seasonId, season.id ?? -1), eq(leagueGroups.groupType, groupType)));
+    names = rows.map((row) => row.name);
+    if (names.length === 0) return [];
+  }
+  const conds = [gte(examRecords.createdAt, season.startAt), lt(examRecords.createdAt, season.endAt), sql`${examRecords.name} NOT LIKE '__teacher_%'`];
+  if (names) conds.push(inArray(examRecords.name, names));
+  const rows = await db
+    .select({
+      name: examRecords.name,
+      totalQuestions: sql`COALESCE(SUM(${examRecords.totalQuestions}), 0)`,
+      correctCount: sql`COALESCE(SUM(${examRecords.correctCount}), 0)`,
+    })
+    .from(examRecords)
+    .where(and(...conds))
+    .groupBy(examRecords.name)
+    .orderBy(desc(sql`COALESCE(SUM(${examRecords.totalQuestions}), 0)`))
+    .limit(Math.min(Math.max(limit, 1), 100));
+  return rows.map((row) => ({
+    name: row.name,
+    totalQuestions: Number(row.totalQuestions),
+    accuracy: Number(row.totalQuestions) > 0 ? Math.round((Number(row.correctCount) / Number(row.totalQuestions)) * 100) : 0,
+  }));
+}
+
+/** 已領取獎勵清單。 */
+export async function listClaimedLeagueRewards(seasonId: number, name: string): Promise<Array<{ rewardType: "participate" | "rank"; rank: number | null }>> {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  const rows = await db
+    .select({ rewardType: leagueRewards.rewardType, rank: leagueRewards.rank })
+    .from(leagueRewards)
+    .where(and(eq(leagueRewards.seasonId, seasonId), eq(leagueRewards.name, name)));
+  return rows.map((row) => ({ rewardType: row.rewardType as "participate" | "rank", rank: row.rank }));
+}
+
+export type LeagueClaimResult = { ok: true; rewardType: "participate" | "rank"; coins: number; badge: string | null; title: string; rank?: number } | { ok: false; reason: string };
+
+/** 領取賽季獎勵：防重複、條件檢查（參與獎需 ≥5 題；排名獎需有作答並依組內名次發放）。 */
+export async function claimLeagueReward(seasonId: number, name: string, rewardType: "participate" | "rank"): Promise<LeagueClaimResult> {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  const seasonRows = await db.select().from(leagueSeasons).where(eq(leagueSeasons.id, seasonId)).limit(1);
+  const season = seasonRows[0];
+  if (!season) return { ok: false, reason: "seasonNotFound" };
+
+  const already = await listClaimedLeagueRewards(seasonId, name);
+  if (already.some((item) => item.rewardType === rewardType)) return { ok: false, reason: "alreadyClaimed" };
+
+  const groupType = await getOrCreateLeagueGroup(name, seasonId);
+  const score = await leagueSeasonScore(name, season);
+
+  if (rewardType === "participate") {
+    if (score < 5) return { ok: false, reason: "notEnoughScore" };
+    await db.insert(leagueRewards).values({ seasonId, name, rewardType, rank: null });
+    return { ok: true, rewardType, coins: 100, badge: "league-participate", title: "賽季參與獎" };
+  }
+
+  if (rewardType === "rank") {
+    if (score < 1) return { ok: false, reason: "noScore" };
+    const standings = await listLeagueStandings(season, groupType, 100);
+    const rankIndex = standings.findIndex((row) => row.name === name);
+    if (rankIndex < 0) return { ok: false, reason: "noScore" };
+    const rank = rankIndex + 1;
+    const reward = computeLeagueRankReward(groupType, rank, standings.length);
+    await db.insert(leagueRewards).values({ seasonId, name, rewardType, rank });
+    return { ok: true, rewardType, coins: reward.coins, badge: reward.badge, title: reward.title, rank };
+  }
+  return { ok: false, reason: "badType" };
 }
 
 /** AI 伴讀每日配額：取得某使用者當日已用次數。 */

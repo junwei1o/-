@@ -230,3 +230,56 @@ export const pkChallenges = mysqlTable("pk_challenges", {
 
 export type PkChallenge = typeof pkChallenges.$inferSelect;
 export type InsertPkChallenge = typeof pkChallenges.$inferInsert;
+
+/** 聯盟賽組別（由低到高）。新玩家預設青銅，結算時前 30% 升、後 30% 降。 */
+export const LEAGUE_GROUPS = ["bronze", "silver", "gold", "diamond"] as const;
+export type LeagueGroupType = (typeof LEAGUE_GROUPS)[number];
+
+/**
+ * 聯盟賽賽季：每 7 天一季（與每週一 00:00 的週榜週期對齊）。
+ * 分組在賽季開始時依上季結算結果建立；賽季中即時聚合作答數排名。
+ */
+export const leagueSeasons = mysqlTable("league_seasons", {
+  id: int("id").autoincrement().primaryKey(),
+  seasonNumber: int("seasonNumber").notNull(),
+  startAt: timestamp("startAt").notNull(),
+  endAt: timestamp("endAt").notNull(),
+  isSettled: mysqlEnum("isSettled", ["0", "1"]).default("0").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+}, (table) => ({
+  seasonNumberIdx: index("league_seasons_number_idx").on(table.seasonNumber),
+}));
+
+export type LeagueSeason = typeof leagueSeasons.$inferSelect;
+export type InsertLeagueSeason = typeof leagueSeasons.$inferInsert;
+
+/** 聯盟賽分組快照：某賽季中每位參賽者的組別（賽季內不變，結算時重排）。 */
+export const leagueGroups = mysqlTable("league_groups", {
+  id: int("id").autoincrement().primaryKey(),
+  seasonId: int("seasonId").notNull(),
+  name: varchar("name", { length: 24 }).notNull(),
+  groupType: mysqlEnum("groupType", LEAGUE_GROUPS).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+}, (table) => ({
+  seasonNameIdx: index("league_groups_season_name_idx").on(table.seasonId, table.name),
+  seasonGroupIdx: index("league_groups_season_group_idx").on(table.seasonId, table.groupType),
+}));
+
+export type LeagueGroup = typeof leagueGroups.$inferSelect;
+export type InsertLeagueGroup = typeof leagueGroups.$inferInsert;
+
+/** 聯盟賽獎勵領取紀錄：同一賽季同一玩家同一獎項只能領一次。 */
+export const leagueRewards = mysqlTable("league_rewards", {
+  id: int("id").autoincrement().primaryKey(),
+  seasonId: int("seasonId").notNull(),
+  name: varchar("name", { length: 24 }).notNull(),
+  rewardType: mysqlEnum("rewardType", ["participate", "rank"]).notNull(),
+  /** 排名獎的組內名次（參與獎為 null）。 */
+  rank: int("rank"),
+  claimedAt: timestamp("claimedAt").defaultNow().notNull(),
+}, (table) => ({
+  seasonNameTypeIdx: index("league_rewards_season_name_type_idx").on(table.seasonId, table.name, table.rewardType),
+}));
+
+export type LeagueReward = typeof leagueRewards.$inferSelect;
+export type InsertLeagueReward = typeof leagueRewards.$inferInsert;

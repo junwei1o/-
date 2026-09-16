@@ -1,0 +1,203 @@
+/* 聯盟賽：賽季／分組／升降級／獎勵 */
+
+.league-season-card {
+  background: linear-gradient(135deg, #fffdf5, #fdf4e3);
+  border: 1px solid #eadfc8;
+  border-radius: 18px;
+  padding: 18px 22px;
+  margin: 14px 0 16px;
+  box-shadow: 0 2px 10px rgba(120, 96, 52, 0.08);
+}
+
+.league-season-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.league-season-eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: #a08a5c;
+  font-weight: 700;
+  margin: 0 0 2px;
+}
+
+.league-season-card h2 {
+  margin: 0;
+  font-size: 22px;
+  color: #5b4a26;
+}
+
+.league-season-remain {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 6px 0 0;
+  color: #8a7a55;
+  font-size: 14px;
+}
+
+.league-my-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.league-group-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 15px;
+  color: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+}
+
+.league-group-bronze { background: linear-gradient(135deg, #b87333, #9a5f27); }
+.league-group-silver { background: linear-gradient(135deg, #9aa5b1, #7d8894); }
+.league-group-gold   { background: linear-gradient(135deg, #d4a017, #b8860b); }
+.league-group-diamond{ background: linear-gradient(135deg, #4fc3f7, #0b6e8e); }
+
+.league-my-rank {
+  margin: 0;
+  font-size: 14px;
+  color: #6b5b36;
+}
+
+.league-tabs {
+  display: flex;
+  gap: 8px;
+  margin: 4px 0 16px;
+  flex-wrap: wrap;
+}
+
+.league-tabs button {
+  appearance: none;
+  border: 1px solid #d9cba9;
+  background: #fffdf5;
+  color: #6b5b36;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 9px 18px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  min-height: 44px;
+}
+
+.league-tabs button.is-active {
+  background: #d88462;
+  border-color: #d88462;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(216, 132, 98, 0.35);
+}
+
+.league-rewards {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.league-reward-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 14px;
+}
+
+.league-reward-card {
+  display: flex;
+  gap: 14px;
+  background: #fffdf5;
+  border: 1px solid #eadfc8;
+  border-radius: 16px;
+  padding: 18px;
+}
+
+.league-reward-icon {
+  flex: none;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fdeedd;
+  color: #d88462;
+}
+
+.league-reward-body h3 {
+  margin: 0 0 6px;
+  font-size: 17px;
+  color: #5b4a26;
+}
+
+.league-reward-body p {
+  margin: 0 0 10px;
+  font-size: 14px;
+  color: #6b5b36;
+  line-height: 1.6;
+}
+
+.league-reward-state {
+  display: inline-block;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.league-reward-state.is-claimed {
+  color: #4d8a54;
+}
+
+.league-claim-btn {
+  appearance: none;
+  border: none;
+  background: #d88462;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  padding: 10px 20px;
+  border-radius: 12px;
+  cursor: pointer;
+  min-height: 44px;
+  transition: opacity 0.15s ease;
+}
+
+.league-claim-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.league-claim-notice {
+  background: #eef7ee;
+  border: 1px solid #cfe3cf;
+  color: #3c6b42;
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 14px;
+  margin: 0;
+}
+
+.league-promotion-hint {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  background: #f6f0e2;
+  border: 1px dashed #d9cba9;
+  border-radius: 12px;
+  padding: 12px 16px;
+  color: #7a6a45;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.league-promotion-hint svg {
+  flex: none;
+  margin-top: 2px;
+  color: #b8860b;
+}

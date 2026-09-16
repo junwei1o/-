@@ -48,6 +48,12 @@ import {
   incrementAiUsage,
   addAiTokenUsage,
   listAiTokenUsage,
+  ensureLeagueSeason,
+  settleLeagueSeason,
+  getOrCreateLeagueGroup,
+  listLeagueStandings,
+  listClaimedLeagueRewards,
+  claimLeagueReward,
   createPkChallenge,
   getPkChallenge,
   joinPkChallenge,
@@ -848,6 +854,7 @@ export const appRouter = router({
    * 排名依據本週作答量，正確率作為次要資訊；教師檔案（__teacher_*）不參賽。
    */
   league: router({
+    /** 每週全站榜（既有）：臺北時間週一 00:00 起本週作答量。 */
     weekly: publicProcedure
       .query(async () => {
         const now = new Date();
@@ -860,6 +867,102 @@ export const appRouter = router({
         const weekKey = `${monday.getUTCFullYear()}-W${String(Math.floor((monday.getUTCDate() - 1) / 7) + 1).padStart(2, "0")}`;
         const standings = await listWeeklyLeaderboard(weekStart, 30);
         return { weekKey, weekStart: weekStart.getTime(), standings };
+      }),
+    /**
+     * 當前賽季（惰性結算）：上季已結束未結算時自動升降級並建立下一季。
+     * 有船名時一併回傳我的組別與組內名次。
+     */
+    season: publicProcedure
+      .input(z.object({ name: cloudNameSchema.optional() }).optional())
+      .query(async ({ input }) => {
+        const now = new Date();
+        const { season, settledPrevious } = await ensureLeagueSeason(now);
+        let myGroup: "bronze" | "silver" | "gold" | "diamond" | null = null;
+        let myRank: number | null = null;
+        let groupStandings: Array<{ name: string; totalQuestions: number; accuracy: number }> = [];
+        if (input?.name) {
+          myGroup = await getOrCreateLeagueGroup(input.name, season.id);
+          groupStandings = await listLeagueStandings(season, myGroup, 50);
+          myRank = groupStandings.findIndex((row) => row.name === input.name) + 1 || null;
+        }
+        return {
+          season: {
+            id: season.id,
+            seasonNumber: season.seasonNumber,
+            startAt: season.startAt.getTime(),
+            endAt: season.endAt.getTime(),
+            isSettled: season.isSettled,
+          },
+          settledPrevious,
+          myGroup,
+          myRank,
+          groupStandings,
+        };
+      }),
+    /** 組別榜：某組（預設我的組別）賽季累計作答量。 */
+    groupRanking: publicProcedure
+      .input(z.object({ name: cloudNameSchema.optional(), groupType: z.enum(["bronze", "silver", "gold", "diamond"]).optional() }).optional())
+      .query(async ({ input }) => {
+        const now = new Date();
+        const { season } = await ensureLeagueSeason(now);
+        let groupType = input?.groupType ?? null;
+        if (!groupType && input?.name) groupType = await getOrCreateLeagueGroup(input.name, season.id);
+        if (!groupType) return { seasonId: season.id, groupType: null, standings: [] };
+        const standings = await listLeagueStandings(season, groupType, 50);
+        return { seasonId: season.id, groupType, standings };
+      }),
+    /** 我的賽季獎勵狀態：已領取清單＋目前可領取條件。 */
+    myRewards: publicProcedure
+      .input(z.object({ name: cloudNameSchema }))
+      .query(async ({ input }) => {
+        const now = new Date();
+        const { season } = await ensureLeagueSeason(now);
+        const groupType = await getOrCreateLeagueGroup(input.name, season.id);
+        const claimed = await listClaimedLeagueRewards(season.id, input.name);
+        return {
+          seasonId: season.id,
+          groupType,
+          claimed,
+          participateClaimed: claimed.some((item) => item.rewardType === "participate"),
+          rankClaimed: claimed.some((item) => item.rewardType === "rank"),
+        };
+      }),
+    /** 領取賽季獎勵：參與獎（≥5 題）與排名獎（依組內名次），防重複。 */
+    claimReward: publicProcedure
+      .input(z.object({ name: cloudNameSchema, rewardType: z.enum(["participate", "rank"]) }))
+      .mutation(async ({ input }) => {
+        const now = new Date();
+        const { season } = await ensureLeagueSeason(now);
+        const result = await claimLeagueReward(season.id, input.name, input.rewardType);
+        if (!result.ok) {
+          const messages: Record<string, string> = {
+            seasonNotFound: "賽季不存在，請重新整理頁面。",
+            alreadyClaimed: "這個獎勵已經領取過了。",
+            notEnoughScore: "參與獎需要本賽季完成至少 5 題，再努力一下！",
+            noScore: "需要先留下作答紀錄，才能領取排名獎。",
+            badType: "獎勵類型不正確。",
+          };
+          throw new TRPCError({ code: "BAD_REQUEST", message: messages[result.reason] ?? "領取失敗，請稍後再試。" });
+        }
+        return result;
+      }),
+    /** 維運：手動結算指定賽季（僅教師帳號可呼叫）。 */
+    settle: publicProcedure
+      .input(z.object({ seasonId: z.number().int().positive(), teacherName: z.string().trim().min(2).max(24) }))
+      .mutation(async ({ input }) => {
+        if (!input.teacherName.startsWith("__teacher_")) {
+          throw new TRPCError({ code: "FORBIDDEN", message: "只有教師帳號可以手動結算賽季。" });
+        }
+        const nextSeason = await settleLeagueSeason(input.seasonId);
+        return {
+          ok: true,
+          nextSeason: {
+            id: nextSeason.id,
+            seasonNumber: nextSeason.seasonNumber,
+            startAt: nextSeason.startAt.getTime(),
+            endAt: nextSeason.endAt.getTime(),
+          },
+        };
       }),
   }),
   /** 異步 PK：建立／加入／提交分數／讀取結果。只同步分數，不傳班級學校。 */
