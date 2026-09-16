@@ -181,6 +181,16 @@ hdmx/
 - **驗收**：tsc 0 錯；`adaptiveLearning.test.ts` 19 測試全綠（含新增同分打平案）；`vite build` 成功；全量 **1017/1018 通過**，唯一失敗 `server/token-usage.test.ts` 為日期硬編碼（預期 2026-09-16，已過日），與本次改動無關。
 - **後續可選**：五、六年級題量偏薄（各約 185，低於三、四年級約 290）；若要擴題型（是非／配對）需一併改判題邏輯，另開工作。
 
+### 題庫擴充＋題型豐富化（本機 commit `9b88ef3`、`590cbaf`，尚未 push）
+> 接續上一段：補齊五、六年級題量、新增是非題型、修好日期飄移測試。
+- **題量 948 → 1090**：新增 140 題（五、六年級四科），來源檔 `data/supplement_{math,science,social,chinese}.json`，由 `scripts/merge-supplement.mjs` 合併、`scripts/remap-topics.mjs` 對齊知識點後寫入主庫。五年級 188→259、六年級 182→253。
+- **是非題型上線**：新增 19 道是非題（`questionType:"是非題"`、2 選項「正確/錯誤」）。前端 `isValidQuestion` 本就有 2 選項分支、判題元件全為 `options.map + index===answer` 通用邏輯，無需改 UI；`expandQuestionBankToSix` 對非 4 選題原樣保留。
+- **知識點≥4 規則維持**：新題的 `learningTopic` 對齊舊庫既有組別（如「圓」拆進「周長計算/面積計算」、「比與比值」併入「比例」、「觀測月亮/太陽/星星」合為「天文觀測」4 題）；薄知識點組（<4 題）數量為 **0**。
+- **limit 500 → 1200**（三處同步：`client/src/lib/questionBank.ts` 請求、`server/db.ts` cap、`server/routers.ts` z.schema），server 模式下也能取到全部 1090 題；後端 `ensureQuestionBankReady` 為增量同步，新題會自動補入 DB。
+- **測試更新**：`server/question-bank.test.ts` 改為依題型驗證選項數（是非 2／選擇 4）；`server/token-usage.test.ts` 日期硬編碼改 `vi.useFakeTimers()` 固定系統時間，消除每日飄移。
+- **驗收**：tsc 0 錯；`vite build` 成功；**全量 174 檔 1018 測試全綠**；品質報告：國語 243／數學 301／社會 272／自然 274；三 291／四 287／五 259／六 253；基礎 414／標準 390／挑戰 286。
+- **線上部署**：等待推送後由 Render 自動增量同步新題至 `question_bank` 表（補缺的 id，不重建）。
+
 ### 獨立待辦：LINE 推播（需使用者本人操作，助理無權限）
 - 程式碼已上線，但線上 webhook 回 501。
 - 需在 **Render 後台**加兩個環境變數：`LINE_CHANNEL_SECRET`、`LINE_CHANNEL_ACCESS_TOKEN`，再重新部署，並在 LINE 頻道設 Webhook URL `https://xue-gr3a.onrender.com/api/line/webhook`、勾選 Allow bot to send push messages。
