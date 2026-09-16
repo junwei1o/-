@@ -239,7 +239,7 @@ export function targetDifficulties(profile: AdaptiveProfile, questions: Adaptive
   return ["基礎", "標準"];
 }
 
-export function selectAdaptiveQuestions<T extends AdaptiveQuestion>(questions: T[], profile: AdaptiveProfile, count = questions.length): T[] {
+export function selectAdaptiveQuestions<T extends AdaptiveQuestion>(questions: T[], profile: AdaptiveProfile, count = questions.length, random: () => number = Math.random): T[] {
   if (questions.length === 0 || count <= 0) return [];
   const attempts = recentAttempts(profile, questions);
   const attemptedIds = new Set(attempts.map((attempt) => attempt.questionId));
@@ -259,7 +259,10 @@ export function selectAdaptiveQuestions<T extends AdaptiveQuestion>(questions: T
     const freshness = attemptedIds.has(question.id) ? 0 : 6;
     return difficultyFit + weakFit + freshness;
   };
-  return [...questions].sort((a, b) => rank(b) - rank(a)).slice(0, Math.min(count, questions.length));
+  // 主分數相同時以隨機鍵打平，避免每次都抽同一批題；先逐題預取亂數（不可在 sort comparator 內呼叫，否則破壞排序契約）。
+  const seeded = questions.map((question) => ({ question, score: rank(question), tie: random() }));
+  seeded.sort((a, b) => b.score - a.score || a.tie - b.tie);
+  return seeded.slice(0, Math.min(count, seeded.length)).map((entry) => entry.question);
 }
 
 export type AdaptiveReport = {

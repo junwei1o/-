@@ -65,6 +65,13 @@ export const LOCAL_ENGLISH_BANK: CurriculumQuestionRow[] = (() => {
   return questions.map((q) => ({ ...q, questionType: q.questionType ?? "選擇題" as const }));
 })();
 
+/**
+ * 離線後備庫的「擴充成 6 選項」結果。擴充是純確定性運算（只依題目內容產生干擾項），
+ * 因此模組載入時算一次即可，不必在每次 query.data 變動時對近千題重跑。
+ * 打亂選項順序仍保留在 useQuestionBank 中每次執行（那是刻意要讓正解位置每次都不同）。
+ */
+const EXPANDED_LOCAL_FALLBACK = expandQuestionBankToSix([...LOCAL_QUESTION_BANK, ...LOCAL_ENGLISH_BANK]);
+
 export type QuestionBankSource = "server" | "local";
 
 /**
@@ -79,8 +86,11 @@ export function useQuestionBank() {
   const questions = useMemo(() => {
     const serverQuestions = (query.data?.questions ?? []) as CurriculumQuestionRow[];
     // 英語文題目固定附加本地 seed：後端 schema 未收錄英語時，英語港口仍有完整題目可作答。
-    const base = serverQuestions.length > 0 ? [...serverQuestions, ...LOCAL_ENGLISH_BANK] : [...LOCAL_QUESTION_BANK, ...LOCAL_ENGLISH_BANK];
-    return expandQuestionBankToSix(base).map((question) => shuffleQuestionOptions(question));
+    // 後端有資料時才即時擴充（需與伺服器題目一起建借用池）；離線後備直接用模組層預擴充的結果。
+    const expanded = serverQuestions.length > 0
+      ? expandQuestionBankToSix([...serverQuestions, ...LOCAL_ENGLISH_BANK])
+      : EXPANDED_LOCAL_FALLBACK;
+    return expanded.map((question) => shuffleQuestionOptions(question));
   }, [query.data]);
   const usingLocal = (query.data?.questions ?? []).length === 0;
   const source = (usingLocal ? "local" : "server") as QuestionBankSource;

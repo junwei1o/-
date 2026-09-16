@@ -72,6 +72,20 @@ describe("adaptive learning model", () => {
     expect(new Set(selected.map((question) => question.curriculumDomain)).size).toBeGreaterThan(1);
   });
 
+  it("breaks score ties with the injected randomizer instead of fixed array order", () => {
+    const profile = defaultAdaptiveProfile;
+    // 兩題同為「基礎」、皆未作答、知識點皆不弱 → 主分數完全相同（40+6=46）
+    const tieQuestions = [
+      { id: "x", difficulty: "基礎" as const, curriculumDomain: "數學領域", knowledge: ["代數"] },
+      { id: "y", difficulty: "基礎" as const, curriculumDomain: "自然科學領域", knowledge: ["觀察"] },
+    ];
+    const seq = (values: number[]) => { let index = 0; return () => values[index++] ?? 0; };
+    // x 拿到較小隨機鍵 → x 先出
+    expect(selectAdaptiveQuestions(tieQuestions, profile, 2, seq([0.1, 0.9]))[0].id).toBe("x");
+    // 同分但 y 拿到較小隨機鍵 → y 先出（順序可被隨機翻轉，證明不再固定 array 順序）
+    expect(selectAdaptiveQuestions(tieQuestions, profile, 2, seq([0.9, 0.1]))[0].id).toBe("y");
+  });
+
   it("derives heatmap states only from valid observed attempts", () => {
     let profile = defaultAdaptiveProfile;
     profile = recordAdaptiveAttempt(profile, { questionId: "a", curriculumDomain: "數學領域", knowledge: ["分數"], difficulty: "基礎", correct: false, responseMs: 18_000, timeLimitMs: 25_000 });

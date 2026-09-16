@@ -1,36 +1,39 @@
 {
-  "questionCount": 500,
-  "expectedQuestionCount": 500,
-  "validQuestionCount": 500,
+  "generatedAt": "2026-09-16T18:30:11.491Z",
+  "questionCount": 948,
+  "validQuestionCount": 948,
   "validationFailures": [],
   "duplicatePromptCount": 0,
-  "duplicatePromptIds": [],
+  "duplicatePrompts": [],
   "counts": {
     "subject": {
-      "國語": 120,
-      "數學": 130,
-      "社會": 120,
-      "自然": 130
+      "國語": 210,
+      "數學": 267,
+      "社會": 235,
+      "自然": 236
     },
     "grade": {
-      "3": 150,
-      "4": 150,
-      "5": 100,
-      "6": 100
+      "3": 291,
+      "4": 287,
+      "5": 188,
+      "6": 182
     },
     "difficulty": {
-      "基礎": 200,
-      "標準": 150,
-      "挑戰": 150
+      "基礎": 379,
+      "標準": 307,
+      "挑戰": 262
+    },
+    "questionType": {
+      "選擇題": 948
     },
     "curriculumDomain": {
-      "語文領域": 120,
-      "數學領域": 130,
-      "社會領域": 120,
-      "自然科學領域": 130
+      "語文領域": 210,
+      "數學領域": 267,
+      "社會領域": 235,
+      "自然科學領域": 236
+    },
+    "optionCount": {
+      "4": 948
     }
-  },
-  "files": {
-    "json": "/home/ubuntu/xue-adventure/data/taiwan_curriculum_500.json"
   }
 }
