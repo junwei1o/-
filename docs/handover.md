@@ -173,6 +173,14 @@ hdmx/
 - **`BattleScene.tsx`**：夜間環境 chip 顯示「✦ 星光加成」。
 - 測試：`nightObservation.test.ts` 3 案（時段邊界/加成/小語）＋`academyExpansion.test.ts` 星語觀測案。
 
+### 題庫設計優化 P0（本機 commit `05615bf`，尚未 push）
+> 目標：在不動 DB schema、不動後端 enum、不改 UI 外觀的前提下，改善手機端題庫載入與抽題重複問題。
+- **載入效能**（`client/src/lib/questionBank.ts`）：離線後備庫（本地 948 題＋英語 seed）的「擴成 6 選項」是純確定性運算，改為模組載入時算一次（`EXPANDED_LOCAL_FALLBACK`），不再每次 `query.data` 變動重跑近千題；打亂選項仍保留每次執行（刻意讓正解位置每次不同）。
+- **抽題多樣性**（`client/src/game/adaptiveLearning.ts`）：`selectAdaptiveQuestions` 新增可注入 `random` 參數；主分數相同時以隨機鍵打平（先逐題預取亂數，不在 sort comparator 內呼叫），解決「同分固定抽 array 順序、每次出同樣題」。既有測試因分數本就不同而不受影響。
+- **題庫誠實報告**：重跑驗證，`data/taiwan_curriculum_500_quality_report.json` 從過期的 500 題更新為真實 **948 題全數有效、0 重複題幹**。真實分布：國語 210／數學 267／社會 235／自然 236；三年級 291／四年級 287／五年級 188／六年級 182；基礎 379／標準 307／挑戰 262；全部為 4 選一選擇題（無是非題）。
+- **驗收**：tsc 0 錯；`adaptiveLearning.test.ts` 19 測試全綠（含新增同分打平案）；`vite build` 成功；全量 **1017/1018 通過**，唯一失敗 `server/token-usage.test.ts` 為日期硬編碼（預期 2026-09-16，已過日），與本次改動無關。
+- **後續可選**：五、六年級題量偏薄（各約 185，低於三、四年級約 290）；若要擴題型（是非／配對）需一併改判題邏輯，另開工作。
+
 ### 獨立待辦：LINE 推播（需使用者本人操作，助理無權限）
 - 程式碼已上線，但線上 webhook 回 501。
 - 需在 **Render 後台**加兩個環境變數：`LINE_CHANNEL_SECRET`、`LINE_CHANNEL_ACCESS_TOKEN`，再重新部署，並在 LINE 頻道設 Webhook URL `https://xue-gr3a.onrender.com/api/line/webhook`、勾選 Allow bot to send push messages。
