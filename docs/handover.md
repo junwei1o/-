@@ -2,7 +2,7 @@
 
 > **用途**：完整記錄專案從開發至今的成果、架構、流程、待辦與部署方式，讓新接手的開發者可以無縫繼續。
 > **最後更新**：2026-09-16
-> **報告涵蓋範圍**：P0 → P1 → P2 → 補缺修復 → AI Token 用量 → 聯盟賽賽季系統 → 卡牌系統（進行中），以及後續 P3-3～P3-5 待辦。
+> **報告涵蓋範圍**：P0 → P1 → P2 → 補缺修復 → AI Token 用量 → 聯盟賽賽季系統 → 卡牌系統 → 夥伴怪獸多樣化，以及後續 P3-4、P3-5 待辦。
 
 ---
 
@@ -141,10 +141,14 @@ hdmx/
 - [ ] Playwright 線上驗收：卡冊五主題分組、48 張、對決頁、相克提示、0 JS 錯誤。
 - [ ]（可選）卡牌美術素材、開卡機率調校、卡牌詳情彈窗動畫。
 
-### P3-3 夥伴怪獸多樣化
-- 怪獸種族/屬性/技能/等級經驗養成；獲取管道（關卡、聯盟賽、卡牌）。
-- 怪獸背包、詳情頁、戰鬥召喚 UI；資料表、API、測試。
-- 現有可複用：`client/src/game/companionBrain.ts`、`companionEvolution.ts`、`companionGrowth.ts`、`companionCombatStyles.ts`。
+### P3-3 夥伴怪獸多樣化（已上線，commit `d05f44f`，線上驗收 6/6）
+> 原本已有：11 隻夥伴（4 棲息地各 2 隻捕捉怪＋4 主角）、進化/養成/捕捉/戰鬥系統。
+本次改動：
+- 新增傳說主角夥伴**「黑熊護衛」**（formosa-bear，region central，守護者，防禦型）＋3 階進化鏈（黑熊護衛→黑曜熊衛→玉山熊皇，`companionEvolution.ts` STAGES）。
+- 捕捉怪 8→12：四個棲息地各補第 3 隻（夜潮螢/雲嶺水鹿/星谷鯨靈/瑩光水母），稀有度 common/rare/legendary 三檔齊全。
+- **遭遇輪替**：`encounterForRegion(region, ownedIds?)` 依已捕捉進度先遇低階未捕捉怪，全捕捉後遇最高階；`RpgAdventure.explore` 傳入已擁有夥伴 id。
+- 新成就 2 個：「圖鑑收藏家」（3 隻夥伴）、「進化先鋒」（首次進化）；`unlockGrowthAchievements` 加可選 `extra` 參數，`rpgStorage` 串接 companionCount/evolutionStage。
+- 測試：`rpgData.test.ts`（5 主角/12 捕捉怪/四棲息地三檔齊全/輪替邏輯）＋companionGrowth 成就測試；全量 **173 檔 1011 測試全綠**。
 
 ### P3-4 文字冒險擴充
 - 支線劇情、選擇分支、多結局；冒險獎勵；中斷存檔續玩。
