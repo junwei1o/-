@@ -23,10 +23,16 @@ const context: TrpcContext = {
 
 const listAiTokenUsageMock = vi.mocked(listAiTokenUsage);
 
-afterEach(() => vi.restoreAllMocks());
+afterEach(() => {
+  vi.restoreAllMocks();
+  vi.useRealTimers();
+});
 
 describe("aiTutor.tokenUsage", () => {
   it("無 name 時回傳全站今日、近 7 天總計與每日明細", async () => {
+    // 固定系統時間為台北 2026-09-16 中午，與 mock 的 today 資料一致，避免隨真實日期飄移。
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-09-16T04:00:00.000Z"));
     listAiTokenUsageMock.mockResolvedValue([
       { usageDate: "2026-09-09", calls: 1, promptTokens: 200, completionTokens: 50, totalTokens: 250 },
       { usageDate: "2026-09-16", calls: 3, promptTokens: 700, completionTokens: 180, totalTokens: 880 },
