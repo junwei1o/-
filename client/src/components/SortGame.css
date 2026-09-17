@@ -14,8 +14,8 @@
 .sort-game .sg-progress i{display:block;height:100%;background:var(--mg-sea,#2f7d8f);border-radius:99px;transition:width .3s ease}
 
 /* 散落項目卡 */
-.sort-game .sg-items{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
-.sort-game .sg-item{min-height:52px;border:2px solid var(--mg-line,#e2d4b6);border-radius:14px;background:var(--mg-card,#fffdf6);
+.sort-game .sg-items{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}
+.sort-game .sg-item{min-height:48px;border:2px solid var(--mg-line,#e2d4b6);border-radius:12px;background:var(--mg-card,#fffdf6);
   font-size:15px;font-weight:700;color:var(--mg-ink,#3a2f23);cursor:pointer;font-family:inherit;
   display:flex;align-items:center;justify-content:center;gap:6px;padding:8px 6px;text-align:center;line-height:1.25;
   box-shadow:0 2px 0 rgba(58,47,35,.10);transition:transform .08s,border-color .15s,background .15s}
@@ -31,7 +31,7 @@
 
 /* 分類籃 */
 .sort-game .sg-baskets{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
-.sort-game .sg-basket{min-height:86px;border:2px solid var(--mg-line,#e2d4b6);border-radius:16px;background:var(--mg-card,#fffdf6);
+.sort-game .sg-basket{min-height:78px;border:2px solid var(--mg-line,#e2d4b6);border-radius:16px;background:var(--mg-card,#fffdf6);
   padding:10px;cursor:pointer;font-family:inherit;text-align:left;position:relative;
   border-top:6px solid var(--mg-sea,#2f7d8f);transition:transform .08s,border-color .15s,box-shadow .15s}
 .sort-game .sg-basket:nth-child(2){border-top-color:var(--mg-orange,#e08a3c)}

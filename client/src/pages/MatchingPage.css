@@ -1,4 +1,4 @@
-.matching-page{min-height:100vh;background:#f7efdd;padding-bottom:32px}
+.matching-page{min-height:100vh;background:#f7efdd;padding-bottom:108px}
 .matching-page .mp-header{background:linear-gradient(160deg,#2f7d8f,#1f5d6b);color:#fff;
   padding:18px 16px 16px;border-radius:0 0 22px 22px;box-shadow:0 4px 0 rgba(31,93,107,.18)}
 .matching-page .mp-header-row{max-width:680px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px}
