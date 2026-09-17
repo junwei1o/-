@@ -132,16 +132,16 @@ export default function Tavern() {
           <span className="tavern-fire">🔥</span>
         </div>
         <button className="tavern-counter" onClick={() => setBarOpen(true)} aria-label="領航櫃台">
-          <span className="tavern-keeper" aria-hidden="true">🧔</span>
+          <span className="tavern-keeper" aria-hidden="true">🧭</span>
           <span className="tavern-counter-label">領航櫃台</span>
-          <span className="tavern-counter-mug" aria-hidden="true">🍺</span>
+          <span className="tavern-counter-mug" aria-hidden="true">🗺️</span>
         </button>
       </div>
 
       {/* 領航員對話氣泡（首次贈卡時提示） */}
       {firstVisit && (
         <div className="tavern-keeper-bubble" role="status">
-          <span aria-hidden="true">🧔</span> 初次見面，送你幾張卡牌試試手氣！
+          <span aria-hidden="true">🧭</span> 初次見面，送你幾張卡牌試試手氣！
         </div>
       )}
 
