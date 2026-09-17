@@ -118,3 +118,6 @@ client/public/__manus__/version.json
 
 # 本機 production 啟動用的 public 複製品（由 dist/public 產生）
 server/_core/public/
+
+# 本機 Playwright / 測試日誌與截圖
+.testlogs/

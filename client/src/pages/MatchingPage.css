@@ -1,0 +1,29 @@
+.matching-page{min-height:100vh;background:#f7efdd;padding-bottom:32px}
+.matching-page .mp-header{background:linear-gradient(160deg,#2f7d8f,#1f5d6b);color:#fff;
+  padding:18px 16px 16px;border-radius:0 0 22px 22px;box-shadow:0 4px 0 rgba(31,93,107,.18)}
+.matching-page .mp-header-row{max-width:680px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.matching-page .mp-header h1{font-size:22px;font-weight:800;letter-spacing:1px;margin:0}
+.matching-page .mp-header p{font-size:13px;opacity:.92;margin:3px 0 0}
+.matching-page .mp-header-actions{display:flex;gap:8px;flex:none}
+.matching-page .mp-icon-btn{min-width:46px;min-height:46px;border:none;background:rgba(255,255,255,.16);color:#fff;
+  border-radius:12px;font-size:17px;cursor:pointer;padding:0 12px}
+.matching-page .mp-body{max-width:680px;margin:0 auto;padding:16px 14px}
+.matching-page .mp-footer{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px}
+.matching-page .mp-link-btn{background:none;border:none;color:#1f5d6b;font-size:14px;font-weight:700;
+  text-decoration:underline;cursor:pointer;padding:8px 10px;font-family:inherit}
+
+.matching-page .mp-menu h2{font-size:20px;font-weight:800;margin:4px 0 14px}
+.matching-page .mp-subject-group{margin-bottom:20px}
+.matching-page .mp-subject-group h3{font-size:15px;color:#1f5d6b;margin:0 0 9px;
+  border-left:5px solid #2f7d8f;padding-left:9px}
+.matching-page .mp-level-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:11px}
+.matching-page .mp-level-card{background:#fffdf6;border:2px solid #e2d4b6;border-radius:16px;padding:13px;
+  text-align:left;cursor:pointer;font-family:inherit;min-height:92px;display:flex;flex-direction:column;gap:4px;
+  box-shadow:0 2px 0 rgba(58,47,35,.08)}
+.matching-page .mp-level-card.is-active{border-color:#2f7d8f;box-shadow:0 0 0 3px rgba(47,125,143,.2)}
+.matching-page .mp-level-subj{font-size:11.5px;color:#6b5d49}
+.matching-page .mp-level-title{font-size:15px;font-weight:800;color:#3a2f23}
+.matching-page .mp-level-stars{color:#e0a92e;letter-spacing:2px;font-size:15px;margin-top:auto}
+@media (min-width:560px){
+  .matching-page .mp-level-grid{grid-template-columns:repeat(3,1fr)}
+}

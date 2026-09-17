@@ -15,6 +15,7 @@ import { OfflineBanner } from "@/components/OfflineBanner";
 
 // 路由懶加載：首頁與導覽保持直接載入（首屏最快），其餘頁面進入時才下載。
 const PaperExam = React.lazy(() => import("./pages/PaperExam"));
+const MatchingPage = React.lazy(() => import("./pages/MatchingPage"));
 const RegionDetail = React.lazy(() => import("./pages/RegionDetail"));
 const MediaObservatory = React.lazy(() => import("./pages/MediaObservatory"));
 const MediaObservatoryDetail = React.lazy(() => import("@/pages/MediaObservatoryDetail"));
@@ -88,6 +89,7 @@ function Router() {
         <Route path={"/camp"} component={DailyCamp} />
         <Route path={"/badges"} component={Badges} />
         <Route path={"/practice"} component={PaperExam} />
+        <Route path={"/matching"} component={MatchingPage} />
         <Route path={"/wrong-answers"} component={WrongAnswers} />
         <Route path={"/review-hub"} component={ReviewHub} />
         <Route path={"/regions/:regionKey"} component={RegionDetail} />

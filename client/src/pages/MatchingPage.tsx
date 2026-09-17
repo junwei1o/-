@@ -1,0 +1,159 @@
+import React, { useEffect, useMemo, useState } from "react";
+import { useLocation } from "wouter";
+import MatchingGame from "@/components/MatchingGame";
+import {
+  MATCHING_SETS,
+  MATCHING_SUBJECTS,
+  type MatchingResult,
+} from "@/lib/matchingBank";
+import "./MatchingPage.css";
+
+const BEST_KEY = "xue-matching-best-v1";
+
+type BestMap = Record<string, { stars: number; errors: number; timeMs: number }>;
+
+function loadBest(): BestMap {
+  try {
+    return JSON.parse(localStorage.getItem(BEST_KEY) ?? "{}") as BestMap;
+  } catch {
+    return {};
+  }
+}
+
+function saveBest(best: BestMap) {
+  try {
+    localStorage.setItem(BEST_KEY, JSON.stringify(best));
+  } catch {
+    /* 隱私模式無法寫入就只保留在記憶體 */
+  }
+}
+
+export default function MatchingPage() {
+  const [, setLocation] = useLocation();
+  const [index, setIndex] = useState(0);
+  const [nonce, setNonce] = useState(0);
+  const [view, setView] = useState<"play" | "menu">("play");
+  const [muted, setMuted] = useState(false);
+  const [best, setBest] = useState<BestMap>({});
+
+  useEffect(() => {
+    setBest(loadBest());
+  }, []);
+
+  const currentSet = MATCHING_SETS[index];
+
+  const grouped = useMemo(
+    () => MATCHING_SUBJECTS.map((subject) => ({ subject, sets: MATCHING_SETS.filter((s) => s.subject === subject) })),
+    [],
+  );
+
+  function handleComplete(result: MatchingResult) {
+    setBest((previous) => {
+      const old = previous[result.id];
+      const better =
+        !old ||
+        result.stars > old.stars ||
+        (result.stars === old.stars && result.errors < old.errors) ||
+        (result.stars === old.stars && result.errors === old.errors && result.timeMs < old.timeMs);
+      if (!better) return previous;
+      const next = {
+        ...previous,
+        [result.id]: { stars: result.stars, errors: result.errors, timeMs: result.timeMs },
+      };
+      saveBest(next);
+      return next;
+    });
+  }
+
+  function play(nextIndex: number) {
+    setIndex(((nextIndex % MATCHING_SETS.length) + MATCHING_SETS.length) % MATCHING_SETS.length);
+    setNonce((n) => n + 1);
+    setView("play");
+    window.scrollTo({ top: 0 });
+  }
+
+  if (!currentSet) return null;
+
+  return (
+    <main className="matching-page">
+      <header className="mp-header">
+        <div className="mp-header-row">
+          <div>
+            <h1>配對連連看</h1>
+            <p>左右連線，把對應的兩項配在一起（成績只存在這台裝置）</p>
+          </div>
+          <div className="mp-header-actions">
+            <button type="button" className="mp-icon-btn" onClick={() => setMuted((m) => !m)} aria-label="音效開關">
+              {muted ? "🔇" : "🔊"}
+            </button>
+            <button type="button" className="mp-icon-btn" onClick={() => setView(view === "menu" ? "play" : "menu")}>
+              {view === "menu" ? "✕" : "☰"}
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <div className="mp-body">
+        {view === "play" ? (
+          <>
+            <MatchingGame
+              key={`${currentSet.id}-${nonce}`}
+              set={currentSet}
+              muted={muted}
+              onComplete={handleComplete}
+              resultActions={
+                <>
+                  <button type="button" className="mg-btn mg-btn-ghost" onClick={() => play(index)}>
+                    重玩
+                  </button>
+                  <button type="button" className="mg-btn mg-btn-primary" onClick={() => play(index + 1)}>
+                    {index < MATCHING_SETS.length - 1 ? "下一關 →" : "回到第 1 關 ↻"}
+                  </button>
+                </>
+              }
+            />
+            <div className="mp-footer">
+              <button type="button" className="mp-link-btn" onClick={() => setView("menu")}>
+                查看全部 {MATCHING_SETS.length} 關
+              </button>
+              <button type="button" className="mp-link-btn" onClick={() => setLocation("/practice")}>
+                回一般試卷
+              </button>
+            </div>
+          </>
+        ) : (
+          <section className="mp-menu">
+            <h2>選擇關卡</h2>
+            {grouped.map((group) => (
+              <div key={group.subject} className="mp-subject-group">
+                <h3>{group.subject}</h3>
+                <div className="mp-level-grid">
+                  {group.sets.map((set) => {
+                    const globalIndex = MATCHING_SETS.findIndex((s) => s.id === set.id);
+                    const record = best[set.id];
+                    return (
+                      <button
+                        type="button"
+                        key={set.id}
+                        className={`mp-level-card ${globalIndex === index ? "is-active" : ""}`}
+                        onClick={() => play(globalIndex)}
+                      >
+                        <span className="mp-level-subj">
+                          {set.grade} · {set.difficulty}
+                        </span>
+                        <span className="mp-level-title">{set.title}</span>
+                        <span className="mp-level-stars">
+                          {record ? [1, 2, 3].map((n) => (n <= record.stars ? "★" : "☆")).join("") : "☆☆☆"}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </section>
+        )}
+      </div>
+    </main>
+  );
+}

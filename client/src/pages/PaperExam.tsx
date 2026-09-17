@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { BookOpenCheck, ChevronLeft, ChevronRight, CircleAlert, ClipboardList, Flag, Lightbulb, MapPinned, Mountain, Orbit, RotateCcw, Volume2, VolumeX, X } from "lucide-react";
+import { BookOpenCheck, ChevronLeft, ChevronRight, CircleAlert, ClipboardList, Flag, Lightbulb, MapPinned, Mountain, Orbit, Puzzle, RotateCcw, Volume2, VolumeX, X } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { useQuestionBank } from "@/lib/questionBank";
 import { getSubjectStudyTips, GENERAL_STUDY_TIPS } from "@/lib/studyTips";
@@ -8,6 +8,8 @@ import { SpeechReadButton } from "@/components/SpeechReadButton";
 import { AiReviewPlanCard } from "@/components/AiReviewPlanCard";
 import { QuestionTransition } from "@/components/QuestionTransition";
 import { AnswerCombo } from "@/components/AnswerCombo";
+import MatchingGame from "@/components/MatchingGame";
+import { pickMatchingSet, formatMatchingTime, type MatchingResult, type MatchingSet } from "@/lib/matchingBank";
 import { CompanionReflection } from "@/components/CompanionReflection";
 import { ReflectionWorkspace } from "@/components/reflection/ReflectionWorkspace";
 import {
@@ -94,6 +96,13 @@ export default function PaperExam() {
   const [comboCount, setComboCount] = useState(0);
   const [comboTrigger, setComboTrigger] = useState(0);
   const [showSummary, setShowSummary] = useState(false);
+  // 卷末加碼的「配對連連看」大題：獨立 local-first 題庫，不進 deck、不影響主題庫計分。
+  const [matchingSet, setMatchingSet] = useState<MatchingSet | null>(null);
+  const [matchingGate, setMatchingGate] = useState<{ active: boolean; done: boolean; result: MatchingResult | null }>({
+    active: false,
+    done: false,
+    result: null,
+  });
   const [reviewTopicConfirmed, setReviewTopicConfirmed] = useState(false);
   const [showRelatedWrong, setShowRelatedWrong] = useState(false);
   const [wrongPracticePreview, setWrongPracticePreview] = useState<PaperQuestion[] | null>(null);
@@ -620,6 +629,13 @@ function pickPoolWithCooldown(nextScope: PaperScope): PaperQuestion[] {
     );
   }, [questions]);
 
+  // 每次建立新試卷（含作業、錯題重練）都重置卷末配對大題，並依範圍選一組配對題。
+  useEffect(() => {
+    setMatchingGate({ active: false, done: false, result: null });
+    setMatchingSet(pickMatchingSet(scope));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [deck]);
+
   function retryUnmasteredQuestions() {
     const retryDeck = [...wrongQuestions];
     if (retryDeck.length === 0) {
@@ -774,6 +790,10 @@ function pickPoolWithCooldown(nextScope: PaperScope): PaperQuestion[] {
               <Orbit size={19} aria-hidden="true" />
               <span><strong>探索天文館</strong><small>進入專屬天文知識挑戰</small></span>
             </button>
+            <button type="button" className="paper-home-secondary" onClick={() => setLocation("/matching")}>
+              <Puzzle size={19} aria-hidden="true" />
+              <span><strong>配對連連看</strong><small>五學科 30 關互動題自由練習</small></span>
+            </button>
           </nav>
         )}
       </section>
@@ -884,6 +904,24 @@ function pickPoolWithCooldown(nextScope: PaperScope): PaperQuestion[] {
             <div><strong>{result.correct} / {result.total}</strong><span>答對題數</span></div>
             <div><strong>{wrongQuestions.length}</strong><span>需要複習</span></div>
           </div>
+          {matchingGate.result && (
+            <section className="paper-matching-summary" aria-label="配對大題結果">
+              <div className="paper-matching-summary-row">
+                <Puzzle size={20} aria-hidden="true" />
+                <div className="paper-matching-summary-name">
+                  <p className="paper-exam-eyebrow">加碼互動題 · {matchingGate.result.subject}</p>
+                  <strong>{matchingGate.result.title}</strong>
+                </div>
+                <div className="paper-matching-summary-score">
+                  <span className="paper-matching-stars" aria-label={`配對獲得 ${matchingGate.result.stars} 星`}>
+                    {"★".repeat(matchingGate.result.stars)}{"☆".repeat(3 - matchingGate.result.stars)}
+                  </span>
+                  <small>失誤 {matchingGate.result.errors} 次 · 用時 {formatMatchingTime(matchingGate.result.timeMs)}</small>
+                </div>
+              </div>
+              <button type="button" className="paper-secondary-button" onClick={() => setLocation("/matching")}>挑戰更多配對關卡 →</button>
+            </section>
+          )}
           {summaryTipGroups.length > 0 && (
             <section className="paper-summary-tips" aria-labelledby="paper-tips-title">
               <div className="paper-summary-tips-heading">
@@ -1096,7 +1134,7 @@ function pickPoolWithCooldown(nextScope: PaperScope): PaperQuestion[] {
         </section>
       )}
 
-      {paperReady && current && (!reviewTopic || reviewTopicConfirmed) && !showSummary && (
+      {paperReady && current && (!reviewTopic || reviewTopicConfirmed) && !showSummary && !matchingGate.active && (
         <section className="paper-question-panel" aria-labelledby="paper-question-title">
           <QuestionTransition itemKey={current.id} className="paper-question-transition">
           {(() => {
@@ -1234,10 +1272,37 @@ function pickPoolWithCooldown(nextScope: PaperScope): PaperQuestion[] {
           )}
           <div className="paper-question-actions">
             <button type="button" className="paper-secondary-button" onClick={() => setCurrentIndex((index) => Math.max(0, index - 1))} disabled={currentIndex === 0}><ChevronLeft size={18} aria-hidden="true" />上一題</button>
-            {currentIndex < deck.length - 1 ? <button type="button" className="paper-primary-button" onClick={() => setCurrentIndex((index) => index + 1)} disabled={!currentAnswered}>下一題<ChevronRight size={18} aria-hidden="true" /></button> : <button type="button" className="paper-primary-button" onClick={() => setShowSummary(true)} disabled={!currentAnswered}><ClipboardList size={18} aria-hidden="true" />查看結果總結</button>}
+            {currentIndex < deck.length - 1 ? <button type="button" className="paper-primary-button" onClick={() => setCurrentIndex((index) => index + 1)} disabled={!currentAnswered}>下一題<ChevronRight size={18} aria-hidden="true" /></button> : matchingGate.done ? <button type="button" className="paper-primary-button" onClick={() => setShowSummary(true)} disabled={!currentAnswered}><ClipboardList size={18} aria-hidden="true" />查看結果總結</button> : <button type="button" className="paper-primary-button" onClick={() => { setMatchingGate((gate) => ({ ...gate, active: true })); window.scrollTo({ top: 0, behavior: "smooth" }); }} disabled={!currentAnswered}><Puzzle size={18} aria-hidden="true" />加碼題：配對連連看</button>}
           </div>
           {allAnswered && <p className="paper-completion-note">本份試卷已完成：答對 {result.correct} / {result.total} 題，得分 {result.percentage} 分。每題結果都已即時寫入學習紀錄。</p>}
           </QuestionTransition>
+        </section>
+      )}
+      {paperReady && matchingGate.active && !matchingGate.done && !showSummary && matchingSet && (
+        <section className="paper-matching-gate" aria-labelledby="paper-matching-title">
+          <div className="paper-matching-head">
+            <p className="paper-exam-kicker"><Puzzle size={16} aria-hidden="true" /> 加碼互動題</p>
+            <h2 id="paper-matching-title">配對連連看</h2>
+            <p>一般題目完成了！把最後這一關的 6 對全部配對，就能查看整份試卷結果。配對關卡成績獨立計算，不影響選擇題與是非題的分數。</p>
+          </div>
+          <MatchingGame
+            key={matchingSet.id}
+            set={matchingSet}
+            onComplete={(result) => setMatchingGate((gate) => ({ ...gate, result }))}
+            resultActions={
+              <button
+                type="button"
+                className="paper-primary-button"
+                onClick={() => {
+                  setMatchingGate((gate) => ({ ...gate, active: false, done: true }));
+                  setShowSummary(true);
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                }}
+              >
+                <ClipboardList size={18} aria-hidden="true" /> 查看試卷結果
+              </button>
+            }
+          />
         </section>
       )}
       <ReflectionWorkspace />

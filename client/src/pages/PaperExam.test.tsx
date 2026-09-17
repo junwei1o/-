@@ -1,9 +1,10 @@
 // @vitest-environment jsdom
 import React from "react";
 import "@testing-library/jest-dom/vitest";
-import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import PaperExam from "@/pages/PaperExam";
+import { MATCHING_SETS } from "@/lib/matchingBank";
 import { ADAPTIVE_STORAGE_KEY } from "@/game/adaptiveLearning";
 
 const playPaperStrategyCue = vi.hoisted(() => vi.fn());
@@ -65,7 +66,14 @@ vi.mock("@/lib/paperExamStrategyCue", () => ({
   savePaperStrategyCueEnabled,
 }));
 
+// 卷末配對關卡含真實的 420ms 完成延遲，整檔與全量並行時放寬 timeout 避免高負載誤判。
+vi.setConfig({ testTimeout: 15000 });
+
 describe("PaperExam mobile-first launchpad and result summary", () => {
+  beforeEach(() => {
+    vi.spyOn(window, "scrollTo").mockImplementation(() => {});
+  });
+
   afterEach(() => {
     cleanup();
     window.history.replaceState({}, "", "/");
@@ -77,6 +85,47 @@ describe("PaperExam mobile-first launchpad and result summary", () => {
 
   function confirmNextGroupStrategy() {
     fireEvent.click(screen.getByRole("button", { name: "開始本組題目" }));
+  }
+
+  // 卷末有一關「配對連連看」加碼題：完成它才會進入總結。
+  // 傳入 advanceTimers 代表測試使用 fake timers：此時不能用依賴真實計時器的 waitFor，
+  // 一切靠 fireEvent 同步 flush，再由 advanceTimers 推進配對完成的 420ms 延遲。
+  async function openSummary(advanceTimers?: () => void) {
+    const gateButton = screen.queryByRole("button", { name: /加碼題/ });
+    if (gateButton) {
+      fireEvent.click(gateButton);
+      if (advanceTimers) {
+        expect(document.querySelector(".matching-game")).toBeTruthy();
+      } else {
+        await waitFor(() => expect(document.querySelector(".matching-game")).toBeTruthy(), { timeout: 4000 });
+      }
+      const title = (document.querySelector(".mg-title")?.textContent ?? "").trim();
+      const matchingSet = MATCHING_SETS.find((item) => item.title === title);
+      if (matchingSet) {
+        const findItem = (selector: string, text: string) =>
+          Array.from(document.querySelectorAll<HTMLElement>(selector)).find((el) =>
+            el.textContent?.includes(text),
+          ) as HTMLElement | undefined;
+        for (const pair of matchingSet.pairs) {
+          fireEvent.click(findItem(".mg-left .mg-item", pair.l) as HTMLElement);
+          fireEvent.click(findItem(".mg-right .mg-item", pair.r) as HTMLElement);
+        }
+        if (advanceTimers) {
+          advanceTimers();
+          expect(document.querySelector(".mg-result-card")).toBeTruthy();
+        } else {
+          await waitFor(() => expect(document.querySelector(".mg-result-card")).toBeTruthy(), { timeout: 6000, interval: 50 });
+        }
+        fireEvent.click(screen.getByRole("button", { name: /查看試卷結果/ }));
+        if (advanceTimers) {
+          expect(screen.getByRole("heading", { name: "學習成果總結" })).toBeInTheDocument();
+        } else {
+          await waitFor(() => expect(screen.getByRole("heading", { name: "學習成果總結" })).toBeInTheDocument(), { timeout: 4000 });
+        }
+        return;
+      }
+    }
+    fireEvent.click(screen.getByRole("button", { name: /查看結果總結/ }));
   }
 
   it("keeps the primary study action and offers one-tap map and exploration routes", () => {
@@ -179,7 +228,7 @@ describe("PaperExam mobile-first launchpad and result summary", () => {
     expect(screen.queryByRole("button", { name: "只練習這些錯題" })).not.toBeInTheDocument();
   });
 
-  it("shows a real mastery comparison after completing a wrong-answer quick quiz", () => {
+  it("shows a real mastery comparison after completing a wrong-answer quick quiz", async () => {
     window.history.replaceState({}, "", "/?reviewTopic=%E9%96%B1%E8%AE%80%E7%90%86%E8%A7%A3");
     window.localStorage.setItem(ADAPTIVE_STORAGE_KEY, JSON.stringify({
       version: 2,
@@ -200,7 +249,7 @@ describe("PaperExam mobile-first launchpad and result summary", () => {
     fireEvent.click(screen.getByRole("button", { name: "只練習這些錯題" }));
     fireEvent.click(screen.getByRole("button", { name: "開始快速測驗" }));
     fireEvent.click(screen.getByRole("radio", { name: mockQuestion.options[mockQuestion.answer] }));
-    fireEvent.click(screen.getByRole("button", { name: /查看結果總結/ }));
+    await openSummary();
 
     expect(screen.getByRole("heading", { name: "掌握度前後比較" })).toBeInTheDocument();
     expect(screen.getByLabelText("掌握度比較：練習前 0%；練習後 100%。")).toBeInTheDocument();
@@ -341,7 +390,7 @@ describe("PaperExam mobile-first launchpad and result summary", () => {
     }
   });
 
-  it("dismisses the summit encouragement after a brief interval and supports Escape", () => {
+  it("dismisses the summit encouragement after a brief interval and supports Escape", async () => {
     vi.useFakeTimers();
     try {
       render(<PaperExam />);
@@ -354,7 +403,7 @@ describe("PaperExam mobile-first launchpad and result summary", () => {
       fireEvent.keyDown(window, { key: "Escape" });
       expect(screen.queryByTestId("paper-summit-encouragement")).not.toBeInTheDocument();
 
-      fireEvent.click(screen.getByRole("button", { name: /查看結果總結/ }));
+      await openSummary(() => act(() => vi.advanceTimersByTime(700)));
       fireEvent.click(screen.getByRole("button", { name: /再做一份試卷/ }));
       confirmNextGroupStrategy();
       fireEvent.click(screen.getByRole("radio", { name: mockQuestion.options[mockQuestion.answer] }));
@@ -367,13 +416,13 @@ describe("PaperExam mobile-first launchpad and result summary", () => {
     }
   });
 
-  it("shows final score and detailed wrong-answer explanations after completion", () => {
+  it("shows final score and detailed wrong-answer explanations after completion", async () => {
     render(<PaperExam />);
 
     fireEvent.click(screen.getByRole("radio", { name: /國語領域專屬試卷/ }));
     confirmNextGroupStrategy();
     fireEvent.click(screen.getByRole("radio", { name: mockQuestion.options[0] }));
-    fireEvent.click(screen.getByRole("button", { name: /查看結果總結/ }));
+    await openSummary();
 
     expect(screen.getByRole("heading", { name: "學習成果總結" })).toBeInTheDocument();
     expect(screen.getByText("0")).toBeInTheDocument();
@@ -384,13 +433,13 @@ describe("PaperExam mobile-first launchpad and result summary", () => {
     expect(screen.queryByRole("heading", { name: "掌握度前後比較" })).not.toBeInTheDocument();
   });
 
-  it("immediately restarts a strengthening deck containing only this result's unmastered questions", () => {
+  it("immediately restarts a strengthening deck containing only this result's unmastered questions", async () => {
     render(<PaperExam />);
 
     fireEvent.click(screen.getByRole("radio", { name: /國語領域專屬試卷/ }));
     confirmNextGroupStrategy();
     fireEvent.click(screen.getByRole("radio", { name: mockQuestion.options[0] }));
-    fireEvent.click(screen.getByRole("button", { name: /查看結果總結/ }));
+    await openSummary();
 
     const retryButton = screen.getByRole("button", { name: "再練一次本次的 1 題未掌握題目" });
     expect(retryButton).toHaveTextContent("再練一次未掌握題目");
@@ -402,19 +451,19 @@ describe("PaperExam mobile-first launchpad and result summary", () => {
     expect(screen.queryByRole("heading", { name: "掌握度前後比較" })).not.toBeInTheDocument();
   });
 
-  it("does not show the unmastered-question retry action after a fully correct result", () => {
+  it("does not show the unmastered-question retry action after a fully correct result", async () => {
     render(<PaperExam />);
 
     fireEvent.click(screen.getByRole("radio", { name: /國語領域專屬試卷/ }));
     confirmNextGroupStrategy();
     fireEvent.click(screen.getByRole("radio", { name: mockQuestion.options[mockQuestion.answer] }));
-    fireEvent.click(screen.getByRole("button", { name: /查看結果總結/ }));
+    await openSummary();
 
     expect(screen.getByText("本次沒有錯題")).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /再練一次本次的.*未掌握題目/ })).not.toBeInTheDocument();
   });
 
-  it("clears the quick-quiz comparison state when starting a new paper", () => {
+  it("clears the quick-quiz comparison state when starting a new paper", async () => {
     window.history.replaceState({}, "", "/?reviewTopic=%E9%96%B1%E8%AE%80%E7%90%86%E8%A7%A3");
     window.localStorage.setItem(ADAPTIVE_STORAGE_KEY, JSON.stringify({
       version: 2,
@@ -435,13 +484,13 @@ describe("PaperExam mobile-first launchpad and result summary", () => {
     fireEvent.click(screen.getByRole("button", { name: "只練習這些錯題" }));
     fireEvent.click(screen.getByRole("button", { name: "開始快速測驗" }));
     fireEvent.click(screen.getByRole("radio", { name: mockQuestion.options[mockQuestion.answer] }));
-    fireEvent.click(screen.getByRole("button", { name: /查看結果總結/ }));
+    await openSummary();
     expect(screen.getByRole("heading", { name: "掌握度前後比較" })).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "再做一份試卷" }));
     confirmNextGroupStrategy();
     fireEvent.click(screen.getByRole("radio", { name: mockQuestion.options[0] }));
-    fireEvent.click(screen.getByRole("button", { name: /查看結果總結/ }));
+    await openSummary();
     expect(screen.queryByRole("heading", { name: "掌握度前後比較" })).not.toBeInTheDocument();
   });
 

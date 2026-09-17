@@ -1,0 +1,94 @@
+/* 配對連連看元件：所有 class 以 mg- 前綴，樣式限定在 .matching-game，避免污染全域。 */
+.matching-game{
+  --mg-paper:#fbf6ea; --mg-ink:#3a2f23; --mg-ink2:#6b5d49;
+  --mg-orange:#e8843a; --mg-orange-d:#c9661f; --mg-sea:#2f7d8f; --mg-sea-d:#1f5d6b;
+  --mg-green:#3f8a43; --mg-green-bg:#e2f0db; --mg-red:#d0503a; --mg-red-bg:#fbe1da;
+  --mg-gold:#e0a92e; --mg-line:#e2d4b6; --mg-card:#fffdf6;
+  position:relative; background:var(--mg-paper); color:var(--mg-ink);
+  border:2px solid var(--mg-line); border-radius:18px; padding:14px;
+}
+.matching-game .mg-meta{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px}
+.matching-game .mg-tag{display:inline-block;background:#fde6d2;color:var(--mg-orange-d);
+  font-size:12px;font-weight:700;border-radius:999px;padding:3px 12px}
+.matching-game .mg-stats{display:flex;gap:8px;flex-wrap:wrap;font-size:12.5px;color:var(--mg-ink2);font-weight:700}
+.matching-game .mg-stats span{background:#f1e8d2;border-radius:8px;padding:3px 9px;font-variant-numeric:tabular-nums}
+.matching-game .mg-title{font-size:19px;font-weight:800;margin:8px 0 2px}
+.matching-game .mg-instruction{font-size:14px;color:var(--mg-ink2);margin:0 0 10px}
+.matching-game .mg-progress{height:10px;background:#ece2ca;border-radius:99px;overflow:hidden;margin-bottom:14px}
+.matching-game .mg-progress i{display:block;height:100%;width:0;
+  background:linear-gradient(90deg,var(--mg-sea),#4aa3b3);border-radius:99px;transition:width .35s ease}
+
+.matching-game .mg-board{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.matching-game .mg-lines{position:absolute;inset:0;width:100%;height:100%;
+  pointer-events:none;z-index:5;overflow:visible}
+.matching-game .mg-col h4{font-size:12.5px;text-align:center;margin:0 0 7px;letter-spacing:1px}
+.matching-game .mg-left h4{color:var(--mg-sea-d)}
+.matching-game .mg-right h4{color:var(--mg-orange-d)}
+.matching-game .mg-item{display:flex;align-items:center;gap:8px;width:100%;min-height:52px;margin-bottom:10px;
+  background:var(--mg-card);border:2px solid var(--mg-line);border-radius:14px;padding:10px 12px;
+  font-size:15px;font-weight:600;color:var(--mg-ink);cursor:pointer;text-align:left;line-height:1.3;
+  box-shadow:0 2px 0 rgba(58,47,35,.10);transition:transform .08s,background .15s,border-color .15s;
+  font-family:inherit;position:relative;z-index:2}
+.matching-game .mg-left .mg-item{border-left:5px solid var(--mg-sea)}
+.matching-game .mg-right .mg-item{border-left:5px solid var(--mg-orange)}
+.matching-game .mg-item:active{transform:scale(.97)}
+.matching-game .mg-badge{flex:none;width:24px;height:24px;border-radius:8px;background:#eef3f2;color:var(--mg-sea-d);
+  font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center}
+.matching-game .mg-right .mg-badge{background:#fdeede;color:var(--mg-orange-d)}
+.matching-game .mg-selected{background:#e7f3f5;border-color:var(--mg-sea);
+  box-shadow:0 0 0 3px rgba(47,125,143,.22);transform:translateY(-1px)}
+.matching-game .mg-matched{background:var(--mg-green-bg);border-color:var(--mg-green);color:#2f6028}
+.matching-game .mg-matched .mg-badge{background:var(--mg-green);color:#fff}
+.matching-game .mg-mark{margin-left:auto;color:var(--mg-green);font-weight:900;font-size:15px}
+.matching-game .mg-shake{background:var(--mg-red-bg);border-color:var(--mg-red);animation:mg-shake .42s}
+@keyframes mg-shake{0%,100%{transform:translateX(0)}18%{transform:translateX(-7px)}
+  38%{transform:translateX(7px)}58%{transform:translateX(-5px)}78%{transform:translateX(5px)}}
+
+.matching-game .mg-hint{min-height:24px;font-size:14px;text-align:center;color:var(--mg-ink2);
+  margin:14px 0 0;font-weight:700;padding:6px 10px;border-radius:10px;transition:background .2s}
+.matching-game .mg-hint.ok{color:var(--mg-green);background:var(--mg-green-bg)}
+.matching-game .mg-hint.err{color:var(--mg-red);background:var(--mg-red-bg)}
+
+/* 成功綠線 */
+.matching-game .mg-match-line{stroke:var(--mg-green);stroke-width:6;stroke-linecap:round;fill:none}
+.matching-game .mg-match-line.draw{animation:mg-draw .38s ease forwards}
+@keyframes mg-draw{from{stroke-dashoffset:var(--mg-len)}to{stroke-dashoffset:0}}
+/* 失敗紅線＋首尾打叉，一起淡出 */
+.matching-game .mg-fail-group{animation:mg-fade .5s ease .62s forwards}
+@keyframes mg-fade{to{opacity:0}}
+.matching-game .mg-fail-line{stroke:var(--mg-red);stroke-width:6;stroke-linecap:round;fill:none;
+  animation:mg-faildraw .28s ease forwards}
+@keyframes mg-faildraw{from{stroke-dashoffset:var(--mg-len)}to{stroke-dashoffset:0}}
+.matching-game .mg-fail-x{opacity:0;transform-box:fill-box;transform-origin:center;
+  animation:mg-xpop .24s cubic-bezier(.2,1.5,.4,1) .28s forwards}
+.matching-game .mg-fail-x circle{fill:var(--mg-red)}
+.matching-game .mg-fail-x line{stroke:#fff;stroke-width:3.4;stroke-linecap:round}
+@keyframes mg-xpop{0%{opacity:0;transform:scale(.1) rotate(-30deg)}
+  100%{opacity:1;transform:scale(1) rotate(0)}}
+
+/* 結果卡 */
+.matching-game .mg-result-card{position:relative;margin-top:16px;background:#fff;overflow:hidden;
+  border:2px solid var(--mg-line);border-radius:18px;padding:22px 18px;text-align:center;
+  box-shadow:0 8px 26px rgba(58,47,35,.14);animation:mg-cardin .35s ease}
+@keyframes mg-cardin{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.matching-game .mg-result-card h3{font-size:21px;margin:0 0 6px}
+.matching-game .mg-stars{font-size:36px;letter-spacing:6px;line-height:1;margin:8px 0;color:var(--mg-gold)}
+.matching-game .mg-stars span{display:inline-block;animation:mg-starpop .5s ease backwards}
+.matching-game .mg-stars .off{color:#d9cfb6}
+@keyframes mg-starpop{0%{transform:scale(0) rotate(-40deg);opacity:0}
+  70%{transform:scale(1.35)}100%{transform:scale(1) rotate(0);opacity:1}}
+.matching-game .mg-result-line{font-size:15px;color:var(--mg-ink2);margin:4px 0}
+.matching-game .mg-result-line b{color:var(--mg-ink);font-size:18px}
+.matching-game .mg-result-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+.matching-game .mg-btn{min-height:48px;border:none;border-radius:14px;padding:0 20px;font-size:15px;font-weight:700;
+  cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:7px}
+.matching-game .mg-btn-primary{background:linear-gradient(160deg,#ec9449,#d9741f);color:#fff;box-shadow:0 3px 0 var(--mg-orange-d)}
+.matching-game .mg-btn-sea{background:linear-gradient(160deg,#3f8fa1,#256b7c);color:#fff;box-shadow:0 3px 0 var(--mg-sea-d)}
+.matching-game .mg-btn-ghost{background:#efe7d2;color:var(--mg-ink)}
+/* 慶祝彩帶 */
+.matching-game .mg-confetti{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.matching-game .mg-confetti span{position:absolute;top:-12px;width:9px;height:14px;border-radius:2px;opacity:0;
+  animation:mg-fall 1.3s ease-in forwards}
+@keyframes mg-fall{0%{opacity:1;transform:translateY(0) rotate(0)}
+  100%{opacity:0;transform:translateY(420px) rotate(540deg)}}
+@media (min-width:560px){.matching-game .mg-item{font-size:16px}}
