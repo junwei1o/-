@@ -80,8 +80,8 @@ export default function CardCollection() {
 
       {ownedCount === 0 ? (
         <div className="card-collection-empty">
-          <p>卡冊還空著——去酒館吧檯找老闆，先領新手卡、再開幾包！</p>
-          <button className="card-collection-cta" onClick={() => setLocation("/tavern")}>前往酒館</button>
+          <p>卡冊還空著——去指航中心櫃台找領航員，先領新手卡、再開幾包！</p>
+          <button className="card-collection-cta" onClick={() => setLocation("/tavern")}>前往指航中心</button>
         </div>
       ) : (
         THEME_ORDER.map((theme) => {
@@ -134,7 +134,7 @@ export default function CardCollection() {
       )}
 
       <p className="card-collection-back">
-        <button className="card-collection-link" onClick={() => setLocation("/tavern")}>← 回到酒館</button>
+        <button className="card-collection-link" onClick={() => setLocation("/tavern")}>← 回到指航中心</button>
         <button className="card-collection-link" onClick={() => setLocation("/tavern/cards")}>去牌局用用這些卡</button>
       </p>
     </main>

@@ -32,7 +32,7 @@ type TavernBarProps = {
 };
 
 /**
- * 吧檯面板：頁內彈層。三區——老闆的話、卡包商店、冒險引導。
+ * 櫃台面板：頁內彈層。三區——領航員的話、卡包商店、冒險引導。
  * 開包結果以翻面卡片展示，按「收下」關閉。
  */
 export default function TavernBar({
@@ -50,7 +50,7 @@ export default function TavernBar({
   const greeting = useMemo(() => greetKeeper(keeperContext), [keeperContext]);
   const ownedTitles = useMemo(() => getLimitedTitles(), [open, packResult]);
 
-  // Esc 鍵關閉吧檯（鍵盤使用者需要可預期的退出路徑）
+  // Esc 鍵關閉櫃台（鍵盤使用者需要可預期的退出路徑）
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
@@ -75,12 +75,12 @@ export default function TavernBar({
   }
 
   return (
-    <div className="tavern-bar-overlay" role="dialog" aria-label="吧檯老闆" onClick={onClose}>
+    <div className="tavern-bar-overlay" role="dialog" aria-label="領航櫃台" onClick={onClose}>
       <div className="tavern-bar-panel" onClick={(e) => e.stopPropagation()}>
-        <button className="tavern-bar-close" onClick={onClose} aria-label="關閉吧檯">✕</button>
+        <button className="tavern-bar-close" onClick={onClose} aria-label="關閉櫃台">✕</button>
 
         <section className="tavern-bar-section">
-          <h3>🧔 老闆的話</h3>
+          <h3>🧭 領航員的話</h3>
           <p className="tavern-keeper-greeting">{greeting}</p>
         </section>
 

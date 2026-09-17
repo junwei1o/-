@@ -1,4 +1,4 @@
-import { Beer, BookOpen, BookOpenCheck, BrainCircuit, Crown, LifeBuoy, Lightbulb, Map as MapIcon, Medal, Orbit, Radar, Swords, Telescope, Tent, type LucideIcon } from "lucide-react";
+import { BookOpen, BookOpenCheck, BrainCircuit, Compass, Crown, LifeBuoy, Lightbulb, Map as MapIcon, Medal, Orbit, Radar, Swords, Telescope, Tent, type LucideIcon } from "lucide-react";
 
 export type FeatureSearchItem = {
   id: "map" | "battle" | "duel" | "tavern" | "guardian" | "wrongAnswers" | "studyTips" | "dailyCamp" | "badges" | "safetyAcademy" | "worldPrinciples" | "mediaObservatory" | "astronomy" | "wisdomStories";
@@ -36,11 +36,11 @@ export const FEATURE_SEARCH_ITEMS: FeatureSearchItem[] = [
   },
   {
     id: "tavern",
-    label: "燈塔酒館／卡牌／冒險",
-    description: "學完進酒館玩：潮汐牌局卡牌對戰、文字冒險章節、夥伴小屋。",
+    label: "燈塔指航中心／卡牌／冒險",
+    description: "學完進指航中心玩：潮汐牌局卡牌對戰、文字冒險章節、夥伴小屋。",
     href: "/tavern",
-    keywords: ["酒館", "卡牌", "潮汐牌局", "文字冒險", "夥伴", "Top Trumps", "燈塔"],
-    icon: Beer,
+    keywords: ["指航中心", "卡牌", "潮汐牌局", "文字冒險", "夥伴", "Top Trumps", "燈塔"],
+    icon: Compass,
   },
   {
     id: "guardian",

@@ -1,0 +1,17 @@
+{
+  "name": "寶島探險家｜互動學習航線",
+  "short_name": "寶島探險家",
+  "description": "專為國小 3~6 年級設計的 RPG 航海學習冒險，涵蓋國語、數學、自然、社會、英語五大課綱領域。",
+  "lang": "zh-Hant",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F9F3E8",
+  "theme_color": "#2f7d8f",
+  "icons": [
+    { "src": "/favicon-32.png", "sizes": "32x32", "type": "image/png" },
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/apple-touch-icon.png", "sizes": "180x180", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

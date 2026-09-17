@@ -1,4 +1,4 @@
-/* 燈塔酒館 — 場景式版面 */
+/* 燈塔指航中心 — 場景式版面 */
 .tavern-page {
   --tavern-wood-dark: #5c3d26;
   --tavern-wood: #7a4f2e;
@@ -98,7 +98,7 @@
 }
 .tavern-hotspot--album .tavern-hotspot-icon { font-size: 26px; }
 
-/* 壁爐＋吧檯老闆 */
+/* 壁爐＋領航櫃台 */
 .tavern-bar-zone {
   display: flex;
   align-items: flex-end;
@@ -154,7 +154,7 @@
   background: none; border: none; color: var(--tidal, #0b6e8e); font-weight: 700; cursor: pointer; text-decoration: underline; padding: 0;
 }
 
-/* ===== 吧檯面板（TavernBar） ===== */
+/* ===== 領航櫃台面板（TavernBar） ===== */
 .tavern-bar-overlay {
   position: fixed; inset: 0; z-index: 60;
   background: rgba(31, 48, 49, .55);

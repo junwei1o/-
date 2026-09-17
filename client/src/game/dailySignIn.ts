@@ -14,7 +14,7 @@
  *     讓每日營地的統計與徽章維持一致
  *   - 首頁簽到卡、新手導覽的簽到步驟全部改走這裡，不再各自寫入
  *
- * 金幣尺度：酒館一張卡包 25 金（tavernKeeper.CARD_PACK_GOLD_COST），
+ * 金幣尺度：指航中心一包卡 25 金（tavernKeeper.CARD_PACK_GOLD_COST），
  * 單筆獎勵不超過一張卡包；一週累計 108 金 ≈ 4.3 張卡包，足以誘發回訪但不造成通膨。
  */
 import { bxStore } from "@/game/bxStore";

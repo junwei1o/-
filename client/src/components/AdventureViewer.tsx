@@ -84,7 +84,7 @@ export default function AdventureViewer() {
     return (
       <div className="adventure-chapters">
         <h2>📜 文字冒險</h2>
-        <p>從酒館佈告欄接任務，出發闖蕩敘事章節。答題通過考驗，揭開結局！</p>
+        <p>從指航中心佈告欄接任務，出發闖蕩敘事章節。答題通過考驗，揭開結局！</p>
         <p className="adventure-back-to-study"><Link href="/practice">返回學習區</Link></p>
         <div className="adventure-chapter-list">
           {ALL_CHAPTERS.map((ch) => (

@@ -55,7 +55,7 @@ describe("CardCollection（卡冊）", () => {
   it("空收藏時顯示引導", () => {
     localStorage.clear();
     render(<CardCollection />);
-    expect(screen.getByRole("button", { name: "前往酒館" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "前往指航中心" })).toBeTruthy();
     expect(screen.queryByText("未收集")).toBeNull();
   });
 });

@@ -1,5 +1,5 @@
 /**
- * 燈塔酒館老闆（吧檯）— 純邏輯層
+ * 燈塔指航中心領航員（櫃台）— 純邏輯層
  *
  * 動態問候、新手免費贈卡、卡包價格常數。不依賴 React/DOM，
  * 可直接單測；localStorage 互動僅用於新手卡一次性標記。
@@ -24,13 +24,13 @@ const HOUR_GREETINGS: ReadonlyArray<{ range: [number, number]; text: string }> =
   { range: [5, 10], text: "早安啊，精神不錯！" },
   { range: [11, 16], text: "午後時光，來一局暖暖身吧。" },
   { range: [17, 22], text: "夜色深了，來一局放鬆吧。" },
-  { range: [23, 24], text: "夜深了，酒館還為你留一盞燈。" },
-  { range: [0, 4], text: "夜深了，酒館還為你留一盞燈。" },
+  { range: [23, 24], text: "夜深了，指航中心還為你留一盞燈。" },
+  { range: [0, 4], text: "夜深了，指航中心還為你留一盞燈。" },
 ];
 
 function timeGreeting(hour: number): string {
   const found = HOUR_GREETINGS.find((g) => hour >= g.range[0] && hour <= g.range[1]);
-  return found?.text ?? "歡迎來到燈塔酒館。";
+  return found?.text ?? "歡迎來到燈塔指航中心。";
 }
 
 /**
@@ -71,7 +71,7 @@ export function grantStarterCards(rng: () => number = Math.random): string[] | n
   return picks;
 }
 
-/** 酒館「下一步」提示所需的狀態（全部由呼叫端注入，便於單測） */
+/** 指航中心「下一步」提示所需的狀態（全部由呼叫端注入，便於單測） */
 export type TavernGoalContext = {
   gold: number;
   signedInToday: boolean;
@@ -86,15 +86,15 @@ export type TavernGoal = {
 };
 
 /**
- * 酒館下一步目標：依優先序挑一件最該做的事，避免玩家進酒館後無所適從。
+ * 指航中心下一步目標：依優先序挑一件最該做的事，避免玩家進中心後無所適從。
  * 優先序：今日未簽到 → 金幣夠開卡包 → 有未解章節 → 都好（提示賺金幣）。
  */
 export function nextTavernGoal(ctx: TavernGoalContext): TavernGoal {
   if (!ctx.signedInToday) {
-    return { key: "signin", text: `💰 今天還沒簽到——去吧檯領 ${ctx.signInReward} 金幣` };
+    return { key: "signin", text: `💰 今天還沒簽到——去櫃台領 ${ctx.signInReward} 金幣` };
   }
   if (ctx.gold >= CARD_PACK_GOLD_COST) {
-    return { key: "pack", text: `📦 金幣夠了！去吧檯開一包卡（${CARD_PACK_GOLD_COST} 金幣）` };
+    return { key: "pack", text: `📦 金幣夠了！去櫃台開一包卡（${CARD_PACK_GOLD_COST} 金幣）` };
   }
   const short = Math.max(0, CARD_PACK_GOLD_COST - ctx.gold);
   if (ctx.uncompletedChapters > 0) {

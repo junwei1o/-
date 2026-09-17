@@ -84,7 +84,7 @@ export function DailySignInModal({ open, onClose }: DailySignInModalProps) {
         </header>
 
         <p id="daily-signin-desc" className="daily-signin-desc">
-          連續簽到累積獎勵，天天回來都能領取金幣，到燈塔酒館換卡包！
+          連續簽到累積獎勵，天天回來都能領取金幣，到燈塔指航中心換卡包！
         </p>
 
         <div className="daily-signin-stats" aria-live="polite">

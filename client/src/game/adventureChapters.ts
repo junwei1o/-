@@ -29,16 +29,16 @@ export const ALL_CHAPTERS: readonly AdventureChapter[] = [
   {
     id: "lighthouse-call",
     title: "燈塔的呼喚",
-    summary: "酒館老闆託你送補給到燈塔，途中認識潮汐、方位與海岸生態。",
+    summary: "指航中心的領航員託你送補給到燈塔，途中認識潮汐、方位與海岸生態。",
     icon: "🗼",
     cost: 0,
     startNodeId: "start",
     nodes: {
-      start: { id: "start", text: "傍晚的酒館，老闆遞來一個包袱：「拜託把這批補給送到海邊的燈塔，守塔人等著用。」", type: "choice", choices: [
+      start: { id: "start", text: "傍晚的指航中心，領航員遞來一個包袱：「拜託把這批補給送到海邊的燈塔，守塔人等著用。」", type: "choice", choices: [
         { label: "收下包袱，沿著海岸出發", nextNodeId: "coast" },
         { label: "先問問路線危險嗎", nextNodeId: "ask" },
       ]},
-      ask: { id: "ask", text: "老闆笑了：「漲潮時礁石會淹沒，記得看潮水。去吧，孩子。」", type: "narrative", choices: [{ label: "出發", nextNodeId: "coast" }]},
+      ask: { id: "ask", text: "領航員笑了：「漲潮時礁石會淹沒，記得看潮水。去吧，孩子。」", type: "narrative", choices: [{ label: "出發", nextNodeId: "coast" }]},
       coast: { id: "coast", text: "來到海岸，遠方燈塔閃著光。前方一片礁石，潮水正在上漲。", type: "check", check: { subject: "自然", nextCorrectId: "safe", nextWrongId: "wet" }},
       safe: { id: "safe", text: "你記得漲潮知識，繞過高處岩徑，順利抵達燈塔。守塔人熱情接待，講述星象導航的故事。", type: "check", check: { subject: "社會", nextCorrectId: "tower-good", nextWrongId: "tower-mid" }},
       wet: { id: "wet", text: "沒注意潮水，鞋襪全濕了，狼狽抵達燈塔。守塔人讓你烤火取暖。", type: "narrative", choices: [{ label: "聽守塔人說故事", nextNodeId: "tower-mid" }]},
@@ -54,7 +54,7 @@ export const ALL_CHAPTERS: readonly AdventureChapter[] = [
     cost: 30,
     startNodeId: "start",
     nodes: {
-      start: { id: "start", text: "酒館傳來消息：山林深處的古廟裡，藏著一本失傳已久的古籍。你決定前去一探究竟。", type: "choice", choices: [
+      start: { id: "start", text: "指航中心傳來消息：山林深處的古廟裡，藏著一本失傳已久的古籍。你決定前去一探究竟。", type: "choice", choices: [
         { label: "帶著地圖與口糧出發", nextNodeId: "forest" },
         { label: "先找老學者請教", nextNodeId: "scholar" },
       ]},

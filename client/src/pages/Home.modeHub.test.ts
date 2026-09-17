@@ -6,7 +6,7 @@ const css = readFileSync(new URL("./HomeDashboard.css", import.meta.url), "utf8"
 
 describe("首頁遊戲模式入口", () => {
   it("提供四個真實單機入口，簽到一律走統一的彈窗", () => {
-    expect(source).toContain("燈塔酒館");
+    expect(source).toContain("燈塔指航中心");
     expect(source).toContain("錯題魔王");
     expect(source).toContain("限時挑戰");
     expect(source).toContain("每日簽到");

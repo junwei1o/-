@@ -21,9 +21,9 @@ describe("Tavern page", () => {
     localStorage.clear();
   });
 
-  it("顯示酒館招牌與金幣", () => {
+  it("顯示指航中心招牌與金幣", () => {
     render(<Tavern />);
-    expect(screen.getByRole("heading", { name: "燈塔酒館" })).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "燈塔指航中心" })).toBeTruthy();
     expect(screen.getByLabelText("金幣")).toBeTruthy();
   });
 
@@ -35,19 +35,19 @@ describe("Tavern page", () => {
     expect(screen.getByRole("link", { name: /稱號牆/ })).toBeTruthy();
   });
 
-  it("老闆吧檯熱點可點開面板", () => {
+  it("領航櫃台熱點可點開面板", () => {
     render(<Tavern />);
-    const counter = screen.getByLabelText("老闆吧檯");
+    const counter = screen.getByLabelText("領航櫃台");
     fireEvent.click(counter);
-    expect(screen.getByRole("dialog", { name: "吧檯老闆" })).toBeTruthy();
+    expect(screen.getByRole("dialog", { name: "領航櫃台" })).toBeTruthy();
   });
 
-  it("吧檯面板可按 Esc 關閉", () => {
+  it("櫃台面板可按 Esc 關閉", () => {
     render(<Tavern />);
-    fireEvent.click(screen.getByLabelText("老闆吧檯"));
-    expect(screen.getByRole("dialog", { name: "吧檯老闆" })).toBeTruthy();
+    fireEvent.click(screen.getByLabelText("領航櫃台"));
+    expect(screen.getByRole("dialog", { name: "領航櫃台" })).toBeTruthy();
     fireEvent.keyDown(window, { key: "Escape" });
-    expect(screen.queryByRole("dialog", { name: "吧檯老闆" })).toBeNull();
+    expect(screen.queryByRole("dialog", { name: "領航櫃台" })).toBeNull();
   });
 
   it("顯示下一步目標提示", () => {
@@ -57,9 +57,9 @@ describe("Tavern page", () => {
     expect(statuses.some((text) => text.includes("簽到"))).toBe(true);
   });
 
-  it("吧檯面板的簽到按鈕可開啟每日簽到視窗", () => {
+  it("櫃台面板的簽到按鈕可開啟每日簽到視窗", () => {
     render(<Tavern />);
-    fireEvent.click(screen.getByLabelText("老闆吧檯"));
+    fireEvent.click(screen.getByLabelText("領航櫃台"));
     const signInButton = screen.getByRole("button", { name: /領取今日/ });
     fireEvent.click(signInButton);
     expect(screen.getByRole("dialog", { name: /留下今天的探險足跡/ })).toBeTruthy();

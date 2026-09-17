@@ -45,7 +45,7 @@ describe("adventure chapters", () => {
     }
   });
 
-  it("good 結局章節授予限定稱號（與酒館 CHAPTER_TITLES 對應）", () => {
+  it("good 結局章節授予限定稱號（與指航中心 CHAPTER_TITLES 對應）", () => {
     for (const chapter of ALL_CHAPTERS) {
       const goodEnding = Object.values(chapter.nodes).find((node) => node.type === "ending" && node.ending === "good");
       if (goodEnding?.reward?.title) {

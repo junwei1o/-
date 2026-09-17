@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { AlarmClock, Backpack, Beer, BookOpenCheck, Bug, CalendarDays, ChevronLeft, Coins, Compass, Crosshair, Dices, RotateCcw, ShieldAlert, Sparkles, Timer, X, Zap } from "lucide-react";
+import { AlarmClock, Backpack, BookOpenCheck, Bug, CalendarDays, ChevronLeft, Coins, Compass, Crosshair, Dices, RotateCcw, ShieldAlert, Sparkles, Timer, X, Zap } from "lucide-react";
 import { toast } from "sonner";
 import { useLocation } from "wouter";
 import { useQuestionBank } from "@/lib/questionBank";
@@ -260,8 +260,8 @@ export default function Home() {
           </div>
           <div className="home-mode-grid">
             <button type="button" className="home-mode-card is-tavern" onClick={() => setLocation("/tavern")}>
-              <Beer size={25} aria-hidden="true" />
-              <strong>燈塔酒館</strong>
+              <Compass size={25} aria-hidden="true" />
+              <strong>燈塔指航中心</strong>
               <span>卡牌 · 冒險 · 夥伴</span>
             </button>
             <button type="button" className="home-mode-card is-wrong-answer" onClick={() => setLocation("/wrong-answers")}>

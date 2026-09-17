@@ -29,7 +29,7 @@ export default function Tavern() {
   const [firstVisit, setFirstVisit] = useState(false);
   const [signInOpen, setSignInOpen] = useState(false);
   const player = getPlayerData();
-  // 金幣用 state 維護：吧檯／簽到視窗關閉時重讀，避免消費後顯示過期
+  // 金幣用 state 維護：櫃台／簽到視窗關閉時重讀，避免消費後顯示過期
   const [gold, setGold] = useState(player.gold);
 
   // 簽到狀態：面板或簽到視窗開合時重讀（領取後要變「已簽到」）
@@ -41,7 +41,7 @@ export default function Tavern() {
     if (!barOpen && !signInOpen) setGold(getPlayerData().gold);
   }, [barOpen, signInOpen]);
 
-  // 首次進入酒館自動贈送新手卡
+  // 首次進入指航中心自動贈送新手卡
   useEffect(() => {
     const already = typeof localStorage !== "undefined" && localStorage.getItem(STARTER_KEY);
     if (already) return;
@@ -63,10 +63,10 @@ export default function Tavern() {
       ownedCardCount: collection.ownedCardIds.length,
       uncompletedChapters,
     };
-    // barOpen 作為依賴：每次開吧檯重算問候（買卡包後收藏數會變）
+    // barOpen 作為依賴：每次開櫃台重算問候（買卡包後收藏數會變）
   }, [player.totalAnswers, barOpen]);
 
-  // 下一步目標：讓玩家進酒館就知道該做什麼
+  // 下一步目標：讓玩家進指航中心就知道該做什麼
   const goal = useMemo(
     () =>
       nextTavernGoal({
@@ -83,7 +83,7 @@ export default function Tavern() {
       {/* 招牌＋燈籠＋金幣 */}
       <header className="tavern-signboard">
         <span className="tavern-lantern tavern-lantern--left" aria-hidden="true">🏮</span>
-        <h1 className="tavern-title">燈塔酒館</h1>
+        <h1 className="tavern-title">燈塔指航中心</h1>
         <span className="tavern-lantern tavern-lantern--right" aria-hidden="true">🏮</span>
         <span className="tavern-gold" aria-label="金幣">💰 {gold}</span>
       </header>
@@ -94,7 +94,7 @@ export default function Tavern() {
       {/* 窗＋酒瓶木層架（純裝飾） */}
       <div className="tavern-window-row" aria-hidden="true">
         <span className="tavern-window">🌙</span>
-        <span className="tavern-shelf">🍶🍷🍺🥃</span>
+        <span className="tavern-shelf">🧭🗺️📜⚓</span>
       </div>
 
       {/* 場景熱點 */}
@@ -126,19 +126,19 @@ export default function Tavern() {
         </button>
       </div>
 
-      {/* 壁爐＋吧檯老闆 */}
+      {/* 壁爐＋領航櫃台 */}
       <div className="tavern-bar-zone">
         <div className="tavern-fireplace" aria-hidden="true">
           <span className="tavern-fire">🔥</span>
         </div>
-        <button className="tavern-counter" onClick={() => setBarOpen(true)} aria-label="老闆吧檯">
+        <button className="tavern-counter" onClick={() => setBarOpen(true)} aria-label="領航櫃台">
           <span className="tavern-keeper" aria-hidden="true">🧔</span>
-          <span className="tavern-counter-label">老闆吧檯</span>
+          <span className="tavern-counter-label">領航櫃台</span>
           <span className="tavern-counter-mug" aria-hidden="true">🍺</span>
         </button>
       </div>
 
-      {/* 老闆對話氣泡（首次贈卡時提示） */}
+      {/* 領航員對話氣泡（首次贈卡時提示） */}
       {firstVisit && (
         <div className="tavern-keeper-bubble" role="status">
           <span aria-hidden="true">🧔</span> 初次見面，送你幾張卡牌試試手氣！
