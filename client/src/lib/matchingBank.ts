@@ -1,9 +1,15 @@
 // 配對連連看獨立題庫（local-first）。不進後端 question_bank、不進戰鬥抽題，
 // 僅由 /matching 活動頁與試卷卷末的「配對大題」使用，因此不影響主題庫的 10 個消費元件。
 import bank from "../../../data/matching_bank.json";
+import imageBank from "../../../data/image_bank.json";
 import type { PaperSubject } from "./paperExam";
 
-export type MatchingPair = { l: string; r: string };
+export type MatchingPair = {
+  l: string;
+  r: string;
+  /** G 圖片配對：左欄改顯示圖片（public/matching-img 下的路徑），l 保留為可讀名稱。 */
+  img?: string;
+};
 
 export type MatchingSet = {
   id: string;
@@ -46,16 +52,25 @@ function isValidSet(value: unknown): value is MatchingSet {
       (pair) =>
         Boolean(pair) &&
         typeof (pair as MatchingPair).l === "string" &&
-        typeof (pair as MatchingPair).r === "string",
+        typeof (pair as MatchingPair).r === "string" &&
+        ((pair as MatchingPair).img === undefined ||
+          typeof (pair as MatchingPair).img === "string"),
     ) &&
     Array.isArray(set.distractors)
   );
 }
 
 const rawSets = (bank as { sets?: unknown }).sets;
-export const MATCHING_SETS: MatchingSet[] = Array.isArray(rawSets)
-  ? (rawSets as unknown[]).filter(isValidSet)
-  : [];
+const rawImageSets = (imageBank as { sets?: unknown }).sets;
+export const MATCHING_SETS: MatchingSet[] = [
+  ...(Array.isArray(rawSets) ? ((rawSets as unknown[]).filter(isValidSet) as MatchingSet[]) : []),
+  ...(Array.isArray(rawImageSets) ? ((rawImageSets as unknown[]).filter(isValidSet) as MatchingSet[]) : []),
+];
+
+/** 圖片配對組（G）：任一配對帶 img 即屬於圖片題。 */
+export const IMAGE_MATCHING_SETS: MatchingSet[] = MATCHING_SETS.filter((set) =>
+  set.pairs.some((pair) => pair.img !== undefined),
+);
 
 export const MATCHING_SUBJECTS: PaperSubject[] = ["國語", "數學", "社會", "自然", "英語"];
 
@@ -123,8 +138,8 @@ export function formatMatchingTime(timeMs: number): string {
   return `${Math.floor(totalSeconds / 60)}:${String(totalSeconds % 60).padStart(2, "0")}`;
 }
 
-/** 速配／搶分共用的單對題：left 為題目，options 為 2–3 個候選（含 answer）。 */
-export type RushQuestion = { left: string; answer: string; options: string[] };
+/** 速配／搶分共用的單對題：left 為題目，options 為 2–3 個候選（含 answer）。img 存在時介面只顯示圖片。 */
+export type RushQuestion = { left: string; answer: string; options: string[]; img?: string };
 
 export type MatchingRushMode = "speed" | "rush";
 
@@ -158,6 +173,6 @@ export function buildRushQuestions(
     );
     const distractors = pool.slice(0, 2);
     const options = shuffleArray([pair.r, ...distractors], random);
-    return { left: pair.l, answer: pair.r, options };
+    return { left: pair.l, answer: pair.r, options, ...(pair.img ? { img: pair.img } : {}) };
   });
 }

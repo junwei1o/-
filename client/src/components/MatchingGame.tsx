@@ -373,11 +373,20 @@ export default function MatchingGame({ set, onComplete, resultActions, muted = f
                 ref={(el) => {
                   leftEls.current[pair] = el;
                 }}
-                className={`mg-item ${isMatched ? "mg-matched" : ""} ${isSelected ? "mg-selected" : ""}`}
+                className={`mg-item ${set.pairs[pair].img ? "mg-item-imgwrap" : ""} ${isMatched ? "mg-matched" : ""} ${isSelected ? "mg-selected" : ""}`}
                 onClick={() => pickLeft(pair)}
               >
                 <span className="mg-badge">{isMatched ? "✓" : String.fromCharCode(65 + index)}</span>
-                <span>{set.pairs[pair].l}</span>
+                {set.pairs[pair].img ? (
+                  <img
+                    className="mg-item-img"
+                    src={set.pairs[pair].img}
+                    alt={set.pairs[pair].l}
+                    draggable={false}
+                  />
+                ) : (
+                  <span>{set.pairs[pair].l}</span>
+                )}
                 {isMatched && <span className="mg-mark">配對</span>}
               </button>
             );

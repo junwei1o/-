@@ -1,0 +1,57 @@
+{
+  "version": 1,
+  "note": "G 圖片配對：左欄顯示圖片、右欄顯示名稱，沿用連連看引擎。img 為 client/public/matching-img 下的路徑。",
+  "sets": [
+    {
+      "id": "img-taiwan-landmarks",
+      "subject": "社會",
+      "grade": "3-4年級",
+      "difficulty": "標準",
+      "title": "縣市地標大考驗",
+      "instruction": "看看圖片，連到正確的縣市",
+      "pairs": [
+        { "l": "台北101", "r": "台北市", "img": "/matching-img/taipei101.jpg" },
+        { "l": "日月潭", "r": "南投縣", "img": "/matching-img/sun-moon-lake.jpg" },
+        { "l": "阿里山小火車", "r": "嘉義縣", "img": "/matching-img/alishan-train.jpg" },
+        { "l": "太魯閣峽谷", "r": "花蓮縣", "img": "/matching-img/taroko.jpg" },
+        { "l": "鵝鑾鼻燈塔", "r": "屏東縣", "img": "/matching-img/eluanbi-lighthouse.jpg" },
+        { "l": "野柳女王頭", "r": "新北市", "img": "/matching-img/queen-head.jpg" }
+      ],
+      "distractors": ["桃園市", "彰化縣"]
+    },
+    {
+      "id": "img-world-landmarks",
+      "subject": "社會",
+      "grade": "3-4年級",
+      "difficulty": "標準",
+      "title": "世界地標找國家",
+      "instruction": "看看世界各地的著名地標，連到正確的國家",
+      "pairs": [
+        { "l": "金字塔", "r": "埃及", "img": "/matching-img/pyramid.jpg" },
+        { "l": "艾菲爾鐵塔", "r": "法國", "img": "/matching-img/eiffel-tower.jpg" },
+        { "l": "自由女神像", "r": "美國", "img": "/matching-img/statue-of-liberty.jpg" },
+        { "l": "雪梨歌劇院", "r": "澳洲", "img": "/matching-img/sydney-opera.jpg" },
+        { "l": "比薩斜塔", "r": "義大利", "img": "/matching-img/leaning-tower.jpg" },
+        { "l": "大笨鐘", "r": "英國", "img": "/matching-img/big-ben.jpg" }
+      ],
+      "distractors": ["日本", "加拿大"]
+    },
+    {
+      "id": "img-taiwan-animals",
+      "subject": "自然",
+      "grade": "3-4年級",
+      "difficulty": "標準",
+      "title": "台灣動物認一認",
+      "instruction": "認一認這些台灣的野生動物，連到正確的名字",
+      "pairs": [
+        { "l": "台灣黑熊", "r": "台灣黑熊", "img": "/matching-img/taiwan-black-bear.jpg" },
+        { "l": "台灣藍鵲", "r": "台灣藍鵲", "img": "/matching-img/taiwan-blue-magpie.jpg" },
+        { "l": "石虎", "r": "石虎", "img": "/matching-img/leopard-cat.jpg" },
+        { "l": "綠蠵龜", "r": "綠蠵龜", "img": "/matching-img/green-turtle.jpg" },
+        { "l": "櫻花鉤吻鮭", "r": "櫻花鉤吻鮭", "img": "/matching-img/formosan-salmon.jpg" },
+        { "l": "梅花鹿", "r": "梅花鹿", "img": "/matching-img/sika-deer.jpg" }
+      ],
+      "distractors": ["穿山甲", "水獺"]
+    }
+  ]
+}

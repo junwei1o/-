@@ -3,6 +3,7 @@ import { useLocation } from "wouter";
 import MatchingGame from "@/components/MatchingGame";
 import MatchingRush from "@/components/MatchingRush";
 import {
+  IMAGE_MATCHING_SETS,
   MATCHING_SETS,
   MATCHING_SUBJECTS,
   type MatchingResult,
@@ -54,7 +55,7 @@ export default function MatchingPage() {
   const [index, setIndex] = useState(0);
   const [nonce, setNonce] = useState(0);
   const [view, setView] = useState<"play" | "menu">("play");
-  const [mode, setMode] = useState<"board" | MatchingRushMode>("board");
+  const [mode, setMode] = useState<"board" | "image" | MatchingRushMode>("board");
   const [muted, setMuted] = useState(false);
   const [best, setBest] = useState<BestMap>({});
   const [rushBest, setRushBest] = useState<RushBestMap>({});
@@ -102,10 +103,21 @@ export default function MatchingPage() {
   }
 
   function play(nextIndex: number) {
-    setIndex(((nextIndex % MATCHING_SETS.length) + MATCHING_SETS.length) % MATCHING_SETS.length);
+    setIndex(wrapIndex(nextIndex));
     setNonce((n) => n + 1);
     setView("play");
     window.scrollTo({ top: 0 });
+  }
+
+  /** 圖片配對模式只在圖片組內循環；其餘模式維持全題庫循環。 */
+  function wrapIndex(nextIndex: number): number {
+    if (mode !== "image") {
+      return ((nextIndex % MATCHING_SETS.length) + MATCHING_SETS.length) % MATCHING_SETS.length;
+    }
+    const ids = IMAGE_MATCHING_SETS.map((s) => MATCHING_SETS.findIndex((m) => m.id === s.id));
+    if (ids.includes(nextIndex)) return nextIndex; // 選關直跳
+    const pos = ids.indexOf(index);
+    return ids[(pos + 1) % ids.length]; // 下一關：圖片組內循環
   }
 
   if (!currentSet) return null;
@@ -130,6 +142,7 @@ export default function MatchingPage() {
         <nav className="mp-modes" aria-label="配對玩法">
           {([
             ["board", "連連看"],
+            ["image", "圖片配對"],
             ["speed", "單對速配"],
             ["rush", "30 秒搶分"],
           ] as const).map(([value, label]) => (
@@ -139,6 +152,9 @@ export default function MatchingPage() {
               className={`mp-mode-chip ${mode === value ? "is-active" : ""}`}
               onClick={() => {
                 setMode(value);
+                if (value === "image" && !IMAGE_MATCHING_SETS.some((s) => s.id === currentSet.id)) {
+                  setIndex(MATCHING_SETS.findIndex((s) => s.id === IMAGE_MATCHING_SETS[0].id));
+                }
                 setNonce((n) => n + 1);
               }}
             >
@@ -151,7 +167,7 @@ export default function MatchingPage() {
       <div className="mp-body">
         {view === "play" ? (
           <>
-            {mode === "board" ? (
+            {mode === "board" || mode === "image" ? (
               <MatchingGame
                 key={`${currentSet.id}-${nonce}`}
                 set={currentSet}

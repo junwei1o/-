@@ -85,3 +85,39 @@ describe("MatchingGame 配對連連看", () => {
     }
   });
 });
+
+describe("MatchingGame G 圖片配對", () => {
+  const imageSet = MATCHING_SETS.find((s) => s.id === "img-taiwan-landmarks");
+  if (!imageSet) throw new Error("缺少圖片題庫組 img-taiwan-landmarks");
+
+  it("圖片組左欄渲染 <img>（不渲染文字），右欄照常顯示名稱", () => {
+    const { container } = render(<MatchingGame set={imageSet} onComplete={vi.fn()} />);
+    const left = within(container.querySelector(".mg-left") as HTMLElement);
+    const imgs = left.getAllByRole("img");
+    expect(imgs).toHaveLength(6);
+    const srcs = imgs.map((img) => img.getAttribute("src"));
+    for (const pair of imageSet.pairs) {
+      expect(srcs).toContain(pair.img);
+      expect(imgs[srcs.indexOf(pair.img as string)]).toHaveAttribute("alt", pair.l);
+    }
+    // 圖片題左欄不顯示文字（避免動物組洩題）
+    expect(left.queryByText(imageSet.pairs[0].l)).toBeNull();
+    const right = within(container.querySelector(".mg-right") as HTMLElement);
+    for (const pair of imageSet.pairs) {
+      expect(right.getByText(pair.r)).toBeTruthy();
+    }
+  });
+
+  it("圖片組照常可完整配對並完成", async () => {
+    const onComplete = vi.fn();
+    const { container } = render(<MatchingGame set={imageSet} onComplete={onComplete} />);
+    const left = within(container.querySelector(".mg-left") as HTMLElement);
+    const right = within(container.querySelector(".mg-right") as HTMLElement);
+    for (const pair of imageSet.pairs) {
+      fireEvent.click(left.getByAltText(pair.l));
+      fireEvent.click(right.getByText(pair.r));
+    }
+    await waitFor(() => expect(onComplete).toHaveBeenCalledTimes(1), { timeout: 6000, interval: 50 });
+    expect(onComplete.mock.calls[0][0].stars).toBe(3);
+  });
+});

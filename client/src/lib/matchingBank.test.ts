@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  IMAGE_MATCHING_SETS,
   MATCHING_SETS,
   MATCHING_SUBJECTS,
   buildMatchingBoard,
@@ -22,10 +23,12 @@ function seeded(seed: number) {
 }
 
 describe("配對題庫資料", () => {
-  it("共有 30 組，五個學科各 6 組", () => {
-    expect(MATCHING_SETS).toHaveLength(30);
+  it("共有 33 組：五個學科各 6 組＋圖片組 3 組", () => {
+    expect(MATCHING_SETS).toHaveLength(33);
     for (const subject of MATCHING_SUBJECTS) {
-      expect(MATCHING_SETS.filter((set) => set.subject === subject)).toHaveLength(6);
+      expect(MATCHING_SETS.filter((set) => set.subject === subject)).toHaveLength(
+        subject === "社會" ? 8 : subject === "自然" ? 7 : 6,
+      );
     }
   });
 
@@ -125,6 +128,29 @@ describe("buildRushQuestions", () => {
     for (const q of questions) {
       expect(q.options).toContain(q.answer);
       expect(q.options.length).toBeGreaterThanOrEqual(2);
+    }
+  });
+});
+
+describe("G 圖片配對題庫", () => {
+  it("IMAGE_MATCHING_SETS 共 3 組，每組 6 對且每對帶 img", () => {
+    expect(IMAGE_MATCHING_SETS).toHaveLength(3);
+    for (const set of IMAGE_MATCHING_SETS) {
+      expect(set.pairs).toHaveLength(6);
+      for (const pair of set.pairs) {
+        expect(typeof pair.img).toBe("string");
+        expect(pair.img).toMatch(/^\/matching-img\//);
+      }
+    }
+  });
+
+  it("圖片組也會被抽進速配題，且帶 img 欄位", () => {
+    const imageSet = IMAGE_MATCHING_SETS[0];
+    const questions = buildRushQuestions(imageSet, seeded(3));
+    expect(questions).toHaveLength(6);
+    for (const q of questions) {
+      expect(typeof q.img).toBe("string");
+      expect(q.options).toContain(q.answer);
     }
   });
 });

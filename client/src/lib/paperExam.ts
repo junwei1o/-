@@ -47,8 +47,10 @@ export function mixPaperMatching(
   random: () => number = Math.random,
 ): PaperQuestion[] {
   if (count <= 0 || deck.length < DEFAULT_PAPER_SIZE) return [...deck];
+  // 試卷保持純文字：圖片配對組（G）只出現在 /matching 的圖片配對模式
+  const textOnly = MATCHING_SETS.filter((set) => !set.pairs.some((pair) => pair.img !== undefined));
   const pool =
-    scope === "綜合課綱" ? MATCHING_SETS : MATCHING_SETS.filter((set) => set.subject === scope);
+    scope === "綜合課綱" ? textOnly : textOnly.filter((set) => set.subject === scope);
   const candidates = pool.length > 0 ? pool : MATCHING_SETS;
 
   const picked: MatchingSet[] = [];

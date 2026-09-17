@@ -314,7 +314,11 @@ export default function MatchingRush({
       </div>
 
       <div className="mr-question" key={`${set.id}-${mode}-${mode === "speed" ? qIndex : rushIndex}`}>
-        <p className="mr-question-left">{question?.left ?? ""}</p>
+        {question?.img ? (
+          <img className="mr-question-img" src={question.img} alt={question.left} draggable={false} />
+        ) : (
+          <p className="mr-question-left">{question?.left ?? ""}</p>
+        )}
         <div className="mr-options">
           {(question?.options ?? []).map((option) => {
             const isAnswer = option === question.answer;

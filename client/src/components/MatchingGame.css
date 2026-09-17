@@ -43,6 +43,13 @@
 .matching-game .mg-matched{background:var(--mg-green-bg);border-color:var(--mg-green);color:#2f6028}
 .matching-game .mg-matched .mg-badge{background:var(--mg-green);color:#fff}
 .matching-game .mg-mark{margin-left:auto;color:var(--mg-green);font-weight:900;font-size:15px}
+/* G 圖片配對：左欄改為圖卡（直排），badge 浮在左上、mark 浮在右上 */
+.matching-game .mg-item-imgwrap{flex-direction:column;align-items:stretch;padding:10px}
+.matching-game .mg-item-imgwrap .mg-badge{position:absolute;top:8px;left:8px;box-shadow:0 1px 3px rgba(58,47,35,.25)}
+.matching-game .mg-item-imgwrap .mg-mark{position:absolute;top:8px;right:8px;margin-left:0;
+  background:var(--mg-green);color:#fff;font-size:12px;padding:3px 8px;border-radius:9px}
+.matching-game .mg-item-img{width:100%;height:96px;object-fit:cover;border-radius:10px;display:block;
+  background:var(--mg-paper);pointer-events:none}
 .matching-game .mg-shake{background:var(--mg-red-bg);border-color:var(--mg-red);animation:mg-shake .42s}
 @keyframes mg-shake{0%,100%{transform:translateX(0)}18%{transform:translateX(-7px)}
   38%{transform:translateX(7px)}58%{transform:translateX(-5px)}78%{transform:translateX(5px)}}
