@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import { BookOpenCheck, ChevronLeft, ChevronRight, CircleAlert, ClipboardList, Flag, Lightbulb, MapPinned, Mountain, Orbit, Puzzle, RotateCcw, Volume2, VolumeX, X } from "lucide-react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { BookOpenCheck, ChevronLeft, ChevronRight, CircleAlert, ClipboardList, Flag, Lightbulb, MapPinned, Mountain, Orbit, Puzzle, RotateCcw, Timer, Volume2, VolumeX, X } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { useQuestionBank } from "@/lib/questionBank";
 import { getSubjectStudyTips, GENERAL_STUDY_TIPS } from "@/lib/studyTips";
@@ -9,7 +9,7 @@ import { AiReviewPlanCard } from "@/components/AiReviewPlanCard";
 import { QuestionTransition } from "@/components/QuestionTransition";
 import { AnswerCombo } from "@/components/AnswerCombo";
 import MatchingGame from "@/components/MatchingGame";
-import { pickMatchingSet, formatMatchingTime, type MatchingResult, type MatchingSet } from "@/lib/matchingBank";
+import { formatMatchingTime, type MatchingResult } from "@/lib/matchingBank";
 import { CompanionReflection } from "@/components/CompanionReflection";
 import { ReflectionWorkspace } from "@/components/reflection/ReflectionWorkspace";
 import {
@@ -18,12 +18,16 @@ import {
 	buildPersonalizedPaperDeck,
   buildSubjectWrongReviewDeck,
   DEFAULT_PAPER_SIZE,
+  PAPER_MATCHING_COUNT,
   PAPER_SCOPES,
   PAPER_MISTAKE_REASONS,
+  PAPER_QUESTION_TIME_LIMIT_MS,
   filterWrongPaperQuestions,
   getPaperStrategyRecap,
   getPaperNextGroupStrategyHint,
   getPaperMistakeReason,
+  isMatchingQuestion,
+  mixPaperMatching,
   questionIndexToAltitude,
   scorePaper,
   type PaperMistakeReason,
@@ -96,13 +100,11 @@ export default function PaperExam() {
   const [comboCount, setComboCount] = useState(0);
   const [comboTrigger, setComboTrigger] = useState(0);
   const [showSummary, setShowSummary] = useState(false);
-  // 卷末加碼的「配對連連看」大題：獨立 local-first 題庫，不進 deck、不影響主題庫計分。
-  const [matchingSet, setMatchingSet] = useState<MatchingSet | null>(null);
-  const [matchingGate, setMatchingGate] = useState<{ active: boolean; done: boolean; result: MatchingResult | null }>({
-    active: false,
-    done: false,
-    result: null,
-  });
+  // 混入平常試卷的 3 題配對：成績獨立計星，不進選擇/是非計分、錯題本與作業回報。
+  const [matchingResults, setMatchingResults] = useState<Record<string, MatchingResult>>({});
+  // 每題 30 秒倒數：時間到自動記為 -1（未作答）。
+  const [timeouts, setTimeouts] = useState<Record<string, boolean>>({});
+  const [timeLeft, setTimeLeft] = useState(PAPER_QUESTION_TIME_LIMIT_MS / 1000);
   const [reviewTopicConfirmed, setReviewTopicConfirmed] = useState(false);
   const [showRelatedWrong, setShowRelatedWrong] = useState(false);
   const [wrongPracticePreview, setWrongPracticePreview] = useState<PaperQuestion[] | null>(null);
@@ -147,6 +149,10 @@ export default function PaperExam() {
   const recordedIdsRef = useRef(new Set<string>());
   const startedAtRef = useRef(Date.now());
   const completedJournalSessionRef = useRef<string | null>(null);
+  /** 每題倒數截止時間（只算第一次進入該題的 30 秒，回看不會重計）。 */
+  const deadlineRef = useRef<Record<string, number>>({});
+  const answersRef = useRef<Record<string, number>>({});
+  const timeoutsRef = useRef<Record<string, boolean>>({});
   /** 記住「這份試卷上次上報出去的錯誤原因快照」，用於判斷是否需要補報。 */
   const lastExamReportRef = useRef<{ sessionKey: string; signature: string }>({ sessionKey: "", signature: "" });
 
@@ -158,6 +164,12 @@ export default function PaperExam() {
   }
 
   const current = deck[currentIndex];
+  // 即時鏡像，讓倒數 interval 的閉包永遠讀到最新作答狀態。
+  answersRef.current = answers;
+  timeoutsRef.current = timeouts;
+  const choiceDeck = useMemo(() => deck.filter((question) => question.questionType !== "配對題"), [deck]);
+  const matchingDeck = useMemo(() => deck.filter(isMatchingQuestion), [deck]);
+  const matchingAnswered = matchingDeck.every((question) => Boolean(matchingResults[question.id]));
   const reviewIntroSections = useMemo(() => reviewTopic ? {
     coreConcept: `本次複習聚焦在「${reviewTopic}」。先找出題目要考的核心概念，理解題幹正在詢問的關鍵關係。`,
     answerReminder: "作答時用選項中的關鍵字逐一比對；遇到不確定的地方，可以先閱讀解析，再依自己的步調繼續。",
@@ -182,8 +194,8 @@ export default function PaperExam() {
     () => Array.from(new Set((wrongPracticePreview ?? []).map((question) => question.learningTopic.trim()).filter(Boolean))),
     [wrongPracticePreview],
   );
-  const result = useMemo(() => scorePaper(deck, answers), [answers, deck]);
-  const summitStrategyRecap = useMemo(() => getPaperStrategyRecap(deck), [deck]);
+  const result = useMemo(() => scorePaper(choiceDeck, answers), [answers, choiceDeck]);
+  const summitStrategyRecap = useMemo(() => getPaperStrategyRecap(choiceDeck), [choiceDeck]);
   const nextGroupStrategyHint = useMemo(
     () => getPaperNextGroupStrategyHint(pendingPaperScope ?? scope),
     [pendingPaperScope, scope],
@@ -206,7 +218,12 @@ export default function PaperExam() {
   const currentExplanationStage = current ? (explanationStage[current.id] ?? 0) : 0;
   const currentErrorType = current ? errorTypes[current.id] : undefined;
   const currentExplanation = current ? buildExplanationStages(current) : null;
-  const allAnswered = paperReady && result.incomplete === 0;
+  const questionDone = current
+    ? current.questionType === "配對題"
+      ? Boolean(matchingResults[current.id])
+      : currentAnswered
+    : false;
+  const allAnswered = paperReady && result.incomplete === 0 && matchingAnswered;
   const wrongQuestions = useMemo(
     () => deck.filter((question) => answers[question.id] !== undefined && answers[question.id] !== question.answer),
     [answers, deck],
@@ -237,7 +254,7 @@ export default function PaperExam() {
       difficulty: question.difficulty,
       learningTopic: question.learningTopic,
       prompt: question.prompt,
-      selectedAnswer: question.options[answers[question.id]],
+      selectedAnswer: answers[question.id] !== undefined && answers[question.id] >= 0 ? question.options[answers[question.id]] : "（未作答）",
       correctAnswer: question.options[question.answer],
       officialExplanation: question.explanation,
     })),
@@ -279,7 +296,7 @@ export default function PaperExam() {
       id: sessionKey,
       date: Date.now(),
       subject,
-      topicCount: new Set(deck.map((question) => question.learningTopic).filter(Boolean)).size,
+      topicCount: new Set(choiceDeck.map((question) => question.learningTopic).filter(Boolean)).size,
       correctCount: result.correct,
       sessionType: "exam" as const,
       islandId: subjectScope ?? null,
@@ -309,7 +326,7 @@ export default function PaperExam() {
         subject,
         grade: deck[0]?.grade,
         difficulty: deck[0]?.difficulty,
-        totalQuestions: deck.length,
+        totalQuestions: choiceDeck.length,
         correctCount: result.correct,
         // 帶上同一份試卷的識別碼：學生答完最後一題才回頭補選原因時會再報一次，
         // 沒有這個 key 雲端會多存一筆沒有歸因的紀錄，老師端反而看不到。
@@ -333,11 +350,11 @@ export default function PaperExam() {
         assignmentId: pending.assignmentId,
         studentName: pending.studentName,
         correctCount: result.correct,
-        totalQuestions: deck.length,
+        totalQuestions: choiceDeck.length,
       });
       setAssignmentBrief(null);
     }
-  }, [allAnswered, deck, result.correct, scope, subjectScope]);
+  }, [allAnswered, choiceDeck, deck, result.correct, scope, subjectScope]);
 
   // 學生常常整卷做完才回頭補選「為什麼答錯」。補選之後要把同一筆雲端紀錄覆蓋更新，
   // 否則老師端看到的永遠是第一次上報、沒有歸因的那一版。
@@ -362,7 +379,7 @@ export default function PaperExam() {
       subject,
       grade: deck[0]?.grade,
       difficulty: deck[0]?.difficulty,
-      totalQuestions: deck.length,
+      totalQuestions: choiceDeck.length,
       correctCount: result.correct,
       sessionKey,
       detail: {
@@ -372,7 +389,7 @@ export default function PaperExam() {
         topics: topicBreakdown,
       },
     });
-  }, [errorTypes, deck, result.correct, scope, subjectScope, answers]);
+  }, [errorTypes, choiceDeck, deck, result.correct, scope, subjectScope, answers]);
 
   useEffect(() => {
     if (!showSummitEncouragement) return;
@@ -498,7 +515,7 @@ export default function PaperExam() {
   useEffect(() => {
     if (!subjectScope || reviewTopic || wrongOnly || !questions.length || subjectScopeLaunchRef.current === subjectScope) return;
     subjectScopeLaunchRef.current = subjectScope;
-    const nextDeck = buildPaperDeck(questions, subjectScope, DEFAULT_PAPER_SIZE);
+    const nextDeck = mixPaperMatching(buildPaperDeck(questions, subjectScope, DEFAULT_PAPER_SIZE), subjectScope);
     setScope(subjectScope);
     setDeck(nextDeck);
     setAnswers({});
@@ -562,7 +579,7 @@ function pickPoolWithCooldown(nextScope: PaperScope): PaperQuestion[] {
 
   function startPaper(nextScope = scope) {
   const profile = loadAdaptiveProfile();
-        const nextDeck = buildPersonalizedPaperDeck(pickPoolWithCooldown(nextScope), nextScope, DEFAULT_PAPER_SIZE, profile);
+        const nextDeck = mixPaperMatching(buildPersonalizedPaperDeck(pickPoolWithCooldown(nextScope), nextScope, DEFAULT_PAPER_SIZE, profile), nextScope);
     setScope(nextScope);
     setPendingPaperScope(null);
     setDeck(nextDeck);
@@ -629,12 +646,64 @@ function pickPoolWithCooldown(nextScope: PaperScope): PaperQuestion[] {
     );
   }, [questions]);
 
-  // 每次建立新試卷（含作業、錯題重練）都重置卷末配對大題，並依範圍選一組配對題。
+  // 每次建立新試卷都重置配對結果與倒數狀態（配對題已內嵌在 deck，不需另外選組）。
   useEffect(() => {
-    setMatchingGate({ active: false, done: false, result: null });
-    setMatchingSet(pickMatchingSet(scope));
+    setMatchingResults({});
+    setTimeouts({});
+    deadlineRef.current = {};
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [deck]);
+
+  // 時間到：把這一題記為「未作答」(-1)、寫入學習紀錄與雲端事件，並顯示正確答案與解析。
+  const handleTimeout = useCallback((question: PaperQuestion) => {
+    if (answersRef.current[question.id] !== undefined || timeoutsRef.current[question.id]) return;
+    const timestamp = Date.now();
+    setAnswers((previous) => ({ ...previous, [question.id]: -1 }));
+    setTimeouts((previous) => ({ ...previous, [question.id]: true }));
+    recordedIdsRef.current.add(question.id);
+    const difficulty = toAdaptiveDifficulty(question.difficulty);
+    let profile = loadAdaptiveProfile();
+    profile = recordAdaptiveAttempt(profile, {
+      questionId: question.id,
+      curriculumDomain: question.subject,
+      knowledge: [question.learningTopic],
+      difficulty,
+      correct: false,
+      responseMs: PAPER_QUESTION_TIME_LIMIT_MS,
+      timeLimitMs: PAPER_QUESTION_TIME_LIMIT_MS,
+      timestamp,
+      flagged: flaggedQuestions[question.id] === true,
+      errorType: "memory",
+    });
+    saveAdaptiveProfile(profile);
+    recordAnalyticsEvent({ type: "answer", subject: question.subject, questionId: question.id, correct: false, responseMs: PAPER_QUESTION_TIME_LIMIT_MS, timestamp });
+    setComboCount(0);
+    setConsecutiveCorrectWithoutExplanation(0);
+    setNotice("時間到，這一題先記為需要複習。看過正確答案與解析後，再繼續下一題。");
+  }, [flaggedQuestions]);
+
+  // 選擇/是非題 30 秒倒數：截止時間以「第一次進入該題」起算，回看不會重計。
+  useEffect(() => {
+    const question = current;
+    if (!question || question.questionType === "配對題") return;
+    if (answersRef.current[question.id] !== undefined || timeoutsRef.current[question.id]) return;
+    if (!deadlineRef.current[question.id]) {
+      deadlineRef.current[question.id] = Date.now() + PAPER_QUESTION_TIME_LIMIT_MS;
+    }
+    const update = () => {
+      if (answersRef.current[question.id] !== undefined || timeoutsRef.current[question.id]) {
+        setTimeLeft(0);
+        return;
+      }
+      const left = Math.max(0, Math.round((deadlineRef.current[question.id] - Date.now()) / 1000));
+      setTimeLeft(left);
+      if (left <= 0) handleTimeout(question);
+    };
+    update();
+    const timer = window.setInterval(update, 250);
+    return () => window.clearInterval(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [current?.id]);
 
   function retryUnmasteredQuestions() {
     const retryDeck = [...wrongQuestions];
@@ -775,7 +844,7 @@ function pickPoolWithCooldown(nextScope: PaperScope): PaperQuestion[] {
       <section className="paper-exam-hero" aria-labelledby="paper-exam-title">
         <p className="paper-exam-kicker"><ClipboardList size={16} aria-hidden="true" /> 十二年國教常規答題</p>
         <h1 id="paper-exam-title">常規試卷答題</h1>
-        <p>選擇試卷範圍後逐題作答。點選選項就會立即顯示正誤與解析，不需要交卷，也不會在作答中跳轉或重排。</p>
+        <p>選擇試卷範圍後逐題作答。點選選項就會立即顯示正誤與解析，不需要交卷，也不會在作答中跳轉或重排；每題限時 30 秒，平常試卷會在題間加入 3 題配對連連看（配對成績獨立計算）。</p>
         {!paperReady && (
           <nav className="paper-home-launchpad" aria-label="學習快速入口">
             <button type="button" className="paper-home-primary" onClick={() => requestPaperStart()} disabled={questions.length === 0}>
@@ -804,7 +873,7 @@ function pickPoolWithCooldown(nextScope: PaperScope): PaperQuestion[] {
             <p className="paper-exam-eyebrow">試卷設定</p>
             <h2 id="paper-scope-title">選擇答題範圍</h2>
           </div>
-          <span className="paper-exam-count">每份最多 {DEFAULT_PAPER_SIZE} 題</span>
+          <span className="paper-exam-count">每份 {DEFAULT_PAPER_SIZE} 題選擇＋{PAPER_MATCHING_COUNT} 題配對</span>
         </div>
         <div className="paper-scope-grid" role="radiogroup" aria-label="試卷範圍">
           {PAPER_SCOPES.map((item) => (
@@ -904,21 +973,30 @@ function pickPoolWithCooldown(nextScope: PaperScope): PaperQuestion[] {
             <div><strong>{result.correct} / {result.total}</strong><span>答對題數</span></div>
             <div><strong>{wrongQuestions.length}</strong><span>需要複習</span></div>
           </div>
-          {matchingGate.result && (
+          {matchingDeck.length > 0 && (
             <section className="paper-matching-summary" aria-label="配對大題結果">
-              <div className="paper-matching-summary-row">
-                <Puzzle size={20} aria-hidden="true" />
-                <div className="paper-matching-summary-name">
-                  <p className="paper-exam-eyebrow">加碼互動題 · {matchingGate.result.subject}</p>
-                  <strong>{matchingGate.result.title}</strong>
-                </div>
-                <div className="paper-matching-summary-score">
-                  <span className="paper-matching-stars" aria-label={`配對獲得 ${matchingGate.result.stars} 星`}>
-                    {"★".repeat(matchingGate.result.stars)}{"☆".repeat(3 - matchingGate.result.stars)}
-                  </span>
-                  <small>失誤 {matchingGate.result.errors} 次 · 用時 {formatMatchingTime(matchingGate.result.timeMs)}</small>
-                </div>
-              </div>
+              {matchingDeck.map((question) => {
+                const matchingResult = matchingResults[question.id];
+                if (!matchingResult) return null;
+                return (
+                  <div className="paper-matching-summary-row" key={question.id}>
+                    <Puzzle size={20} aria-hidden="true" />
+                    <div className="paper-matching-summary-name">
+                      <p className="paper-exam-eyebrow">配對互動題 · {matchingResult.subject}</p>
+                      <strong>{matchingResult.title}</strong>
+                    </div>
+                    <div className="paper-matching-summary-score">
+                      <span className="paper-matching-stars" aria-label={`配對獲得 ${matchingResult.stars} 星`}>
+                        {"★".repeat(matchingResult.stars)}{"☆".repeat(3 - matchingResult.stars)}
+                      </span>
+                      <small>
+                        失誤 {matchingResult.errors} 次 · 用時 {formatMatchingTime(matchingResult.timeMs)}
+                        {matchingResult.timedOut ? " · 時間到" : ""}
+                      </small>
+                    </div>
+                  </div>
+                );
+              })}
               <button type="button" className="paper-secondary-button" onClick={() => setLocation("/matching")}>挑戰更多配對關卡 →</button>
             </section>
           )}
@@ -1014,7 +1092,7 @@ function pickPoolWithCooldown(nextScope: PaperScope): PaperQuestion[] {
                       <p className="paper-question-meta">第 {deck.indexOf(question) + 1} 題 · {question.subject} · {question.learningTopic}</p>
                       <SpeechReadableText as="h3" text={question.prompt} label="錯題題目" className="paper-wrong-prompt" compact={false} />
                       <div className="paper-wrong-answer-grid">
-                        <p><span>你的作答</span><SpeechReadableText as="strong" text={question.options[selectedAnswer]} label="你的作答" compact /></p>
+                        <p><span>你的作答</span><SpeechReadableText as="strong" text={selectedAnswer !== undefined && selectedAnswer >= 0 ? question.options[selectedAnswer] : "（未作答）"} label="你的作答" compact /></p>
                         <p><span>正確答案</span><SpeechReadableText as="strong" text={question.options[question.answer]} label="正確答案" compact /></p>
                       </div>
                       <SpeechReadableText as="p" text={question.explanation} label="錯題詳細解析" className="paper-explanation" compact={false} />
@@ -1134,30 +1212,36 @@ function pickPoolWithCooldown(nextScope: PaperScope): PaperQuestion[] {
         </section>
       )}
 
-      {paperReady && current && (!reviewTopic || reviewTopicConfirmed) && !showSummary && !matchingGate.active && (
+      {paperReady && current && (!reviewTopic || reviewTopicConfirmed) && !showSummary && (
         <section className="paper-question-panel" aria-labelledby="paper-question-title">
           <QuestionTransition itemKey={current.id} className="paper-question-transition">
           {(() => {
-            const altitude = questionIndexToAltitude(result.answered, deck.length);
+            const altitude = questionIndexToAltitude(result.answered, choiceDeck.length);
 	            const altitudeSpeechText = `玉山高度計。目前海拔 ${altitude.toLocaleString("zh-TW")} 公尺。已完成 ${result.answered} 題，現在來到第 ${currentIndex + 1} 題。`;
 	            const summitEncouragementText = "你完成這一組題目，玉山高度計已抵達 3,952 公尺。每一次認真整理線索，都是新的前進。";
 	            const summitStrategySpeechText = `${summitStrategyRecap.title}。${summitStrategyRecap.summary} ${summitStrategyRecap.strategies.join(" ")}${summitStrategyRecap.knowledgeTopics.length ? ` 本組知識點：${summitStrategyRecap.knowledgeTopics.join("、")}。` : ""}`;
             return (
               <div className="paper-question-journey">
-                <div className="paper-progress-row"><span>第 {currentIndex + 1} / {deck.length} 題</span><span>{scope} · {current.subject} · {current.learningTopic}{current.questionType === "是非題" ? " · 是非題" : ""}</span></div>
+                <div className="paper-progress-row"><span>第 {currentIndex + 1} / {deck.length} 題</span><span>{scope} · {current.subject} · {current.learningTopic}{current.questionType === "是非題" ? " · 是非題" : current.questionType === "配對題" ? " · 配對題" : ""}</span></div>
+                {current.questionType !== "配對題" && !currentAnswered && (
+                  <div className={`paper-question-timer ${timeLeft <= 10 ? "is-urgent" : ""}`} role="timer" aria-label={`剩餘 ${timeLeft} 秒`} data-testid="paper-question-timer">
+                    <Timer size={16} aria-hidden="true" />
+                    <strong>{timeLeft}</strong><span>秒</span>
+                  </div>
+                )}
                 <aside className="paper-altitude-card" aria-label="玉山高度計">
                   <div
                     className="paper-altitude-meter"
                     role="progressbar"
                     aria-label="玉山高度計"
                     aria-valuemin={0}
-                    aria-valuemax={deck.length}
+                    aria-valuemax={choiceDeck.length}
                     aria-valuenow={result.answered}
                     aria-valuetext={`目前海拔 ${altitude.toLocaleString("zh-TW")} 公尺，已完成 ${result.answered} 題`}
                     data-testid="paper-altitude-gauge"
                   >
                     <span className="paper-altitude-meter-snow" aria-hidden="true" />
-                    <span className="paper-altitude-meter-fill" style={{ height: `${deck.length ? (result.answered / deck.length) * 100 : 0}%` }} aria-hidden="true" />
+                    <span className="paper-altitude-meter-fill" style={{ height: `${choiceDeck.length ? (result.answered / choiceDeck.length) * 100 : 0}%` }} aria-hidden="true" />
                   </div>
                   <div className="paper-altitude-copy">
                     <p>玉山高度計</p>
@@ -1216,6 +1300,44 @@ function pickPoolWithCooldown(nextScope: PaperScope): PaperQuestion[] {
               </div>
             );
           })()}
+          {current.questionType === "配對題" && current.matchingSet ? (
+            matchingResults[current.id] ? (
+              <div className="paper-matching-done" role="status" aria-label="配對題完成">
+                <div className="paper-matching-done-head">
+                  <Puzzle size={18} aria-hidden="true" />
+                  <div>
+                    <p className="paper-exam-eyebrow">配對互動題完成</p>
+                    <h3>{current.matchingSet.title}</h3>
+                  </div>
+                </div>
+                <div className="paper-matching-done-stars" aria-label={`配對獲得 ${matchingResults[current.id].stars} 星`}>
+                  {"★".repeat(matchingResults[current.id].stars)}{"☆".repeat(3 - matchingResults[current.id].stars)}
+                </div>
+                <p className="paper-matching-done-meta">
+                  失誤 {matchingResults[current.id].errors} 次 · 用時 {formatMatchingTime(matchingResults[current.id].timeMs)}
+                  {matchingResults[current.id].timedOut ? " · 時間到" : ""}
+                </p>
+              </div>
+            ) : (
+              <MatchingGame
+                key={current.id}
+                set={current.matchingSet}
+                onComplete={(result) => setMatchingResults((previous) => ({ ...previous, [current.id]: result }))}
+                resultActions={
+                  currentIndex < deck.length - 1 ? (
+                    <button type="button" className="paper-primary-button" onClick={() => setCurrentIndex((index) => index + 1)}>
+                      下一題<ChevronRight size={18} aria-hidden="true" />
+                    </button>
+                  ) : (
+                    <button type="button" className="paper-primary-button" onClick={() => setShowSummary(true)}>
+                      <ClipboardList size={18} aria-hidden="true" /> 查看結果總結
+                    </button>
+                  )
+                }
+              />
+            )
+          ) : (
+            <>
           <div className="paper-question-heading"><div><p className="paper-question-meta">{current.grade} 年級 · {current.difficulty}</p><SpeechReadableText as="h2" text={current.prompt} label="題目" className="paper-question-prompt" compact={false} /></div></div>
           <div className="paper-options" role="radiogroup" aria-label="答案選項">
             {current.options.map((option, index) => {
@@ -1233,9 +1355,10 @@ function pickPoolWithCooldown(nextScope: PaperScope): PaperQuestion[] {
           </div>
           {currentAnswered && currentExplanation && (
             <aside className={`paper-answer-feedback ${currentCorrect ? "is-correct" : "is-wrong"}`} aria-live="polite">
-              <div className="paper-feedback-heading"><SpeechReadableText as="strong" text={currentCorrect ? "答對了！" : "先整理線索"} label="答題結果" compact={false} /></div>
+              <div className="paper-feedback-heading"><SpeechReadableText as="strong" text={currentCorrect ? "答對了！" : timeouts[current.id] ? "時間到！" : "先整理線索"} label="答題結果" compact={false} /></div>
               {!currentCorrect && <p>正確答案：<SpeechReadableText as="strong" text={current.options[current.answer]} label="正確答案" compact /></p>}
-              {!currentCorrect && (
+              {timeouts[current.id] && <p className="paper-timeout-note">30 秒用完，這一題先記為需要複習；看過正確答案與解析後再繼續。</p>}
+              {!currentCorrect && !timeouts[current.id] && (
                 <div className="paper-error-classification" role="group" aria-label="這次答錯的原因">
                   <span>你覺得這次需要哪種幫助？</span>
                   <div className="paper-error-classification-actions">
@@ -1259,50 +1382,27 @@ function pickPoolWithCooldown(nextScope: PaperScope): PaperQuestion[] {
                 {currentExplanationStage >= 1 && <button type="button" className="paper-explanation-toggle" onClick={() => revealExplanation(current, currentExplanationStage >= 2 ? 1 : 2)} aria-expanded={currentExplanationStage >= 2}>{currentExplanationStage >= 2 ? "收起完整深讀" : "進入完整深讀"}</button>}
                 <button type="button" className={`paper-doubt-button ${flaggedQuestions[current.id] ? "is-flagged" : ""}`} aria-pressed={Boolean(flaggedQuestions[current.id])} onClick={() => toggleDoubt(current)}><Flag size={16} aria-hidden="true" />{flaggedQuestions[current.id] ? "已標記疑惑" : "標記疑惑"}</button>
               </div>
-              <CompanionReflection
-                question={current.prompt}
-                options={current.options}
-                selectedIndex={answers[current.id] ?? -1}
-                answerIndex={current.answer}
-                subject={current.subject}
-                learningTopic={current.learningTopic}
-              />
+              {!timeouts[current.id] && (
+                <CompanionReflection
+                  question={current.prompt}
+                  options={current.options}
+                  selectedIndex={answers[current.id] ?? -1}
+                  answerIndex={current.answer}
+                  subject={current.subject}
+                  learningTopic={current.learningTopic}
+                />
+              )}
               {currentCorrect && consecutiveCorrectWithoutExplanation >= 10 && <p className="paper-challenge-prompt" role="status">你已連續答對 10 題，而且先靠自己的線索完成；可以試試看挑戰更難的區域。</p>}
             </aside>
           )}
+            </>
+          )}
           <div className="paper-question-actions">
             <button type="button" className="paper-secondary-button" onClick={() => setCurrentIndex((index) => Math.max(0, index - 1))} disabled={currentIndex === 0}><ChevronLeft size={18} aria-hidden="true" />上一題</button>
-            {currentIndex < deck.length - 1 ? <button type="button" className="paper-primary-button" onClick={() => setCurrentIndex((index) => index + 1)} disabled={!currentAnswered}>下一題<ChevronRight size={18} aria-hidden="true" /></button> : matchingGate.done ? <button type="button" className="paper-primary-button" onClick={() => setShowSummary(true)} disabled={!currentAnswered}><ClipboardList size={18} aria-hidden="true" />查看結果總結</button> : <button type="button" className="paper-primary-button" onClick={() => { setMatchingGate((gate) => ({ ...gate, active: true })); window.scrollTo({ top: 0, behavior: "smooth" }); }} disabled={!currentAnswered}><Puzzle size={18} aria-hidden="true" />加碼題：配對連連看</button>}
+            {currentIndex < deck.length - 1 ? <button type="button" className="paper-primary-button" onClick={() => setCurrentIndex((index) => index + 1)} disabled={!questionDone}>下一題<ChevronRight size={18} aria-hidden="true" /></button> : <button type="button" className="paper-primary-button" onClick={() => setShowSummary(true)} disabled={!questionDone}><ClipboardList size={18} aria-hidden="true" />查看結果總結</button>}
           </div>
           {allAnswered && <p className="paper-completion-note">本份試卷已完成：答對 {result.correct} / {result.total} 題，得分 {result.percentage} 分。每題結果都已即時寫入學習紀錄。</p>}
           </QuestionTransition>
-        </section>
-      )}
-      {paperReady && matchingGate.active && !matchingGate.done && !showSummary && matchingSet && (
-        <section className="paper-matching-gate" aria-labelledby="paper-matching-title">
-          <div className="paper-matching-head">
-            <p className="paper-exam-kicker"><Puzzle size={16} aria-hidden="true" /> 加碼互動題</p>
-            <h2 id="paper-matching-title">配對連連看</h2>
-            <p>一般題目完成了！把最後這一關的 6 對全部配對，就能查看整份試卷結果。配對關卡成績獨立計算，不影響選擇題與是非題的分數。</p>
-          </div>
-          <MatchingGame
-            key={matchingSet.id}
-            set={matchingSet}
-            onComplete={(result) => setMatchingGate((gate) => ({ ...gate, result }))}
-            resultActions={
-              <button
-                type="button"
-                className="paper-primary-button"
-                onClick={() => {
-                  setMatchingGate((gate) => ({ ...gate, active: false, done: true }));
-                  setShowSummary(true);
-                  window.scrollTo({ top: 0, behavior: "smooth" });
-                }}
-              >
-                <ClipboardList size={18} aria-hidden="true" /> 查看試卷結果
-              </button>
-            }
-          />
         </section>
       )}
       <ReflectionWorkspace />

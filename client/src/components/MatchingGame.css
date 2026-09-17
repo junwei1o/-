@@ -12,6 +12,9 @@
   font-size:12px;font-weight:700;border-radius:999px;padding:3px 12px}
 .matching-game .mg-stats{display:flex;gap:8px;flex-wrap:wrap;font-size:12.5px;color:var(--mg-ink2);font-weight:700}
 .matching-game .mg-stats span{background:#f1e8d2;border-radius:8px;padding:3px 9px;font-variant-numeric:tabular-nums}
+.matching-game .mg-stats .mg-countdown{background:#e7f3f5;color:var(--mg-sea-d)}
+.matching-game .mg-stats .mg-countdown.is-urgent{background:var(--mg-red-bg);color:var(--mg-red);animation:mg-countdown-pulse .9s infinite}
+@keyframes mg-countdown-pulse{0%,100%{opacity:1}50%{opacity:.55}}
 .matching-game .mg-title{font-size:19px;font-weight:800;margin:8px 0 2px}
 .matching-game .mg-instruction{font-size:14px;color:var(--mg-ink2);margin:0 0 10px}
 .matching-game .mg-progress{height:10px;background:#ece2ca;border-radius:99px;overflow:hidden;margin-bottom:14px}

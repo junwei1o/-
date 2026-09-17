@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { buildPaperDeck, buildSubjectWrongReviewDeck, getPaperNextGroupStrategyHint, getPaperStrategyRecap, getReviewSelfCheckAdaptation, questionIndexToAltitude, scorePaper, type PaperQuestion } from "./paperExam";
+import { buildPaperDeck, buildSubjectWrongReviewDeck, getPaperNextGroupStrategyHint, getPaperStrategyRecap, getReviewSelfCheckAdaptation, isMatchingQuestion, mixPaperMatching, questionIndexToAltitude, scorePaper, type PaperQuestion } from "./paperExam";
 
 const questions: PaperQuestion[] = [
   { id: "l", grade: 4, subject: "國語", difficulty: "基礎", learningTopic: "詞義", prompt: "題目", options: ["A", "B"], answer: 0, explanation: "解析" },
@@ -85,5 +85,57 @@ describe("paper exam deck", () => {
 
   it("沒有錯題時安全回退到基礎二選一", () => {
     expect(getReviewSelfCheckAdaptation([])).toMatchObject({ difficulty: "基礎", optionCount: 2, focusTopics: [] });
+  });
+});
+
+describe("mixPaperMatching", () => {
+  const twelve: PaperQuestion[] = Array.from({ length: 12 }, (_, i) => ({
+    id: `c${i}`,
+    grade: 4,
+    subject: "數學" as const,
+    difficulty: "標準",
+    learningTopic: `數與量${i}`,
+    prompt: `題目${i}`,
+    options: ["A", "B"],
+    answer: 0,
+    explanation: "解析",
+  }));
+
+  it("12 題平常試卷混入 3 題迷你配對，插在整體第 5、10、15 題", () => {
+    const mixed = mixPaperMatching(twelve, "數學", 3, () => 0.5);
+    expect(mixed).toHaveLength(15);
+    const positions = mixed
+      .map((question, index) => (isMatchingQuestion(question) ? index + 1 : null))
+      .filter((position): position is number => position !== null);
+    expect(positions).toEqual([5, 10, 15]);
+    const matching = mixed.filter(isMatchingQuestion);
+    expect(matching).toHaveLength(3);
+    for (const question of matching) {
+      expect(question.subject).toBe("數學");
+      expect(question.matchingSet?.pairs).toHaveLength(4);
+      expect(question.matchingSet?.distractors).toHaveLength(1);
+      expect(question.questionType).toBe("配對題");
+    }
+  });
+
+  it("綜合卷可混入不同學科的配對題，且迷你盤不修改原 set", () => {
+    const mixed = mixPaperMatching(twelve, "綜合課綱", 3, () => 0.7);
+    const subjects = new Set(mixed.filter(isMatchingQuestion).map((question) => question.subject));
+    expect(subjects.size).toBeGreaterThanOrEqual(1);
+  });
+
+  it("不足 12 題的短文卷（錯題重練、單題冒險）不混入配對", () => {
+    const one = [twelve[0]];
+    const result = mixPaperMatching(one, "綜合課綱", 3, () => 0.5);
+    expect(result).toHaveLength(1);
+    expect(result[0].id).toBe("c0");
+    expect(isMatchingQuestion(result[0])).toBe(false);
+  });
+
+  it("選擇/是非題維持原結構，配對題不進選擇計分", () => {
+    const mixed = mixPaperMatching(twelve, "數學", 3, () => 0.5);
+    const choiceDeck = mixed.filter((question) => question.questionType !== "配對題");
+    expect(choiceDeck).toHaveLength(12);
+    expect(scorePaper(choiceDeck, { c0: 0 })).toMatchObject({ answered: 1, correct: 1, total: 12 });
   });
 });

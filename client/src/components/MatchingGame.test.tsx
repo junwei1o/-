@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import React from "react";
-import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import "@testing-library/jest-dom/vitest";
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import MatchingGame from "@/components/MatchingGame";
 import { MATCHING_SETS } from "@/lib/matchingBank";
@@ -50,5 +51,37 @@ describe("MatchingGame 配對連連看", () => {
     const result = onComplete.mock.calls[0][0];
     expect(result.errors).toBe(1);
     expect(result.stars).toBe(2);
+  });
+
+  it("倒數 30 秒用盡後強制結束，記 1 星並標記 timedOut", async () => {
+    vi.useFakeTimers();
+    try {
+      const onComplete = vi.fn();
+      render(<MatchingGame set={set} onComplete={onComplete} timeLimitMs={30_000} />);
+
+      expect(screen.getByRole("timer", { name: "剩餘 30 秒" })).toBeTruthy();
+      act(() => vi.advanceTimersByTime(31_000));
+
+      expect(onComplete).toHaveBeenCalledTimes(1);
+      const result = onComplete.mock.calls[0][0];
+      expect(result.timedOut).toBe(true);
+      expect(result.stars).toBe(1);
+      expect(screen.getByText("時間到！")).toBeTruthy();
+      expect(screen.queryByText("過關！")).not.toBeInTheDocument();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("時間到前的倒數會顯示剩餘秒數，低於 5 秒進入警示樣式", async () => {
+    vi.useFakeTimers();
+    try {
+      render(<MatchingGame set={set} timeLimitMs={30_000} />);
+      act(() => vi.advanceTimersByTime(26_000));
+      const timer = screen.getByRole("timer", { name: "剩餘 4 秒" });
+      expect(timer.classList.contains("is-urgent")).toBe(true);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });

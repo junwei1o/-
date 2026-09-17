@@ -1,12 +1,13 @@
 import { loadUserPreferences, getTargetDifficultiesFromPrefs, filterQuestionsByGrade, targetDifficulties, type AdaptiveProfile } from "@/game/adaptiveLearning";
 import { shuffleQuestionOptions } from "./optionRandomizer";
+import { MATCHING_SETS, shuffleArray, sliceMatchingSet, type MatchingSet } from "./matchingBank";
 export type PaperSubject = "數學" | "自然" | "社會" | "國語" | "英語";
 
 export type PaperQuestion = {
   id: string;
   grade: number;
   subject: PaperSubject;
-  questionType?: "選擇題" | "是非題";
+  questionType?: "選擇題" | "是非題" | "配對題";
   difficulty: string;
   learningTopic: string;
   prompt: string;
@@ -15,6 +16,8 @@ export type PaperQuestion = {
   explanation: string;
   /** Optional verified distractor feedback from the formal question bank. */
   strongDistractor?: { optionIndex: number; note: string };
+  /** 配對題專用：試卷內嵌的迷你配對盤（4 對＋1 干擾）。成績獨立計星，不影響選擇/是非分數。 */
+  matchingSet?: MatchingSet;
 };
 
 export type PaperScope = "綜合課綱" | PaperSubject;
@@ -23,6 +26,62 @@ export type PaperMistakeReason = "基礎題需重看" | "標準題需練習" | "
 export const PAPER_SCOPES: readonly PaperScope[] = ["綜合課綱", "國語", "數學", "英語", "自然", "社會"] as const;
 export const PAPER_MISTAKE_REASONS: readonly PaperMistakeReason[] = ["基礎題需重看", "標準題需練習", "挑戰題需拆解"] as const;
 export const DEFAULT_PAPER_SIZE = 12;
+/** 平常試卷在 12 題選擇/是非之外，另外混入的配對題數。 */
+export const PAPER_MATCHING_COUNT = 3;
+/** 每題（含選擇、是非、配對）的作答時間上限。 */
+export const PAPER_QUESTION_TIME_LIMIT_MS = 30_000;
+
+export function isMatchingQuestion(question: PaperQuestion): boolean {
+  return question.questionType === "配對題" && Boolean(question.matchingSet);
+}
+
+/**
+ * 把 3 題迷你配對題混進 12 題選擇/是非試卷（整體第 5、10、15 題）。
+ * 短文卷（錯題重練、知識點複習、單題冒險等不足 12 題的卷子）不混入，
+ * 維持「平常試卷」才加入配對的產品邊界。
+ */
+export function mixPaperMatching(
+  deck: readonly PaperQuestion[],
+  scope: PaperScope,
+  count = PAPER_MATCHING_COUNT,
+  random: () => number = Math.random,
+): PaperQuestion[] {
+  if (count <= 0 || deck.length < DEFAULT_PAPER_SIZE) return [...deck];
+  const pool =
+    scope === "綜合課綱" ? MATCHING_SETS : MATCHING_SETS.filter((set) => set.subject === scope);
+  const candidates = pool.length > 0 ? pool : MATCHING_SETS;
+
+  const picked: MatchingSet[] = [];
+  for (const set of shuffleArray(candidates, random)) {
+    if (picked.length >= count) break;
+    if (!picked.some((item) => item.id === set.id)) picked.push(set);
+  }
+  while (picked.length < count && picked.length > 0) picked.push(picked[0]);
+
+  const matchingQuestions: PaperQuestion[] = picked.map((set, index) => {
+    const mini = sliceMatchingSet(set, 4, 1, random);
+    return {
+      id: `match-${set.id}-${index}`,
+      grade: 0,
+      subject: set.subject,
+      questionType: "配對題",
+      difficulty: set.difficulty,
+      learningTopic: `${set.title}（配對）`,
+      prompt: mini.instruction,
+      options: [],
+      answer: -1,
+      explanation: "",
+      matchingSet: mini,
+    };
+  });
+
+  const result = [...deck];
+  // 插在每 4 題之後：整體第 5、10、15 題（最後一題是配對，收尾最順）。
+  [4, 8, 12].forEach((position, index) => {
+    result.splice(Math.min(position + index, result.length), 0, matchingQuestions[index]);
+  });
+  return result;
+}
 
 export function getPaperMistakeReason(question: Pick<PaperQuestion, "difficulty">): PaperMistakeReason {
   if (question.difficulty === "挑戰") return "挑戰題需拆解";

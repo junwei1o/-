@@ -23,11 +23,13 @@ type HintTone = "" | "ok" | "err";
 type Props = {
   /** 一組配對題。換關或重玩請由父層改變 key，讓元件重新掛載、重新洗牌計時。 */
   set: MatchingSet;
-  /** 完成（全部配對）時回報一次，用於記錄成績或推進試卷流程。 */
+  /** 完成（全部配對或時間到）時回報一次，用於記錄成績或推進試卷流程。 */
   onComplete?: (result: MatchingResult) => void;
   /** 結果卡底部按鈕（例如：下一關、查看試卷結果）。 */
   resultActions?: ReactNode;
   muted?: boolean;
+  /** 作答倒數上限（毫秒）。預設 30 秒；時間到強制結束並記 1 星。 */
+  timeLimitMs?: number;
 };
 
 function buzz(pattern: number | number[]) {
@@ -44,13 +46,14 @@ function buzz(pattern: number | number[]) {
  * 配對連連看：點左欄一項、再點右欄對應項。
  * 成功畫綠線、失敗畫紅線並在首尾打叉後一起淡出。元件為 local-first、無網路依賴。
  */
-export default function MatchingGame({ set, onComplete, resultActions, muted = false }: Props) {
+export default function MatchingGame({ set, onComplete, resultActions, muted = false, timeLimitMs = 30_000 }: Props) {
   const board = useMemo(() => buildMatchingBoard(set), [set]);
   const [selected, setSelected] = useState<number | null>(null);
   const [matched, setMatched] = useState<Set<number>>(new Set());
   const [errors, setErrors] = useState(0);
   const [elapsed, setElapsed] = useState(0);
   const [finished, setFinished] = useState(false);
+  const [timedOut, setTimedOut] = useState(false);
   const [hint, setHint] = useState<{ text: string; tone: HintTone }>({
     text: "點一項左邊的題目開始吧！",
     tone: "",
@@ -240,24 +243,43 @@ export default function MatchingGame({ set, onComplete, resultActions, muted = f
     [endpoints],
   );
 
-  const finish = useCallback(() => {
-    if (completedRef.current) return;
-    completedRef.current = true;
-    const timeMs = Date.now() - startRef.current;
-    const stars = matchingStars(errors);
-    setFinished(true);
-    playSound("win");
-    buzz([40, 50, 40, 50, 120]);
-    const result: MatchingResult = {
-      id: set.id,
-      title: set.title,
-      subject: set.subject,
-      stars,
-      errors,
-      timeMs,
-    };
-    onComplete?.(result);
-  }, [errors, onComplete, playSound, set.id, set.subject, set.title]);
+  const finish = useCallback(
+    (over: { timedOut?: boolean } = {}) => {
+      if (completedRef.current) return;
+      completedRef.current = true;
+      const timeMs = Date.now() - startRef.current;
+      const stars: 1 | 2 | 3 = over.timedOut ? 1 : matchingStars(errors);
+      setFinished(true);
+      setTimedOut(Boolean(over.timedOut));
+      if (over.timedOut) {
+        playSound("no");
+        buzz([60, 40, 60, 40]);
+      } else {
+        playSound("win");
+        buzz([40, 50, 40, 50, 120]);
+      }
+      const result: MatchingResult = {
+        id: set.id,
+        title: set.title,
+        subject: set.subject,
+        stars,
+        errors,
+        timeMs,
+        ...(over.timedOut ? { timedOut: true } : {}),
+      };
+      onComplete?.(result);
+    },
+    [errors, onComplete, playSound, set.id, set.subject, set.title],
+  );
+
+  // 倒數：時間用盡強制結束（記 1 星）。timeLimitMs<=0 視為不限時。
+  const timeLimit = timeLimitMs > 0 ? timeLimitMs : Number.POSITIVE_INFINITY;
+  const secondsLeft = timeLimit === Number.POSITIVE_INFINITY ? null : Math.max(0, Math.ceil((timeLimit - elapsed) / 1000));
+
+  useEffect(() => {
+    if (timeLimit === Number.POSITIVE_INFINITY || finished) return;
+    if (elapsed >= timeLimit) finish({ timedOut: true });
+  }, [elapsed, finished, timeLimit, finish]);
 
   const pickLeft = (pair: number) => {
     if (matched.has(pair) || finished) return;
@@ -317,6 +339,11 @@ export default function MatchingGame({ set, onComplete, resultActions, muted = f
         </span>
         <div className="mg-stats">
           <span>用時 {formatMatchingTime(elapsed)}</span>
+          {secondsLeft !== null && !finished && (
+            <span className={`mg-countdown ${secondsLeft <= 5 ? "is-urgent" : ""}`} role="timer" aria-label={`剩餘 ${secondsLeft} 秒`}>
+              剩 {secondsLeft} 秒
+            </span>
+          )}
           <span>
             已配對 {matched.size}/{total}
           </span>
@@ -385,7 +412,7 @@ export default function MatchingGame({ set, onComplete, resultActions, muted = f
 
       {finished && (
         <div className="mg-result-card" role="status" aria-label="配對結果">
-          <h3>過關！</h3>
+          <h3>{timedOut ? "時間到！" : "過關！"}</h3>
           <div className="mg-stars" aria-label={`獲得 ${stars} 星`}>
             {[1, 2, 3].map((n) => (
               <span key={n} className={n <= stars ? "" : "off"} style={{ animationDelay: `${n * 0.12}s` }}>
@@ -393,24 +420,32 @@ export default function MatchingGame({ set, onComplete, resultActions, muted = f
               </span>
             ))}
           </div>
-          <p className="mg-result-line">
-            用時 <b>{formatMatchingTime(elapsed)}</b>
-          </p>
-          <p className="mg-result-line">
-            失誤 <b>{errors}</b> 次
-          </p>
-          <div className="mg-confetti" aria-hidden="true">
-            {Array.from({ length: 18 }).map((_, i) => (
-              <span
-                key={i}
-                style={{
-                  left: `${(i * 53) % 100}%`,
-                  background: ["#e8843a", "#2f7d8f", "#e0a92e", "#3f8a43", "#d0503a", "#7a5cc0"][i % 6],
-                  animationDelay: `${(i % 7) * 0.05}s`,
-                }}
-              />
-            ))}
-          </div>
+          {timedOut ? (
+            <p className="mg-result-line">30 秒用完，這一關先記為需要再練。</p>
+          ) : (
+            <>
+              <p className="mg-result-line">
+                用時 <b>{formatMatchingTime(elapsed)}</b>
+              </p>
+              <p className="mg-result-line">
+                失誤 <b>{errors}</b> 次
+              </p>
+            </>
+          )}
+          {!timedOut && (
+            <div className="mg-confetti" aria-hidden="true">
+              {Array.from({ length: 18 }).map((_, i) => (
+                <span
+                  key={i}
+                  style={{
+                    left: `${(i * 53) % 100}%`,
+                    background: ["#e8843a", "#2f7d8f", "#e0a92e", "#3f8a43", "#d0503a", "#7a5cc0"][i % 6],
+                    animationDelay: `${(i % 7) * 0.05}s`,
+                  }}
+                />
+              ))}
+            </div>
+          )}
           {resultActions && <div className="mg-result-actions">{resultActions}</div>}
         </div>
       )}

@@ -4,7 +4,6 @@ import "@testing-library/jest-dom/vitest";
 import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import PaperExam from "@/pages/PaperExam";
-import { MATCHING_SETS } from "@/lib/matchingBank";
 import { ADAPTIVE_STORAGE_KEY } from "@/game/adaptiveLearning";
 
 const playPaperStrategyCue = vi.hoisted(() => vi.fn());
@@ -87,44 +86,9 @@ describe("PaperExam mobile-first launchpad and result summary", () => {
     fireEvent.click(screen.getByRole("button", { name: "開始本組題目" }));
   }
 
-  // 卷末有一關「配對連連看」加碼題：完成它才會進入總結。
-  // 傳入 advanceTimers 代表測試使用 fake timers：此時不能用依賴真實計時器的 waitFor，
-  // 一切靠 fireEvent 同步 flush，再由 advanceTimers 推進配對完成的 420ms 延遲。
-  async function openSummary(advanceTimers?: () => void) {
-    const gateButton = screen.queryByRole("button", { name: /加碼題/ });
-    if (gateButton) {
-      fireEvent.click(gateButton);
-      if (advanceTimers) {
-        expect(document.querySelector(".matching-game")).toBeTruthy();
-      } else {
-        await waitFor(() => expect(document.querySelector(".matching-game")).toBeTruthy(), { timeout: 4000 });
-      }
-      const title = (document.querySelector(".mg-title")?.textContent ?? "").trim();
-      const matchingSet = MATCHING_SETS.find((item) => item.title === title);
-      if (matchingSet) {
-        const findItem = (selector: string, text: string) =>
-          Array.from(document.querySelectorAll<HTMLElement>(selector)).find((el) =>
-            el.textContent?.includes(text),
-          ) as HTMLElement | undefined;
-        for (const pair of matchingSet.pairs) {
-          fireEvent.click(findItem(".mg-left .mg-item", pair.l) as HTMLElement);
-          fireEvent.click(findItem(".mg-right .mg-item", pair.r) as HTMLElement);
-        }
-        if (advanceTimers) {
-          advanceTimers();
-          expect(document.querySelector(".mg-result-card")).toBeTruthy();
-        } else {
-          await waitFor(() => expect(document.querySelector(".mg-result-card")).toBeTruthy(), { timeout: 6000, interval: 50 });
-        }
-        fireEvent.click(screen.getByRole("button", { name: /查看試卷結果/ }));
-        if (advanceTimers) {
-          expect(screen.getByRole("heading", { name: "學習成果總結" })).toBeInTheDocument();
-        } else {
-          await waitFor(() => expect(screen.getByRole("heading", { name: "學習成果總結" })).toBeInTheDocument(), { timeout: 4000 });
-        }
-        return;
-      }
-    }
+  // 測試宇宙只有 1 道選擇題（不足 12 題，不會混入配對），答完直接點「查看結果總結」。
+  // 傳入 advanceTimers 代表測試使用 fake timers：summary 的顯示是同步 state 變更，直接點即可。
+  async function openSummary(_advanceTimers?: () => void) {
     fireEvent.click(screen.getByRole("button", { name: /查看結果總結/ }));
   }
 

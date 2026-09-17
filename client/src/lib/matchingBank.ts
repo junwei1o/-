@@ -23,6 +23,8 @@ export type MatchingResult = {
   stars: 1 | 2 | 3;
   errors: number;
   timeMs: number;
+  /** 30 秒倒數用盡時為 true；時間到一律記 1 星。 */
+  timedOut?: boolean;
 };
 
 /** 右欄項目：pair>=0 為某個配對的右值，pair===-1 為干擾項。 */
@@ -102,6 +104,18 @@ export function pickMatchingSet(
       : MATCHING_SETS.filter((set) => set.subject === subject);
   const candidates = pool.length > 0 ? pool : MATCHING_SETS;
   return candidates[Math.floor(random() * candidates.length)] ?? null;
+}
+
+/** 從整組配對題裁出較小的盤面（試卷內嵌的迷你配對題用），不修改原 set。 */
+export function sliceMatchingSet(
+  set: MatchingSet,
+  pairsCount: number,
+  distractorCount: number,
+  random: () => number = Math.random,
+): MatchingSet {
+  const pairs = shuffleArray(set.pairs, random).slice(0, Math.max(1, Math.min(pairsCount, set.pairs.length)));
+  const distractors = shuffleArray(set.distractors, random).slice(0, Math.max(0, Math.min(distractorCount, set.distractors.length)));
+  return { ...set, pairs, distractors };
 }
 
 export function formatMatchingTime(timeMs: number): string {

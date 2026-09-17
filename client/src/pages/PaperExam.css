@@ -103,3 +103,63 @@
 .paper-matching-summary > button {
   margin-top: 12px;
 }
+
+/* 每題 30 秒倒數 */
+.paper-question-timer {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #e7f3f5;
+  color: #2f7d8f;
+  font-weight: 800;
+  font-size: 14px;
+  border-radius: 999px;
+  padding: 4px 12px;
+  margin: 6px 0 2px;
+  font-variant-numeric: tabular-nums;
+}
+.paper-question-timer strong { font-size: 17px; }
+.paper-question-timer.is-urgent {
+  background: #fde3dc;
+  color: #c2452f;
+  animation: paper-timer-pulse .9s infinite;
+}
+@keyframes paper-timer-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: .55; }
+}
+.paper-timeout-note {
+  color: #b04030;
+  font-weight: 700;
+  font-size: 13px;
+  margin: 2px 0 8px;
+}
+
+/* 配對題完成卡（內嵌於題流） */
+.paper-matching-done {
+  background: #fffaf0;
+  border: 2px dashed #e0a92e;
+  border-radius: 18px;
+  padding: 18px 16px;
+  margin-top: 10px;
+  text-align: center;
+}
+.paper-matching-done-head {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+.paper-matching-done-head h3 { margin: 2px 0 0; font-size: 18px; }
+.paper-matching-done-stars {
+  font-size: 30px;
+  color: #e0a92e;
+  letter-spacing: 4px;
+  margin: 10px 0 4px;
+}
+.paper-matching-done-meta {
+  margin: 0;
+  font-size: 13px;
+  color: #6a5c4a;
+  font-weight: 700;
+}
