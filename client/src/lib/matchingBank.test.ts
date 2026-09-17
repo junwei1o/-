@@ -4,9 +4,11 @@ import {
   MATCHING_SUBJECTS,
   buildMatchingBoard,
   formatMatchingTime,
+  buildRushQuestions,
   matchingStars,
   pickMatchingSet,
   shuffleArray,
+  sliceMatchingSet,
   type MatchingSet,
 } from "./matchingBank";
 
@@ -93,5 +95,36 @@ describe("純函式", () => {
   it("formatMatchingTime 格式化為 m:ss", () => {
     expect(formatMatchingTime(0)).toBe("0:00");
     expect(formatMatchingTime(65000)).toBe("1:05");
+  });
+});
+
+describe("buildRushQuestions", () => {
+  it("每對一題、候選含正確答案與 2 個干擾，且不修改原 set", () => {
+    const set = MATCHING_SETS.find((s) => s.id === "m-math-1");
+    expect(set).toBeTruthy();
+    const questions = buildRushQuestions(set as MatchingSet, seeded(5));
+    expect(questions).toHaveLength((set as MatchingSet).pairs.length);
+    const otherRights = new Set((set as MatchingSet).pairs.map((p) => p.r));
+    (set as MatchingSet).distractors.forEach((d) => otherRights.add(d));
+    for (const q of questions) {
+      expect(q.options).toHaveLength(3);
+      expect(q.options).toContain(q.answer);
+      for (const opt of q.options) {
+        expect(otherRights.has(opt)).toBe(true);
+      }
+      expect(new Set(q.options).size).toBe(3);
+    }
+    expect((set as MatchingSet).pairs).toHaveLength(6);
+  });
+
+  it("迷你盤（4 對＋1 干擾）也能產生 3 選（干擾不足時少給仍含答案）", () => {
+    const base = MATCHING_SETS.find((s) => s.id === "m-math-1");
+    const mini = sliceMatchingSet(base as MatchingSet, 4, 1, seeded(7));
+    const questions = buildRushQuestions(mini, seeded(8));
+    expect(questions).toHaveLength(4);
+    for (const q of questions) {
+      expect(q.options).toContain(q.answer);
+      expect(q.options.length).toBeGreaterThanOrEqual(2);
+    }
   });
 });

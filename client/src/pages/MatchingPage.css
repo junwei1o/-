@@ -27,3 +27,10 @@
 @media (min-width:560px){
   .matching-page .mp-level-grid{grid-template-columns:repeat(3,1fr)}
 }
+
+/* 玩法模式切換（連連看／單對速配／30 秒搶分） */
+.mp-modes{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 0}
+.mp-mode-chip{min-height:44px;border:2px solid var(--line,#e2d4b6);border-radius:999px;
+  background:var(--card,#fffdf6);color:var(--ink2,#6b5d49);font-size:14px;font-weight:800;
+  padding:8px 16px;cursor:pointer}
+.mp-mode-chip.is-active{border-color:var(--sea,#2f7d8f);background:var(--sea,#2f7d8f);color:#fff}

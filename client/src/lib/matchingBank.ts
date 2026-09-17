@@ -122,3 +122,42 @@ export function formatMatchingTime(timeMs: number): string {
   const totalSeconds = Math.floor(timeMs / 1000);
   return `${Math.floor(totalSeconds / 60)}:${String(totalSeconds % 60).padStart(2, "0")}`;
 }
+
+/** 速配／搶分共用的單對題：left 為題目，options 為 2–3 個候選（含 answer）。 */
+export type RushQuestion = { left: string; answer: string; options: string[] };
+
+export type MatchingRushMode = "speed" | "rush";
+
+export type MatchingRushResult = {
+  id: string;
+  title: string;
+  subject: PaperSubject;
+  mode: MatchingRushMode;
+  /** 搶分得分（speed 模式為 0）。 */
+  score: number;
+  correct: number;
+  total: number;
+  maxCombo: number;
+  timeMs: number;
+};
+
+/**
+ * 把一組配對題拆成連續單對題（A 單對速配的題源）：
+ * 每對一題，候選 = 正確右值 + 2 個干擾（優先其他 pair 的右值，不足補 distractors）。
+ * 不修改原 set。
+ */
+export function buildRushQuestions(
+  set: MatchingSet,
+  random: () => number = Math.random,
+): RushQuestion[] {
+  const otherRights = set.pairs.map((pair) => pair.r);
+  return set.pairs.map((pair) => {
+    const pool = shuffleArray(
+      [...otherRights.filter((r) => r !== pair.r), ...set.distractors],
+      random,
+    );
+    const distractors = pool.slice(0, 2);
+    const options = shuffleArray([pair.r, ...distractors], random);
+    return { left: pair.l, answer: pair.r, options };
+  });
+}

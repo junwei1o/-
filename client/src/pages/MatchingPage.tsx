@@ -1,16 +1,21 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useLocation } from "wouter";
 import MatchingGame from "@/components/MatchingGame";
+import MatchingRush from "@/components/MatchingRush";
 import {
   MATCHING_SETS,
   MATCHING_SUBJECTS,
   type MatchingResult,
+  type MatchingRushMode,
+  type MatchingRushResult,
 } from "@/lib/matchingBank";
 import "./MatchingPage.css";
 
 const BEST_KEY = "xue-matching-best-v1";
+const RUSH_BEST_KEY = "xue-matching-rush-best-v1";
 
 type BestMap = Record<string, { stars: number; errors: number; timeMs: number }>;
+type RushBestMap = Record<string, { score: number; maxCombo: number }>;
 
 function loadBest(): BestMap {
   try {
@@ -28,16 +33,35 @@ function saveBest(best: BestMap) {
   }
 }
 
+function loadRushBest(): RushBestMap {
+  try {
+    return JSON.parse(localStorage.getItem(RUSH_BEST_KEY) ?? "{}") as RushBestMap;
+  } catch {
+    return {};
+  }
+}
+
+function saveRushBest(best: RushBestMap) {
+  try {
+    localStorage.setItem(RUSH_BEST_KEY, JSON.stringify(best));
+  } catch {
+    /* 隱私模式無法寫入就只保留在記憶體 */
+  }
+}
+
 export default function MatchingPage() {
   const [, setLocation] = useLocation();
   const [index, setIndex] = useState(0);
   const [nonce, setNonce] = useState(0);
   const [view, setView] = useState<"play" | "menu">("play");
+  const [mode, setMode] = useState<"board" | MatchingRushMode>("board");
   const [muted, setMuted] = useState(false);
   const [best, setBest] = useState<BestMap>({});
+  const [rushBest, setRushBest] = useState<RushBestMap>({});
 
   useEffect(() => {
     setBest(loadBest());
+    setRushBest(loadRushBest());
   }, []);
 
   const currentSet = MATCHING_SETS[index];
@@ -46,6 +70,18 @@ export default function MatchingPage() {
     () => MATCHING_SUBJECTS.map((subject) => ({ subject, sets: MATCHING_SETS.filter((s) => s.subject === subject) })),
     [],
   );
+
+  const rushRecord = (index: number) => rushBest[MATCHING_SETS[index].id];
+
+  function handleRushComplete(result: MatchingRushResult) {
+    setRushBest((previous) => {
+      const old = previous[result.id];
+      if (old && old.score >= result.score) return previous;
+      const next = { ...previous, [result.id]: { score: result.score, maxCombo: result.maxCombo } };
+      saveRushBest(next);
+      return next;
+    });
+  }
 
   function handleComplete(result: MatchingResult) {
     setBest((previous) => {
@@ -91,27 +127,67 @@ export default function MatchingPage() {
             </button>
           </div>
         </div>
+        <nav className="mp-modes" aria-label="配對玩法">
+          {([
+            ["board", "連連看"],
+            ["speed", "單對速配"],
+            ["rush", "30 秒搶分"],
+          ] as const).map(([value, label]) => (
+            <button
+              key={value}
+              type="button"
+              className={`mp-mode-chip ${mode === value ? "is-active" : ""}`}
+              onClick={() => {
+                setMode(value);
+                setNonce((n) => n + 1);
+              }}
+            >
+              {label}
+            </button>
+          ))}
+        </nav>
       </header>
 
       <div className="mp-body">
         {view === "play" ? (
           <>
-            <MatchingGame
-              key={`${currentSet.id}-${nonce}`}
-              set={currentSet}
-              muted={muted}
-              onComplete={handleComplete}
-              resultActions={
-                <>
-                  <button type="button" className="mg-btn mg-btn-ghost" onClick={() => play(index)}>
-                    重玩
-                  </button>
-                  <button type="button" className="mg-btn mg-btn-primary" onClick={() => play(index + 1)}>
-                    {index < MATCHING_SETS.length - 1 ? "下一關 →" : "回到第 1 關 ↻"}
-                  </button>
-                </>
-              }
-            />
+            {mode === "board" ? (
+              <MatchingGame
+                key={`${currentSet.id}-${nonce}`}
+                set={currentSet}
+                muted={muted}
+                onComplete={handleComplete}
+                resultActions={
+                  <>
+                    <button type="button" className="mg-btn mg-btn-ghost" onClick={() => play(index)}>
+                      重玩
+                    </button>
+                    <button type="button" className="mg-btn mg-btn-primary" onClick={() => play(index + 1)}>
+                      {index < MATCHING_SETS.length - 1 ? "下一關 →" : "回到第 1 關 ↻"}
+                    </button>
+                  </>
+                }
+              />
+            ) : (
+              <MatchingRush
+                key={`${currentSet.id}-${mode}-${nonce}`}
+                set={currentSet}
+                mode={mode}
+                muted={muted}
+                onComplete={handleComplete}
+                onRushComplete={handleRushComplete}
+                resultActions={
+                  <>
+                    <button type="button" className="mg-btn mg-btn-ghost" onClick={() => play(index)}>
+                      重玩
+                    </button>
+                    <button type="button" className="mg-btn mg-btn-primary" onClick={() => play(index + 1)}>
+                      {index < MATCHING_SETS.length - 1 ? "下一關 →" : "回到第 1 關 ↻"}
+                    </button>
+                  </>
+                }
+              />
+            )}
             <div className="mp-footer">
               <button type="button" className="mp-link-btn" onClick={() => setView("menu")}>
                 查看全部 {MATCHING_SETS.length} 關
@@ -144,6 +220,7 @@ export default function MatchingPage() {
                         <span className="mp-level-title">{set.title}</span>
                         <span className="mp-level-stars">
                           {record ? [1, 2, 3].map((n) => (n <= record.stars ? "★" : "☆")).join("") : "☆☆☆"}
+                          {rushRecord(globalIndex) ? ` · 搶分 ${rushRecord(globalIndex).score}` : ""}
                         </span>
                       </button>
                     );
