@@ -298,3 +298,12 @@ curl -s https://xue-gr3a.onrender.com/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | h
 - 題庫層：`buildRushQuestions(set)`（每對一題，正確值＋2 干擾，迷你盤自動降級）。
 - 測試：matchingBank +2、MatchingRush +7（含 fake timers 倒數與結算）；tsc 0 error；受影響 6 檔 58 tests 全綠；build hash `index-L0wAPRld.js`。
 - 線上 Playwright：三種模式切換、速配/搶分作答回饋、31 秒搶分結算全通過（唯一 console 400 為題庫端點既有 fallback 噪音）。
+
+## 2026-09-17 G 圖片配對上線（236dbc6）
+- 圖片題庫 data/image_bank.json：縣市地標（6 對→縣市）、世界地標（6 對→國家）、台灣動物（6 對，看圖認名）；每組 2 干擾，共 3 組併入 MATCHING_SETS（33 組）；IMAGE_MATCHING_SETS 匯出。
+- MatchingPair 加 img 欄位；MatchingGame 左欄 img 渲染（.mg-item-imgwrap 直排圖卡，badge 浮左上）；MatchingRush 支援圖片題（只顯示圖、不顯文字，避免動物組 l==r 洩題）。
+- /matching 四種玩法：連連看／圖片配對／單對速配／30 秒搶分；圖片配對模式只在圖片組內循環。
+- 試卷配對保持純文字：mixPaperMatching 排除圖片組。
+- 素材：image_search 18 張（地標/動物）下載→PIL 壓縮→client/public/matching-img/（25–77KB）；contact sheet 核驗無水印。
+- 測試：matchingBank +4（圖片組/速配 img）、MatchingGame +2（img 渲染/完整配對）；全量 178 檔 1051 tests 綠、tsc 0 error；build hash index-DYxaK-U2.js。
+- 線上 Playwright 9/9：四 chip、圖卡盤、配對綠線、速配圖片題、33 關選單、無 pageerror。
