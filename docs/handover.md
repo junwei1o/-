@@ -307,3 +307,9 @@ curl -s https://xue-gr3a.onrender.com/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | h
 - 素材：image_search 18 張（地標/動物）下載→PIL 壓縮→client/public/matching-img/（25–77KB）；contact sheet 核驗無水印。
 - 測試：matchingBank +4（圖片組/速配 img）、MatchingGame +2（img 渲染/完整配對）；全量 178 檔 1051 tests 綠、tsc 0 error；build hash index-DYxaK-U2.js。
 - 線上 Playwright 9/9：四 chip、圖卡盤、配對綠線、速配圖片題、33 關選單、無 pageerror。
+
+## 2026-09-17 寶可夢船 favicon＋燈塔指航中心改名（841f510、6c6bba0）
+- favicon：image_gen 生成寶可夢畫風可愛小船（圓潤木船/白帆指南針符號/船頭燈，無角色，避版權）→ client/public/：favicon.ico、favicon-16/32/48.png、apple-touch-icon.png(180)、icon-192/512.png、site.webmanifest；index.html 補 icon links＋manifest（原本全站無 favicon）。
+- 改名：使用者可見「燈塔酒館」全面改「燈塔指航中心」（首頁模式卡、功能目錄、全站搜尋、Tavern h1、藏寶 Hub、簽到彈窗、卡冊 CTA、冒險章節 lighthouse-call/lost-classic 文案）；「老闆吧檯」→「領航櫃台」、「老闆的話」→「領航員的話」、吧檯→櫃台；啤酒杯 Beer icon→Compass；場景酒瓶陳列🍶🍷🍺🥃→🧭🗺️📜⚓、老闆🍺/🧔→🧭/🗺️。
+- 不變：路由 /tavern*、元件/檔名/CSS class、localStorage key、CHAPTER_TITLES 常數、鹽田/小吃攤老闆等無關角色。
+- 驗證：tsc 0 error、全量 178 檔 1051 tests 綠；線上 Playwright 17/17（靜態圖標 200、manifest、首頁/Tavern 改名、彈層、無 pageerror）；bundle hash index-I8Yedzoa.js。
