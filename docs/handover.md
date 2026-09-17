@@ -291,3 +291,10 @@ curl -s https://xue-gr3a.onrender.com/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | h
 - **後續路線**：無未完成開發項；五大長期項目（聯盟賽/卡牌/夥伴/文字冒險/夜間觀測）已全部完成上線。
 - **需使用者操作**：LINE 兩個 Render 環境變數。
 - 新接手者只要依第 4～6 節的守則與流程，即可直接繼續迭代。
+
+## 2026-09-17 配對變體 A＋H 上線（510c059）
+- MatchingRush 元件：單對速配（每題 30 秒、3 選一、答錯自動顯示解答）＋30 秒搶分（答對 +10、連對每連 +5、時間到結算得分/最高連對）。
+- /matching 頁加玩法切換（連連看／單對速配／30 秒搶分）；搶分最高分存 `xue-matching-rush-best-v1`，選關卡顯示「· 搶分 N」。
+- 題庫層：`buildRushQuestions(set)`（每對一題，正確值＋2 干擾，迷你盤自動降級）。
+- 測試：matchingBank +2、MatchingRush +7（含 fake timers 倒數與結算）；tsc 0 error；受影響 6 檔 58 tests 全綠；build hash `index-L0wAPRld.js`。
+- 線上 Playwright：三種模式切換、速配/搶分作答回饋、31 秒搶分結算全通過（唯一 console 400 為題庫端點既有 fallback 噪音）。
