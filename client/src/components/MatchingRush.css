@@ -8,7 +8,7 @@
 .mr-tag{display:inline-block;background:#fde6d2;color:var(--mg-orange-d,#c9661f);
   font-size:12px;font-weight:800;border-radius:999px;padding:4px 12px}
 .mr-set-title{font-size:13.5px;font-weight:800;color:var(--mg-sea-d,#1f5d6b)}
-.mr-countdown{}margin-left:auto;display:inline-flex;align-items:center;gap:4px;
+.mr-countdown{margin-left:auto;display:inline-flex;align-items:center;gap:4px;
   background:#e7f3f5;color:var(--mg-sea-d,#1f5d6b);font-weight:800;font-size:13px;
   border-radius:999px;padding:4px 12px}
 .mr-countdown.is-urgent{background:var(--mg-red-bg,#fbe1da);color:var(--mg-red,#d0503a);animation:mg-countdown-pulse .9s infinite}
