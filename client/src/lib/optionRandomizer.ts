@@ -12,6 +12,8 @@
 export type ShuffleableQuestion = {
   options: string[];
   answer: number;
+  /** 題型；是非題不打亂選項，固定「正確／錯誤」順序。 */
+  questionType?: string;
   strongDistractor?: { optionIndex: number; note: string };
 };
 
@@ -66,6 +68,16 @@ export function shuffledIndexes(count: number, random: () => number = Math.rando
 export function shuffleQuestionOptions<T extends ShuffleableQuestion>(question: T, random: () => number = Math.random): T {
   if (!Array.isArray(question?.options) || question.options.length < 2) return question;
   if (!Number.isInteger(question.answer) || question.answer < 0 || question.answer >= question.options.length) return question;
+  // 是非題不打亂：固定「正確」在前（○）、「錯誤」在後（✕），避免符號與語意錯位（例如出現「✕ 正確」）。
+  const looksTrueFalse =
+    question.questionType === "是非題" ||
+    (question.options.length === 2 &&
+      question.options.includes("正確") &&
+      question.options.includes("錯誤"));
+  if (looksTrueFalse) {
+    const answeredText = question.options[question.answer];
+    return { ...question, options: ["正確", "錯誤"], answer: answeredText === "正確" ? 0 : 1 };
+  }
   const permutation = shuffledIndexes(question.options.length, random);
   const options = permutation.map((index) => question.options[index]);
   const answer = permutation.indexOf(question.answer);

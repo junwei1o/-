@@ -135,6 +135,28 @@ describe("shuffleQuestionOptions", () => {
     }
     expect(differed).toBe(true);
   });
+
+  it("是非題固定「正確／錯誤」順序，不被打亂（避免 ○/✕ 符號錯位）", () => {
+    // 即使原庫順序顛倒、或注入任何亂數，輸出都固定為 [正確, 錯誤]
+    const reversedTrue = { questionType: "是非題" as const, options: ["錯誤", "正確"], answer: 1 };
+    for (let seed = 1; seed <= 30; seed += 1) {
+      const out = shuffleQuestionOptions(reversedTrue, seededRandom(seed));
+      expect(out.options).toEqual(["正確", "錯誤"]);
+      expect(out.answer).toBe(0); // 原答案文字為「正確」→ 固定位置 0
+    }
+    // 敘述為錯的是非題：答案文字「錯誤」→ 固定位置 1
+    const falseStatement = { questionType: "是非題" as const, options: ["正確", "錯誤"], answer: 1 };
+    const out2 = shuffleQuestionOptions(falseStatement, seededRandom(7));
+    expect(out2.options).toEqual(["正確", "錯誤"]);
+    expect(out2.answer).toBe(1);
+  });
+
+  it("缺 questionType 但選項恰為正確/錯誤時，也視為是非題固定順序", () => {
+    const legacy = { options: ["錯誤", "正確"], answer: 1 };
+    const out = shuffleQuestionOptions(legacy, seededRandom(3));
+    expect(out.options).toEqual(["正確", "錯誤"]);
+    expect(out.answer).toBe(0);
+  });
 });
 
 describe("hashStringToSeed / seededRandom", () => {
