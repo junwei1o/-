@@ -313,3 +313,11 @@ curl -s https://xue-gr3a.onrender.com/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | h
 - 改名：使用者可見「燈塔酒館」全面改「燈塔指航中心」（首頁模式卡、功能目錄、全站搜尋、Tavern h1、藏寶 Hub、簽到彈窗、卡冊 CTA、冒險章節 lighthouse-call/lost-classic 文案）；「老闆吧檯」→「領航櫃台」、「老闆的話」→「領航員的話」、吧檯→櫃台；啤酒杯 Beer icon→Compass；場景酒瓶陳列🍶🍷🍺🥃→🧭🗺️📜⚓、老闆🍺/🧔→🧭/🗺️。
 - 不變：路由 /tavern*、元件/檔名/CSS class、localStorage key、CHAPTER_TITLES 常數、鹽田/小吃攤老闆等無關角色。
 - 驗證：tsc 0 error、全量 178 檔 1051 tests 綠；線上 Playwright 17/17（靜態圖標 200、manifest、首頁/Tavern 改名、彈層、無 pageerror）；bundle hash index-I8Yedzoa.js。
+
+## 2026-09-18 C 分類歸位變體上線（999870f、a135d16）
+- 分類題庫 data/sort_bank.json：量詞搭配（國語）、單位家族（數學）、縣市與直轄市（社會，2 籃）、動物住哪裡（自然）、單字分類（英語），共 5 組；SortSet 含 categories（每籃 items 多對一）。
+- SortGame 元件：上方散落項目卡（點選高亮）→ 下方分類籃（點籃歸位）；成功「歸位成功！」＋ok 音、失敗抖動＋「這個放錯籃子了，再想想看！」＋no 音；30 秒倒數（is-urgent）；完成結算 sortStars（0 失誤 3 星／≤2 2 星／其餘 1 星）結果卡沿用 mg-* 樣式；成績存 xue-matching-best-v1（與配對同構）。
+- 入口整合：/matching 第五顆玩法 chip「分類歸位」、選關清單新增「分類歸位」組、「查看全部 38 關」（33 配對＋5 分類）。
+- 驗證：sortBank +3、SortGame +3（正確歸位 3 星／錯籃 1 失誤 2 星／時間到 1 星）；受影響 6 檔 31 tests 綠、tsc 0 error、全量回歸綠；build index-DEDEdXIc.js。
+- 修 UX bug：390×844 下分類籃底部被固定底部導覽遮擋點不到 → .matching-page padding-bottom 32→108px、項目區 3 欄改 4 欄（12 項 4 行→3 行）更緊湊。
+- 線上 Playwright 9/9：五 chip、盤面 12 項/4 籃、倒數、歸位成功回饋（sorted≥1）、籃內顯示放入項目、錯籃錯誤提示、38 關選單、選關後 2 籃盤、無 pageerror。
