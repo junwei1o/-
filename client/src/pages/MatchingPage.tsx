@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useLocation } from "wouter";
 import MatchingGame from "@/components/MatchingGame";
 import MatchingRush from "@/components/MatchingRush";
+import SortGame from "@/components/SortGame";
 import {
   IMAGE_MATCHING_SETS,
   MATCHING_SETS,
@@ -10,6 +11,7 @@ import {
   type MatchingRushMode,
   type MatchingRushResult,
 } from "@/lib/matchingBank";
+import { SORT_SETS } from "@/lib/sortBank";
 import "./MatchingPage.css";
 
 const BEST_KEY = "xue-matching-best-v1";
@@ -53,9 +55,10 @@ function saveRushBest(best: RushBestMap) {
 export default function MatchingPage() {
   const [, setLocation] = useLocation();
   const [index, setIndex] = useState(0);
+  const [sortIndex, setSortIndex] = useState(0);
   const [nonce, setNonce] = useState(0);
   const [view, setView] = useState<"play" | "menu">("play");
-  const [mode, setMode] = useState<"board" | "image" | MatchingRushMode>("board");
+  const [mode, setMode] = useState<"board" | "image" | "sort" | MatchingRushMode>("board");
   const [muted, setMuted] = useState(false);
   const [best, setBest] = useState<BestMap>({});
   const [rushBest, setRushBest] = useState<RushBestMap>({});
@@ -66,6 +69,7 @@ export default function MatchingPage() {
   }, []);
 
   const currentSet = MATCHING_SETS[index];
+  const currentSortSet = SORT_SETS[sortIndex];
 
   const grouped = useMemo(
     () => MATCHING_SUBJECTS.map((subject) => ({ subject, sets: MATCHING_SETS.filter((s) => s.subject === subject) })),
@@ -109,6 +113,15 @@ export default function MatchingPage() {
     window.scrollTo({ top: 0 });
   }
 
+  /** 分類歸位模式：只在分類題庫內循環。 */
+  function playSort(nextIndex: number) {
+    setSortIndex(((nextIndex % SORT_SETS.length) + SORT_SETS.length) % SORT_SETS.length);
+    setMode("sort");
+    setNonce((n) => n + 1);
+    setView("play");
+    window.scrollTo({ top: 0 });
+  }
+
   /** 圖片配對模式只在圖片組內循環；其餘模式維持全題庫循環。 */
   function wrapIndex(nextIndex: number): number {
     if (mode !== "image") {
@@ -120,7 +133,7 @@ export default function MatchingPage() {
     return ids[(pos + 1) % ids.length]; // 下一關：圖片組內循環
   }
 
-  if (!currentSet) return null;
+  if (!currentSet && !currentSortSet) return null;
 
   return (
     <main className="matching-page">
@@ -143,6 +156,7 @@ export default function MatchingPage() {
           {([
             ["board", "連連看"],
             ["image", "圖片配對"],
+            ["sort", "分類歸位"],
             ["speed", "單對速配"],
             ["rush", "30 秒搶分"],
           ] as const).map(([value, label]) => (
@@ -167,7 +181,24 @@ export default function MatchingPage() {
       <div className="mp-body">
         {view === "play" ? (
           <>
-            {mode === "board" || mode === "image" ? (
+            {mode === "sort" ? (
+              <SortGame
+                key={`${currentSortSet.id}-${nonce}`}
+                set={currentSortSet}
+                muted={muted}
+                onComplete={handleComplete}
+                resultActions={
+                  <>
+                    <button type="button" className="mg-btn mg-btn-ghost" onClick={() => playSort(sortIndex)}>
+                      重玩
+                    </button>
+                    <button type="button" className="mg-btn mg-btn-primary" onClick={() => playSort(sortIndex + 1)}>
+                      {sortIndex < SORT_SETS.length - 1 ? "下一關 →" : "回到第 1 關 ↻"}
+                    </button>
+                  </>
+                }
+              />
+            ) : mode === "board" || mode === "image" ? (
               <MatchingGame
                 key={`${currentSet.id}-${nonce}`}
                 set={currentSet}
@@ -206,7 +237,7 @@ export default function MatchingPage() {
             )}
             <div className="mp-footer">
               <button type="button" className="mp-link-btn" onClick={() => setView("menu")}>
-                查看全部 {MATCHING_SETS.length} 關
+                查看全部 {MATCHING_SETS.length + SORT_SETS.length} 關
               </button>
               <button type="button" className="mp-link-btn" onClick={() => setLocation("/practice")}>
                 回一般試卷
@@ -244,6 +275,30 @@ export default function MatchingPage() {
                 </div>
               </div>
             ))}
+            <div className="mp-subject-group">
+              <h3>分類歸位</h3>
+              <div className="mp-level-grid">
+                {SORT_SETS.map((set) => {
+                  const record = best[set.id];
+                  return (
+                    <button
+                      type="button"
+                      key={set.id}
+                      className={`mp-level-card ${mode === "sort" && set.id === currentSortSet.id ? "is-active" : ""}`}
+                      onClick={() => playSort(SORT_SETS.indexOf(set))}
+                    >
+                      <span className="mp-level-subj">
+                        {set.grade} · {set.difficulty}
+                      </span>
+                      <span className="mp-level-title">{set.title}</span>
+                      <span className="mp-level-stars">
+                        {record ? [1, 2, 3].map((n) => (n <= record.stars ? "★" : "☆")).join("") : "☆☆☆"}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
           </section>
         )}
       </div>

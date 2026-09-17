@@ -1,0 +1,73 @@
+{
+  "version": 1,
+  "note": "C 分類歸位：下方分類籃、上方待分類項目，多對一。categories 每籃 3-4 項，全部項目打散成散落卡。",
+  "sets": [
+    {
+      "id": "sort-liangci",
+      "subject": "國語",
+      "grade": "3-4年級",
+      "difficulty": "基礎",
+      "title": "量詞搭配",
+      "instruction": "把詞語放進正確的量詞籃",
+      "categories": [
+        { "name": "一匹", "items": ["馬", "狼", "斑馬"] },
+        { "name": "一頭", "items": ["牛", "大象", "獅子"] },
+        { "name": "一朵", "items": ["花", "雲", "香菇"] },
+        { "name": "一雙", "items": ["鞋", "筷子", "手套"] }
+      ]
+    },
+    {
+      "id": "sort-units",
+      "subject": "數學",
+      "grade": "3-4年級",
+      "difficulty": "標準",
+      "title": "單位家族",
+      "instruction": "把單位放進正確的家族籃",
+      "categories": [
+        { "name": "長度", "items": ["公分", "公尺", "公里"] },
+        { "name": "重量", "items": ["公克", "公斤", "公噸"] },
+        { "name": "時間", "items": ["秒", "分鐘", "小時"] },
+        { "name": "容量", "items": ["毫升", "公升", "毫公升"] }
+      ]
+    },
+    {
+      "id": "sort-counties",
+      "subject": "社會",
+      "grade": "3-4年級",
+      "difficulty": "標準",
+      "title": "縣市與直轄市",
+      "instruction": "把縣市名稱放進正確的籃子",
+      "categories": [
+        { "name": "直轄市", "items": ["台北市", "新北市", "桃園市", "台中市"] },
+        { "name": "縣", "items": ["宜蘭縣", "花蓮縣", "嘉義縣", "屏東縣"] }
+      ]
+    },
+    {
+      "id": "sort-animal-homes",
+      "subject": "自然",
+      "grade": "3-4年級",
+      "difficulty": "標準",
+      "title": "動物住哪裡",
+      "instruction": "想一想動物住在哪裡，放進正確的籃子",
+      "categories": [
+        { "name": "陸地", "items": ["台灣黑熊", "石虎", "梅花鹿", "穿山甲"] },
+        { "name": "水裡", "items": ["綠蠵龜", "鯨魚", "櫻花鉤吻鮭"] },
+        { "name": "天空", "items": ["台灣藍鵲", "老鷹", "燕子"] }
+      ]
+    },
+    {
+      "id": "sort-english",
+      "subject": "英語",
+      "grade": "3-4年級",
+      "difficulty": "基礎",
+      "title": "單字分類",
+      "instruction": "把英文單字放進正確的分類籃",
+      "categories": [
+        { "name": "水果", "items": ["apple", "banana", "mango"] },
+        { "name": "動物", "items": ["cat", "dog", "bird"] },
+        { "name": "顏色", "items": ["red", "blue", "yellow"] },
+        { "name": "食物", "items": ["rice", "bread", "milk"] }
+      ]
+    }
+  ]
+}

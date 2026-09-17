@@ -1,0 +1,71 @@
+/* C 分類歸位：散落項目卡＋分類籃，視覺沿用配對連連看的米黃/海藍/暖橙手繪風 */
+.sort-game{max-width:640px;margin:0 auto;padding:2px 0 8px}
+.sort-game .sg-meta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;font-size:12.5px;color:var(--mg-ink2,#6b5d49);font-weight:700;margin-bottom:10px}
+.sort-game .sg-tag{background:var(--mg-card,#fffdf6);border:1px solid var(--mg-line,#e2d4b6);border-radius:10px;padding:4px 10px}
+.sort-game .sg-stats{display:flex;gap:8px;flex-wrap:wrap}
+.sort-game .sg-stats span{background:var(--mg-card,#fffdf6);border:1px solid var(--mg-line,#e2d4b6);border-radius:10px;padding:4px 10px}
+.sort-game .sg-countdown{color:var(--mg-sea-d,#1f5e6e)}
+.sort-game .sg-countdown.is-urgent{color:var(--mg-red,#d0503a);background:var(--mg-red-bg,#fbe1da);animation:sg-pulse .9s infinite}
+@keyframes sg-pulse{50%{opacity:.55}}
+
+.sort-game .sg-title{font-size:21px;margin:0 0 4px;color:var(--mg-ink,#3a2f23)}
+.sort-game .sg-instruction{font-size:14px;margin:0 0 10px;color:var(--mg-ink2,#6b5d49)}
+.sort-game .sg-progress{height:8px;border-radius:99px;background:#e8ddc4;overflow:hidden;margin-bottom:14px}
+.sort-game .sg-progress i{display:block;height:100%;background:var(--mg-sea,#2f7d8f);border-radius:99px;transition:width .3s ease}
+
+/* 散落項目卡 */
+.sort-game .sg-items{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.sort-game .sg-item{min-height:52px;border:2px solid var(--mg-line,#e2d4b6);border-radius:14px;background:var(--mg-card,#fffdf6);
+  font-size:15px;font-weight:700;color:var(--mg-ink,#3a2f23);cursor:pointer;font-family:inherit;
+  display:flex;align-items:center;justify-content:center;gap:6px;padding:8px 6px;text-align:center;line-height:1.25;
+  box-shadow:0 2px 0 rgba(58,47,35,.10);transition:transform .08s,border-color .15s,background .15s}
+.sort-game .sg-item:active{transform:scale(.96)}
+.sort-game .sg-item .sg-badge{flex:none;width:20px;height:20px;border-radius:7px;background:#eef3f2;color:var(--mg-sea-d,#1f5e6e);
+  font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center}
+.sort-game .sg-item.sg-selected{border-color:var(--mg-sea,#2f7d8f);background:#e7f3f5;box-shadow:0 0 0 3px rgba(47,125,143,.22);transform:translateY(-1px)}
+.sort-game .sg-item.sg-sorted{opacity:.45;border-style:dashed;color:var(--mg-green,#4a8f3c);background:var(--mg-green-bg,#e9f3df)}
+.sort-game .sg-item.sg-sorted .sg-badge{background:var(--mg-green,#4a8f3c);color:#fff}
+.sort-game .sg-item.sg-shake{animation:sg-shake .42s}
+@keyframes sg-shake{0%,100%{transform:translateX(0)}18%{transform:translateX(-7px)}
+  38%{transform:translateX(7px)}58%{transform:translateX(-5px)}78%{transform:translateX(5px)}}
+
+/* 分類籃 */
+.sort-game .sg-baskets{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.sort-game .sg-basket{min-height:86px;border:2px solid var(--mg-line,#e2d4b6);border-radius:16px;background:var(--mg-card,#fffdf6);
+  padding:10px;cursor:pointer;font-family:inherit;text-align:left;position:relative;
+  border-top:6px solid var(--mg-sea,#2f7d8f);transition:transform .08s,border-color .15s,box-shadow .15s}
+.sort-game .sg-basket:nth-child(2){border-top-color:var(--mg-orange,#e08a3c)}
+.sort-game .sg-basket:nth-child(3){border-top-color:var(--mg-gold,#c9a227)}
+.sort-game .sg-basket:nth-child(4){border-top-color:var(--mg-green,#4a8f3c)}
+.sort-game .sg-basket.sg-armed{border-color:var(--mg-sea,#2f7d8f);box-shadow:0 0 0 3px rgba(47,125,143,.18)}
+.sort-game .sg-basket:active{transform:scale(.98)}
+.sort-game .sg-basket-name{font-size:16px;font-weight:800;color:var(--mg-ink,#3a2f23);display:block;margin-bottom:6px}
+.sort-game .sg-basket-items{display:flex;flex-wrap:wrap;gap:5px;min-height:24px}
+.sort-game .sg-basket-items b{background:#eef3f2;border:1px solid #d8e2df;border-radius:9px;padding:3px 8px;
+  font-size:13px;font-weight:700;color:var(--mg-ink,#3a2f23);animation:sg-plop .22s cubic-bezier(.2,1.4,.4,1)}
+@keyframes sg-plop{from{transform:scale(.5);opacity:0}to{transform:scale(1);opacity:1}}
+.sort-game .sg-basket-empty{color:#d9cfb6;font-style:normal;font-size:18px;font-weight:800}
+
+/* 提示與結果卡（沿用配對連連看 mg-* 語彙與變數） */
+.sort-game .sg-hint{min-height:24px;font-size:14px;text-align:center;color:var(--mg-ink2,#6b5d49);
+  margin:14px 0 0;font-weight:700;padding:6px 10px;border-radius:10px;transition:background .2s}
+.sort-game .sg-hint.ok{color:var(--mg-green,#4a8f3c);background:var(--mg-green-bg,#e9f3df)}
+.sort-game .sg-hint.err{color:var(--mg-red,#d0503a);background:var(--mg-red-bg,#fbe1da)}
+
+.sort-game .mg-result-card{position:relative;margin-top:16px;background:#fff;overflow:hidden;
+  border:2px solid var(--mg-line,#e2d4b6);border-radius:18px;padding:22px 18px;text-align:center;
+  box-shadow:0 8px 26px rgba(58,47,35,.14);animation:sg-cardin .35s ease}
+@keyframes sg-cardin{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.sort-game .mg-result-card h3{font-size:21px;margin:0 0 6px}
+.sort-game .mg-stars{font-size:36px;letter-spacing:6px;line-height:1;margin:8px 0;color:var(--mg-gold,#c9a227)}
+.sort-game .mg-stars span{display:inline-block;animation:sg-starpop .5s ease backwards}
+.sort-game .mg-stars .off{color:#d9cfb6}
+@keyframes sg-starpop{0%{transform:scale(0) rotate(-40deg);opacity:0}
+  70%{transform:scale(1.35)}100%{transform:scale(1) rotate(0);opacity:1}}
+.sort-game .mg-result-line{font-size:15px;color:var(--mg-ink2,#6b5d49);margin:4px 0}
+.sort-game .mg-result-line b{color:var(--mg-ink,#3a2f23);font-size:18px}
+.sort-game .mg-result-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+.sort-game .mg-btn{min-height:48px;border:none;border-radius:14px;padding:0 20px;font-size:15px;font-weight:700;
+  cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:7px}
+.sort-game .mg-btn-ghost{background:var(--mg-card,#fffdf6);color:var(--mg-ink,#3a2f23);border:2px solid var(--mg-line,#e2d4b6)}
+.sort-game .mg-btn-primary{background:var(--mg-sea,#2f7d8f);color:#fff}
