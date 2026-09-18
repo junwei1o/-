@@ -33,7 +33,8 @@ const TICK_MS = 200;
 /**
  * 倍數防衛戰：隕石帶著數字落下，快速點擊「目標倍數」攔截（+10 分、回 1 能量），
  * 誤觸非倍數 −1 能量、漏接目標隕石 −2 能量；基地能量耗盡就結束。
- * 三波：2 的倍數 → 5 的倍數 → 同時是 2 和 5 的倍數（10 的倍數），波次結束揭曉個位數特徵。
+ * 三波隨機組合：首波考 2 或 5 的倍數（個位數特徵暖身），其餘從 3、9、同時是 2 和 5 的倍數抽出，波波不重複；
+ * 波次結束揭曉該波特徵的教學註記。
  */
 export default function MeteorGame({ muted = false, onExit, onBest, bestStars, bestScore }: Props) {
   const [waves, setWaves] = useState<MeteorWave[]>(() => buildMeteorWaves(3));
@@ -231,7 +232,7 @@ export default function MeteorGame({ muted = false, onExit, onBest, bestStars, b
             <span className="cr-rule-chip">能源歸零就結束</span>
           </div>
           <p className="md-start-tip">
-            小技巧：2 的倍數個位是 0、2、4、6、8；5 的倍數個位是 0 或 5——用個位數特徵攔截最快！
+            小技巧：2 的倍數看個位 0/2/4/6/8；5 的倍數看個位 0/5；3 和 9 的倍數要把每個數字加起來看總和——每輪的三波都是隨機組合，隨時保持警覺！
           </p>
           <button type="button" className="cr-btn" onClick={begin}>開始防衛</button>
         </div>
@@ -260,7 +261,7 @@ export default function MeteorGame({ muted = false, onExit, onBest, bestStars, b
               </p>
             </>
           )}
-          <p className="cr-result-metric">2 的倍數看個位 0/2/4/6/8，5 的倍數看個位 0/5，同時是 2 和 5 的倍數個位必是 0</p>
+          <p className="cr-result-metric">2 看個位（0/2/4/6/8）、5 看個位（0/5）、3 和 9 看數字和、同時是 2 和 5 的倍數個位必是 0</p>
           {newBest && <span className="cr-result-newbest">寫下新紀錄！</span>}
           <div className="cr-actions">
             <button type="button" className="cr-btn-ghost" onClick={onExit}>回我的教室</button>

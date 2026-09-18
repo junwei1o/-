@@ -225,11 +225,17 @@ describe("教室最佳紀錄（local-first）", () => {
 });
 
 describe("倍數防衛戰題庫", () => {
-  it("三波分別考 2、5、10 的倍數，每波 7 目標＋9 干擾、時間遞增", () => {
+  it("三波隨機組合：首波考 2 或 5，波波不重複，每波 7 目標＋9 干擾", () => {
     const waves = buildMeteorWaves(3, seeded());
     expect(waves).toHaveLength(3);
-    expect(waves.map((w) => w.multipleOf)).toEqual([2, 5, 10]);
+    const multiples = waves.map((w) => w.multipleOf);
+    expect(new Set(multiples).size).toBe(3); // 波波不重複
+    expect([2, 5].includes(multiples[0])).toBe(true); // 首波個位數特徵暖身
+    for (const multiple of multiples.slice(1)) {
+      expect([3, 9, 10].includes(multiple)).toBe(true);
+    }
     for (const wave of waves) {
+      expect(wave.hint.length).toBeGreaterThan(0);
       expect(wave.meteors).toHaveLength(16);
       const targets = wave.meteors.filter((m) => m.isTarget);
       expect(targets).toHaveLength(7);
@@ -249,13 +255,35 @@ describe("倍數防衛戰題庫", () => {
     }
   });
 
-  it("第三波干擾全是「2 或 5 的倍數」陷阱（但不是 10 的倍數）", () => {
+  it("多輪隨機會出現不同組合（重玩性）", () => {
+    const combos = new Set<string>();
+    for (let i = 0; i < 12; i += 1) {
+      const waves = buildMeteorWaves(3, seeded(0.1 + i * 0.07));
+      combos.add(waves.map((w) => w.multipleOf).join("-"));
+    }
+    expect(combos.size).toBeGreaterThan(1);
+  });
+
+  it("「同時是 2 和 5 的倍數」波：干擾全是 2 或 5 的倍數陷阱（但不是 10 的倍數）", () => {
     const waves = buildMeteorWaves(3, seeded());
-    const decoys = waves[2].meteors.filter((m) => !m.isTarget);
-    expect(decoys.length).toBeGreaterThan(0);
+    const shared = waves.find((w) => w.multipleOf === 10);
+    if (!shared) return; // 該輪沒抽到就跳過
+    const decoys = shared.meteors.filter((m) => !m.isTarget);
+    expect(decoys.length).toBe(9);
     for (const meteor of decoys) {
       expect(meteor.value % 2 === 0 || meteor.value % 5 === 0).toBe(true);
       expect(meteor.value % 10).not.toBe(0);
+    }
+  });
+
+  it("3／9 的倍數波：目標隕石符合數字和特徵", () => {
+    const waves = buildMeteorWaves(3, seeded());
+    for (const wave of waves) {
+      if (wave.multipleOf !== 3 && wave.multipleOf !== 9) continue;
+      const digitSum = (n: number) => String(n).split("").reduce((sum, d) => sum + Number(d), 0);
+      for (const meteor of wave.meteors) {
+        expect(meteor.isTarget).toBe(digitSum(meteor.value) % wave.multipleOf === 0);
+      }
     }
   });
 

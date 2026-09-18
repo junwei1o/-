@@ -417,6 +417,16 @@ const METEOR_WAVE_CONFIG: Array<{ multipleOf: number; label: string; hint: strin
     hint: "5 的倍數個位一定是 0 或 5；個位是其他數字的隕石，讓它掉下去也沒關係。",
   },
   {
+    multipleOf: 3,
+    label: "3 的倍數",
+    hint: "3 的倍數：把每個數字加起來，總和是 3 的倍數（例如 42 → 4+2=6，是 3 的倍數）。",
+  },
+  {
+    multipleOf: 9,
+    label: "9 的倍數",
+    hint: "9 的倍數：把每個數字加起來，總和是 9 的倍數（例如 63 → 6+3=9，是 9 的倍數）。",
+  },
+  {
     multipleOf: 10,
     label: "同時是 2 和 5 的倍數",
     hint: "同時是 2 和 5 的倍數就是 10 的倍數，個位一定是 0；只有 2 的倍數或只有 5 的倍數都不能攔截喔！",
@@ -447,8 +457,8 @@ function buildMeteorPool(multipleOf: number): { targets: number[]; decoys: numbe
   return { targets, decoys };
 }
 
-function makeMeteorWave(index: number, random: () => number): MeteorWave {
-  const cfg = METEOR_WAVE_CONFIG[index % METEOR_WAVE_CONFIG.length];
+function makeMeteorWave(cfgIndex: number, index: number, random: () => number): MeteorWave {
+  const cfg = METEOR_WAVE_CONFIG[cfgIndex % METEOR_WAVE_CONFIG.length];
   const { targets, decoys } = buildMeteorPool(cfg.multipleOf);
   const picked = shuffleArray(
     [
@@ -468,9 +478,13 @@ function makeMeteorWave(index: number, random: () => number): MeteorWave {
   return { id: `meteor-wave-${index + 1}`, multipleOf: cfg.multipleOf, label: cfg.label, hint: cfg.hint, meteors };
 }
 
-/** 倍數防衛戰波次：3 波（2 的倍數→5 的倍數→同時是 2 和 5 的倍數），每波 16 顆隕石含干擾。 */
+/** 倍數防衛戰波次：每輪隨機組合 3 波——首波考 2 或 5 的倍數（個位數特徵暖身），其餘從 3/9/10 抽，波波不重複。 */
 export function buildMeteorWaves(count = 3, random: () => number = Math.random): MeteorWave[] {
-  return Array.from({ length: count }, (_, i) => makeMeteorWave(i, random));
+  const firstPool = [0, 1]; // 2 的倍數、5 的倍數
+  const restPool = [2, 3, 4]; // 3、9、同時是 2 和 5
+  const pick = (pool: number[]) => pool.splice(Math.floor(random() * pool.length), 1)[0];
+  const indexes = [pick(firstPool), pick(restPool), pick(restPool)];
+  return indexes.slice(0, count).map((cfgIndex, i) => makeMeteorWave(cfgIndex, i, random));
 }
 
 /** 倍數防衛戰星等：零失誤 3 星、總失誤 ≤4 二星，其餘 1 星。 */

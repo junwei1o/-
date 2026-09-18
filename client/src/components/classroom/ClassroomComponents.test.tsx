@@ -313,10 +313,10 @@ describe("MeteorGame 倍數防衛戰", () => {
     expect(energyNum()).toBe(15);
     expect(screen.queryByRole("button", { name: `隕石 ${target.value}` })).not.toBeInTheDocument();
 
-    // 誤觸干擾：−1 能量、出現提示
+    // 誤觸干擾：−1 能量、出現提示（波次倍數隨機，正則動態組）
     fireEvent.click(screen.getByRole("button", { name: `隕石 ${decoy.value}` }));
     expect(energyNum()).toBe(14);
-    expect(screen.getByText(/不是 2 的倍數/)).toBeInTheDocument();
+    expect(screen.getByText(new RegExp(`不是 ${waves[0].multipleOf} 的倍數`))).toBeInTheDocument();
     vi.useRealTimers();
     vi.restoreAllMocks();
   });

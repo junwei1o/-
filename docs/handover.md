@@ -350,3 +350,8 @@ curl -s https://xue-gr3a.onrender.com/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | h
 - 無障礙/手機：prefers-reduced-motion 關跑馬燈與脈動；520px 下領航員改 static 全寬、徽章縮小、幾何 scale .8、切換鈕縮小。
 - 測試：QuizRoom.test.tsx 加 4 例（預設極簡＋進度/彈幕/氣泡換句、切孟菲斯寫 localStorage、切經典出彩帶、重入沿用本機皮）共 7 例綠；tsc 0 error、vite build OK。
 - rebase 注記：本節與倍數防衛戰（29a8bed）并行開發，rebase 後合併第 8 張卡、進度條 playRecords 補 best.meteor、標題 8 種。
+## 2026-09-18 倍數防衛戰隨機波次變體（3／9 的倍數）
+- METEOR_WAVE_CONFIG 擴到 5 種：2、5、3、9、同時是 2 和 5（=10）；3/9 的 hint 教「各位數字和是 3/9 的倍數」（42→4+2=6、63→6+3=9）。
+- buildMeteorWaves 改隨機組合：首波固定抽 2 或 5（個位數特徵暖身），第 2、3 波從 3/9/10 抽，波波不重複；每輪順序都不同，重玩性提升。
+- 開始頁小技巧與結果頁口訣更新（2 看個位、5 看個位、3/9 看數字和、2 和 5 共同個位必 0）。
+- 測試：classroomBank.test.ts 改隨機組合斷言（首波∈{2,5}、不重複、多輪組合數>1、10 波陷阱干擾條件式、3/9 數字和不變量）+2；ClassroomComponents 誤觸提示改動態倍數正則。全量 1103 tests 綠、tsc 0 error、build OK。
