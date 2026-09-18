@@ -76,7 +76,7 @@
   width: 150px;
   height: 150px;
   border-radius: 50%;
-  background: repeating-linear-gradient(45deg, rgba(232, 132, 58, 0.12) 0 10px, transparent 10px 20px);
+  background: repeating-linear-gradient(45deg, rgba(232, 117, 74, 0.12) 0 10px, transparent 10px 20px);
   pointer-events: none;
 }
 .mc-hero-eyebrow {
@@ -246,7 +246,7 @@
   width: 38px;
   height: 38px;
   border-radius: 11px;
-  background: rgba(47, 125, 143, 0.12);
+  background: rgba(11, 110, 142, 0.12);
   color: var(--cr-sea);
   flex: 0 0 auto;
 }
@@ -487,7 +487,7 @@
   font-weight: 800;
   letter-spacing: 0.05em;
   color: var(--cr-sea-d);
-  background: rgba(47, 125, 143, 0.1);
+  background: rgba(11, 110, 142, 0.1);
   border-radius: 999px;
   padding: 3px 10px;
 }
@@ -589,7 +589,7 @@
 .cr-explain {
   margin-top: 8px;
   border-left: 3px solid var(--cr-sea);
-  background: rgba(47, 125, 143, 0.07);
+  background: rgba(11, 110, 142, 0.07);
   border-radius: 0 10px 10px 0;
   padding: 8px 12px;
   font-size: 13px;
@@ -698,7 +698,7 @@
   padding: 0 10px;
   border-radius: 8px;
   border-bottom: 3px solid var(--cr-sea);
-  background: rgba(47, 125, 143, 0.08);
+  background: rgba(11, 110, 142, 0.08);
   color: var(--cr-sea-d);
   font-weight: 900;
 }
@@ -772,7 +772,7 @@
   padding: 10px 14px;
   border: 2.5px dashed var(--cr-sea);
   border-radius: 13px;
-  background: rgba(47, 125, 143, 0.06);
+  background: rgba(11, 110, 142, 0.06);
   font-size: 15px;
   font-weight: 700;
 }
@@ -1005,7 +1005,7 @@
   background: transparent;
 }
 .mc-page[data-skin="concise"] .mc-skin-bg {
-  background: linear-gradient(180deg, #e9e7fa 0%, #f4f2fd 38%, #efeafb 72%, #f6f4fd 100%);
+  background: linear-gradient(180deg, #dceef2 0%, #eef7f8 38%, #e5f1f3 72%, #f2f9fa 100%);
 }
 .mc-page[data-skin="memphis"] .mc-skin-bg { background: #fbf4e2; }
 .mc-page > *:not(.mc-skin-bg):not(.mm-decor) { position: relative; z-index: 1; }
@@ -1061,15 +1061,15 @@
   border-color: #e1dbf6;
   box-shadow: 0 5px 14px rgba(109, 91, 208, 0.1);
 }
-.mc-page[data-skin="concise"] .mc-skin-label { color: #6d5bd0; }
-.mc-page[data-skin="concise"] .mc-skin-btn.is-active { background: #6d5bd0; color: #fff; }
+.mc-page[data-skin="concise"] .mc-skin-label { color: var(--tidal); }
+.mc-page[data-skin="concise"] .mc-skin-btn.is-active { background: var(--tidal); color: #fff; }
 
 .mc-page[data-skin="concise"] .mc-hero {
   border: none;
   border-radius: 26px;
   padding: 26px 24px 22px;
   color: #fff;
-  background: linear-gradient(135deg, #6454d6 0%, #806ee9 52%, #9a89f0 100%);
+  background: linear-gradient(135deg, #0B6E8E 0%, #1B7082 52%, #2f8fa5 100%);
   box-shadow: 0 16px 34px rgba(100, 84, 214, 0.3);
 }
 .mc-page[data-skin="concise"] .mc-hero::after { display: none; }
@@ -1106,7 +1106,7 @@
   display: grid;
   place-items: center;
   color: #fff;
-  background: radial-gradient(circle at 32% 28%, #a797f4, #6454d6);
+  background: radial-gradient(circle at 32% 28%, #3f9db5, #07516A);
   box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.18);
   cursor: pointer;
   animation: cs-pulse 2.8s ease-in-out infinite;
@@ -1182,22 +1182,22 @@
   gap: 8px;
   font-size: 13px;
   font-weight: 800;
-  color: #6d5bd0;
+  color: var(--tidal);
 }
-.cs-bullet::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #a78bfa; }
+.cs-bullet::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--tidal); }
 @keyframes cs-ticker {
   from { transform: translateX(0); }
   to { transform: translateX(-50%); }
 }
 
-.mc-page[data-skin="concise"] .mc-section-title { color: #5b4bc4; }
+.mc-page[data-skin="concise"] .mc-section-title { color: var(--tidal-deep); }
 .mc-page[data-skin="concise"] .mc-section-title::after {
   height: 1px;
-  background: linear-gradient(90deg, #d6cff7, transparent);
+  background: linear-gradient(90deg, rgba(11, 110, 142, 0.35), transparent);
 }
-.mc-page[data-skin="concise"] .mc-doodle { background: #6d5bd0; border-radius: 11px; }
+.mc-page[data-skin="concise"] .mc-doodle { background: var(--tidal); border-radius: 11px; }
 .mc-page[data-skin="concise"] .mc-play-card {
-  border: 1px solid #e8e3f8;
+  border: 1px solid rgba(11, 110, 142, 0.25);
   border-radius: 20px;
   background: #fff;
   box-shadow: 0 6px 18px rgba(109, 91, 208, 0.08);
@@ -1209,20 +1209,20 @@
 }
 .mc-page[data-skin="concise"] .mc-tilt-l,
 .mc-page[data-skin="concise"] .mc-tilt-r { transform: none; }
-.mc-page[data-skin="concise"] .mc-play-icon { border: none; box-shadow: 0 6px 14px rgba(60, 40, 120, 0.2); }
-.mc-page[data-skin="concise"] .mc-play-card p { color: #7e789b; }
-.mc-page[data-skin="concise"] .mc-play-go { color: #6d5bd0; }
-.mc-page[data-skin="concise"] .mc-play-best { background: #f1edfd; border-color: #e0d9f8; color: #6d5bd0; }
+.mc-page[data-skin="concise"] .mc-play-icon { border: none; box-shadow: 0 6px 14px rgba(7, 81, 106, 0.2); }
+.mc-page[data-skin="concise"] .mc-play-card p { color: var(--muted); }
+.mc-page[data-skin="concise"] .mc-play-go { color: var(--tidal); }
+.mc-page[data-skin="concise"] .mc-play-best { background: rgba(11, 110, 142, 0.1); border-color: rgba(11, 110, 142, 0.22); color: var(--tidal); }
 .mc-page[data-skin="concise"] .mc-mode-card {
-  border: 1px solid #e8e3f8;
+  border: 1px solid rgba(11, 110, 142, 0.25);
   border-radius: 17px;
   background: #fff;
   box-shadow: 0 3px 10px rgba(109, 91, 208, 0.05);
 }
 .mc-page[data-skin="concise"] .mc-mode-card:hover,
 .mc-page[data-skin="concise"] .mc-mode-card:focus-visible { border-color: #b9aaf3; }
-.mc-page[data-skin="concise"] .mc-mode-card .mc-mode-icon { background: #f1edfd; color: #6d5bd0; }
-.mc-page[data-skin="concise"] .mc-mode-card p { color: #7e789b; }
+.mc-page[data-skin="concise"] .mc-mode-card .mc-mode-icon { background: rgba(11, 110, 142, 0.1); color: var(--tidal); }
+.mc-page[data-skin="concise"] .mc-mode-card p { color: var(--muted); }
 
 /* ---------------- 孟菲斯皮 memphis ---------------- */
 .mc-page[data-skin="memphis"] .mc-skin-options {
@@ -1480,7 +1480,7 @@
 }
 .md-meteor.md-static.is-selected {
   border-color: var(--cr-orange-d);
-  box-shadow: 0 0 0 4px rgba(232, 132, 58, 0.35), 0 4px 0 rgba(58, 47, 35, 0.22);
+  box-shadow: 0 0 0 4px rgba(232, 117, 74, 0.35), 0 4px 0 rgba(58, 47, 35, 0.22);
 }
 @keyframes md-appear {
   from { opacity: 0; transform: scale(0.7); }
@@ -1495,7 +1495,7 @@
   justify-content: center;
   border: 3px dashed var(--cr-sea);
   border-radius: 16px;
-  background: rgba(47, 125, 143, 0.08);
+  background: rgba(11, 110, 142, 0.08);
   color: var(--cr-sea-d);
   font-weight: 900;
   font-size: 14px;
@@ -1505,7 +1505,7 @@
 }
 .md-slot.is-active {
   border-color: var(--cr-orange-d);
-  background: rgba(232, 132, 58, 0.14);
+  background: rgba(232, 117, 74, 0.14);
   color: var(--cr-orange-d);
 }
 
@@ -1557,13 +1557,13 @@
   border-style: dashed;
   border-color: var(--cr-sea-d);
   color: var(--cr-sea-d);
-  background: rgba(47, 125, 143, 0.08);
+  background: rgba(11, 110, 142, 0.08);
   animation: none;
 }
 .rg-foundchip.is-square {
   border-color: var(--cr-orange-d);
   color: var(--cr-orange-d);
-  background: rgba(232, 132, 58, 0.12);
+  background: rgba(232, 117, 74, 0.12);
   animation: rg-wobble 1.6s ease-in-out infinite;
 }
 @keyframes rg-pop-in {
@@ -1587,8 +1587,8 @@
   border: 2px solid rgba(74, 55, 40, 0.5);
   border-radius: 14px;
   background:
-    linear-gradient(rgba(62, 124, 177, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(62, 124, 177, 0.05) 1px, transparent 1px),
+    linear-gradient(rgba(11, 110, 142, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(11, 110, 142, 0.05) 1px, transparent 1px),
     linear-gradient(180deg, #fffdf6, #faf3e3);
   background-size: 100% 25%, 25% 100%, 100% 100%;
   box-shadow:
@@ -1625,25 +1625,25 @@
 .rg-cell.is-preview {
   border-style: solid;
   border-color: var(--cr-orange-d);
-  background: rgba(232, 132, 58, 0.4);
+  background: rgba(232, 117, 74, 0.4);
   box-shadow: inset 0 0 0 1px rgba(255, 253, 246, 0.7);
   animation: rg-preview-breathe 1.1s ease-in-out infinite;
 }
 @keyframes rg-preview-breathe {
-  0%, 100% { background: rgba(232, 132, 58, 0.32); }
-  50% { background: rgba(232, 132, 58, 0.5); }
+  0%, 100% { background: rgba(232, 117, 74, 0.32); }
+  50% { background: rgba(232, 117, 74, 0.5); }
 }
 
 /* 錨點：脈動提示等第二下 */
 .rg-cell.is-anchored {
   border-style: solid;
   border-color: var(--cr-orange-d);
-  background: rgba(232, 132, 58, 0.6);
+  background: rgba(232, 117, 74, 0.6);
   animation: rg-anchor-pulse 1s ease-in-out infinite;
 }
 @keyframes rg-anchor-pulse {
-  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(232, 132, 58, 0.45); }
-  50% { transform: scale(1.12); box-shadow: 0 0 0 5px rgba(232, 132, 58, 0); }
+  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(232, 117, 74, 0.45); }
+  50% { transform: scale(1.12); box-shadow: 0 0 0 5px rgba(232, 117, 74, 0); }
 }
 
 /* 已拼出的磚：六色積木＋立體斜面＋入場彈跳 */

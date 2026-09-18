@@ -691,7 +691,7 @@ export default function MeteorGame({ muted = false, onExit, onBest, bestStars, b
         )}
         {trail.length > 1 && fieldSize.w > 0 && (
           <svg className="md-trail" viewBox={`0 0 ${fieldSize.w} ${fieldSize.h}`} aria-hidden="true">
-            <polyline points={trailPoints} fill="none" stroke="rgba(232,132,58,0.9)" strokeWidth={6} strokeLinecap="round" strokeLinejoin="round" />
+            <polyline points={trailPoints} fill="none" stroke="rgba(232,117,74,0.9)" strokeWidth={6} strokeLinecap="round" strokeLinejoin="round" />
             <polyline points={trailPoints} fill="none" stroke="rgba(255,253,246,0.95)" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         )}

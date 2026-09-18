@@ -51,6 +51,9 @@
 
 @theme inline { --radius-sm: 8px; --radius-md: 12px; --radius-lg: 18px; --radius-xl: 24px; --color-background: var(--paper); --color-foreground: var(--ink); --color-card: var(--paper); --color-card-foreground: var(--ink); --color-primary: var(--tidal); --color-primary-foreground: #fff; --color-border: var(--line); --color-input: var(--line); --color-ring: var(--coral); }
 :root { --paper:#F9F3E8; --paper-deep:#EFE6D7; --ink:#1F3031; --muted:#5F6E6A; --tidal:#0B6E8E; --tidal-deep:#07516A; --coral:#E8754A; --moss:#6C8460; --yellow:#E8B84B; --line:#D9D1C2; --white:#FFFDF8; --ease:cubic-bezier(.23,1,.32,1); }
+/* 全站色板橋接：讓教室遊戲等子系統的 --cr-*（var(--sea)/var(--orange)…）繼承同一套品牌色。
+   單一事實來源＝上行 --tidal/--coral/--moss/--yellow；改色只動上行。 */
+:root { --card:#FFFDF8; --sea:#0B6E8E; --sea-d:#07516A; --orange:#E8754A; --orange-d:#C25B36; --green:#6C8460; --red:#C8553D; --gold:#E8B84B; }
 * { box-sizing:border-box; }
 .skip-link { position:fixed; top:-100px; left:12px; z-index:999; padding:10px 16px; border-radius:10px; background:var(--tidal-deep); color:#fff; font-weight:800; font-size:14px; text-decoration:none; transition:top .18s var(--ease); }
 .skip-link:focus { top:12px; outline:3px solid var(--env-focus,#F6CD6D); outline-offset:2px; }

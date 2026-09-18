@@ -28,7 +28,7 @@ import "@/components/classroom/classroom.css";
 type SkinId = "concise" | "memphis" | "classic";
 const SKIN_STORAGE_KEY = "xue-classroom-skin-v1";
 const SKINS: Array<{ id: SkinId; label: string; hint: string; dot: string }> = [
-  { id: "concise", label: "極簡紫", hint: "扁平漸層，安靜專注", dot: "#6d5bd0" },
+  { id: "concise", label: "極簡海", hint: "扁平漸層，安靜專注", dot: "#0B6E8E" },
   { id: "memphis", label: "孟菲斯", hint: "高飽和幾何，玩心最重", dot: "#ff5d8f" },
   { id: "classic", label: "經典海報", hint: "暖木彩帶，手作教室", dot: "#e8843a" },
 ];
@@ -64,7 +64,7 @@ function loadSkin(): SkinId {
  * 我的教室（原答題室）：
  * 上區是七種自由玩法（選擇題變體，成績留在自己裝置）；
  * 下區保留原本的八種答題模式（自由練習、潮汐戰鬥、週測等）。
- * 教室皮膚可切換：極簡紫／孟菲斯／經典海報，偏好存本機。
+ * 教室皮膚可切換：極簡海／孟菲斯／經典海報，偏好存本機。
  */
 export default function QuizRoom() {
   const [, setLocation] = useLocation();
@@ -91,7 +91,7 @@ export default function QuizRoom() {
       desc: "題目藏在卡片背面，翻開才開始 30 秒倒數，憑直覺作答。",
       href: "/classroom/flip",
       icon: Layers,
-      color: "#2f7d8f",
+      color: "#0B6E8E",
       tilt: "mc-tilt-l",
       best: starLabel(best.flip?.stars),
     },
@@ -101,7 +101,7 @@ export default function QuizRoom() {
       desc: "用圖片配對的 18 張實景照片，看一張圖選出正確名稱。",
       href: "/classroom/image",
       icon: ImageIcon,
-      color: "#5b8a4b",
+      color: "#6C8460",
       tilt: "mc-tilt-r",
       best: starLabel(best.image?.stars),
     },
@@ -111,7 +111,7 @@ export default function QuizRoom() {
       desc: "30 秒無限連判對錯，兩顆大鍵，訓練又快又準的手感。",
       href: "/classroom/bolt",
       icon: Zap,
-      color: "#d9a441",
+      color: "#E8B84B",
       tilt: "mc-tilt-l",
       best: scoreLabel(best.bolt?.score),
     },
@@ -121,7 +121,7 @@ export default function QuizRoom() {
       desc: "30 秒四選一連續接力，連對愈久加分愈多，挑戰最高分。",
       href: "/classroom/rush",
       icon: Timer,
-      color: "#e8843a",
+      color: "#E8754A",
       tilt: "mc-tilt-r",
       best: scoreLabel(best.rush?.score),
     },
@@ -161,7 +161,7 @@ export default function QuizRoom() {
       desc: "數學五上：滑動切割目標倍數隕石，一刀連斬有加成，小心炸彈！",
       href: "/classroom/meteor",
       icon: Shield,
-      color: "#3e7cb1",
+      color: "#1B7082",
       tilt: "mc-tilt-r",
       best: starLabel(best.meteor?.stars),
     },
@@ -171,7 +171,7 @@ export default function QuizRoom() {
       desc: "數學五上：把方格拖曳拼成長方形，長×寬就是因數對，完全平方數有正方形彩蛋。",
       href: "/classroom/rect",
       icon: LayoutGrid,
-      color: "#7a9e5f",
+      color: "#64866D",
       tilt: "mc-tilt-l",
       best: starLabel(best.rect?.stars),
     },
@@ -284,7 +284,7 @@ export default function QuizRoom() {
         )}
       </header>
 
-      {/* 極簡紫皮專屬：鼓勵彈幕跑馬燈 */}
+      {/* 極簡海皮專屬：鼓勵彈幕跑馬燈 */}
       {skin === "concise" && (
         <div className="cs-bullets" aria-hidden="true">
           <div className="cs-bullets-track">
