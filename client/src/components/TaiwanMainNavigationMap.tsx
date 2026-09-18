@@ -707,6 +707,52 @@ export function TaiwanMainNavigationMap({ islands, onOpenSubject, onStartIslandQ
               </ul>
             </section>
 
+            <section className={`taiwan-map-landmarks island-${activeIsland.id}`} aria-labelledby={`taiwan-landmarks-title-${activeIsland.id}`} data-testid={`taiwan-landmarks-${activeIsland.id}`}>
+              <p id={`taiwan-landmarks-title-${activeIsland.id}`}>真實地標</p>
+              <ul aria-label={`${activeIsland.shortTitle}地區的真實台灣地標`}>
+                {ISLAND_LANDMARKS[activeIsland.id].map((landmark) => (
+                  <li key={landmark.name}>
+                    <span className="taiwan-island-icon" aria-hidden="true">{landmark.symbol}</span>
+                    <span>
+                      <strong>{landmark.name}</strong>
+                      <small>{landmark.note}</small>
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+
+            <section className="taiwan-map-docks" aria-labelledby={`taiwan-docks-title-${activeIsland.id}`} data-testid={`taiwan-docks-${activeIsland.id}`}>
+              <p id={`taiwan-docks-title-${activeIsland.id}`}>關卡碼頭 · 教室融合玩法</p>
+              <ul aria-label={`${activeIsland.shortTitle}停靠的教室玩法`}>
+                {ISLAND_DOCKS[activeIsland.id].map((dock) => {
+                  const dockStars = classroomBest[dock.gameId]?.stars;
+                  const dockScore = classroomBest[dock.gameId]?.score;
+                  const bestText = dockStars ? `最佳 ${dockStars}★` : dockScore !== undefined ? `最佳 ${dockScore} 分` : "尚未挑戰";
+                  const dockBody = (
+                    <>
+                      <span aria-hidden="true">{dock.emoji}</span>
+                      <span>
+                        <strong>{dock.label}</strong>
+                        <small>{dock.hint} · {bestText}</small>
+                      </span>
+                    </>
+                  );
+                  return (
+                    <li key={dock.gameId}>
+                      {onOpenGame ? (
+                        <button type="button" onClick={() => onOpenGame(dock.gameId)} aria-label={`前往${dock.label}：${dock.hint}，${bestText}`}>
+                          {dockBody}
+                        </button>
+                      ) : (
+                        <span>{dockBody}</span>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+            </section>
+
             {activeIsland.observedKnowledge.length ? (
               <div className="taiwan-map-panel-observed" aria-label="已留下的知識線索">
                 <span>已留下的線索</span>
