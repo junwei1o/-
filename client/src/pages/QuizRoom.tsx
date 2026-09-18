@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useLocation } from "wouter";
 import {
   AlertTriangle,
@@ -10,8 +10,10 @@ import {
   Image as ImageIcon,
   Layers,
   Link2,
+  Palette,
   RotateCcw,
   Shield,
+  Sparkles,
   Swords,
   Telescope,
   Timer,
@@ -21,14 +23,62 @@ import { loadClassroomBest, type ClassroomBestMap } from "@/lib/classroomBank";
 import "./HubPages.css";
 import "@/components/classroom/classroom.css";
 
+/** 教室皮膚（local-first，只存這台裝置） */
+type SkinId = "concise" | "memphis" | "classic";
+const SKIN_STORAGE_KEY = "xue-classroom-skin-v1";
+const SKINS: Array<{ id: SkinId; label: string; hint: string; dot: string }> = [
+  { id: "concise", label: "極簡紫", hint: "扁平漸層，安靜專注", dot: "#6d5bd0" },
+  { id: "memphis", label: "孟菲斯", hint: "高飽和幾何，玩心最重", dot: "#ff5d8f" },
+  { id: "classic", label: "經典海報", hint: "暖木彩帶，手作教室", dot: "#e8843a" },
+];
+
+const CHEER_TICKER = [
+  "答錯不會扣分你的自信",
+  "每個玩法都會告訴你正確答案",
+  "30 秒，剛好專心一次",
+  "成績只留在你自己的裝置",
+  "玩到會，比考到會更重要",
+  "這間教室，你說了算",
+];
+
+const HELPER_TIPS = [
+  "今天想試試哪一種玩法？",
+  "先從會的開始，手感會帶你往前。",
+  "答錯的題，才是進步的關卡。",
+  "30 秒做一題，等於給大腦一個小任務。",
+  "休息也是學習的一部分喔。",
+];
+
+function loadSkin(): SkinId {
+  try {
+    const saved = localStorage.getItem(SKIN_STORAGE_KEY);
+    if (saved === "concise" || saved === "memphis" || saved === "classic") return saved;
+  } catch {
+    // 隱私模式或無 localStorage 時退回預設皮
+  }
+  return "concise";
+}
+
 /**
  * 我的教室（原答題室）：
- * 上區是六種自由玩法（選擇題變體，成績留在自己裝置）；
+ * 上區是七種自由玩法（選擇題變體，成績留在自己裝置）；
  * 下區保留原本的八種答題模式（自由練習、潮汐戰鬥、週測等）。
+ * 教室皮膚可切換：極簡紫／孟菲斯／經典海報，偏好存本機。
  */
 export default function QuizRoom() {
   const [, setLocation] = useLocation();
   const best: ClassroomBestMap = loadClassroomBest();
+  const [skin, setSkin] = useState<SkinId>(loadSkin);
+  const [tipIndex, setTipIndex] = useState(0);
+
+  const changeSkin = (next: SkinId) => {
+    setSkin(next);
+    try {
+      localStorage.setItem(SKIN_STORAGE_KEY, next);
+    } catch {
+      // 寫入失敗時仍可在本次造訪切換
+    }
+  };
 
   const starLabel = (stars?: number) => (stars ? `最佳 ${stars}★` : "尚無紀錄");
   const scoreLabel = (score?: number) => (score !== undefined ? `最佳 ${score} 分` : "尚無紀錄");
@@ -127,13 +177,77 @@ export default function QuizRoom() {
     { id: "expedition", label: "今日遠征", desc: "每日三線任務，答題收集線索、修復學習星圖。", href: "/expedition", icon: Compass },
   ];
 
+  // 探索進度：七種自由玩法中，已在本機留下星等/分數紀錄的數量
+  const playRecords = [best.flip, best.image, best.bolt, best.rush, best.relay, best.trap, best.factor, best.meteor];
+  const doneCount = playRecords.filter((record) => Boolean(record && ((record.stars ?? 0) > 0 || (record.score ?? 0) > 0))).length;
+  const progressPct = Math.round((doneCount / plays.length) * 100);
+  const helperTip = HELPER_TIPS[tipIndex];
+
   return (
-    <main className="mc-page" aria-labelledby="my-classroom-title">
-      <div className="mc-garland" aria-hidden="true">
-        {Array.from({ length: 18 }, (_, i) => <i key={i} />)}
+    <main className="mc-page" data-skin={skin} aria-labelledby="my-classroom-title">
+      <div className="mc-skin-bg" aria-hidden="true" />
+      {/* 孟菲斯皮專屬：散落的幾何裝飾 */}
+      {skin === "memphis" && (
+        <div className="mm-decor" aria-hidden="true">
+          <span className="mm-shape mm-dot" />
+          <span className="mm-shape mm-ring" />
+          <span className="mm-shape mm-tri" />
+          <span className="mm-shape mm-plus" />
+          <span className="mm-shape mm-zig" />
+          <span className="mm-shape mm-dot mm-dot-2" />
+          <span className="mm-shape mm-ring mm-ring-2" />
+          <span className="mm-shape mm-tri mm-tri-2" />
+        </div>
+      )}
+
+      {/* 經典海報皮專屬：天花板彩帶 */}
+      {skin === "classic" && (
+        <div className="mc-garland" aria-hidden="true">
+          {Array.from({ length: 18 }, (_, i) => <i key={i} />)}
+        </div>
+      )}
+
+      {/* 教室皮膚切換器 */}
+      <div className="mc-skin-switch" role="group" aria-label="教室佈置切換">
+        <span className="mc-skin-label"><Palette size={15} /> 教室佈置</span>
+        <span className="mc-skin-options">
+          {SKINS.map((option) => (
+            <button
+              key={option.id}
+              type="button"
+              className={`mc-skin-btn${skin === option.id ? " is-active" : ""}`}
+              aria-pressed={skin === option.id}
+              title={option.hint}
+              onClick={() => changeSkin(option.id)}
+            >
+              <span className="mc-skin-dot" style={{ background: option.dot }} aria-hidden="true" />
+              {option.label}
+            </button>
+          ))}
+        </span>
       </div>
 
       <header className="mc-hero">
+        {skin === "memphis" && <span className="mm-hero-tag" aria-hidden="true">FREE PLAY</span>}
+        {skin === "concise" && (
+          <div className="cs-helper">
+            <button
+              type="button"
+              className="cs-helper-avatar"
+              aria-label="換一句領航員悄悄話"
+              onClick={() => setTipIndex((index) => (index + 1) % HELPER_TIPS.length)}
+            >
+              <Compass size={26} />
+            </button>
+            <button
+              type="button"
+              className="cs-helper-bubble"
+              onClick={() => setTipIndex((index) => (index + 1) % HELPER_TIPS.length)}
+            >
+              {helperTip}
+            </button>
+          </div>
+        )}
         <p className="mc-hero-eyebrow">MY CLASSROOM · 自由玩法大本營</p>
         <h1 id="my-classroom-title">我的<u>教室</u>，隨你玩</h1>
         <p className="mc-sub">
@@ -146,7 +260,29 @@ export default function QuizRoom() {
           <span className="mc-sticker">💾 紀錄<b>只存這台裝置</b></span>
           <span className="mc-sticker">🔁 玩幾次都可以</span>
         </div>
+        {skin === "concise" && (
+          <div className="cs-progress" aria-label={`探索進度 ${doneCount} / ${plays.length}`}>
+            <div className="cs-progress-head">
+              <span><Sparkles size={14} /> 你的探索進度</span>
+              <span>{doneCount} / {plays.length} 種玩法留下紀錄</span>
+            </div>
+            <div className="cs-progress-track">
+              <div className="cs-progress-bar" style={{ width: `${progressPct}%` }} />
+            </div>
+          </div>
+        )}
       </header>
+
+      {/* 極簡紫皮專屬：鼓勵彈幕跑馬燈 */}
+      {skin === "concise" && (
+        <div className="cs-bullets" aria-hidden="true">
+          <div className="cs-bullets-track">
+            {[...CHEER_TICKER, ...CHEER_TICKER].map((text, i) => (
+              <span className="cs-bullet" key={i}>{text}</span>
+            ))}
+          </div>
+        </div>
+      )}
 
       <h2 className="mc-section-title">
         <span className="mc-doodle" aria-hidden="true"><Layers size={18} /></span>

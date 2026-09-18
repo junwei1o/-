@@ -340,10 +340,13 @@ curl -s https://xue-gr3a.onrender.com/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | h
 - 測試：classroomBank.test.ts +5（listFactors/factorPairs 攤平等於因數/五關不變量/第4平方第5質數/factorStars）、ClassroomComponents.test.tsx +4（開始頁 disabled、五關全對 3 星 onBest、誤選漏選雙回饋、timeout 自動揭曉）、QuizRoom.test.tsx 改 7 張卡；受影響 3 檔 33 tests 綠、tsc 0 error、vite build OK。
 - 踩坑：tsconfig target 不支援 Set 展開（TS2802），用 Array.from(set)；getByRole 無 exact 選項（那是 getByText 的）。
 
-## 2026-09-18 我的教室第八種玩法「倍數防衛戰」上線
-- 數學五上「倍數與因數」隕石攔截玩法（gameId=meteor，路由 /classroom/meteor），hub 第 8 張卡（Shield icon、#3e7cb1 海藍、mc-tilt-r），標題改「自由玩法（8 種新玩法）」。參考新北市五上數學 2-1「倍數防禦基地」玩法改造為點擊版（免拖曳、觸控友善）。
-- 邏輯層 classroomBank.ts：buildMeteorWaves(count=3) 三波固定考 2 的倍數→5 的倍數→同時是 2 和 5 的倍數（=10 的倍數）；每波 16 顆隕石（7 目標＋9 干擾，值域 10–99，delay 間隔 2.2s、落地 3.8–5.2s、落點 12–88%）；第三波干擾全是「僅 2 的倍數或僅 5 的倍數」陷阱；METEOR_WAVE_TIME=42s；meteorStars（0 失誤 3 星／≤4 二星／其餘 1 星）。
-- MeteorGame.tsx：start/play/waveEnd/result 四階段；200ms 主迴圈推進（腳本出隕石、進度定位 top 6→84%、漏接判定）；攔截 +10 分＋回 1 能源（上限 15）、誤觸 −1、漏接目標 −2，能源歸零提前結束（lost 結果頁 1 星）；波次結束揭曉「個位數特徵」教學註記（2：個位 0/2/4/6/8；5：個位 0/5；同時是 2 和 5：個位必 0）；md-flash 雙回饋浮條＋ok/no/win 音效；結果頁星等/攔截數/分數/新紀錄，最佳紀錄存 xue-classroom-best-v1（meteor: {stars,score,correct,total}）。
-- 樣式 classroom.css：md-* 全套（md-field 天空漸層沙地、md-meteor 立體圓石 top transition、md-energybar 能源條低量轉紅、md-base 基地條、md-pop keyframes、520px 手機微調、prefers-reduced-motion）。
-- 測試：classroomBank.test.ts +3（三波結構/第三波陷阱干擾/meteorStars）、ClassroomComponents.test.tsx +4（攔截加分回能＋誤觸扣能/漏接扣 2 能/三波全攔截 3 星 onBest 21/21/能源歸零提前結束）、QuizRoom.test.tsx 改 8 張卡；全量 182 檔 1101 tests 綠、tsc 0 error、vite build OK。
 - 踩坑：測試選隕石要限定「已出場」的前兩顆（腳本 delay 未到的不在 DOM）；能源歸零測試改成 500ms 步進＋點掉全部干擾＋目標全漏接（−9−14 > 15）才穩定觸發。
+
+## 2026-09-18 我的教室皮膚切換器（極簡紫／孟菲斯／經典海報）
+- QuizRoom.tsx：data-skin（concise｜memphis｜classic）掛在 .mc-page，切換器 .mc-skin-switch（三顆 segmented 按鈕帶色點、aria-pressed、group label），偏好存 localStorage `xue-classroom-skin-v1`，首次造訪預設 concise；經典皮彩帶、孟菲斯幾何 .mm-decor 改條件渲染；新增 .mc-skin-bg fixed 滿版背景層（z-index 0，其餘直接子層 z-index 1）。
+- 極簡紫 concise：紫漸層 hero（#6454d6→#9a89f0）白字、扁平白膠囊守則、領航員懸浮窗（.cs-helper 圓形脈動頭像＋可點擊換句的悄悄話氣泡，5 句 HELPER_TIPS）、探索進度條（.cs-progress，依 8 玩法已有 stars/score 紀錄比例）、鼓勵彈幕跑馬燈（.cs-bullets，6 句重複兩次 CSS translateX -50% 循環 30s）；卡片白地淡紫邊柔陰影、去傾斜。
+- 孟菲斯 memphis：奶黃底 #fbf4e2、fixed 幾何裝飾（圓點/圓環/三角/十字/鋸齒，高飽和 #ff5d8f/#2ec4b6/#ffd84d/#845ef7＋黑邊）；hero 黃底黑邊 8px 硬陰影、FREE PLAY 旋轉徽章、波浪粉底線；貼紙黑邊硬陰影四色輪替；玩法卡三色輪替底（青/粉/黃）＋6px 黑硬陰影 hover 位移；模式卡黑邊硬陰影青 icon。
+- 經典海報 classic：沿用原 mc-* 暖木彩帶風（data-skin 預設外觀保留）。
+- 無障礙/手機：prefers-reduced-motion 關跑馬燈與脈動；520px 下領航員改 static 全寬、徽章縮小、幾何 scale .8、切換鈕縮小。
+- 測試：QuizRoom.test.tsx 加 4 例（預設極簡＋進度/彈幕/氣泡換句、切孟菲斯寫 localStorage、切經典出彩帶、重入沿用本機皮）共 7 例綠；tsc 0 error、vite build OK。
+- rebase 注記：本節與倍數防衛戰（29a8bed）并行開發，rebase 後合併第 8 張卡、進度條 playRecords 補 best.meteor、標題 8 種。

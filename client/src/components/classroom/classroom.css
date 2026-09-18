@@ -990,3 +990,400 @@
 @media (prefers-reduced-motion: reduce) {
   .md-flash { animation: none; opacity: 1; }
 }
+
+/* ============================================================
+   我的教室：可切換教室皮（data-skin）
+   concise 紫色極簡教育風 / memphis 孟菲斯幾何風 / classic 經典海報風（上方原始 mc- 樣式）
+   ============================================================ */
+
+/* 皮膚滿版背景層（fixed 鋪底，內容在上） */
+.mc-skin-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: transparent;
+}
+.mc-page[data-skin="concise"] .mc-skin-bg {
+  background: linear-gradient(180deg, #e9e7fa 0%, #f4f2fd 38%, #efeafb 72%, #f6f4fd 100%);
+}
+.mc-page[data-skin="memphis"] .mc-skin-bg { background: #fbf4e2; }
+.mc-page > *:not(.mc-skin-bg):not(.mm-decor) { position: relative; z-index: 1; }
+
+/* 皮膚切換器（三皮共用，中性可辨識） */
+.mc-skin-switch {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex-wrap: wrap;
+  margin: 2px 4px 14px;
+}
+.mc-skin-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12.5px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: var(--cr-muted);
+}
+.mc-skin-options {
+  display: inline-flex;
+  gap: 4px;
+  background: rgba(255, 253, 246, 0.85);
+  border: 1.5px solid var(--cr-line);
+  border-radius: 999px;
+  padding: 4px;
+}
+.mc-skin-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  border: none;
+  background: transparent;
+  border-radius: 999px;
+  padding: 5px 13px;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 800;
+  color: var(--cr-muted);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.12s ease;
+}
+.mc-skin-btn:active { transform: scale(0.95); }
+.mc-skin-dot { width: 11px; height: 11px; border-radius: 50%; flex: 0 0 auto; }
+.mc-skin-btn.is-active { background: var(--cr-ink); color: #fff; }
+
+/* ---------------- 極簡紫皮 concise ---------------- */
+.mc-page[data-skin="concise"] .mc-skin-options {
+  background: #fff;
+  border-color: #e1dbf6;
+  box-shadow: 0 5px 14px rgba(109, 91, 208, 0.1);
+}
+.mc-page[data-skin="concise"] .mc-skin-label { color: #6d5bd0; }
+.mc-page[data-skin="concise"] .mc-skin-btn.is-active { background: #6d5bd0; color: #fff; }
+
+.mc-page[data-skin="concise"] .mc-hero {
+  border: none;
+  border-radius: 26px;
+  padding: 26px 24px 22px;
+  color: #fff;
+  background: linear-gradient(135deg, #6454d6 0%, #806ee9 52%, #9a89f0 100%);
+  box-shadow: 0 16px 34px rgba(100, 84, 214, 0.3);
+}
+.mc-page[data-skin="concise"] .mc-hero::after { display: none; }
+.mc-page[data-skin="concise"] .mc-hero-eyebrow { color: rgba(255, 255, 255, 0.78); }
+.mc-page[data-skin="concise"] .mc-hero h1 { color: #fff; letter-spacing: 0.02em; }
+.mc-page[data-skin="concise"] .mc-hero h1 u { text-decoration-color: #ffd866; text-decoration-thickness: 4px; }
+.mc-page[data-skin="concise"] .mc-hero p.mc-sub { color: rgba(255, 255, 255, 0.9); }
+.mc-page[data-skin="concise"] .mc-sticker {
+  background: rgba(255, 255, 255, 0.16);
+  border: 1.5px solid rgba(255, 255, 255, 0.4);
+  box-shadow: none;
+  color: #fff;
+  transform: none;
+}
+.mc-page[data-skin="concise"] .mc-sticker:nth-child(even) { transform: none; }
+.mc-page[data-skin="concise"] .mc-sticker b { color: #ffe08a; }
+
+/* 講師（領航員）懸浮窗 */
+.cs-helper {
+  position: absolute;
+  top: 18px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  max-width: 48%;
+}
+.cs-helper-avatar {
+  flex: 0 0 auto;
+  width: 52px;
+  height: 52px;
+  border: none;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: radial-gradient(circle at 32% 28%, #a797f4, #6454d6);
+  box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.18);
+  cursor: pointer;
+  animation: cs-pulse 2.8s ease-in-out infinite;
+}
+.cs-helper-bubble {
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  background: #fff;
+  color: #5346ad;
+  border-radius: 15px 15px 4px 15px;
+  padding: 8px 13px;
+  font: inherit;
+  font-size: 12.5px;
+  line-height: 1.5;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(46, 34, 120, 0.18);
+}
+@keyframes cs-pulse {
+  0%, 100% { box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.18); }
+  50% { box-shadow: 0 0 0 11px rgba(255, 255, 255, 0.07); }
+}
+
+/* 探索進度條 */
+.cs-progress {
+  margin-top: 17px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 15px;
+  padding: 11px 14px 12px;
+}
+.cs-progress-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 8px;
+}
+.cs-progress-head span:first-child { display: inline-flex; align-items: center; gap: 5px; }
+.cs-progress-track { height: 9px; border-radius: 999px; background: rgba(255, 255, 255, 0.28); overflow: hidden; }
+.cs-progress-bar {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #ffd866, #ffb347);
+  transition: width 0.7s ease;
+}
+
+/* 鼓勵彈幕跑馬燈 */
+.cs-bullets {
+  overflow: hidden;
+  margin: -6px 0 18px;
+  border: 1px solid #e2dcf7;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  padding: 9px 0;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+}
+.cs-bullets-track {
+  display: inline-flex;
+  align-items: center;
+  gap: 30px;
+  white-space: nowrap;
+  padding-left: 100%;
+  animation: cs-ticker 30s linear infinite;
+}
+.cs-bullet {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #6d5bd0;
+}
+.cs-bullet::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #a78bfa; }
+@keyframes cs-ticker {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.mc-page[data-skin="concise"] .mc-section-title { color: #5b4bc4; }
+.mc-page[data-skin="concise"] .mc-section-title::after {
+  height: 1px;
+  background: linear-gradient(90deg, #d6cff7, transparent);
+}
+.mc-page[data-skin="concise"] .mc-doodle { background: #6d5bd0; border-radius: 11px; }
+.mc-page[data-skin="concise"] .mc-play-card {
+  border: 1px solid #e8e3f8;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 6px 18px rgba(109, 91, 208, 0.08);
+}
+.mc-page[data-skin="concise"] .mc-play-card:hover,
+.mc-page[data-skin="concise"] .mc-play-card:focus-visible {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 28px rgba(109, 91, 208, 0.17);
+}
+.mc-page[data-skin="concise"] .mc-tilt-l,
+.mc-page[data-skin="concise"] .mc-tilt-r { transform: none; }
+.mc-page[data-skin="concise"] .mc-play-icon { border: none; box-shadow: 0 6px 14px rgba(60, 40, 120, 0.2); }
+.mc-page[data-skin="concise"] .mc-play-card p { color: #7e789b; }
+.mc-page[data-skin="concise"] .mc-play-go { color: #6d5bd0; }
+.mc-page[data-skin="concise"] .mc-play-best { background: #f1edfd; border-color: #e0d9f8; color: #6d5bd0; }
+.mc-page[data-skin="concise"] .mc-mode-card {
+  border: 1px solid #e8e3f8;
+  border-radius: 17px;
+  background: #fff;
+  box-shadow: 0 3px 10px rgba(109, 91, 208, 0.05);
+}
+.mc-page[data-skin="concise"] .mc-mode-card:hover,
+.mc-page[data-skin="concise"] .mc-mode-card:focus-visible { border-color: #b9aaf3; }
+.mc-page[data-skin="concise"] .mc-mode-card .mc-mode-icon { background: #f1edfd; color: #6d5bd0; }
+.mc-page[data-skin="concise"] .mc-mode-card p { color: #7e789b; }
+
+/* ---------------- 孟菲斯皮 memphis ---------------- */
+.mc-page[data-skin="memphis"] .mc-skin-options {
+  background: #ffd84d;
+  border: 2px solid #1f1b2e;
+  border-radius: 15px;
+  box-shadow: 3px 3px 0 #1f1b2e;
+}
+.mc-page[data-skin="memphis"] .mc-skin-label { color: #1f1b2e; }
+.mc-page[data-skin="memphis"] .mc-skin-btn.is-active { background: #1f1b2e; color: #ffd84d; }
+
+.mm-decor { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+.mm-shape { position: absolute; display: block; }
+.mm-dot { width: 22px; height: 22px; border-radius: 50%; background: #ff5d8f; top: 13%; left: 4%; }
+.mm-dot-2 { width: 14px; height: 14px; background: #2ec4b6; top: 63%; right: 5%; left: auto; }
+.mm-ring {
+  width: 34px; height: 34px; border-radius: 50%;
+  border: 5px solid #2ec4b6; top: 24%; right: 6%;
+}
+.mm-ring-2 {
+  width: 24px; height: 24px; border-radius: 50%;
+  border: 4px solid #ffd84d; outline: 3px solid #1f1b2e;
+  top: 80%; left: 6%;
+}
+.mm-tri {
+  width: 0; height: 0;
+  border-left: 17px solid transparent;
+  border-right: 17px solid transparent;
+  border-bottom: 30px solid #ffd84d;
+  filter: drop-shadow(2.5px 2.5px 0 #1f1b2e);
+  top: 42%; left: 2.5%;
+}
+.mm-tri-2 { border-bottom-color: #845ef7; top: 90%; right: 3%; left: auto; }
+.mm-plus { width: 26px; height: 26px; top: 33%; right: 3.5%; }
+.mm-plus::before, .mm-plus::after {
+  content: ""; position: absolute; background: #1f1b2e; border-radius: 2px;
+}
+.mm-plus::before { left: 50%; top: 0; bottom: 0; width: 5px; transform: translateX(-50%); }
+.mm-plus::after { top: 50%; left: 0; right: 0; height: 5px; transform: translateY(-50%); }
+.mm-zig {
+  top: 56%; left: 3.5%;
+  width: 48px; height: 15px;
+  background: repeating-linear-gradient(135deg, #845ef7 0 8px, transparent 8px 16px);
+  border-radius: 4px;
+}
+
+.mc-page[data-skin="memphis"] .mc-hero {
+  border: 3px solid #1f1b2e;
+  border-radius: 22px;
+  padding: 24px 22px 21px;
+  background: #ffd84d;
+  box-shadow: 8px 8px 0 #1f1b2e;
+  transform: rotate(-0.4deg);
+}
+.mc-page[data-skin="memphis"] .mc-hero::after { display: none; }
+.mc-page[data-skin="memphis"] .mc-hero-eyebrow {
+  display: inline-block;
+  color: #fff;
+  background: #1f1b2e;
+  border-radius: 8px;
+  padding: 4px 11px;
+  letter-spacing: 0.18em;
+}
+.mc-page[data-skin="memphis"] .mc-hero h1 { color: #1f1b2e; }
+.mc-page[data-skin="memphis"] .mc-hero h1 u {
+  text-decoration-color: #ff5d8f;
+  text-decoration-thickness: 5px;
+  text-decoration-style: wavy;
+  text-underline-offset: 6px;
+}
+.mc-page[data-skin="memphis"] .mc-hero p.mc-sub { color: #4a4462; }
+.mc-page[data-skin="memphis"] .mc-sticker {
+  border-width: 2.5px;
+  border-color: #1f1b2e;
+  border-radius: 13px;
+  box-shadow: 3px 3px 0 #1f1b2e;
+  transform: none;
+}
+.mc-page[data-skin="memphis"] .mc-sticker:nth-child(even) { transform: none; }
+.mc-page[data-skin="memphis"] .mc-sticker:nth-child(4n+1) { background: #2ec4b6; color: #fff; }
+.mc-page[data-skin="memphis"] .mc-sticker:nth-child(4n+2) { background: #ff5d8f; color: #fff; }
+.mc-page[data-skin="memphis"] .mc-sticker:nth-child(4n+3) { background: #fff; }
+.mc-page[data-skin="memphis"] .mc-sticker b { color: inherit; text-decoration: underline; text-decoration-thickness: 2px; }
+.mm-hero-tag {
+  position: absolute;
+  top: 16px;
+  right: -8px;
+  background: #1f1b2e;
+  color: #ffd84d;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  padding: 6px 12px;
+  border-radius: 9px;
+  transform: rotate(5deg);
+  box-shadow: 3px 3px 0 #ff5d8f;
+}
+
+.mc-page[data-skin="memphis"] .mc-section-title { color: #1f1b2e; }
+.mc-page[data-skin="memphis"] .mc-section-title::after {
+  height: 7px;
+  border-radius: 4px;
+  background: repeating-linear-gradient(135deg, #2ec4b6 0 10px, transparent 10px 20px);
+}
+.mc-page[data-skin="memphis"] .mc-doodle {
+  background: #ff5d8f;
+  border: 2.5px solid #1f1b2e;
+  border-radius: 50%;
+}
+.mc-page[data-skin="memphis"] .mc-play-card {
+  border: 3px solid #1f1b2e;
+  border-radius: 15px;
+  background: #fff;
+  box-shadow: 6px 6px 0 #1f1b2e;
+}
+.mc-page[data-skin="memphis"] .mc-play-card:nth-child(3n+1) { background: #e6faf7; }
+.mc-page[data-skin="memphis"] .mc-play-card:nth-child(3n+2) { background: #ffeef4; }
+.mc-page[data-skin="memphis"] .mc-play-card:nth-child(3n) { background: #fff7d1; }
+.mc-page[data-skin="memphis"] .mc-play-card:hover,
+.mc-page[data-skin="memphis"] .mc-play-card:focus-visible {
+  transform: translate(-2px, -2px);
+  box-shadow: 9px 9px 0 #1f1b2e;
+}
+.mc-page[data-skin="memphis"] .mc-tilt-l,
+.mc-page[data-skin="memphis"] .mc-tilt-r { transform: none; }
+.mc-page[data-skin="memphis"] .mc-play-icon { border-width: 2.5px; border-radius: 13px; }
+.mc-page[data-skin="memphis"] .mc-play-go { color: #1f1b2e; }
+.mc-page[data-skin="memphis"] .mc-play-best {
+  background: #ffd84d;
+  border: 2px solid #1f1b2e;
+  color: #1f1b2e;
+  border-radius: 9px;
+}
+.mc-page[data-skin="memphis"] .mc-mode-card {
+  border: 2.5px solid #1f1b2e;
+  border-radius: 13px;
+  background: #fff;
+  box-shadow: 4px 4px 0 #1f1b2e;
+}
+.mc-page[data-skin="memphis"] .mc-mode-card:hover,
+.mc-page[data-skin="memphis"] .mc-mode-card:focus-visible {
+  border-color: #1f1b2e;
+  transform: translate(-1px, -2px);
+  box-shadow: 6px 6px 0 #1f1b2e;
+}
+.mc-page[data-skin="memphis"] .mc-mode-card .mc-mode-icon {
+  background: #2ec4b6;
+  color: #fff;
+  border: 2px solid #1f1b2e;
+  border-radius: 10px;
+}
+
+/* 皮膚動作的無障礙與手機微調 */
+@media (prefers-reduced-motion: reduce) {
+  .cs-bullets-track { animation: none; padding-left: 0; }
+  .cs-helper-avatar { animation: none; }
+}
+@media (max-width: 520px) {
+  .cs-helper { position: static; max-width: none; margin-bottom: 12px; }
+  .cs-helper-bubble { flex: 1; }
+  .mm-hero-tag { font-size: 9.5px; padding: 4px 8px; top: 10px; }
+  .mm-decor .mm-shape { transform: scale(0.8); }
+  .mc-skin-btn { padding: 5px 10px; font-size: 12px; }
+}
