@@ -19,6 +19,10 @@ import {
   meteorStars,
   meteorChainBonus,
   buildMeteorWaves,
+  buildRectRounds,
+  rectStars,
+  RECT_GRID_COLS,
+  RECT_GRID_ROWS,
   orderToPaper,
   saveClassroomBest,
   trapStars,
@@ -195,6 +199,52 @@ describe("因數探險", () => {
     expect(factorStars(0)).toBe(3);
     expect(factorStars(3)).toBe(2);
     expect(factorStars(8)).toBe(1);
+  });
+});
+
+describe("長方形拼拼樂題庫", () => {
+  it("buildRectRounds 5 關：數字不重複、真長方形都在格線內且乘積等於 n", () => {
+    const rounds = buildRectRounds(5, seeded());
+    expect(rounds).toHaveLength(5);
+    expect(new Set(rounds.map((r) => r.n)).size).toBe(5);
+    for (const round of rounds) {
+      expect(round.granted).toEqual([1, round.n]);
+      expect(round.pairs).toContainEqual(round.granted);
+      // realPairs 就是 pairs 去掉 1×N
+      expect(round.realPairs).toEqual(round.pairs.filter(([a]) => a >= 2));
+      for (const [a, b] of round.realPairs) {
+        expect(a).toBeGreaterThanOrEqual(2);
+        expect(a).toBeLessThanOrEqual(b);
+        expect(a * b).toBe(round.n);
+        expect(a).toBeLessThanOrEqual(RECT_GRID_ROWS);
+        expect(b).toBeLessThanOrEqual(RECT_GRID_COLS);
+      }
+      expect(round.hint.length).toBeGreaterThan(0);
+    }
+  });
+
+  it("第 5 關為完全平方數彩蛋關：realPairs 含正方形排法", () => {
+    const rounds = buildRectRounds(5, seeded());
+    const square = rounds[4];
+    expect(square.kind).toBe("square");
+    const root = Math.round(Math.sqrt(square.n));
+    expect(root * root).toBe(square.n);
+    expect(square.realPairs).toContainEqual([root, root]);
+  });
+
+  it("多輪隨機會出現不同數字組合（重玩性）", () => {
+    const combos = new Set<string>();
+    for (let i = 0; i < 12; i += 1) {
+      const rounds = buildRectRounds(5, seeded(0.1 + i * 0.07));
+      combos.add(rounds.map((r) => r.n).join("-"));
+    }
+    expect(combos.size).toBeGreaterThan(1);
+  });
+
+  it("rectStars 零失誤 3 星、≤3 二星、其餘 1 星", () => {
+    expect(rectStars(0)).toBe(3);
+    expect(rectStars(3)).toBe(2);
+    expect(rectStars(6)).toBe(1);
   });
 });
 

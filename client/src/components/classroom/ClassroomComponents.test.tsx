@@ -9,7 +9,8 @@ import QuizRunner, { type RunnerQuestion } from "./QuizRunner";
 import RushRunner from "./RushRunner";
 import FactorGame from "./FactorGame";
 import MeteorGame from "./MeteorGame";
-import { buildFactorRounds, buildMeteorWaves } from "@/lib/classroomBank";
+import RectGame from "./RectGame";
+import { buildFactorRounds, buildMeteorWaves, buildRectRounds } from "@/lib/classroomBank";
 import type { PaperQuestion } from "@/lib/paperExam";
 
 afterEach(() => {
@@ -317,6 +318,67 @@ function dropAllTrayTargets(wave: ReturnType<typeof buildMeteorWaves>[number]) {
     fireEvent.click(screen.getByRole("button", { name: /基地回收槽/ }));
   }
 }
+
+describe("RectGame 長方形拼拼樂", () => {
+  const cellBtn = (r: number, c: number) =>
+    document.querySelector(`.rg-cell[data-r="${r}"][data-c="${c}"]`) as HTMLElement;
+
+  it("錯誤面積算失誤，正確排法成立；重複排法不重計", () => {
+    vi.spyOn(Math, "random").mockReturnValue(0.5);
+    const rounds = buildRectRounds(5, () => 0.5);
+    render(<RectGame onExit={() => {}} />);
+    fireEvent.click(screen.getByRole("button", { name: "開始拼磚" }));
+
+    const n = rounds[0].n;
+    expect(document.querySelector(".rg-grid")).toBeInTheDocument();
+    // 點兩下拼出 1×2（面積 2 ≠ n），顯示面積不符
+    fireEvent.click(cellBtn(0, 0));
+    fireEvent.click(cellBtn(0, 1));
+    expect(screen.getByText(new RegExp(`面積是 2，不是 ${n}`))).toBeInTheDocument();
+
+    // 拼出第一個真長方形
+    const [a, b] = rounds[0].realPairs[0];
+    fireEvent.click(cellBtn(0, 0));
+    fireEvent.click(cellBtn(a - 1, b - 1));
+    expect(screen.getByText(new RegExp(`${a} × ${b} 成立`))).toBeInTheDocument();
+    expect(document.querySelectorAll(".rg-foundchip").length).toBe(2); // 送分＋第一個排法
+
+    // 同一排法再點一次：只提示已找到、不算失誤也不重複
+    fireEvent.click(cellBtn(0, 0));
+    fireEvent.click(cellBtn(a - 1, b - 1));
+    expect(screen.getByText(/已經找到了/)).toBeInTheDocument();
+    expect(document.querySelectorAll(".rg-foundchip").length).toBe(2);
+    vi.restoreAllMocks();
+  });
+
+  it("五關全部拼出真長方形，結算三顆星並回報最佳紀錄", () => {
+    vi.spyOn(Math, "random").mockReturnValue(0.5);
+    const rounds = buildRectRounds(5, () => 0.5);
+    const onBest = vi.fn();
+    render(<RectGame onExit={() => {}} onBest={onBest} />);
+    fireEvent.click(screen.getByRole("button", { name: "開始拼磚" }));
+
+    for (let r = 0; r < rounds.length; r += 1) {
+      for (const [a, b] of rounds[r].realPairs) {
+        fireEvent.click(cellBtn(0, 0));
+        fireEvent.click(cellBtn(a - 1, b - 1));
+      }
+      expect(screen.getByText(/排法全部拼出來/)).toBeInTheDocument();
+      // 全部因數對（含送分的 1×N）都要列出
+      expect(document.querySelectorAll(".fc-pair").length).toBe(rounds[r].pairs.length);
+      if (r < rounds.length - 1) {
+        fireEvent.click(screen.getByRole("button", { name: /前進下一關/ }));
+      } else {
+        fireEvent.click(screen.getByRole("button", { name: /看拼磚結果/ }));
+      }
+    }
+
+    expect(screen.getByText(/完整拼出 5 \/ 5 關/)).toBeInTheDocument();
+    expect(screen.getByText("★★★")).toBeInTheDocument();
+    expect(onBest).toHaveBeenCalledWith(expect.objectContaining({ stars: 3, correct: 5, total: 5 }));
+    vi.restoreAllMocks();
+  });
+});
 
 describe("MeteorGame 倍數防衛戰（點擊／劃切波）", () => {
   it("切中目標倍數加分回能，誤觸非倍數扣能", () => {

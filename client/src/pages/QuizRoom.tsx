@@ -9,6 +9,7 @@ import {
   Hash,
   Image as ImageIcon,
   Layers,
+  LayoutGrid,
   Link2,
   Palette,
   RotateCcw,
@@ -164,6 +165,16 @@ export default function QuizRoom() {
       tilt: "mc-tilt-r",
       best: starLabel(best.meteor?.stars),
     },
+    {
+      id: "rect",
+      label: "長方形拼拼樂",
+      desc: "數學五上：把方格拖曳拼成長方形，長×寬就是因數對，完全平方數有正方形彩蛋。",
+      href: "/classroom/rect",
+      icon: LayoutGrid,
+      color: "#7a9e5f",
+      tilt: "mc-tilt-l",
+      best: starLabel(best.rect?.stars),
+    },
   ];
 
   const modes = [
@@ -178,7 +189,7 @@ export default function QuizRoom() {
   ];
 
   // 探索進度：七種自由玩法中，已在本機留下星等/分數紀錄的數量
-  const playRecords = [best.flip, best.image, best.bolt, best.rush, best.relay, best.trap, best.factor, best.meteor];
+  const playRecords = [best.flip, best.image, best.bolt, best.rush, best.relay, best.trap, best.factor, best.meteor, best.rect];
   const doneCount = playRecords.filter((record) => Boolean(record && ((record.stars ?? 0) > 0 || (record.score ?? 0) > 0))).length;
   const progressPct = Math.round((doneCount / plays.length) * 100);
   const helperTip = HELPER_TIPS[tipIndex];
@@ -286,7 +297,7 @@ export default function QuizRoom() {
 
       <h2 className="mc-section-title">
         <span className="mc-doodle" aria-hidden="true"><Layers size={18} /></span>
-        自由玩法（8 種新玩法）
+        自由玩法（9 種新玩法）
       </h2>
       <div className="mc-play-grid">
         {plays.map(({ id, label, desc, href, icon: Icon, color, tilt, best: bestText }) => (

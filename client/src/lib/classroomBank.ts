@@ -609,6 +609,79 @@ export function meteorChainBonus(count: number): number {
   return 10 * count + 5 * (count - 1);
 }
 
+/* ============================== 長方形拼拼樂 ============================== */
+
+export type RectPair = [number, number];
+
+export type RectRound = {
+  id: string;
+  /** 本關要拼的目標數（方格總數）。 */
+  n: number;
+  /** 全部因數對（含 1×N），由小到大。 */
+  pairs: RectPair[];
+  /** 要在格線上拼出的「真長方形」（不含 1×N；a≥2、a≤b，a 為列數、b 為行數）。 */
+  realPairs: RectPair[];
+  /** 直接過關的一排長條 [1, n]（每個數都排得出來一排，自動送分）。 */
+  granted: RectPair;
+  /** 關卡標記：一般合成數／完全平方數（排得出正方形）。 */
+  kind: "normal" | "square";
+  /** 過關小筆記。 */
+  hint: string;
+};
+
+/** 拼長方形格線：15 行 × 7 列（涵蓋題庫中最大的 3×15 與 7×7）。 */
+export const RECT_GRID_COLS = 15;
+export const RECT_GRID_ROWS = 7;
+export const RECT_TIME_PER_LEVEL = 60;
+
+// 題庫設計：排除 1×N 以外的因數對有邊超過 15 行或 7 列的數（例如 28 的 2×14 可以、36 的 2×18 不行）。
+const RECT_TIERS: Array<{ pool: number[]; kind: RectRound["kind"] }> = [
+  { pool: [12, 15, 16, 18, 20], kind: "normal" },
+  { pool: [20, 21, 22, 24], kind: "normal" },
+  { pool: [24, 25, 27, 28, 30], kind: "normal" },
+  { pool: [33, 35, 45], kind: "normal" },
+  { pool: [16, 25, 49], kind: "square" },
+];
+
+function makeRectRound(n: number, id: string, kind: RectRound["kind"]): RectRound {
+  const pairs = factorPairs(n);
+  const realPairs = pairs.filter(([a]) => a >= 2) as RectPair[];
+  const shapeList = pairs.map(([a, b]) => `${a}×${b}`).join("、");
+  const hint =
+    kind === "square"
+      ? `${n} 是完全平方數，排得出 ${Math.round(Math.sqrt(n))}×${Math.round(Math.sqrt(n))} 的正方形——只有完全平方數辦得到！`
+      : `${n} 一共有 ${pairs.length} 種排法：${shapeList}；因數愈多，排法就愈多。`;
+  return { id, n, pairs, realPairs, granted: [1, n], kind, hint };
+}
+
+/**
+ * 長方形拼拼樂關卡：5 關，由小合成數→大合成數→完全平方數彩蛋關。
+ * 每關把 n 個方格拼成長方形：1×N 的一排長條直接送分，其餘排法要在格線上拼出來。
+ */
+export function buildRectRounds(count = 5, random: () => number = Math.random): RectRound[] {
+  const used = new Set<number>();
+  const rounds: RectRound[] = [];
+  for (let i = 0; i < count; i += 1) {
+    const tier = RECT_TIERS[i % RECT_TIERS.length];
+    let n = tier.pool[Math.floor(random() * tier.pool.length)];
+    let guard = 0;
+    while (used.has(n) && guard < 25) {
+      n = tier.pool[Math.floor(random() * tier.pool.length)];
+      guard += 1;
+    }
+    used.add(n);
+    rounds.push(makeRectRound(n, `rect-${i + 1}`, tier.kind));
+  }
+  return rounds;
+}
+
+/** 長方形拼拼樂星等：零失誤 3 星、總失誤 ≤3 二星，其餘 1 星。 */
+export function rectStars(totalMistakes: number): 1 | 2 | 3 {
+  if (totalMistakes <= 0) return 3;
+  if (totalMistakes <= 3) return 2;
+  return 1;
+}
+
 /* ============================== 計分 ============================== */
 
 /** 依正確率給 1–3 星（全對 3 星、≥7 成 2 星，其餘 1 星）。 */

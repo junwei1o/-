@@ -372,3 +372,11 @@ curl -s https://xue-gr3a.onrender.com/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | h
 - 新手教學（phase="tutorial"）：5 步——總覽卡（三操作＋炸彈警告）→ 點擊練習（點 12）→ 劃切練習（滑過 14，點按也可過）→ 拖拽練習（拖 20 進槽或點選＋點槽）→ 完成卡；完成寫 localStorage xue-meteor-tutorial-v1，開始頁首次顯示「第一次玩？」提示，教學按鈕常駐可重看。
 - 測試：findSeedForFirstWaveMode(mode, extra?) 以亂數常數掃描控制第 1 波模式與組成；bank +模式結構/拖拽炸彈不變量；components +拖拽三態（對/錯/炸彈）、教學五步 E2E、三波混合全對 3 星；全量 182 檔 1113 tests 綠、tsc 0 error、build OK。
 - 踩坑：getByText(/爆炸/) 會撞到拖拽模式的說明文案（md-modehint），改驗 .md-flash 內容；波內兩顆炸彈同時在場要用 getAllByRole。
+
+## 2026-09-19 長方形拼拼樂：拖曳拼長方形＝找因數對（第 9 種玩法）
+- 借鑒 NCTM Factorize／Polypad Rectangle Game：每關給 n 個方格，在 15×7 格線上拖曳（pointerdown/move/up＋elementFromPoint）或點兩下（錨點制，pointer/click 用 suppressClickRef 互斥防錨點被切）拼出長方形；長×寬＝n 才成立，錯誤面積算失誤＋抖動，重複排法只提示不重計。
+- 數學設計：1×N 一排長條「送分」自動過關（手機排不下 1×60），玩家找的是 a≥2 的「真長方形」——排長方形＝找因數對；題庫限定真長方形最長邊 ≤15 行、最短邊 ≤7 列（28 的 2×14 可以、36 的 2×18 不行）。
+- 題庫 buildRectRounds：5 關分層 [12/15/16/18/20]→[20/21/22/24]→[24/25/27/28/30]→[33/35/45]→完全平方數彩蛋 [16/25/49]（正方形 5×5、7×7）；不重複抽題；rectStars 同 factorStars（零失誤 3 星、≤3 二星）。
+- 檔案：classroomBank.ts（RECT_* 常數、RectRound、buildRectRounds、rectStars）、components/classroom/RectGame.tsx（phase start/play/result，60 秒/關，逾時揭曉）、classroom.css rg-* 樣式（格線 touch-action:none、預覽暖橙/已拼出海藍/rg-flash 浮條/抖動）、ClassroomPlay.tsx case "rect"、QuizRoom.tsx 第 9 張卡（LayoutGrid #7a9e5f）、標題「9 種新玩法」、playRecords 補 best.rect。
+- 測試：classroomBank.test.ts +4（格線內不變量、平方數彩蛋、重玩性、星等）；ClassroomComponents +2（錯誤面積失誤＋重複排法不重計、五關全對 3 星）；QuizRoom.test 8→9 張卡。全量 182 檔 1119 tests 綠、tsc 0 error、build OK。
+- 踩坑：同一檔案多個 Edit 併發送出會有部分未落盤（ClassroomPlay import、QuizRoom 卡片曾丟失），同一檔的多次編輯應逐一確認或序列執行；Set 展開要 Array.from（TS2802）。

@@ -5,6 +5,7 @@ import RushRunner from "@/components/classroom/RushRunner";
 import RelayMatch from "@/components/classroom/RelayMatch";
 import FactorGame from "@/components/classroom/FactorGame";
 import MeteorGame from "@/components/classroom/MeteorGame";
+import RectGame from "@/components/classroom/RectGame";
 import {
   TRAP_QUESTIONS,
   buildChoiceDeck,
@@ -18,7 +19,7 @@ import { IMAGE_MATCHING_SETS, shuffleArray } from "@/lib/matchingBank";
 
 /**
  * 我的教室自由玩法頁：/classroom/:gameId
- * flip 翻牌問答 / image 看圖選答 / bolt 是非閃電 / rush 限時接力 / relay 選擇配對接力 / trap 陷阱題挑戰 / factor 因數探險 / meteor 倍數防衛戰
+ * flip 翻牌問答 / image 看圖選答 / bolt 是非閃電 / rush 限時接力 / relay 選擇配對接力 / trap 陷阱題挑戰 / factor 因數探險 / meteor 倍數防衛戰 / rect 長方形拼拼樂
  */
 const GAME_META: Record<string, { title: string }> = {
   flip: { title: "翻牌問答" },
@@ -208,6 +209,15 @@ export default function ClassroomPlay() {
           key="meteor"
           bestStars={record?.stars}
           onBest={(r) => updateBest({ stars: r.stars, score: r.score, correct: r.correct, total: r.total })}
+          onExit={exit}
+        />
+      );
+    case "rect":
+      return (
+        <RectGame
+          key="rect"
+          bestStars={record?.stars}
+          onBest={(r) => updateBest({ stars: r.stars, correct: r.correct, total: r.total })}
           onExit={exit}
         />
       );
