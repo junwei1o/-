@@ -383,11 +383,12 @@ export function factorStars(totalErrors: number): 1 | 2 | 3 {
 
 /* ============================== 倍數防衛戰 ============================== */
 
-/** 單顆隕石腳本：value 為石上數字；x 為水平落點（%）；delayMs 為開波後幾毫秒出現；durationMs 為落地秒數。 */
+/** 單顆隕石腳本：value 為石上數字；x 為水平落點（%）；delayMs 為開波後幾毫秒出現；durationMs 為落地秒數；isBomb 為炸彈（切到即結束）。 */
 export type MeteorSpec = {
   id: string;
   value: number;
   isTarget: boolean;
+  isBomb: boolean;
   x: number;
   delayMs: number;
   durationMs: number;
@@ -467,14 +468,32 @@ function makeMeteorWave(cfgIndex: number, index: number, random: () => number): 
     ],
     random,
   );
-  const meteors = picked.map((value, i) => ({
+  const meteors: MeteorSpec[] = picked.map((value, i) => ({
     id: `meteor-${index + 1}-${i + 1}`,
     value,
     isTarget: value % cfg.multipleOf === 0,
+    isBomb: false,
     x: 12 + Math.floor(random() * 76),
     delayMs: METEOR_FIRST_DELAY_MS + i * METEOR_GAP_MS,
     durationMs: 3800 + Math.floor(random() * 1400),
   }));
+  // 聚集生成：約 22% 的隕石與前一顆同刻緊鄰落下，製造「一刀連斬」的機會。
+  for (let i = 1; i < meteors.length; i += 1) {
+    if (random() < 0.22) {
+      meteors[i] = {
+        ...meteors[i],
+        delayMs: meteors[i - 1].delayMs,
+        x: Math.max(12, Math.min(88, meteors[i - 1].x + (random() * 24 - 12))),
+      };
+    }
+  }
+  // 炸彈：每波 1–2 顆，只替換第 4 顆以後的干擾隕石（目標數不變、前三顆絕無炸彈）。
+  const bombCount = random() < 0.4 ? 2 : 1;
+  const bombIdxPool = meteors.map((_, i) => i).filter((i) => i >= 3 && !meteors[i].isTarget);
+  const bombIdx = shuffleArray(bombIdxPool, random).slice(0, bombCount);
+  for (const i of bombIdx) {
+    meteors[i] = { ...meteors[i], isBomb: true, isTarget: false };
+  }
   return { id: `meteor-wave-${index + 1}`, multipleOf: cfg.multipleOf, label: cfg.label, hint: cfg.hint, meteors };
 }
 
@@ -492,6 +511,12 @@ export function meteorStars(mistakes: number): 1 | 2 | 3 {
   if (mistakes <= 0) return 3;
   if (mistakes <= 4) return 2;
   return 1;
+}
+
+/** 連斬加成：同一次滑動切中 count 個目標，第 1 顆 10 分、之後每顆再多 5 分（10/25/40…總分）。 */
+export function meteorChainBonus(count: number): number {
+  if (count <= 0) return 0;
+  return 10 * count + 5 * (count - 1);
 }
 
 /* ============================== 計分 ============================== */

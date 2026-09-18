@@ -22,25 +22,40 @@ type Phase = "start" | "play" | "waveEnd" | "result";
 
 type ActiveMeteor = MeteorSpec & { spawnedAt: number };
 
+type Fragment = {
+  id: string;
+  x: number;
+  top: number;
+  value: number;
+  isBomb: boolean;
+  side: "l" | "r";
+  dx: number;
+  dy: number;
+  rot: number;
+};
+
 type Flash = { text: string; kind: "ok" | "no" } | null;
 
 const SCORE_PER_HIT = 10;
+const CHAIN_BONUS_STEP = 5;
 const HIT_ENERGY = 1;
 const WRONG_COST = 1;
 const MISS_COST = 2;
 const TICK_MS = 200;
 
 /**
- * 倍數防衛戰：隕石帶著數字落下，快速點擊「目標倍數」攔截（+10 分、回 1 能量），
- * 誤觸非倍數 −1 能量、漏接目標隕石 −2 能量；基地能量耗盡就結束。
- * 三波隨機組合：首波考 2 或 5 的倍數（個位數特徵暖身），其餘從 3、9、同時是 2 和 5 的倍數抽出，波波不重複；
- * 波次結束揭曉該波特徵的教學註記。
+ * 倍數防衛戰（切水果版）：手指在場上滑動即可「切割」隕石——
+ * 切中目標倍數 +10 分並回 1 能源，同一刀連斬多顆每顆再加 5 分；
+ * 切錯非倍數 −1 能源、漏接目標隕石 −2 能源；場上混有炸彈，切到能源直接歸零。
+ * 三波隨機組合：首波考 2 或 5 的倍數（個位數特徵暖身），其餘從 3、9、同時是 2 和 5 的倍數抽出；
+ * 波次結束揭曉該波特徵的教學註記。點按仍可切割（無障礙／簡單操作）。
  */
 export default function MeteorGame({ muted = false, onExit, onBest, bestStars, bestScore }: Props) {
   const [waves, setWaves] = useState<MeteorWave[]>(() => buildMeteorWaves(3));
   const [phase, setPhase] = useState<Phase>("start");
   const [waveIndex, setWaveIndex] = useState(0);
   const [active, setActive] = useState<ActiveMeteor[]>([]);
+  const [frags, setFrags] = useState<Fragment[]>([]);
   const [energy, setEnergy] = useState(METEOR_ENERGY_MAX);
   const [score, setScore] = useState(0);
   const [mistakes, setMistakes] = useState(0);
@@ -49,6 +64,8 @@ export default function MeteorGame({ muted = false, onExit, onBest, bestStars, b
   const [flash, setFlash] = useState<Flash>(null);
   const [lost, setLost] = useState(false);
   const [newBest, setNewBest] = useState(false);
+  const [trail, setTrail] = useState<Array<{ x: number; y: number }>>([]);
+  const [fieldSize, setFieldSize] = useState({ w: 0, h: 0 });
 
   const play = useClassroomSound(muted);
   const wavesRef = useRef(waves);
@@ -62,10 +79,20 @@ export default function MeteorGame({ muted = false, onExit, onBest, bestStars, b
   const waveStartRef = useRef(0);
   const flashTimerRef = useRef<number | null>(null);
   const reportedRef = useRef(false);
+  const fieldRef = useRef<HTMLDivElement | null>(null);
+  const slashingRef = useRef(false);
+  const chainCountRef = useRef(0);
+  const fragTimersRef = useRef<number[]>([]);
 
   useEffect(() => {
     wavesRef.current = waves;
   }, [waves]);
+
+  // 卸載時清掉所有 fragment 計時器，避免測試與嚴格模式告警。
+  useEffect(() => {
+    const timers = fragTimersRef;
+    return () => timers.current.forEach((t) => window.clearTimeout(t));
+  }, []);
 
   const showFlash = useCallback((text: string, kind: "ok" | "no") => {
     setFlash({ text, kind });
@@ -80,6 +107,9 @@ export default function MeteorGame({ muted = false, onExit, onBest, bestStars, b
       setLost(didLose);
       setPhase("result");
       setActive([]);
+      setFrags([]);
+      setTrail([]);
+      slashingRef.current = false;
       meteorsRef.current = [];
       play(didLose ? "no" : "win");
       if (!reportedRef.current && stars > (bestStars ?? 0)) {
@@ -134,31 +164,64 @@ export default function MeteorGame({ muted = false, onExit, onBest, bestStars, b
     beginWave(0);
   }, [beginWave]);
 
-  const tap = useCallback(
+  /** 切開隕石：分裂成左右兩半飛散墜落。 */
+  const spawnFragments = useCallback((meteor: ActiveMeteor) => {
+    const progress = Math.min(1, (Date.now() - meteor.spawnedAt) / meteor.durationMs);
+    const top = 6 + progress * 78;
+    const dx = 26 + Math.random() * 22;
+    const dy = 30 + Math.random() * 26;
+    const rot = 60 + Math.random() * 60;
+    const pair: Fragment[] = [
+      { id: `${meteor.id}-l`, side: "l", x: meteor.x, top, value: meteor.value, isBomb: meteor.isBomb, dx: -dx, dy, rot: -rot },
+      { id: `${meteor.id}-r`, side: "r", x: meteor.x, top, value: meteor.value, isBomb: meteor.isBomb, dx, dy, rot },
+    ];
+    setFrags((previous) => [...previous, ...pair]);
+    const timer = window.setTimeout(() => {
+      setFrags((previous) => previous.filter((f) => f.id !== pair[0].id && f.id !== pair[1].id));
+    }, 700);
+    fragTimersRef.current.push(timer);
+  }, []);
+
+  /** 切割：滑動劃過或點按都會走到這裡。 */
+  const slice = useCallback(
     (meteor: ActiveMeteor) => {
       if (phase !== "play") return;
+      if (!meteorsRef.current.some((m) => m.id === meteor.id)) return;
       meteorsRef.current = meteorsRef.current.filter((m) => m.id !== meteor.id);
       setActive([...meteorsRef.current]);
+      spawnFragments(meteor);
+
+      if (meteor.isBomb) {
+        play("no");
+        showFlash("💀 切到炸彈了！", "no");
+        finish(true);
+        return;
+      }
       if (meteor.isTarget) {
+        chainCountRef.current += 1;
+        const bonus = (chainCountRef.current - 1) * CHAIN_BONUS_STEP;
         hitsRef.current += 1;
         setHits(hitsRef.current);
-        scoreRef.current += SCORE_PER_HIT;
+        scoreRef.current += SCORE_PER_HIT + bonus;
         setScore(scoreRef.current);
         energyRef.current = Math.min(METEOR_ENERGY_MAX, energyRef.current + HIT_ENERGY);
         setEnergy(energyRef.current);
         play("ok");
-        showFlash(`+${SCORE_PER_HIT} 分，攔截成功！`, "ok");
+        showFlash(
+          bonus > 0 ? `⚡ 連斬 ×${chainCountRef.current}！+${SCORE_PER_HIT + bonus} 分` : `+${SCORE_PER_HIT} 分，切中了！`,
+          "ok",
+        );
       } else {
         mistakesRef.current += 1;
         setMistakes(mistakesRef.current);
         energyRef.current -= WRONG_COST;
         setEnergy(Math.max(0, energyRef.current));
         play("no");
-        showFlash(`${meteor.value} 不是 ${wavesRef.current[waveIndexRef.current].multipleOf} 的倍數，−1 能量`, "no");
+        showFlash(`${meteor.value} 不是 ${wavesRef.current[waveIndexRef.current].multipleOf} 的倍數，−1 能源`, "no");
         if (energyRef.current <= 0) finish(true);
       }
     },
-    [finish, phase, play, showFlash],
+    [finish, phase, play, showFlash, spawnFragments],
   );
 
   // 遊戲主迴圈：出隕石、推進落地進度、漏接判定、波次倒數。
@@ -179,7 +242,7 @@ export default function MeteorGame({ muted = false, onExit, onBest, bestStars, b
         spawnCursorRef.current += 1;
       }
 
-      // 落地判定：目標隕石漏接 −2 能量，干擾隕石落地無事。
+      // 落地判定：目標隕石漏接 −2 能源，干擾隕石與炸彈落地無事。
       const remaining: ActiveMeteor[] = [];
       let leaked = false;
       for (const meteor of meteorsRef.current) {
@@ -195,7 +258,7 @@ export default function MeteorGame({ muted = false, onExit, onBest, bestStars, b
       }
       if (leaked) {
         play("no");
-        showFlash(`漏接目標隕石，−${MISS_COST} 能量`, "no");
+        showFlash(`漏接目標隕石，−${MISS_COST} 能源`, "no");
       }
       meteorsRef.current = remaining;
       setActive([...remaining]);
@@ -214,6 +277,39 @@ export default function MeteorGame({ muted = false, onExit, onBest, bestStars, b
     return () => window.clearInterval(timer);
   }, [phase, endWave, finish, play, showFlash]);
 
+  // ---- 滑動切割：pointer 軌跡 + 命中場上隕石 ----
+  const onSlashStart = (e: React.PointerEvent) => {
+    if (phase !== "play") return;
+    slashingRef.current = true;
+    chainCountRef.current = 0;
+    const rect = fieldRef.current?.getBoundingClientRect();
+    if (rect) {
+      setFieldSize({ w: rect.width, h: rect.height });
+      setTrail([{ x: e.clientX - rect.left, y: e.clientY - rect.top }]);
+    }
+  };
+
+  const onSlashMove = (e: React.PointerEvent) => {
+    if (!slashingRef.current || phase !== "play") return;
+    const rect = fieldRef.current?.getBoundingClientRect();
+    if (rect) {
+      const point = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+      setTrail((previous) => [...previous.slice(-30), point]);
+    }
+    const hit = document.elementFromPoint(e.clientX, e.clientY);
+    const bubble = hit instanceof Element ? hit.closest(".md-meteor") : null;
+    const mid = bubble?.getAttribute("data-mid");
+    if (mid) {
+      const meteor = meteorsRef.current.find((m) => m.id === mid);
+      if (meteor) slice(meteor);
+    }
+  };
+
+  const onSlashEnd = () => {
+    slashingRef.current = false;
+    window.setTimeout(() => setTrail([]), 160);
+  };
+
   if (phase === "start") {
     return (
       <div className="cr-page">
@@ -222,14 +318,15 @@ export default function MeteorGame({ muted = false, onExit, onBest, bestStars, b
           <span className="cr-start-emoji" aria-hidden="true">☄️</span>
           <h2>倍數防衛戰</h2>
           <p>
-            帶著數字的隕石正朝基地飛來！看清楚每一波的任務，隕石上是目標的「倍數」就趕快點它攔截下來；
-            不是倍數的隕石不用管，讓它安全落地。誤觸會傷基地、漏接目標隕石更傷，守住 15 格能源撐完三波！
+            用手指在場上<b>滑動切割</b>隕石！切中這一波目標的「倍數」+10 分、回 1 能源；
+            同一刀連斬多顆有連斬加成。切錯非倍數 −1 能源、漏接目標隕石 −2；
+            場上藏有<b>炸彈</b>——切到能源直接歸零，看準再出手！
           </p>
           <div className="cr-rules">
             <span className="cr-rule-chip">共 3 波</span>
             <span className="cr-rule-chip">每波 42 秒</span>
-            <span className="cr-rule-chip">點倍數攔截 +10 分</span>
-            <span className="cr-rule-chip">能源歸零就結束</span>
+            <span className="cr-rule-chip">一刀連斬有加成</span>
+            <span className="cr-rule-chip">💣 切到就結束</span>
           </div>
           <p className="md-start-tip">
             小技巧：2 的倍數看個位 0/2/4/6/8；5 的倍數看個位 0/5；3 和 9 的倍數要把每個數字加起來看總和——每輪的三波都是隨機組合，隨時保持警覺！
@@ -250,13 +347,13 @@ export default function MeteorGame({ muted = false, onExit, onBest, bestStars, b
           {lost ? (
             <>
               <h2 className="cr-result-title">💔 基地能源耗盡！</h2>
-              <p className="cr-result-sub">這次獲得了 {score} 分。別灰心，用個位數特徵再試一次！</p>
+              <p className="cr-result-sub">這次獲得了 {score} 分。別灰心，用特徵再試一次！</p>
             </>
           ) : (
             <>
               <h2 className="cr-result-title">{"★".repeat(stars)}{"☆".repeat(3 - stars)}</h2>
               <p className="cr-result-sub">
-                三波全撐完，攔截 {hits} / {totalTargets} 顆目標隕石，獲得 {score} 分
+                三波全撐完，切中 {hits} / {totalTargets} 顆目標隕石，獲得 {score} 分
                 {mistakes > 0 ? `，共 ${mistakes} 次失誤` : "，全程零失誤！"}
               </p>
             </>
@@ -285,10 +382,10 @@ export default function MeteorGame({ muted = false, onExit, onBest, bestStars, b
           <span className="cr-q-meta">數學 · 五上 · 倍數與因數</span>
           <h3 className="md-wave-end-title">第 {waveIndex + 1} 波擊退！基地還剩 {energy} / {METEOR_ENERGY_MAX} 能源</h3>
           <p className="cr-hint is-ok">
-            本波任務「{wave.label}」：攔截 {hits} 顆、失誤 {mistakes} 次、目前 {score} 分。
+            本波任務「{wave.label}」：切中 {hits} 顆、失誤 {mistakes} 次、目前 {score} 分。
           </p>
           <div className="md-hint-box" aria-label="教學註記">
-            <p className="md-hint-title">💡 個位數特徵小筆記</p>
+            <p className="md-hint-title">💡 特徵小筆記</p>
             <p className="md-hint-body">{wave.hint}</p>
           </div>
           <button type="button" className="cr-btn sea md-next-wave" onClick={() => beginWave(waveIndexRef.current + 1)}>
@@ -300,6 +397,7 @@ export default function MeteorGame({ muted = false, onExit, onBest, bestStars, b
   }
 
   // phase === "play"
+  const trailPoints = trail.map((p) => `${p.x},${p.y}`).join(" ");
   return (
     <div className="cr-page">
       <div className="cr-top">
@@ -323,26 +421,57 @@ export default function MeteorGame({ muted = false, onExit, onBest, bestStars, b
 
       <div className="md-wavebanner" aria-live="polite">第 {waveIndex + 1} 波：{wave.label}</div>
 
-      <div className="md-field">
+      <div
+        ref={fieldRef}
+        className="md-field"
+        onPointerDown={onSlashStart}
+        onPointerMove={onSlashMove}
+        onPointerUp={onSlashEnd}
+        onPointerCancel={onSlashEnd}
+        onPointerLeave={onSlashEnd}
+      >
         {flash && (
           <span className={`md-flash ${flash.kind === "ok" ? "is-ok" : "is-no"}`} role="status">{flash.text}</span>
         )}
+        {trail.length > 1 && fieldSize.w > 0 && (
+          <svg className="md-trail" viewBox={`0 0 ${fieldSize.w} ${fieldSize.h}`} aria-hidden="true">
+            <polyline points={trailPoints} fill="none" stroke="rgba(232,132,58,0.9)" strokeWidth={6} strokeLinecap="round" strokeLinejoin="round" />
+            <polyline points={trailPoints} fill="none" stroke="rgba(255,253,246,0.95)" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        )}
+        {frags.map((f) => (
+          <span
+            key={f.id}
+            className={`md-frag md-frag-${f.side}${f.isBomb ? " is-bomb" : ""}`}
+            style={{
+              left: `${f.x}%`,
+              top: `${f.top}%`,
+              "--dx": `${f.dx}px`,
+              "--dy": `${f.dy}px`,
+              "--rot": `${f.rot}deg`,
+            } as React.CSSProperties}
+            aria-hidden="true"
+          >
+            {f.isBomb ? "💣" : f.value}
+          </span>
+        ))}
         {active.map((meteor) => {
           const progress = Math.min(1, (Date.now() - meteor.spawnedAt) / meteor.durationMs);
           return (
             <button
               type="button"
               key={meteor.id}
-              className="md-meteor"
+              data-mid={meteor.id}
+              className={`md-meteor${meteor.isBomb ? " is-bomb" : ""}`}
               style={{ left: `${meteor.x}%`, top: `${6 + progress * 78}%` }}
-              aria-label={`隕石 ${meteor.value}`}
-              onClick={() => tap(meteor)}
+              aria-label={meteor.isBomb ? "炸彈" : `隕石 ${meteor.value}`}
+              onClick={() => slice(meteor)}
             >
-              {meteor.value}
+              {meteor.isBomb ? "" : meteor.value}
             </button>
           );
         })}
-        <span className="md-base" aria-hidden="true">🛡 倍數防衛基地（點擊目標倍數攔截隕石）</span>
+        <span className="md-base" aria-hidden="true">🛡 倍數防衛基地（滑動切割目標倍數，小心炸彈）</span>
       </div>
     </div>
   );

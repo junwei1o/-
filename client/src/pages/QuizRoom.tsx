@@ -157,7 +157,7 @@ export default function QuizRoom() {
     {
       id: "meteor",
       label: "倍數防衛戰",
-      desc: "數學五上：隕石來襲！快速點擊目標倍數攔截隕石，守住基地 15 格能源。",
+      desc: "數學五上：滑動切割目標倍數隕石，一刀連斬有加成，小心炸彈！",
       href: "/classroom/meteor",
       icon: Shield,
       color: "#3e7cb1",

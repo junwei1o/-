@@ -363,7 +363,7 @@ describe("MeteorGame 倍數防衛戰", () => {
       // 快進到本波結束
       act(() => { vi.advanceTimersByTime(42_000 - elapsed + 500); });
       if (w < waves.length - 1) {
-        expect(screen.getByText(/個位數特徵小筆記/)).toBeInTheDocument();
+        expect(screen.getByText(/特徵小筆記/)).toBeInTheDocument();
         fireEvent.click(screen.getByRole("button", { name: /迎接下一波/ }));
       }
     }
@@ -393,6 +393,44 @@ describe("MeteorGame 倍數防衛戰", () => {
     }
     expect(screen.getByText(/基地能源耗盡/)).toBeInTheDocument();
     expect(screen.getByText(/獲得了 0 分/)).toBeInTheDocument();
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+  });
+});
+
+describe("MeteorGame 切水果版機制", () => {
+  it("切到炸彈立即結束，顯示基地能源耗盡", () => {
+    vi.useFakeTimers();
+    vi.spyOn(Math, "random").mockReturnValue(0.5);
+    const waves = buildMeteorWaves(3, () => 0.5);
+    render(<MeteorGame onExit={() => {}} />);
+    fireEvent.click(screen.getByRole("button", { name: "開始防衛" }));
+
+    const bomb = waves[0].meteors.find((m) => m.isBomb)!;
+    // 快進讓炸彈登場（炸彈一定在第 4 顆以後）
+    act(() => { vi.advanceTimersByTime(bomb.delayMs + 300); });
+    fireEvent.click(screen.getByRole("button", { name: "炸彈" }));
+
+    expect(screen.getByText(/基地能源耗盡/)).toBeInTheDocument();
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+  });
+
+  it("切割後產生左右兩半分裂碎片", () => {
+    vi.useFakeTimers();
+    vi.spyOn(Math, "random").mockReturnValue(0.5);
+    const waves = buildMeteorWaves(3, () => 0.5);
+    render(<MeteorGame onExit={() => {}} />);
+    fireEvent.click(screen.getByRole("button", { name: "開始防衛" }));
+
+    act(() => { vi.advanceTimersByTime(3200); });
+    const firstTwo = waves[0].meteors.slice(0, 2);
+    const target = firstTwo.find((m) => m.isTarget && !m.isBomb) ?? firstTwo.find((m) => !m.isBomb)!;
+    fireEvent.click(screen.getByRole("button", { name: `隕石 ${target.value}` }));
+
+    // 左右兩半同時出現
+    expect(document.querySelectorAll(".md-frag-l").length).toBeGreaterThanOrEqual(1);
+    expect(document.querySelectorAll(".md-frag-r").length).toBeGreaterThanOrEqual(1);
     vi.useRealTimers();
     vi.restoreAllMocks();
   });

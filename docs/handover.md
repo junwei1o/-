@@ -355,3 +355,12 @@ curl -s https://xue-gr3a.onrender.com/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | h
 - buildMeteorWaves 改隨機組合：首波固定抽 2 或 5（個位數特徵暖身），第 2、3 波從 3/9/10 抽，波波不重複；每輪順序都不同，重玩性提升。
 - 開始頁小技巧與結果頁口訣更新（2 看個位、5 看個位、3/9 看數字和、2 和 5 共同個位必 0）。
 - 測試：classroomBank.test.ts 改隨機組合斷言（首波∈{2,5}、不重複、多輪組合數>1、10 波陷阱干擾條件式、3/9 數字和不變量）+2；ClassroomComponents 誤觸提示改動態倍數正則。全量 1103 tests 綠、tsc 0 error、build OK。
+
+## 2026-09-18 倍數防衛戰切水果化：滑動切割＋分裂＋炸彈＋連斬
+- 互動改為手指滑動切割（pointerdown/move/up 軌跡＋document.elementFromPoint 命中 .md-meteor[data-mid]），保留 onClick 點按兜底（無障礙＋jsdom 測試可測）；md-field 加 touch-action:none 防滑動捲動。
+- 視覺：md-trail SVG 雙 polyline 光刀（暖橙粗線＋白細線，viewBox 用場地 rect px）；切中後 md-frag 左右兩半（半圓 clip、--dx/--dy/--rot CSS 變數、md-fly keyframes 0.68s 飛散墜落，700ms 後清）。
+- 炸彈：每波 1–2 顆（40% 機率 2 顆），只替換第 4 顆以後的干擾隕石（目標數恆 7、前三顆絕無炸彈），aria-label「炸彈」、黑色圓石💣；切到立即 finish(true) 遊戲結束。
+- 連斬：同一刀（pointerdown→up）chainCountRef 計數，切中第 n 顆加 (n−1)×5 分（10/15/20…）；meteorChainBonus(n)=10n+5(n−1) 匯出供測試。聚集生成：22% 隕石與前一顆同 delayMs、x±12% 緊鄰落下，製造一刀多斬機會。
+- 文案：卡片 desc、開始頁規則（💣 切到就結束／一刀連斬有加成）、基地條、漏接/誤切「能量」全改「能源」、波末「個位數特徵小筆記」→「特徵小筆記」。
+- 測試：classroomBank +2（炸彈不變量 8 輪 seed 掃描：1–2 顆、前 3 絕無、目標數恆 7；chainBonus 10/25/40）、ClassroomComponents +2（切炸彈立即結束、切割產生左右兩半）＋文案斷言更新。全量 182 檔 1111 tests 綠、tsc 0 error、build OK。
+- 踩坑：重寫 MeteorGame 時 flash 浮條漏渲染（slice 邏輯對但 UI 沒元素），用 dbg 測試掃 body.innerHTML 才抓到——改互動元件時先盤點「所有會出現/消失的 UI 元素」再動筆。

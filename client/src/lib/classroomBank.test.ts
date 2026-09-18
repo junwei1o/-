@@ -17,6 +17,7 @@ import {
   listFactors,
   loadClassroomBest,
   meteorStars,
+  meteorChainBonus,
   buildMeteorWaves,
   orderToPaper,
   saveClassroomBest,
@@ -291,5 +292,35 @@ describe("倍數防衛戰題庫", () => {
     expect(meteorStars(0)).toBe(3);
     expect(meteorStars(4)).toBe(2);
     expect(meteorStars(5)).toBe(1);
+  });
+
+  it("每波 1–2 顆炸彈：前三顆絕無炸彈、炸彈不是目標、目標數不變", () => {
+    for (let i = 0; i < 8; i += 1) {
+      const waves = buildMeteorWaves(3, seeded(0.2 + i * 0.11));
+      for (const wave of waves) {
+        const bombs = wave.meteors.filter((m) => m.isBomb);
+        expect(bombs.length).toBeGreaterThanOrEqual(1);
+        expect(bombs.length).toBeLessThanOrEqual(2);
+        for (const bomb of bombs) {
+          expect(bomb.isTarget).toBe(false);
+        }
+        // 前三顆（delay 最早的）不能是炸彈
+        const firstThree = [...wave.meteors]
+          .sort((a, b) => a.delayMs - b.delayMs)
+          .slice(0, 3);
+        for (const meteor of firstThree) {
+          expect(meteor.isBomb).toBe(false);
+        }
+        // 目標數維持 7（炸彈只替換干擾隕石）
+        expect(wave.meteors.filter((m) => m.isTarget)).toHaveLength(7);
+      }
+    }
+  });
+
+  it("meteorChainBonus 連斬計分：10／25／40", () => {
+    expect(meteorChainBonus(0)).toBe(0);
+    expect(meteorChainBonus(1)).toBe(10);
+    expect(meteorChainBonus(2)).toBe(25);
+    expect(meteorChainBonus(3)).toBe(40);
   });
 });
