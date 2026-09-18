@@ -381,3 +381,9 @@ curl -s https://xue-gr3a.onrender.com/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | h
 - 測試：classroomBank.test.ts +4（格線內不變量、平方數彩蛋、重玩性、星等）；ClassroomComponents +2（錯誤面積失誤＋重複排法不重計、五關全對 3 星）；QuizRoom.test 8→9 張卡。全量 182 檔 1119 tests 綠、tsc 0 error、build OK。
 - 踩坑：同一檔案多個 Edit 併發送出會有部分未落盤（ClassroomPlay import、QuizRoom 卡片曾丟失），同一檔的多次編輯應逐一確認或序列執行；Set 展開要 Array.from（TS2802）。
 - 部署修正（9db6748）：128703f 線上 404（GAME_META 漏 rect，同檔併發編輯未落盤）→ b1231c4 補；再修互動——Chromium 的 click 在 pointerup 後的獨立 task 派發，setTimeout(0) 清抑制旗標會早於 click 執行導致錨點被 click 切掉，改為「pointerdown 重置 pointerHandledRef、commit 時設立」無計時器方案，且 commit 內改用 applyAnchor(null) 同步清 anchoredRef（原 setAnchored(null) 漏清 ref 造成錨點殘留）。線上回歸：rect 9/9、hub 9 卡／meteor／factor 全過、無 pageerror。
+
+## 2026-09-19 長方形拼拼樂美化
+- 視覺：格線改方格紙質感（米黃底＋淡藍格線＋紙張外框陰影）；已拼出的磚改六色積木（RECT_BRICK_COLORS：海藍/暖橙/綠/紫/磚紅/青，每種排法一色、立體漸層斜面＋白邊圓角，同格被多排法覆蓋顯示最新色）；chips 加同色色點（rg-dot）與 Pop 入場。
+- 動效：預覽呼吸動畫、錨點脈動（等第二下）、磚塊彈跳入場（rg-brick-in）、flash 滑入、過關面板 rg-pop、正方形彩蛋 chip 搖擺；@media (prefers-reduced-motion: reduce) 全部關閉。
+- 新增即時尺寸提示條 rg-status：拖曳中顯示「目前選取 a × b ＝ x 格，還差/可以放手了」，面積等於 n 轉綠（aria-live polite）。
+- 驗證：tsc 0 錯、1119 tests 全綠、bundle index-DRwDnMq0.js 線上一致；線上回歸 10/10（含磚色格數、chip 色點＝磚 class、即時提示、滑動手勢）。踩坑：漸層磚色在 background-image，computed backgroundColor 是透明，比對色要用 class。
