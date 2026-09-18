@@ -28,6 +28,9 @@ type Flash = { text: string; kind: "ok" | "no" | "info" } | null;
 
 const LEVEL_COUNT = 5;
 
+/** 積木配色（米黃暖橙海藍延伸，與教室佈置一致）；每種排法一色。 */
+const RECT_BRICK_COLORS = ["#3e7cb1", "#e8843a", "#5b8a4b", "#8a6bb5", "#c8553d", "#2f7d8f"];
+
 function cellKey(r: number, c: number): string {
   return `${r}-${c}`;
 }
@@ -334,10 +337,11 @@ export default function RectGame({ muted = false, onExit, onBest, bestStars }: P
   }
 
   const round = rounds[roundIndex];
-  const foundKeys = new Set<string>();
-  for (const pair of found) {
-    for (const key of Array.from(pairCells(pair))) foundKeys.add(key);
-  }
+  // 每種排法一種磚色；同格被多個排法覆蓋時顯示最新一個的顏色。
+  const cellColor = new Map<string, number>();
+  found.forEach((pair, index) => {
+    for (const key of Array.from(pairCells(pair))) cellColor.set(key, index % RECT_BRICK_COLORS.length);
+  });
   const previewKeys = new Set<string>();
   if (preview) {
     for (let r = preview.r1; r <= preview.r2; r += 1) {
@@ -345,6 +349,9 @@ export default function RectGame({ muted = false, onExit, onBest, bestStars }: P
     }
   }
   const previewArea = preview ? rectArea(preview) : 0;
+  const previewLabel = preview
+    ? `${preview.r2 - preview.r1 + 1} × ${preview.c2 - preview.c1 + 1}`
+    : null;
   const isLastRound = roundIndex + 1 >= rounds.length;
   const remaining = round.realPairs.length - found.length;
 
@@ -379,8 +386,11 @@ export default function RectGame({ muted = false, onExit, onBest, bestStars }: P
 
         <div className="rg-foundlist" aria-label="已找到的排法">
           <span className="rg-foundchip is-granted">1 × {round.n}（送分）</span>
-          {found.map(([a, b]) => (
-            <span key={`${a}x${b}`} className="rg-foundchip">{a} × {b}</span>
+          {found.map(([a, b], index) => (
+            <span key={`${a}x${b}`} className="rg-foundchip">
+              <i className="rg-dot" style={{ background: RECT_BRICK_COLORS[index % RECT_BRICK_COLORS.length] }} aria-hidden="true" />
+              {a} × {b}
+            </span>
           ))}
           {round.kind === "square" && (
             <span className="rg-foundchip is-square">🥚 藏有正方形排法</span>
@@ -407,9 +417,10 @@ export default function RectGame({ muted = false, onExit, onBest, bestStars }: P
             const r = Math.floor(i / RECT_GRID_COLS);
             const c = i % RECT_GRID_COLS;
             const key = cellKey(r, c);
+            const colorIndex = cellColor.get(key);
             const cls = [
               "rg-cell",
-              foundKeys.has(key) ? "is-filled" : "",
+              colorIndex !== undefined ? `is-filled rg-brick-${colorIndex}` : "",
               previewKeys.has(key) ? "is-preview" : "",
               anchored && anchored.r === r && anchored.c === c ? "is-anchored" : "",
             ]
@@ -429,10 +440,15 @@ export default function RectGame({ muted = false, onExit, onBest, bestStars }: P
             );
           })}
         </div>
+        <p className={`rg-status${preview ? (previewArea === round.n ? " is-ok" : " is-no") : ""}`} role="status" aria-live="polite">
+          {preview
+            ? `目前選取 ${previewLabel} ＝ ${previewArea} 格${previewArea === round.n ? "，可以放手了！" : `，還差 ${round.n - previewArea} 格`}`
+            : "在格線上拖曳（或點一角再點對角）開始拼磚"}
+        </p>
         <p className="rg-tip">玩法：在格線上按住拖出一個長方形放開；或先點一角、再點對角。面積不等於 {round.n} 會算失誤喔！</p>
 
         {levelDone && (
-          <div role="status" className="fc-feedback">
+          <div role="status" className="fc-feedback rg-pop">
             <p className={`cr-hint ${timedOut ? "is-no" : "is-ok"}`}>
               {timedOut
                 ? `時間到！${round.n} 的排法一共有 ${round.pairs.length} 種`
