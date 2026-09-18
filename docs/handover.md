@@ -387,3 +387,10 @@ curl -s https://xue-gr3a.onrender.com/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | h
 - 動效：預覽呼吸動畫、錨點脈動（等第二下）、磚塊彈跳入場（rg-brick-in）、flash 滑入、過關面板 rg-pop、正方形彩蛋 chip 搖擺；@media (prefers-reduced-motion: reduce) 全部關閉。
 - 新增即時尺寸提示條 rg-status：拖曳中顯示「目前選取 a × b ＝ x 格，還差/可以放手了」，面積等於 n 轉綠（aria-live polite）。
 - 驗證：tsc 0 錯、1119 tests 全綠、bundle index-DRwDnMq0.js 線上一致；線上回歸 10/10（含磚色格數、chip 色點＝磚 class、即時提示、滑動手勢）。踩坑：漸層磚色在 background-image，computed backgroundColor 是透明，比對色要用 class。
+
+## 2026-09-19 全站風格統一
+- 問題：全站兩套色——index.css 品牌 tokens（--tidal #0B6E8E／--coral #E8754A／--moss／--yellow）vs 教室子系統 fallback（--sea #2f7d8f／--orange #e8843a）；且教室 hub 預設皮「極簡紫」整組紫色漸層與全站調性脫鉤。
+- 色板橋接：index.css :root 新增 --card/--sea/--sea-d/--orange/--orange-d/--green/--red/--gold 對映品牌色（--sea=#0B6E8E、--orange=#E8754A、--green=--moss、--gold=--yellow、--orange-d=#C25B36）；classroom.css 的 --cr-* 本就 var() 掛載，自動繼承，改色只動 index.css 一行。
+- 硬編碼清掃：classroom.css 19 處舊 rgba（232,132,58／62,124,177／47,125,143）全換 coral/tidal rgba；MeteorGame 光刀 stroke 同步；QuizRoom 玩法卡強調色對齊（flip #0B6E8E、image #6C8460、bolt #E8B84B、rush #E8754A、meteor #1B7082、rect #64866D，紫/粉/磚紅保留做區別）。
+- 極簡紫→極簡海：concise 皮全組紫色（#6d5bd0/#5b4bc4/#6454d6 漸層/#a78bfa/#d6cff7/#e8e3f8/#f1edfd…）重著色為品牌海藍家族，label 改「極簡海」、色點 #0B6E8E；skin id 不變（concise），既有使用者本機偏好自動沿用新配色，測試僅改名。
+- 驗證：tsc 0 錯、1119 tests 綠、bundle index-s6OndpMm.js 一致；線上回歸 rect 10/10＋10 頁截圖審計（home/quiz-room/practice/battle/review-hub/weekly-quiz/factor/rect/expedition/gallery）全部呈現同一套米黃＋海藍＋暖橙。battle 為刻意的夜戰深色主題、quiz-room 另兩張皮（孟菲斯／經典海報）為可切換的佈置主題，非不一致。
