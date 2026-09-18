@@ -408,3 +408,4 @@ curl -s https://xue-gr3a.onrender.com/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | h
 - QuizRoom hub：cards 9→6（flipdex/flashrush/relay/trap/meteor/duo）、playRecords 同步、「自由玩法（6 種融合玩法）」；測試改 6 卡。
 - 驗證：tsc 0 錯、1119 tests 全綠、build 成功。
 - 踩坑：Edit 工具批次多檔編輯會「部分静默丟失」（本輪 6 處），每個 Edit 後必 grep 驗證；span 地標章不能放進 <svg> 內，要放 canvas div 層。
+- 補記（同日）：面板「真實地標＋關卡碼頭」與 QuizRunner flipdex 三處（初始 revealed／begin 重置／翻牌渲染）曾因 Edit 靜默丟失，已於 80ec616／482c2e4 補上；最終 bundle index-DnVZPJ5H.js 線上一致，線上 Playwright 回歸 25/25（地標章 15、面板地標 3、碼頭 2 並可導航 /classroom/duo、雙重奏兩段流程、閃電接力 mixed、翻牌圖鑑翻牌、舊路由 6 條相容、Hub 六卡、無 pageerror）。
