@@ -381,6 +381,105 @@ export function factorStars(totalErrors: number): 1 | 2 | 3 {
   return 1;
 }
 
+/* ============================== 倍數防衛戰 ============================== */
+
+/** 單顆隕石腳本：value 為石上數字；x 為水平落點（%）；delayMs 為開波後幾毫秒出現；durationMs 為落地秒數。 */
+export type MeteorSpec = {
+  id: string;
+  value: number;
+  isTarget: boolean;
+  x: number;
+  delayMs: number;
+  durationMs: number;
+};
+
+export type MeteorWave = {
+  id: string;
+  /** 本波要攔截的目標倍數（2 / 5 / 10）。 */
+  multipleOf: number;
+  /** 波次標題（例：「2 的倍數」）。 */
+  label: string;
+  /** 波次結束後的教學註記（個位數特徵）。 */
+  hint: string;
+  /** 隕石腳本（依 delayMs 由小到大）。 */
+  meteors: MeteorSpec[];
+};
+
+const METEOR_WAVE_CONFIG: Array<{ multipleOf: number; label: string; hint: string }> = [
+  {
+    multipleOf: 2,
+    label: "2 的倍數",
+    hint: "2 的倍數個位一定是 0、2、4、6、8——先看個位數，就能快速攔截！",
+  },
+  {
+    multipleOf: 5,
+    label: "5 的倍數",
+    hint: "5 的倍數個位一定是 0 或 5；個位是其他數字的隕石，讓它掉下去也沒關係。",
+  },
+  {
+    multipleOf: 10,
+    label: "同時是 2 和 5 的倍數",
+    hint: "同時是 2 和 5 的倍數就是 10 的倍數，個位一定是 0；只有 2 的倍數或只有 5 的倍數都不能攔截喔！",
+  },
+];
+
+export const METEOR_WAVE_TIME = 42; // 每波秒數
+export const METEOR_ENERGY_MAX = 15;
+export const METEOR_TARGETS_PER_WAVE = 7;
+export const METEOR_DECOYS_PER_WAVE = 9;
+const METEOR_GAP_MS = 2200;
+const METEOR_FIRST_DELAY_MS = 600;
+
+function buildMeteorPool(multipleOf: number): { targets: number[]; decoys: number[] } {
+  const targets: number[] = [];
+  const decoys: number[] = [];
+  for (let v = 10; v <= 99; v += 1) {
+    if (multipleOf === 10) {
+      // 第三波陷阱：干擾項全是「2 的倍數」或「5 的倍數」但不是 10 的倍數。
+      if (v % 10 === 0) targets.push(v);
+      else if (v % 2 === 0 || v % 5 === 0) decoys.push(v);
+    } else if (v % multipleOf === 0) {
+      targets.push(v);
+    } else {
+      decoys.push(v);
+    }
+  }
+  return { targets, decoys };
+}
+
+function makeMeteorWave(index: number, random: () => number): MeteorWave {
+  const cfg = METEOR_WAVE_CONFIG[index % METEOR_WAVE_CONFIG.length];
+  const { targets, decoys } = buildMeteorPool(cfg.multipleOf);
+  const picked = shuffleArray(
+    [
+      ...shuffleArray(targets, random).slice(0, METEOR_TARGETS_PER_WAVE),
+      ...shuffleArray(decoys, random).slice(0, METEOR_DECOYS_PER_WAVE),
+    ],
+    random,
+  );
+  const meteors = picked.map((value, i) => ({
+    id: `meteor-${index + 1}-${i + 1}`,
+    value,
+    isTarget: value % cfg.multipleOf === 0,
+    x: 12 + Math.floor(random() * 76),
+    delayMs: METEOR_FIRST_DELAY_MS + i * METEOR_GAP_MS,
+    durationMs: 3800 + Math.floor(random() * 1400),
+  }));
+  return { id: `meteor-wave-${index + 1}`, multipleOf: cfg.multipleOf, label: cfg.label, hint: cfg.hint, meteors };
+}
+
+/** 倍數防衛戰波次：3 波（2 的倍數→5 的倍數→同時是 2 和 5 的倍數），每波 16 顆隕石含干擾。 */
+export function buildMeteorWaves(count = 3, random: () => number = Math.random): MeteorWave[] {
+  return Array.from({ length: count }, (_, i) => makeMeteorWave(i, random));
+}
+
+/** 倍數防衛戰星等：零失誤 3 星、總失誤 ≤4 二星，其餘 1 星。 */
+export function meteorStars(mistakes: number): 1 | 2 | 3 {
+  if (mistakes <= 0) return 3;
+  if (mistakes <= 4) return 2;
+  return 1;
+}
+
 /* ============================== 計分 ============================== */
 
 /** 依正確率給 1–3 星（全對 3 星、≥7 成 2 星，其餘 1 星）。 */

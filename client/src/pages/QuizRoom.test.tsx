@@ -16,7 +16,7 @@ describe("QuizRoom 我的教室", () => {
     localStorage.clear();
   });
 
-  it("展示七種自由玩法並導向 /classroom 目的地", () => {
+  it("展示八種自由玩法並導向 /classroom 目的地", () => {
     render(<QuizRoom />);
     expect(screen.getByRole("heading", { name: /我的教室/ })).toBeInTheDocument();
 
@@ -28,6 +28,7 @@ describe("QuizRoom 我的教室", () => {
       ["選擇配對接力", "/classroom/relay"],
       ["陷阱題挑戰", "/classroom/trap"],
       ["因數探險", "/classroom/factor"],
+      ["倍數防衛戰", "/classroom/meteor"],
     ];
     for (const [label, href] of plays) {
       fireEvent.click(screen.getByRole("button", { name: new RegExp(label) }));

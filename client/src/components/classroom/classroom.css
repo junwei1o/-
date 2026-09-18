@@ -845,3 +845,148 @@
   .fc-bubbles { gap: 8px; }
   .fc-bubble { min-height: 56px; font-size: 22px; }
 }
+
+/* ---------------- 倍數防衛戰（隕石攔截） ---------------- */
+
+.md-start-tip {
+  margin: 10px 0 0;
+  font-size: 13.5px;
+  line-height: 1.7;
+  color: var(--cr-sea-d);
+  background: #eaf3f5;
+  border: 1.5px dashed var(--cr-sea);
+  border-radius: 12px;
+  padding: 10px 12px;
+}
+
+.md-energybar {
+  height: 16px;
+  border: 2.5px solid var(--cr-ink);
+  border-radius: 999px;
+  background: var(--cr-card);
+  overflow: hidden;
+  margin: 4px 0 10px;
+}
+.md-energy-fill {
+  display: block;
+  height: 100%;
+  border-radius: 999px 0 0 999px;
+  background: linear-gradient(90deg, #79b06a, var(--cr-green));
+  transition: width 0.25s ease;
+}
+.md-energy-fill.is-low { background: linear-gradient(90deg, #d97b62, var(--cr-red)); }
+
+.md-wavebanner {
+  align-self: center;
+  display: inline-block;
+  margin: 2px auto 10px;
+  padding: 7px 20px;
+  border: 2.5px solid var(--cr-ink);
+  border-radius: 999px;
+  background: var(--cr-card);
+  font-weight: 900;
+  font-size: 16px;
+  color: var(--cr-orange-d);
+  box-shadow: 0 3px 0 rgba(58, 47, 35, 0.14);
+  text-align: center;
+  width: fit-content;
+}
+
+.md-field {
+  position: relative;
+  height: 420px;
+  border: 3px solid var(--cr-ink);
+  border-radius: 18px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 20% 12%, rgba(255, 255, 255, 0.7), transparent 34%),
+    linear-gradient(180deg, #dceef7 0%, #eef5ee 62%, var(--cr-paper) 100%);
+  box-shadow: inset 0 2px 8px rgba(58, 47, 35, 0.1);
+  margin: 4px 0 14px;
+}
+
+.md-meteor {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 60px;
+  height: 60px;
+  padding: 0;
+  border-radius: 50%;
+  border: 3px solid var(--cr-ink);
+  background: radial-gradient(circle at 34% 30%, #fffdf6, #f3e2c4 78%);
+  color: var(--cr-ink);
+  font-weight: 900;
+  font-size: 19px;
+  font-family: inherit;
+  cursor: pointer;
+  box-shadow: 0 4px 0 rgba(58, 47, 35, 0.22);
+  touch-action: manipulation;
+  transition: top 0.25s linear;
+}
+.md-meteor:active { transform: translate(-50%, -50%) scale(0.92); }
+
+.md-base {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border-top: 3px solid var(--cr-ink);
+  background: repeating-linear-gradient(45deg, #f3d9b0 0 14px, #eccf9f 14px 28px);
+  font-size: 12px;
+  font-weight: 800;
+  color: #7a5c33;
+  pointer-events: none;
+}
+
+.md-flash {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 2.5px solid var(--cr-ink);
+  font-size: 13.5px;
+  font-weight: 900;
+  white-space: nowrap;
+  max-width: 92%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  animation: md-pop 0.9s ease;
+  pointer-events: none;
+}
+.md-flash.is-ok { background: #e3f0dc; color: var(--cr-green); }
+.md-flash.is-no { background: #f8e0d8; color: var(--cr-red); }
+@keyframes md-pop {
+  0% { transform: translateX(-50%) scale(0.7); opacity: 0; }
+  18% { transform: translateX(-50%) scale(1.06); opacity: 1; }
+  80% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.md-wave-end-title { margin: 4px 0 8px; font-size: 20px; color: var(--cr-ink); }
+.md-hint-box {
+  margin: 12px 0 0;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: #f3ead5;
+  border: 1.5px dashed var(--cr-line);
+}
+.md-hint-title { margin: 0 0 6px; font-size: 14px; font-weight: 900; color: var(--cr-orange-d); }
+.md-hint-body { margin: 0; font-size: 14.5px; line-height: 1.75; color: var(--cr-ink); }
+.md-next-wave { width: 100%; margin-top: 14px; }
+
+@media (max-width: 520px) {
+  .md-field { height: 360px; }
+  .md-meteor { width: 56px; height: 56px; font-size: 17px; }
+  .md-wavebanner { font-size: 14px; padding: 6px 14px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .md-flash { animation: none; opacity: 1; }
+}

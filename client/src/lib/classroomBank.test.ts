@@ -16,6 +16,8 @@ import {
   fillToPaper,
   listFactors,
   loadClassroomBest,
+  meteorStars,
+  buildMeteorWaves,
   orderToPaper,
   saveClassroomBest,
   trapStars,
@@ -219,5 +221,47 @@ describe("教室最佳紀錄（local-first）", () => {
     const loaded = loadClassroomBest();
     expect(loaded.flip?.stars).toBe(3);
     expect(loaded.rush?.score).toBe(120);
+  });
+});
+
+describe("倍數防衛戰題庫", () => {
+  it("三波分別考 2、5、10 的倍數，每波 7 目標＋9 干擾、時間遞增", () => {
+    const waves = buildMeteorWaves(3, seeded());
+    expect(waves).toHaveLength(3);
+    expect(waves.map((w) => w.multipleOf)).toEqual([2, 5, 10]);
+    for (const wave of waves) {
+      expect(wave.meteors).toHaveLength(16);
+      const targets = wave.meteors.filter((m) => m.isTarget);
+      expect(targets).toHaveLength(7);
+      for (const meteor of wave.meteors) {
+        expect(meteor.value).toBeGreaterThanOrEqual(10);
+        expect(meteor.value).toBeLessThanOrEqual(99);
+        expect(meteor.isTarget).toBe(meteor.value % wave.multipleOf === 0);
+        expect(meteor.x).toBeGreaterThanOrEqual(12);
+        expect(meteor.x).toBeLessThanOrEqual(88);
+        expect(meteor.durationMs).toBeGreaterThanOrEqual(3800);
+      }
+      const delays = wave.meteors.map((m) => m.delayMs);
+      expect([...delays].sort((a, b) => a - b)).toEqual(delays);
+      // 最後一顆要在波次時間（42s）內落地
+      const last = wave.meteors[wave.meteors.length - 1];
+      expect(last.delayMs + last.durationMs).toBeLessThan(42_000);
+    }
+  });
+
+  it("第三波干擾全是「2 或 5 的倍數」陷阱（但不是 10 的倍數）", () => {
+    const waves = buildMeteorWaves(3, seeded());
+    const decoys = waves[2].meteors.filter((m) => !m.isTarget);
+    expect(decoys.length).toBeGreaterThan(0);
+    for (const meteor of decoys) {
+      expect(meteor.value % 2 === 0 || meteor.value % 5 === 0).toBe(true);
+      expect(meteor.value % 10).not.toBe(0);
+    }
+  });
+
+  it("meteorStars 零失誤 3 星、≤4 二星、其餘 1 星", () => {
+    expect(meteorStars(0)).toBe(3);
+    expect(meteorStars(4)).toBe(2);
+    expect(meteorStars(5)).toBe(1);
   });
 });

@@ -8,7 +8,8 @@ import OrderSteps from "./OrderSteps";
 import QuizRunner, { type RunnerQuestion } from "./QuizRunner";
 import RushRunner from "./RushRunner";
 import FactorGame from "./FactorGame";
-import { buildFactorRounds } from "@/lib/classroomBank";
+import MeteorGame from "./MeteorGame";
+import { buildFactorRounds, buildMeteorWaves } from "@/lib/classroomBank";
 import type { PaperQuestion } from "@/lib/paperExam";
 
 afterEach(() => {
@@ -281,6 +282,117 @@ describe("FactorGame 因數探險", () => {
 
     expect(screen.getByText(/時間到/)).toBeInTheDocument();
     expect(screen.getByText(/因數兩兩成對/)).toBeInTheDocument();
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+  });
+});
+
+describe("MeteorGame 倍數防衛戰", () => {
+  it("攔截目標倍數加分回能，誤觸非倍數扣能", () => {
+    vi.useFakeTimers();
+    vi.spyOn(Math, "random").mockReturnValue(0.5);
+    const waves = buildMeteorWaves(3, () => 0.5);
+    render(<MeteorGame onExit={() => {}} />);
+    fireEvent.click(screen.getByRole("button", { name: "開始防衛" }));
+
+    // 快進讓前兩顆隕石登場（尚未落地：首顆 600ms 出現、約 5100ms 才落地）
+    act(() => { vi.advanceTimersByTime(3200); });
+    const energyNum = () => Number(document.querySelector(".md-energy-num")?.textContent);
+    const scoreNum = () => Number(document.querySelector(".md-score")?.textContent);
+    expect(energyNum()).toBe(15);
+    expect(scoreNum()).toBe(0);
+
+    const firstTwo = waves[0].meteors.slice(0, 2);
+    const target = firstTwo.find((m) => m.isTarget)!;
+    const decoy = firstTwo.find((m) => !m.isTarget)!;
+    expect(target && decoy).toBeTruthy();
+
+    // 攔截目標：+10 分、能源回滿上限
+    fireEvent.click(screen.getByRole("button", { name: `隕石 ${target.value}` }));
+    expect(scoreNum()).toBe(10);
+    expect(energyNum()).toBe(15);
+    expect(screen.queryByRole("button", { name: `隕石 ${target.value}` })).not.toBeInTheDocument();
+
+    // 誤觸干擾：−1 能量、出現提示
+    fireEvent.click(screen.getByRole("button", { name: `隕石 ${decoy.value}` }));
+    expect(energyNum()).toBe(14);
+    expect(screen.getByText(/不是 2 的倍數/)).toBeInTheDocument();
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+  });
+
+  it("目標隕石漏接扣 2 能量並出現提示", () => {
+    vi.useFakeTimers();
+    vi.spyOn(Math, "random").mockReturnValue(0.5);
+    const waves = buildMeteorWaves(3, () => 0.5);
+    render(<MeteorGame onExit={() => {}} />);
+    fireEvent.click(screen.getByRole("button", { name: "開始防衛" }));
+
+    const first = waves[0].meteors[0];
+    // 快進超過第一顆的出現＋落地時間，不點它
+    act(() => { vi.advanceTimersByTime(first.delayMs + first.durationMs + 600); });
+    if (first.isTarget) {
+      expect(document.querySelector(".md-energy-num")?.textContent).toBe("13");
+      expect(screen.getByText(/漏接目標隕石/)).toBeInTheDocument();
+    } else {
+      // 干擾隕石落地無事
+      expect(document.querySelector(".md-energy-num")?.textContent).toBe("15");
+    }
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+  });
+
+  it("三波全攔截、零失誤撐完，結算三顆星並回報最佳紀錄", () => {
+    vi.useFakeTimers();
+    vi.spyOn(Math, "random").mockReturnValue(0.5);
+    const waves = buildMeteorWaves(3, () => 0.5);
+    const onBest = vi.fn();
+    render(<MeteorGame onExit={() => {}} onBest={onBest} />);
+    fireEvent.click(screen.getByRole("button", { name: "開始防衛" }));
+
+    for (let w = 0; w < waves.length; w += 1) {
+      const wave = waves[w];
+      let elapsed = 0; // beginWave 會重置波內時鐘
+      for (const meteor of wave.meteors) {
+        act(() => { vi.advanceTimersByTime(meteor.delayMs - elapsed + 200); });
+        elapsed = meteor.delayMs + 200;
+        if (meteor.isTarget) {
+          fireEvent.click(screen.getByRole("button", { name: `隕石 ${meteor.value}` }));
+        }
+      }
+      // 快進到本波結束
+      act(() => { vi.advanceTimersByTime(42_000 - elapsed + 500); });
+      if (w < waves.length - 1) {
+        expect(screen.getByText(/個位數特徵小筆記/)).toBeInTheDocument();
+        fireEvent.click(screen.getByRole("button", { name: /迎接下一波/ }));
+      }
+    }
+
+    expect(screen.getByText("★★★")).toBeInTheDocument();
+    expect(screen.getByText(/全程零失誤/)).toBeInTheDocument();
+    expect(onBest).toHaveBeenCalledWith(expect.objectContaining({ stars: 3, correct: 21, total: 21 }));
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+  });
+
+  it("能源歸零提前結束，顯示基地能源耗盡", () => {
+    vi.useFakeTimers();
+    vi.spyOn(Math, "random").mockReturnValue(0.5);
+    const waves = buildMeteorWaves(3, () => 0.5);
+    render(<MeteorGame onExit={() => {}} />);
+    fireEvent.click(screen.getByRole("button", { name: "開始防衛" }));
+
+    // 持續快進並點掉每一顆干擾隕石（−1）＋讓目標隕石全部漏接（−2×7）→ 能源必歸零
+    const decoyValues = new Set(waves[0].meteors.filter((m) => !m.isTarget).map((m) => m.value));
+    for (let t = 0; t < 120 && document.querySelector(".md-field"); t += 1) {
+      act(() => { vi.advanceTimersByTime(500); });
+      for (const button of Array.from(document.querySelectorAll(".md-meteor"))) {
+        const value = Number((button.getAttribute("aria-label") ?? "").replace("隕石 ", ""));
+        if (decoyValues.has(value)) fireEvent.click(button);
+      }
+    }
+    expect(screen.getByText(/基地能源耗盡/)).toBeInTheDocument();
+    expect(screen.getByText(/獲得了 0 分/)).toBeInTheDocument();
     vi.useRealTimers();
     vi.restoreAllMocks();
   });

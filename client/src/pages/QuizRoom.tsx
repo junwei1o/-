@@ -11,6 +11,7 @@ import {
   Layers,
   Link2,
   RotateCcw,
+  Shield,
   Swords,
   Telescope,
   Timer,
@@ -103,6 +104,16 @@ export default function QuizRoom() {
       tilt: "mc-tilt-l",
       best: starLabel(best.factor?.stars),
     },
+    {
+      id: "meteor",
+      label: "倍數防衛戰",
+      desc: "數學五上：隕石來襲！快速點擊目標倍數攔截隕石，守住基地 15 格能源。",
+      href: "/classroom/meteor",
+      icon: Shield,
+      color: "#3e7cb1",
+      tilt: "mc-tilt-r",
+      best: starLabel(best.meteor?.stars),
+    },
   ];
 
   const modes = [
@@ -139,7 +150,7 @@ export default function QuizRoom() {
 
       <h2 className="mc-section-title">
         <span className="mc-doodle" aria-hidden="true"><Layers size={18} /></span>
-        自由玩法（7 種新玩法）
+        自由玩法（8 種新玩法）
       </h2>
       <div className="mc-play-grid">
         {plays.map(({ id, label, desc, href, icon: Icon, color, tilt, best: bestText }) => (
