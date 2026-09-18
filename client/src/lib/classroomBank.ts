@@ -394,6 +394,16 @@ export type MeteorSpec = {
   durationMs: number;
 };
 
+/** 波次操作模式：點擊／劃切（漂浮隕石）、拖拽（托盤）、混合（兩者同場）。 */
+export type MeteorMode = "tap" | "slash" | "drag" | "mixed";
+
+export const METEOR_MODE_INFO: Record<MeteorMode, { title: string; desc: string }> = {
+  tap: { title: "點擊模式", desc: "快速點擊目標倍數的隕石，別碰到炸彈！" },
+  slash: { title: "劃切模式", desc: "滑動切割目標倍數，一刀連斬有加成，小心炸彈！" },
+  drag: { title: "拖拽模式", desc: "把目標倍數的泡泡拖進基地回收槽；拖錯會爆炸，拖到炸彈會大爆炸！" },
+  mixed: { title: "混合模式", desc: "空中的用點擊或劃切，底部的泡泡要拖進基地——三種操作一起來！" },
+};
+
 export type MeteorWave = {
   id: string;
   /** 本波要攔截的目標倍數（2 / 5 / 10）。 */
@@ -402,8 +412,12 @@ export type MeteorWave = {
   label: string;
   /** 波次結束後的教學註記（個位數特徵）。 */
   hint: string;
-  /** 隕石腳本（依 delayMs 由小到大）。 */
+  /** 本波操作模式（每輪隨機組合、關關換模式）。 */
+  mode: MeteorMode;
+  /** 漂浮隕石腳本（tap/slash/mixed 會落下；drag 為空陣列），依 delayMs 由小到大。 */
   meteors: MeteorSpec[];
+  /** 拖拽托盤的靜態泡泡（drag＝9 顆整格；mixed＝3 顆；其餘空陣列）。 */
+  tray: MeteorSpec[];
 };
 
 const METEOR_WAVE_CONFIG: Array<{ multipleOf: number; label: string; hint: string }> = [
@@ -458,18 +472,23 @@ function buildMeteorPool(multipleOf: number): { targets: number[]; decoys: numbe
   return { targets, decoys };
 }
 
-function makeMeteorWave(cfgIndex: number, index: number, random: () => number): MeteorWave {
-  const cfg = METEOR_WAVE_CONFIG[cfgIndex % METEOR_WAVE_CONFIG.length];
+function buildFallingMeteors(
+  waveNumber: number,
+  cfg: { multipleOf: number },
+  targetCount: number,
+  decoyCount: number,
+  random: () => number,
+): MeteorSpec[] {
   const { targets, decoys } = buildMeteorPool(cfg.multipleOf);
   const picked = shuffleArray(
     [
-      ...shuffleArray(targets, random).slice(0, METEOR_TARGETS_PER_WAVE),
-      ...shuffleArray(decoys, random).slice(0, METEOR_DECOYS_PER_WAVE),
+      ...shuffleArray(targets, random).slice(0, targetCount),
+      ...shuffleArray(decoys, random).slice(0, decoyCount),
     ],
     random,
   );
   const meteors: MeteorSpec[] = picked.map((value, i) => ({
-    id: `meteor-${index + 1}-${i + 1}`,
+    id: `meteor-${waveNumber}-${i + 1}`,
     value,
     isTarget: value % cfg.multipleOf === 0,
     isBomb: false,
@@ -487,23 +506,94 @@ function makeMeteorWave(cfgIndex: number, index: number, random: () => number): 
       };
     }
   }
-  // 炸彈：每波 1–2 顆，只替換第 4 顆以後的干擾隕石（目標數不變、前三顆絕無炸彈）。
+  // 炸彈：1–2 顆，只替換第 4 顆以後的干擾隕石（目標數不變、前三顆絕無炸彈）。
   const bombCount = random() < 0.4 ? 2 : 1;
   const bombIdxPool = meteors.map((_, i) => i).filter((i) => i >= 3 && !meteors[i].isTarget);
   const bombIdx = shuffleArray(bombIdxPool, random).slice(0, bombCount);
   for (const i of bombIdx) {
     meteors[i] = { ...meteors[i], isBomb: true, isTarget: false };
   }
-  return { id: `meteor-wave-${index + 1}`, multipleOf: cfg.multipleOf, label: cfg.label, hint: cfg.hint, meteors };
+  return meteors;
 }
 
-/** 倍數防衛戰波次：每輪隨機組合 3 波——首波考 2 或 5 的倍數（個位數特徵暖身），其餘從 3/9/10 抽，波波不重複。 */
+/** 拖拽托盤：targets 顆目標倍數＋bombs 顆炸彈＋decoys 顆干擾，洗牌後成為靜態泡泡格。 */
+function buildTray(
+  waveNumber: number,
+  cfg: { multipleOf: number },
+  targets: number,
+  bombs: number,
+  decoys: number,
+  random: () => number,
+): MeteorSpec[] {
+  const { targets: targetPool, decoys: decoyPool } = buildMeteorPool(cfg.multipleOf);
+  const picked = shuffleArray(
+    [
+      ...shuffleArray(targetPool, random).slice(0, targets),
+      ...shuffleArray(decoyPool, random).slice(0, bombs + decoys),
+    ],
+    random,
+  );
+  const nonTargetOrder = shuffleArray(
+    picked.map((_, i) => i).filter((i) => picked[i] % cfg.multipleOf !== 0),
+    random,
+  );
+  const bombIdx = new Set(nonTargetOrder.slice(0, bombs));
+  return picked.map((value, i) => {
+    const isTarget = value % cfg.multipleOf === 0;
+    const isBomb = !isTarget && bombIdx.has(i);
+    return {
+      id: `tray-${waveNumber}-${i + 1}`,
+      value,
+      isTarget,
+      isBomb,
+      x: 0,
+      delayMs: 0,
+      durationMs: 0,
+    };
+  });
+}
+
+function makeMeteorWave(cfgIndex: number, mode: MeteorMode, index: number, random: () => number): MeteorWave {
+  const cfg = METEOR_WAVE_CONFIG[cfgIndex % METEOR_WAVE_CONFIG.length];
+  const waveNumber = index + 1;
+  if (mode === "drag") {
+    return {
+      id: `meteor-wave-${waveNumber}`,
+      multipleOf: cfg.multipleOf,
+      label: cfg.label,
+      hint: cfg.hint,
+      mode,
+      meteors: [],
+      tray: buildTray(waveNumber, cfg, 3, 2, 4, random),
+    };
+  }
+  if (mode === "mixed") {
+    return {
+      id: `meteor-wave-${waveNumber}`,
+      multipleOf: cfg.multipleOf,
+      label: cfg.label,
+      hint: cfg.hint,
+      mode,
+      meteors: buildFallingMeteors(waveNumber, cfg, 4, 8, random),
+      tray: buildTray(waveNumber, cfg, 2, 1, 0, random),
+    };
+  }
+  return {
+    id: `meteor-wave-${waveNumber}`,
+    multipleOf: cfg.multipleOf,
+    label: cfg.label,
+    hint: cfg.hint,
+    mode,
+    meteors: buildFallingMeteors(waveNumber, cfg, METEOR_TARGETS_PER_WAVE, METEOR_DECOYS_PER_WAVE, random),
+    tray: [],
+  };
+}
+
+/** 倍數防衛戰波次：每輪從點擊／劃切／拖拽／混合四種模式隨機抽 3 種（關關換模式），倍數主題也隨機組合。 */
 export function buildMeteorWaves(count = 3, random: () => number = Math.random): MeteorWave[] {
-  const firstPool = [0, 1]; // 2 的倍數、5 的倍數
-  const restPool = [2, 3, 4]; // 3、9、同時是 2 和 5
-  const pick = (pool: number[]) => pool.splice(Math.floor(random() * pool.length), 1)[0];
-  const indexes = [pick(firstPool), pick(restPool), pick(restPool)];
-  return indexes.slice(0, count).map((cfgIndex, i) => makeMeteorWave(cfgIndex, i, random));
+  const cfgIndexes = shuffleArray([0, 1, 2, 3, 4], random);
+  const modes = shuffleArray<MeteorMode>(["tap", "slash", "drag", "mixed"], random).slice(0, count);
+  return modes.map((mode, i) => makeMeteorWave(cfgIndexes[i % cfgIndexes.length], mode, i, random));
 }
 
 /** 倍數防衛戰星等：零失誤 3 星、總失誤 ≤4 二星，其餘 1 星。 */

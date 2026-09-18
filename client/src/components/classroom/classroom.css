@@ -1438,3 +1438,83 @@
 @media (prefers-reduced-motion: reduce) {
   .md-frag { animation-duration: 0.3s; }
 }
+
+/* ---- 四模式版：模式提示、拖拽托盤、回收槽、教學 ---- */
+
+.md-modehint {
+  margin: 0 0 8px;
+  text-align: center;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--cr-sea-d);
+}
+
+.md-traywrap {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+  padding: 6px 10px;
+  z-index: 1;
+}
+.md-traywrap--full { top: 16px; justify-content: center; gap: 14px; }
+
+.md-tray {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  max-width: 96%;
+}
+
+.md-meteor.md-static {
+  position: relative;
+  left: auto !important;
+  top: auto !important;
+  transform: none;
+  animation: md-appear 0.25s ease-out;
+}
+.md-meteor.md-static.is-selected {
+  border-color: var(--cr-orange-d);
+  box-shadow: 0 0 0 4px rgba(232, 132, 58, 0.35), 0 4px 0 rgba(58, 47, 35, 0.22);
+}
+@keyframes md-appear {
+  from { opacity: 0; transform: scale(0.7); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.md-slot {
+  width: min(92%, 420px);
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px dashed var(--cr-sea);
+  border-radius: 16px;
+  background: rgba(47, 125, 143, 0.08);
+  color: var(--cr-sea-d);
+  font-weight: 900;
+  font-size: 14px;
+  cursor: pointer;
+  user-select: none;
+  touch-action: none;
+}
+.md-slot.is-active {
+  border-color: var(--cr-orange-d);
+  background: rgba(232, 132, 58, 0.14);
+  color: var(--cr-orange-d);
+}
+
+.md-tut-field { height: 320px; }
+.md-tut-ask { text-align: center; }
+.md-tut-list p { margin: 8px 0; font-size: 14.5px; line-height: 1.8; color: var(--cr-ink); }
+.md-tut-slot { width: 80%; margin: 0 auto; }
+
+@media (max-width: 520px) {
+  .md-traywrap--full { top: 8px; }
+  .md-slot { font-size: 13px; min-height: 52px; }
+}

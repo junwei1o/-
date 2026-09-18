@@ -3,8 +3,10 @@ import { useClassroomSound } from "./useClassroomSound";
 import {
   buildMeteorWaves,
   METEOR_ENERGY_MAX,
+  METEOR_MODE_INFO,
   METEOR_WAVE_TIME,
   meteorStars,
+  type MeteorMode,
   type MeteorSpec,
   type MeteorWave,
 } from "@/lib/classroomBank";
@@ -18,7 +20,7 @@ type Props = {
   bestScore?: number;
 };
 
-type Phase = "start" | "play" | "waveEnd" | "result";
+type Phase = "start" | "tutorial" | "play" | "waveEnd" | "result";
 
 type ActiveMeteor = MeteorSpec & { spawnedAt: number };
 
@@ -41,14 +43,14 @@ const CHAIN_BONUS_STEP = 5;
 const HIT_ENERGY = 1;
 const WRONG_COST = 1;
 const MISS_COST = 2;
+const BOMB_DRAG_COST = 3;
 const TICK_MS = 200;
+const TUTORIAL_KEY = "xue-meteor-tutorial-v1";
 
 /**
- * 倍數防衛戰（切水果版）：手指在場上滑動即可「切割」隕石——
- * 切中目標倍數 +10 分並回 1 能源，同一刀連斬多顆每顆再加 5 分；
- * 切錯非倍數 −1 能源、漏接目標隕石 −2 能源；場上混有炸彈，切到能源直接歸零。
- * 三波隨機組合：首波考 2 或 5 的倍數（個位數特徵暖身），其餘從 3、9、同時是 2 和 5 的倍數抽出；
- * 波次結束揭曉該波特徵的教學註記。點按仍可切割（無障礙／簡單操作）。
+ * 倍數防衛戰（四模式版）：關關換模式——點擊／劃切（漂浮隕石）、拖拽（把目標倍數拖進基地回收槽，
+ * 拖錯會爆炸、拖到炸彈大爆炸）、混合（空中用點／切＋底部要拖）。同一刀連斬多顆有加成；
+ * 漂浮隕石藏炸彈，切到／點到直接結束。附新手教學關（點擊→劃切→拖拽三步實作講解）。
  */
 export default function MeteorGame({ muted = false, onExit, onBest, bestStars, bestScore }: Props) {
   const [waves, setWaves] = useState<MeteorWave[]>(() => buildMeteorWaves(3));
@@ -66,11 +68,25 @@ export default function MeteorGame({ muted = false, onExit, onBest, bestStars, b
   const [newBest, setNewBest] = useState(false);
   const [trail, setTrail] = useState<Array<{ x: number; y: number }>>([]);
   const [fieldSize, setFieldSize] = useState({ w: 0, h: 0 });
+  const [trayLeft, setTrayLeft] = useState<MeteorSpec[]>([]);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [dragOffset, setDragOffset] = useState<{ id: string; dx: number; dy: number } | null>(null);
+  const [tutStep, setTutStep] = useState(0);
+  const [tutSelected, setTutSelected] = useState(false);
+  const [tutorialDone, setTutorialDone] = useState(() => {
+    try {
+      return localStorage.getItem(TUTORIAL_KEY) === "done";
+    } catch {
+      return true;
+    }
+  });
 
   const play = useClassroomSound(muted);
   const wavesRef = useRef(waves);
   const waveIndexRef = useRef(0);
   const meteorsRef = useRef<ActiveMeteor[]>([]);
+  const trayLeftRef = useRef<MeteorSpec[]>([]);
+  const droppedRef = useRef<Set<string>>(new Set());
   const energyRef = useRef(METEOR_ENERGY_MAX);
   const scoreRef = useRef(0);
   const mistakesRef = useRef(0);
@@ -80,15 +96,17 @@ export default function MeteorGame({ muted = false, onExit, onBest, bestStars, b
   const flashTimerRef = useRef<number | null>(null);
   const reportedRef = useRef(false);
   const fieldRef = useRef<HTMLDivElement | null>(null);
+  const slotRef = useRef<HTMLDivElement | null>(null);
   const slashingRef = useRef(false);
   const chainCountRef = useRef(0);
+  const dragRef = useRef<{ id: string; startX: number; startY: number } | null>(null);
+  const movedRef = useRef(false);
   const fragTimersRef = useRef<number[]>([]);
 
   useEffect(() => {
     wavesRef.current = waves;
   }, [waves]);
 
-  // 卸載時清掉所有 fragment 計時器，避免測試與嚴格模式告警。
   useEffect(() => {
     const timers = fragTimersRef;
     return () => timers.current.forEach((t) => window.clearTimeout(t));
@@ -102,14 +120,21 @@ export default function MeteorGame({ muted = false, onExit, onBest, bestStars, b
 
   const finish = useCallback(
     (didLose: boolean) => {
-      const totalTargets = wavesRef.current.reduce((sum, wave) => sum + wave.meteors.filter((m) => m.isTarget).length, 0);
+      const totalTargets = wavesRef.current.reduce(
+        (sum, wave) => sum + wave.meteors.filter((m) => m.isTarget).length + wave.tray.filter((m) => m.isTarget).length,
+        0,
+      );
       const stars = didLose ? 1 : meteorStars(mistakesRef.current);
       setLost(didLose);
       setPhase("result");
       setActive([]);
       setFrags([]);
       setTrail([]);
+      setTrayLeft([]);
+      setDragOffset(null);
+      setSelectedId(null);
       slashingRef.current = false;
+      dragRef.current = null;
       meteorsRef.current = [];
       play(didLose ? "no" : "win");
       if (!reportedRef.current && stars > (bestStars ?? 0)) {
@@ -123,15 +148,32 @@ export default function MeteorGame({ muted = false, onExit, onBest, bestStars, b
   );
 
   const endWave = useCallback(() => {
+    // 拖拽／混合波：沒拖進基地的目標泡泡算漏接。
+    const wave = wavesRef.current[waveIndexRef.current];
+    if (wave && wave.tray.length > 0) {
+      const missedTray = wave.tray.filter((m) => m.isTarget && !droppedRef.current.has(m.id));
+      if (missedTray.length > 0) {
+        mistakesRef.current += missedTray.length;
+        setMistakes(mistakesRef.current);
+        energyRef.current -= MISS_COST * missedTray.length;
+        setEnergy(Math.max(0, energyRef.current));
+        showFlash(`${missedTray.length} 顆目標沒拖進基地，−${MISS_COST * missedTray.length} 能源`, "no");
+      }
+    }
+    if (energyRef.current <= 0) {
+      finish(true);
+      return;
+    }
     meteorsRef.current = [];
     setActive([]);
+    setTrayLeft([]);
     if (waveIndexRef.current + 1 >= wavesRef.current.length) {
       finish(false);
     } else {
       setPhase("waveEnd");
       window.scrollTo({ top: 0 });
     }
-  }, [finish]);
+  }, [finish, showFlash]);
 
   const beginWave = useCallback((index: number) => {
     waveIndexRef.current = index;
@@ -139,6 +181,11 @@ export default function MeteorGame({ muted = false, onExit, onBest, bestStars, b
     spawnCursorRef.current = 0;
     meteorsRef.current = [];
     setActive([]);
+    droppedRef.current = new Set();
+    trayLeftRef.current = [...wavesRef.current[index].tray];
+    setTrayLeft([...trayLeftRef.current]);
+    setSelectedId(null);
+    setDragOffset(null);
     waveStartRef.current = Date.now();
     setTimeLeft(METEOR_WAVE_TIME);
     setPhase("play");
@@ -164,7 +211,7 @@ export default function MeteorGame({ muted = false, onExit, onBest, bestStars, b
     beginWave(0);
   }, [beginWave]);
 
-  /** 切開隕石：分裂成左右兩半飛散墜落。 */
+  /** 切開漂浮隕石：分裂成左右兩半飛散墜落。 */
   const spawnFragments = useCallback((meteor: ActiveMeteor) => {
     const progress = Math.min(1, (Date.now() - meteor.spawnedAt) / meteor.durationMs);
     const top = 6 + progress * 78;
@@ -182,7 +229,7 @@ export default function MeteorGame({ muted = false, onExit, onBest, bestStars, b
     fragTimersRef.current.push(timer);
   }, []);
 
-  /** 切割：滑動劃過或點按都會走到這裡。 */
+  /** 切割／點擊漂浮隕石。 */
   const slice = useCallback(
     (meteor: ActiveMeteor) => {
       if (phase !== "play") return;
@@ -224,7 +271,45 @@ export default function MeteorGame({ muted = false, onExit, onBest, bestStars, b
     [finish, phase, play, showFlash, spawnFragments],
   );
 
-  // 遊戲主迴圈：出隕石、推進落地進度、漏接判定、波次倒數。
+  /** 拖拽泡泡放進回收槽：拖對得分、拖錯爆炸、拖到炸彈大爆炸。 */
+  const dropTray = useCallback(
+    (meteor: MeteorSpec) => {
+      if (phase !== "play") return;
+      droppedRef.current.add(meteor.id);
+      trayLeftRef.current = trayLeftRef.current.filter((m) => m.id !== meteor.id);
+      setTrayLeft([...trayLeftRef.current]);
+      setSelectedId(null);
+      if (meteor.isBomb) {
+        mistakesRef.current += 1;
+        setMistakes(mistakesRef.current);
+        energyRef.current -= BOMB_DRAG_COST;
+        setEnergy(Math.max(0, energyRef.current));
+        play("no");
+        showFlash(`💣 炸彈爆炸！−${BOMB_DRAG_COST} 能源`, "no");
+        if (energyRef.current <= 0) finish(true);
+      } else if (meteor.isTarget) {
+        hitsRef.current += 1;
+        setHits(hitsRef.current);
+        scoreRef.current += SCORE_PER_HIT;
+        setScore(scoreRef.current);
+        energyRef.current = Math.min(METEOR_ENERGY_MAX, energyRef.current + HIT_ENERGY);
+        setEnergy(energyRef.current);
+        play("ok");
+        showFlash(`+${SCORE_PER_HIT} 分，拖對了！`, "ok");
+      } else {
+        mistakesRef.current += 1;
+        setMistakes(mistakesRef.current);
+        energyRef.current -= WRONG_COST;
+        setEnergy(Math.max(0, energyRef.current));
+        play("no");
+        showFlash(`💥 爆炸！${meteor.value} 不是 ${wavesRef.current[waveIndexRef.current].multipleOf} 的倍數，−1 能源`, "no");
+        if (energyRef.current <= 0) finish(true);
+      }
+    },
+    [finish, phase, play, showFlash],
+  );
+
+  // 遊戲主迴圈：出隕石、推進落地進度、漏接判定、波次倒數（拖拽波沒有漂浮隕石，只倒數）。
   useEffect(() => {
     if (phase !== "play") return;
     const wave = wavesRef.current[waveIndexRef.current];
@@ -232,7 +317,6 @@ export default function MeteorGame({ muted = false, onExit, onBest, bestStars, b
     const timer = window.setInterval(() => {
       const elapsed = Date.now() - waveStartRef.current;
 
-      // 出現時刻到的隕石依腳本登場。
       while (
         spawnCursorRef.current < wave.meteors.length &&
         wave.meteors[spawnCursorRef.current].delayMs <= elapsed
@@ -242,7 +326,6 @@ export default function MeteorGame({ muted = false, onExit, onBest, bestStars, b
         spawnCursorRef.current += 1;
       }
 
-      // 落地判定：目標隕石漏接 −2 能源，干擾隕石與炸彈落地無事。
       const remaining: ActiveMeteor[] = [];
       let leaked = false;
       for (const meteor of meteorsRef.current) {
@@ -277,7 +360,7 @@ export default function MeteorGame({ muted = false, onExit, onBest, bestStars, b
     return () => window.clearInterval(timer);
   }, [phase, endWave, finish, play, showFlash]);
 
-  // ---- 滑動切割：pointer 軌跡 + 命中場上隕石 ----
+  // ---- 劃切：pointer 軌跡 + 命中漂浮隕石 ----
   const onSlashStart = (e: React.PointerEvent) => {
     if (phase !== "play") return;
     slashingRef.current = true;
@@ -290,7 +373,16 @@ export default function MeteorGame({ muted = false, onExit, onBest, bestStars, b
   };
 
   const onSlashMove = (e: React.PointerEvent) => {
-    if (!slashingRef.current || phase !== "play") return;
+    if (phase !== "play") return;
+    // 正在拖拽泡泡時不做劃切判定。
+    if (dragRef.current) {
+      const dx = e.clientX - dragRef.current.startX;
+      const dy = e.clientY - dragRef.current.startY;
+      if (Math.hypot(dx, dy) > 8) movedRef.current = true;
+      setDragOffset({ id: dragRef.current.id, dx, dy });
+      return;
+    }
+    if (!slashingRef.current) return;
     const rect = fieldRef.current?.getBoundingClientRect();
     if (rect) {
       const point = { x: e.clientX - rect.left, y: e.clientY - rect.top };
@@ -305,9 +397,67 @@ export default function MeteorGame({ muted = false, onExit, onBest, bestStars, b
     }
   };
 
-  const onSlashEnd = () => {
+  const onSlashEnd = (e?: React.PointerEvent) => {
+    if (dragRef.current && e) {
+      const id = dragRef.current.id;
+      const rect = slotRef.current?.getBoundingClientRect();
+      const inside = rect && e.clientX >= rect.left && e.clientX <= rect.right && e.clientY >= rect.top && e.clientY <= rect.bottom;
+      dragRef.current = null;
+      setDragOffset(null);
+      if (inside) {
+        const meteor = trayLeftRef.current.find((m) => m.id === id);
+        if (meteor) dropTray(meteor);
+      }
+      return;
+    }
     slashingRef.current = false;
     window.setTimeout(() => setTrail([]), 160);
+  };
+
+  const onTrayPointerDown = (meteor: MeteorSpec, e: React.PointerEvent) => {
+    if (phase !== "play") return;
+    e.stopPropagation();
+    dragRef.current = { id: meteor.id, startX: e.clientX, startY: e.clientY };
+    movedRef.current = false;
+    setDragOffset({ id: meteor.id, dx: 0, dy: 0 });
+  };
+
+  const onTrayClick = (meteor: MeteorSpec) => {
+    if (phase !== "play" || movedRef.current) return;
+    // 沒真的拖動就當成「點選」，再點回收槽放下（無障礙／不會拖的小朋友）。
+    setSelectedId((previous) => (previous === meteor.id ? null : meteor.id));
+  };
+
+  const onSlotClick = () => {
+    if (phase !== "play" || !selectedId) return;
+    const meteor = trayLeftRef.current.find((m) => m.id === selectedId);
+    if (meteor) dropTray(meteor);
+  };
+
+  // ---- 新手教學 ----
+  const startTutorial = () => {
+    setTutStep(0);
+    setTutSelected(false);
+    setPhase("tutorial");
+    window.scrollTo({ top: 0 });
+  };
+
+  const advanceTut = (step: number) => {
+    play("ok");
+    setTutStep(step);
+    window.scrollTo({ top: 0 });
+  };
+
+  const finishTutorial = () => {
+    try {
+      localStorage.setItem(TUTORIAL_KEY, "done");
+    } catch {
+      /* 存不了就下次再教 */
+    }
+    setTutorialDone(true);
+    play("win");
+    setTutStep(4);
+    window.scrollTo({ top: 0 });
   };
 
   if (phase === "start") {
@@ -318,27 +468,129 @@ export default function MeteorGame({ muted = false, onExit, onBest, bestStars, b
           <span className="cr-start-emoji" aria-hidden="true">☄️</span>
           <h2>倍數防衛戰</h2>
           <p>
-            用手指在場上<b>滑動切割</b>隕石！切中這一波目標的「倍數」+10 分、回 1 能源；
-            同一刀連斬多顆有連斬加成。切錯非倍數 −1 能源、漏接目標隕石 −2；
-            場上藏有<b>炸彈</b>——切到能源直接歸零，看準再出手！
+            三種操作、關關換模式：<b>點擊</b>目標倍數、用手指<b>劃切</b>隕石、把泡泡<b>拖拽</b>進基地回收槽，
+            還有關卡會混合出題！切錯、拖錯會爆炸，<b>漂浮炸彈切到就結束</b>，看準再出手！
           </p>
           <div className="cr-rules">
-            <span className="cr-rule-chip">共 3 波</span>
+            <span className="cr-rule-chip">4 種模式隨機抽 3 波</span>
             <span className="cr-rule-chip">每波 42 秒</span>
             <span className="cr-rule-chip">一刀連斬有加成</span>
-            <span className="cr-rule-chip">💣 切到就結束</span>
+            <span className="cr-rule-chip">💣 漂浮炸彈切到就結束</span>
           </div>
-          <p className="md-start-tip">
-            小技巧：2 的倍數看個位 0/2/4/6/8；5 的倍數看個位 0/5；3 和 9 的倍數要把每個數字加起來看總和——每輪的三波都是隨機組合，隨時保持警覺！
-          </p>
+          {!tutorialDone && (
+            <p className="md-start-tip">👋 第一次玩？先花 60 秒完成新手教學，學會點擊、劃切、拖拽三種操作！</p>
+          )}
           <button type="button" className="cr-btn" onClick={begin}>開始防衛</button>
+          <button type="button" className="cr-btn-ghost md-tutorial-btn" onClick={startTutorial}>
+            🎓 新手教學{tutorialDone ? "（再看一次）" : ""}
+          </button>
         </div>
       </div>
     );
   }
 
+  if (phase === "tutorial") {
+    return (
+      <div className="cr-page">
+        <div className="cr-top">
+          <button type="button" className="cr-back" onClick={() => setPhase("start")}>← 回開始頁</button>
+          <span className="cr-tag sea">新手教學 {tutStep + 1} / 5</span>
+        </div>
+        {tutStep === 0 && (
+          <div className="cr-q-card" role="status">
+            <h3 className="md-wave-end-title">三種操作，一起學會！</h3>
+            <div className="md-tut-list">
+              <p>👆 <b>點擊</b>：目標倍數的泡泡出現時，快速點它一下就得分。</p>
+              <p>✂️ <b>劃切</b>：用手指在場上滑過泡泡，像切水果一樣把它切開；同一刀連斬多顆更划算。</p>
+              <p>🎯 <b>拖拽</b>：按住泡泡拖進「基地回收槽」；拖錯位置會爆炸，炸彈拖進去會大爆炸！</p>
+              <p>💣 漂浮的炸彈千萬別切、別點，切到能源直接歸零。</p>
+            </div>
+            <button type="button" className="cr-btn sea md-next-wave" onClick={() => advanceTut(1)}>開始練習 →</button>
+          </div>
+        )}
+        {tutStep > 0 && tutStep < 4 && (
+          <div className="cr-q-card">
+            <span className="cr-q-meta">數學 · 五上 · 倍數與因數</span>
+            <p className="cr-q-prompt md-tut-ask">
+              {tutStep === 1 && <>【點擊練習】任務「2 的倍數」：<b>點一下</b>下面是 2 的倍數的泡泡！</>}
+              {tutStep === 2 && <>【劃切練習】任務「2 的倍數」：用手指<b>滑過</b>下面 2 的倍數的泡泡，把它切開！</>}
+              {tutStep === 3 && <>【拖拽練習】任務「2 的倍數」：<b>按住</b> 2 的倍數的泡泡<b>拖進</b>基地回收槽（也可以先點泡泡、再點回收槽）。</>}
+            </p>
+            <div className="md-field md-tut-field">
+              {tutStep === 1 && (
+                <button type="button" className="md-meteor md-static" style={{ left: "50%", top: "30%" }} aria-label="隕石 12" onClick={() => advanceTut(2)}>12</button>
+              )}
+              {tutStep === 2 && (
+                <button
+                  type="button"
+                  className="md-meteor md-static"
+                  style={{ left: "50%", top: "30%" }}
+                  aria-label="隕石 14"
+                  onClick={() => advanceTut(3)}
+                  onPointerDown={() => setTutSelected(false)}
+                  onPointerMove={(e) => {
+                    const hit = document.elementFromPoint(e.clientX, e.clientY);
+                    const bubble = hit instanceof Element ? hit.closest(".md-meteor") : null;
+                    if (bubble) advanceTut(3);
+                  }}
+                >14</button>
+              )}
+              {tutStep === 3 && (
+                <>
+                  <button
+                    type="button"
+                    className={`md-meteor md-static${tutSelected ? " is-selected" : ""}`}
+                    style={{ left: "50%", top: "22%" }}
+                    aria-label="隕石 20"
+                    onClick={() => setTutSelected((v) => !v)}
+                  >20</button>
+                  <div
+                    ref={slotRef}
+                    className="md-slot md-tut-slot"
+                    role="button"
+                    aria-label="基地回收槽"
+                    onClick={() => {
+                      if (tutSelected) finishTutorial();
+                    }}
+                    onPointerUp={(e) => {
+                      const rect = slotRef.current?.getBoundingClientRect();
+                      const bx = rect ? rect.left + rect.width / 2 : 0;
+                      const by = rect ? rect.top + rect.height / 2 : 0;
+                      void bx; void by;
+                      // 拖拽版：泡泡 pointerup 不會落到這裡（教學只有一顆泡泡，拖進來時 pointerup 在槽上）
+                      const hit = document.elementFromPoint(e.clientX, e.clientY);
+                      if (hit instanceof Element && hit.closest(".md-meteor")) {
+                        // 拖著泡泡放到槽上
+                        finishTutorial();
+                      }
+                    }}
+                  >🎯 基地回收槽</div>
+                </>
+              )}
+            </div>
+            {tutStep === 3 && <p className="md-start-tip">提示：把泡泡拖到回收槽上放手；或先點泡泡讓它亮起來，再點回收槽。</p>}
+          </div>
+        )}
+        {tutStep === 4 && (
+          <div className="cr-result" role="status">
+            <p className="cr-result-kicker">新手教學完成</p>
+            <h2 className="cr-result-title">🎓 三種操作都學會了！</h2>
+            <p className="cr-result-sub">點擊、劃切、拖拽都會了，加上混合模式——去守衛基地吧！</p>
+            <div className="cr-actions">
+              <button type="button" className="cr-btn-ghost" onClick={() => setPhase("start")}>回開始頁</button>
+              <button type="button" className="cr-btn sea" onClick={begin}>開始防衛</button>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
   if (phase === "result") {
-    const totalTargets = waves.reduce((sum, wave) => sum + wave.meteors.filter((m) => m.isTarget).length, 0);
+    const totalTargets = waves.reduce(
+      (sum, wave) => sum + wave.meteors.filter((m) => m.isTarget).length + wave.tray.filter((m) => m.isTarget).length,
+      0,
+    );
     const stars = lost ? 1 : meteorStars(mistakes);
     return (
       <div className="cr-page">
@@ -353,7 +605,7 @@ export default function MeteorGame({ muted = false, onExit, onBest, bestStars, b
             <>
               <h2 className="cr-result-title">{"★".repeat(stars)}{"☆".repeat(3 - stars)}</h2>
               <p className="cr-result-sub">
-                三波全撐完，切中 {hits} / {totalTargets} 顆目標隕石，獲得 {score} 分
+                三波全撐完，處理 {hits} / {totalTargets} 個目標，獲得 {score} 分
                 {mistakes > 0 ? `，共 ${mistakes} 次失誤` : "，全程零失誤！"}
               </p>
             </>
@@ -379,10 +631,10 @@ export default function MeteorGame({ muted = false, onExit, onBest, bestStars, b
           <span className="cr-tag sea">倍數防衛戰</span>
         </div>
         <div className="cr-q-card" role="status">
-          <span className="cr-q-meta">數學 · 五上 · 倍數與因數</span>
+          <span className="cr-q-meta">數學 · 五上 · 倍數與因數｜{METEOR_MODE_INFO[wave.mode].title}</span>
           <h3 className="md-wave-end-title">第 {waveIndex + 1} 波擊退！基地還剩 {energy} / {METEOR_ENERGY_MAX} 能源</h3>
           <p className="cr-hint is-ok">
-            本波任務「{wave.label}」：切中 {hits} 顆、失誤 {mistakes} 次、目前 {score} 分。
+            本波任務「{wave.label}」：處理 {hits} 個目標、失誤 {mistakes} 次、目前 {score} 分。
           </p>
           <div className="md-hint-box" aria-label="教學註記">
             <p className="md-hint-title">💡 特徵小筆記</p>
@@ -398,6 +650,7 @@ export default function MeteorGame({ muted = false, onExit, onBest, bestStars, b
 
   // phase === "play"
   const trailPoints = trail.map((p) => `${p.x},${p.y}`).join(" ");
+  const isDragWave = wave.mode === "drag" || wave.mode === "mixed";
   return (
     <div className="cr-page">
       <div className="cr-top">
@@ -419,11 +672,14 @@ export default function MeteorGame({ muted = false, onExit, onBest, bestStars, b
         <i className={`md-energy-fill${energy <= 5 ? " is-low" : ""}`} style={{ width: `${(energy / METEOR_ENERGY_MAX) * 100}%` }} />
       </div>
 
-      <div className="md-wavebanner" aria-live="polite">第 {waveIndex + 1} 波：{wave.label}</div>
+      <div className="md-wavebanner" aria-live="polite">
+        第 {waveIndex + 1} 波：{wave.label}｜{METEOR_MODE_INFO[wave.mode].title}
+      </div>
+      <p className="md-modehint">{METEOR_MODE_INFO[wave.mode].desc}</p>
 
       <div
         ref={fieldRef}
-        className="md-field"
+        className={`md-field${wave.mode === "drag" ? " md-field--drag" : ""}`}
         onPointerDown={onSlashStart}
         onPointerMove={onSlashMove}
         onPointerUp={onSlashEnd}
@@ -463,7 +719,7 @@ export default function MeteorGame({ muted = false, onExit, onBest, bestStars, b
               key={meteor.id}
               data-mid={meteor.id}
               className={`md-meteor${meteor.isBomb ? " is-bomb" : ""}`}
-              style={{ left: `${meteor.x}%`, top: `${6 + progress * 78}%` }}
+              style={{ left: `${meteor.x}%`, top: `${6 + progress * 70}%` }}
               aria-label={meteor.isBomb ? "炸彈" : `隕石 ${meteor.value}`}
               onClick={() => slice(meteor)}
             >
@@ -471,7 +727,33 @@ export default function MeteorGame({ muted = false, onExit, onBest, bestStars, b
             </button>
           );
         })}
-        <span className="md-base" aria-hidden="true">🛡 倍數防衛基地（滑動切割目標倍數，小心炸彈）</span>
+        {isDragWave && (
+          <div className={`md-traywrap${wave.mode === "drag" ? " md-traywrap--full" : ""}`}>
+            <div className="md-tray">
+              {trayLeft.map((m) => {
+                const isDragging = dragOffset?.id === m.id;
+                return (
+                  <button
+                    type="button"
+                    key={m.id}
+                    data-mid={m.id}
+                    className={`md-meteor md-static${m.isBomb ? " is-bomb" : ""}${selectedId === m.id ? " is-selected" : ""}`}
+                    style={isDragging ? { transform: `translate(${dragOffset.dx}px, ${dragOffset.dy}px)` } : undefined}
+                    aria-label={m.isBomb ? "炸彈" : `泡泡 ${m.value}`}
+                    onPointerDown={(e) => onTrayPointerDown(m, e)}
+                    onClick={() => onTrayClick(m)}
+                  >
+                    {m.isBomb ? "" : m.value}
+                  </button>
+                );
+              })}
+            </div>
+            <div ref={slotRef} className={`md-slot${selectedId ? " is-active" : ""}`} role="button" aria-label="基地回收槽" onClick={onSlotClick}>
+              🎯 基地回收槽{selectedId ? "（再點一下放下）" : "（把目標倍數拖進來）"}
+            </div>
+          </div>
+        )}
+        <span className="md-base" aria-hidden="true">🛡 倍數防衛基地（{METEOR_MODE_INFO[wave.mode].title}）</span>
       </div>
     </div>
   );

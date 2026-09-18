@@ -226,64 +226,93 @@ describe("教室最佳紀錄（local-first）", () => {
 });
 
 describe("倍數防衛戰題庫", () => {
-  it("三波隨機組合：首波考 2 或 5，波波不重複，每波 7 目標＋9 干擾", () => {
+  it("每輪隨機抽 3 種模式（不重複），四種模式各有正確結構", () => {
     const waves = buildMeteorWaves(3, seeded());
     expect(waves).toHaveLength(3);
-    const multiples = waves.map((w) => w.multipleOf);
-    expect(new Set(multiples).size).toBe(3); // 波波不重複
-    expect([2, 5].includes(multiples[0])).toBe(true); // 首波個位數特徵暖身
-    for (const multiple of multiples.slice(1)) {
-      expect([3, 9, 10].includes(multiple)).toBe(true);
+    const modes = waves.map((w) => w.mode);
+    expect(new Set(modes).size).toBe(3);
+    for (const mode of modes) {
+      expect(["tap", "slash", "drag", "mixed"]).toContain(mode);
     }
     for (const wave of waves) {
       expect(wave.hint.length).toBeGreaterThan(0);
-      expect(wave.meteors).toHaveLength(16);
-      const targets = wave.meteors.filter((m) => m.isTarget);
-      expect(targets).toHaveLength(7);
-      for (const meteor of wave.meteors) {
-        expect(meteor.value).toBeGreaterThanOrEqual(10);
-        expect(meteor.value).toBeLessThanOrEqual(99);
-        expect(meteor.isTarget).toBe(meteor.value % wave.multipleOf === 0);
-        expect(meteor.x).toBeGreaterThanOrEqual(12);
-        expect(meteor.x).toBeLessThanOrEqual(88);
-        expect(meteor.durationMs).toBeGreaterThanOrEqual(3800);
+      if (wave.mode === "tap" || wave.mode === "slash") {
+        expect(wave.meteors).toHaveLength(16);
+        expect(wave.tray).toHaveLength(0);
+        expect(wave.meteors.filter((m) => m.isTarget)).toHaveLength(7);
+      } else if (wave.mode === "drag") {
+        expect(wave.meteors).toHaveLength(0);
+        expect(wave.tray).toHaveLength(9);
+        expect(wave.tray.filter((m) => m.isTarget)).toHaveLength(3);
+        expect(wave.tray.filter((m) => m.isBomb)).toHaveLength(2);
+      } else {
+        // mixed：空中 12 顆（4 目標）＋托盤 3 顆（2 目標＋1 炸彈）
+        expect(wave.meteors).toHaveLength(12);
+        expect(wave.meteors.filter((m) => m.isTarget)).toHaveLength(4);
+        expect(wave.tray).toHaveLength(3);
+        expect(wave.tray.filter((m) => m.isTarget)).toHaveLength(2);
+        expect(wave.tray.filter((m) => m.isBomb)).toHaveLength(1);
       }
-      const delays = wave.meteors.map((m) => m.delayMs);
-      expect([...delays].sort((a, b) => a - b)).toEqual(delays);
-      // 最後一顆要在波次時間（42s）內落地
-      const last = wave.meteors[wave.meteors.length - 1];
-      expect(last.delayMs + last.durationMs).toBeLessThan(42_000);
     }
   });
 
-  it("多輪隨機會出現不同組合（重玩性）", () => {
+  it("漂浮隕石不變量：值域、落點、時間遞增、42 秒內落地；炸彈只出現在第 4 顆以後", () => {
+    for (let i = 0; i < 8; i += 1) {
+      const waves = buildMeteorWaves(3, seeded(0.2 + i * 0.11));
+      for (const wave of waves) {
+        for (const meteor of wave.meteors) {
+          expect(meteor.value).toBeGreaterThanOrEqual(10);
+          expect(meteor.value).toBeLessThanOrEqual(99);
+          expect(meteor.isTarget).toBe(!meteor.isBomb && meteor.value % wave.multipleOf === 0);
+          expect(meteor.x).toBeGreaterThanOrEqual(12);
+          expect(meteor.x).toBeLessThanOrEqual(88);
+          expect(meteor.durationMs).toBeGreaterThanOrEqual(3800);
+        }
+        const delays = wave.meteors.map((m) => m.delayMs);
+        expect([...delays].sort((a, b) => a - b)).toEqual(delays);
+        if (wave.meteors.length > 0) {
+          const last = wave.meteors[wave.meteors.length - 1];
+          expect(last.delayMs + last.durationMs).toBeLessThan(42_000);
+          const bombs = wave.meteors.filter((m) => m.isBomb);
+          expect(bombs.length).toBeGreaterThanOrEqual(1);
+          expect(bombs.length).toBeLessThanOrEqual(2);
+          const firstThree = [...wave.meteors].sort((a, b) => a.delayMs - b.delayMs).slice(0, 3);
+          for (const meteor of firstThree) {
+            expect(meteor.isBomb).toBe(false);
+          }
+        }
+      }
+    }
+  });
+
+  it("多輪隨機會出現不同模式與倍數組合（重玩性）", () => {
     const combos = new Set<string>();
     for (let i = 0; i < 12; i += 1) {
       const waves = buildMeteorWaves(3, seeded(0.1 + i * 0.07));
-      combos.add(waves.map((w) => w.multipleOf).join("-"));
+      combos.add(waves.map((w) => `${w.mode}:${w.multipleOf}`).join("-"));
     }
     expect(combos.size).toBeGreaterThan(1);
   });
 
-  it("「同時是 2 和 5 的倍數」波：干擾全是 2 或 5 的倍數陷阱（但不是 10 的倍數）", () => {
+  it("「同時是 2 和 5 的倍數」波：漂浮干擾全是 2 或 5 的倍數陷阱（但不是 10 的倍數）", () => {
     const waves = buildMeteorWaves(3, seeded());
-    const shared = waves.find((w) => w.multipleOf === 10);
-    if (!shared) return; // 該輪沒抽到就跳過
+    const shared = waves.find((w) => w.multipleOf === 10 && w.mode !== "drag");
+    if (!shared) return; // 該輪沒抽到漂浮版就跳過
     const decoys = shared.meteors.filter((m) => !m.isTarget);
-    expect(decoys.length).toBe(9);
+    expect(decoys.length).toBeGreaterThan(0);
     for (const meteor of decoys) {
       expect(meteor.value % 2 === 0 || meteor.value % 5 === 0).toBe(true);
       expect(meteor.value % 10).not.toBe(0);
     }
   });
 
-  it("3／9 的倍數波：目標隕石符合數字和特徵", () => {
+  it("3／9 的倍數波：目標（漂浮＋托盤）都符合數字和特徵", () => {
     const waves = buildMeteorWaves(3, seeded());
+    const digitSum = (n: number) => String(n).split("").reduce((sum, d) => sum + Number(d), 0);
     for (const wave of waves) {
       if (wave.multipleOf !== 3 && wave.multipleOf !== 9) continue;
-      const digitSum = (n: number) => String(n).split("").reduce((sum, d) => sum + Number(d), 0);
-      for (const meteor of wave.meteors) {
-        expect(meteor.isTarget).toBe(digitSum(meteor.value) % wave.multipleOf === 0);
+      for (const meteor of [...wave.meteors, ...wave.tray]) {
+        expect(meteor.isTarget).toBe(!meteor.isBomb && digitSum(meteor.value) % wave.multipleOf === 0);
       }
     }
   });
@@ -292,29 +321,6 @@ describe("倍數防衛戰題庫", () => {
     expect(meteorStars(0)).toBe(3);
     expect(meteorStars(4)).toBe(2);
     expect(meteorStars(5)).toBe(1);
-  });
-
-  it("每波 1–2 顆炸彈：前三顆絕無炸彈、炸彈不是目標、目標數不變", () => {
-    for (let i = 0; i < 8; i += 1) {
-      const waves = buildMeteorWaves(3, seeded(0.2 + i * 0.11));
-      for (const wave of waves) {
-        const bombs = wave.meteors.filter((m) => m.isBomb);
-        expect(bombs.length).toBeGreaterThanOrEqual(1);
-        expect(bombs.length).toBeLessThanOrEqual(2);
-        for (const bomb of bombs) {
-          expect(bomb.isTarget).toBe(false);
-        }
-        // 前三顆（delay 最早的）不能是炸彈
-        const firstThree = [...wave.meteors]
-          .sort((a, b) => a.delayMs - b.delayMs)
-          .slice(0, 3);
-        for (const meteor of firstThree) {
-          expect(meteor.isBomb).toBe(false);
-        }
-        // 目標數維持 7（炸彈只替換干擾隕石）
-        expect(wave.meteors.filter((m) => m.isTarget)).toHaveLength(7);
-      }
-    }
   });
 
   it("meteorChainBonus 連斬計分：10／25／40", () => {

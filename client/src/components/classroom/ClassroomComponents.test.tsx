@@ -287,15 +287,49 @@ describe("FactorGame 因數探險", () => {
   });
 });
 
-describe("MeteorGame 倍數防衛戰", () => {
-  it("攔截目標倍數加分回能，誤觸非倍數扣能", () => {
+// ---- 倍數防衛戰（四模式版）共用工具 ----
+
+function seededSeq(seed: number) {
+  let value = seed;
+  return () => {
+    value = (value * 9301 + 49297) % 233280;
+    return value / 233280;
+  };
+}
+
+/** 找一個讓第 1 波符合指定模式的亂數常數（元件 begin() 內部用 Math.random 建關）。 */
+function findSeedForFirstWaveMode(
+  mode: "tap" | "slash" | "drag" | "mixed",
+  extra?: (waves: ReturnType<typeof buildMeteorWaves>) => boolean,
+): number {
+  for (let i = 1; i <= 40; i += 1) {
+    const v = i / 41;
+    const waves = buildMeteorWaves(3, () => v);
+    if (waves[0].mode === mode && (!extra || extra(waves))) return v;
+  }
+  return 0.5;
+}
+
+/** 把托盤裡的目標泡泡全部用「點選＋點回收槽」放下。 */
+function dropAllTrayTargets(wave: ReturnType<typeof buildMeteorWaves>[number]) {
+  for (const m of wave.tray.filter((t) => t.isTarget)) {
+    fireEvent.click(screen.getByRole("button", { name: `泡泡 ${m.value}` }));
+    fireEvent.click(screen.getByRole("button", { name: /基地回收槽/ }));
+  }
+}
+
+describe("MeteorGame 倍數防衛戰（點擊／劃切波）", () => {
+  it("切中目標倍數加分回能，誤觸非倍數扣能", () => {
     vi.useFakeTimers();
-    vi.spyOn(Math, "random").mockReturnValue(0.5);
-    const waves = buildMeteorWaves(3, () => 0.5);
+    const seed = findSeedForFirstWaveMode("slash", (ws) => {
+      const firstTwo = ws[0].meteors.slice(0, 2);
+      return firstTwo.some((m) => m.isTarget) && firstTwo.some((m) => !m.isTarget);
+    });
+    vi.spyOn(Math, "random").mockReturnValue(seed);
+    const waves = buildMeteorWaves(3, () => seed);
     render(<MeteorGame onExit={() => {}} />);
     fireEvent.click(screen.getByRole("button", { name: "開始防衛" }));
 
-    // 快進讓前兩顆隕石登場（尚未落地：首顆 600ms 出現、約 5100ms 才落地）
     act(() => { vi.advanceTimersByTime(3200); });
     const energyNum = () => Number(document.querySelector(".md-energy-num")?.textContent);
     const scoreNum = () => Number(document.querySelector(".md-score")?.textContent);
@@ -303,17 +337,15 @@ describe("MeteorGame 倍數防衛戰", () => {
     expect(scoreNum()).toBe(0);
 
     const firstTwo = waves[0].meteors.slice(0, 2);
-    const target = firstTwo.find((m) => m.isTarget)!;
-    const decoy = firstTwo.find((m) => !m.isTarget)!;
+    const target = firstTwo.find((m) => m.isTarget && !m.isBomb)!;
+    const decoy = firstTwo.find((m) => !m.isTarget && !m.isBomb)!;
     expect(target && decoy).toBeTruthy();
 
-    // 攔截目標：+10 分、能源回滿上限
     fireEvent.click(screen.getByRole("button", { name: `隕石 ${target.value}` }));
     expect(scoreNum()).toBe(10);
     expect(energyNum()).toBe(15);
     expect(screen.queryByRole("button", { name: `隕石 ${target.value}` })).not.toBeInTheDocument();
 
-    // 誤觸干擾：−1 能量、出現提示（波次倍數隨機，正則動態組）
     fireEvent.click(screen.getByRole("button", { name: `隕石 ${decoy.value}` }));
     expect(energyNum()).toBe(14);
     expect(screen.getByText(new RegExp(`不是 ${waves[0].multipleOf} 的倍數`))).toBeInTheDocument();
@@ -321,28 +353,129 @@ describe("MeteorGame 倍數防衛戰", () => {
     vi.restoreAllMocks();
   });
 
-  it("目標隕石漏接扣 2 能量並出現提示", () => {
+  it("目標隕石漏接扣 2 能源並出現提示", () => {
     vi.useFakeTimers();
-    vi.spyOn(Math, "random").mockReturnValue(0.5);
-    const waves = buildMeteorWaves(3, () => 0.5);
+    const seed = findSeedForFirstWaveMode("tap");
+    vi.spyOn(Math, "random").mockReturnValue(seed);
+    const waves = buildMeteorWaves(3, () => seed);
     render(<MeteorGame onExit={() => {}} />);
     fireEvent.click(screen.getByRole("button", { name: "開始防衛" }));
 
     const first = waves[0].meteors[0];
-    // 快進超過第一顆的出現＋落地時間，不點它
     act(() => { vi.advanceTimersByTime(first.delayMs + first.durationMs + 600); });
     if (first.isTarget) {
       expect(document.querySelector(".md-energy-num")?.textContent).toBe("13");
       expect(screen.getByText(/漏接目標隕石/)).toBeInTheDocument();
     } else {
-      // 干擾隕石落地無事
       expect(document.querySelector(".md-energy-num")?.textContent).toBe("15");
     }
     vi.useRealTimers();
     vi.restoreAllMocks();
   });
 
-  it("三波全攔截、零失誤撐完，結算三顆星並回報最佳紀錄", () => {
+  it("漂浮炸彈切到立即結束，顯示基地能源耗盡", () => {
+    vi.useFakeTimers();
+    const seed = findSeedForFirstWaveMode("slash");
+    vi.spyOn(Math, "random").mockReturnValue(seed);
+    const waves = buildMeteorWaves(3, () => seed);
+    render(<MeteorGame onExit={() => {}} />);
+    fireEvent.click(screen.getByRole("button", { name: "開始防衛" }));
+
+    const bomb = waves[0].meteors.find((m) => m.isBomb)!;
+    act(() => { vi.advanceTimersByTime(bomb.delayMs + 300); });
+    fireEvent.click(screen.getAllByRole("button", { name: "炸彈" })[0]);
+
+    expect(screen.getByText(/基地能源耗盡/)).toBeInTheDocument();
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+  });
+
+  it("切割後產生左右兩半分裂碎片", () => {
+    vi.useFakeTimers();
+    const seed = findSeedForFirstWaveMode("slash", (ws) => {
+      const firstTwo = ws[0].meteors.slice(0, 2);
+      return firstTwo.some((m) => m.isTarget) && firstTwo.some((m) => !m.isTarget);
+    });
+    vi.spyOn(Math, "random").mockReturnValue(seed);
+    const waves = buildMeteorWaves(3, () => seed);
+    render(<MeteorGame onExit={() => {}} />);
+    fireEvent.click(screen.getByRole("button", { name: "開始防衛" }));
+
+    act(() => { vi.advanceTimersByTime(3200); });
+    const firstTwo = waves[0].meteors.slice(0, 2);
+    const target = firstTwo.find((m) => m.isTarget && !m.isBomb)!;
+    fireEvent.click(screen.getByRole("button", { name: `隕石 ${target.value}` }));
+
+    expect(document.querySelectorAll(".md-frag-l").length).toBeGreaterThanOrEqual(1);
+    expect(document.querySelectorAll(".md-frag-r").length).toBeGreaterThanOrEqual(1);
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+  });
+
+  it("能源歸零提前結束，顯示基地能源耗盡", () => {
+    vi.useFakeTimers();
+    const seed = findSeedForFirstWaveMode("tap");
+    vi.spyOn(Math, "random").mockReturnValue(seed);
+    const waves = buildMeteorWaves(3, () => seed);
+    render(<MeteorGame onExit={() => {}} />);
+    fireEvent.click(screen.getByRole("button", { name: "開始防衛" }));
+
+    const decoyValues = new Set(waves[0].meteors.filter((m) => !m.isTarget).map((m) => m.value));
+    for (let t = 0; t < 120 && document.querySelector(".md-field"); t += 1) {
+      act(() => { vi.advanceTimersByTime(500); });
+      for (const button of Array.from(document.querySelectorAll(".md-meteor"))) {
+        const label = button.getAttribute("aria-label") ?? "";
+        const value = Number(label.replace("隕石 ", ""));
+        if (decoyValues.has(value)) fireEvent.click(button);
+      }
+    }
+    expect(screen.getByText(/基地能源耗盡/)).toBeInTheDocument();
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+  });
+});
+
+describe("MeteorGame 拖拽模式", () => {
+  it("拖對目標進回收槽加分回能；拖錯爆炸扣能；拖到炸彈大爆炸", () => {
+    vi.useFakeTimers();
+    const seed = findSeedForFirstWaveMode("drag");
+    vi.spyOn(Math, "random").mockReturnValue(seed);
+    const waves = buildMeteorWaves(3, () => seed);
+    render(<MeteorGame onExit={() => {}} />);
+    fireEvent.click(screen.getByRole("button", { name: "開始防衛" }));
+
+    const energyNum = () => Number(document.querySelector(".md-energy-num")?.textContent);
+    const scoreNum = () => Number(document.querySelector(".md-score")?.textContent);
+    const slot = () => screen.getByRole("button", { name: /基地回收槽/ });
+
+    // 拖對（點選泡泡 → 點回收槽）
+    const target = waves[0].tray.find((m) => m.isTarget)!;
+    fireEvent.click(screen.getByRole("button", { name: `泡泡 ${target.value}` }));
+    fireEvent.click(slot());
+    expect(scoreNum()).toBe(10);
+    expect(energyNum()).toBe(15);
+
+    // 拖錯：干擾泡泡爆炸 −1
+    const decoy = waves[0].tray.find((m) => !m.isTarget && !m.isBomb)!;
+    fireEvent.click(screen.getByRole("button", { name: `泡泡 ${decoy.value}` }));
+    fireEvent.click(slot());
+    expect(scoreNum()).toBe(10);
+    expect(energyNum()).toBe(14);
+    expect(document.querySelector(".md-flash")?.textContent).toContain("爆炸");
+
+    // 拖到炸彈：大爆炸 −3
+    const bomb = waves[0].tray.find((m) => m.isBomb)!;
+    fireEvent.click(screen.getAllByRole("button", { name: "炸彈" })[0]);
+    fireEvent.click(slot());
+    expect(energyNum()).toBe(11);
+    expect(screen.getByText(/炸彈爆炸/)).toBeInTheDocument();
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+  });
+});
+
+describe("MeteorGame 三波全處理完（混合各模式）", () => {
+  it("每波換模式照樣全對，結算三顆星並回報最佳紀錄", () => {
     vi.useFakeTimers();
     vi.spyOn(Math, "random").mockReturnValue(0.5);
     const waves = buildMeteorWaves(3, () => 0.5);
@@ -352,14 +485,17 @@ describe("MeteorGame 倍數防衛戰", () => {
 
     for (let w = 0; w < waves.length; w += 1) {
       const wave = waves[w];
-      let elapsed = 0; // beginWave 會重置波內時鐘
+      let elapsed = 0;
+      // 漂浮隕石：依腳本依序出現，出現就點目標
       for (const meteor of wave.meteors) {
         act(() => { vi.advanceTimersByTime(meteor.delayMs - elapsed + 200); });
         elapsed = meteor.delayMs + 200;
-        if (meteor.isTarget) {
+        if (meteor.isTarget && !meteor.isBomb) {
           fireEvent.click(screen.getByRole("button", { name: `隕石 ${meteor.value}` }));
         }
       }
+      // 托盤：把目標全部拖（點選＋點槽）進回收槽
+      if (wave.tray.length > 0) dropAllTrayTargets(wave);
       // 快進到本波結束
       act(() => { vi.advanceTimersByTime(42_000 - elapsed + 500); });
       if (w < waves.length - 1) {
@@ -368,70 +504,40 @@ describe("MeteorGame 倍數防衛戰", () => {
       }
     }
 
+    const totalTargets = waves.reduce(
+      (sum, w) => sum + w.meteors.filter((m) => m.isTarget).length + w.tray.filter((m) => m.isTarget).length,
+      0,
+    );
     expect(screen.getByText("★★★")).toBeInTheDocument();
     expect(screen.getByText(/全程零失誤/)).toBeInTheDocument();
-    expect(onBest).toHaveBeenCalledWith(expect.objectContaining({ stars: 3, correct: 21, total: 21 }));
-    vi.useRealTimers();
-    vi.restoreAllMocks();
-  });
-
-  it("能源歸零提前結束，顯示基地能源耗盡", () => {
-    vi.useFakeTimers();
-    vi.spyOn(Math, "random").mockReturnValue(0.5);
-    const waves = buildMeteorWaves(3, () => 0.5);
-    render(<MeteorGame onExit={() => {}} />);
-    fireEvent.click(screen.getByRole("button", { name: "開始防衛" }));
-
-    // 持續快進並點掉每一顆干擾隕石（−1）＋讓目標隕石全部漏接（−2×7）→ 能源必歸零
-    const decoyValues = new Set(waves[0].meteors.filter((m) => !m.isTarget).map((m) => m.value));
-    for (let t = 0; t < 120 && document.querySelector(".md-field"); t += 1) {
-      act(() => { vi.advanceTimersByTime(500); });
-      for (const button of Array.from(document.querySelectorAll(".md-meteor"))) {
-        const value = Number((button.getAttribute("aria-label") ?? "").replace("隕石 ", ""));
-        if (decoyValues.has(value)) fireEvent.click(button);
-      }
-    }
-    expect(screen.getByText(/基地能源耗盡/)).toBeInTheDocument();
-    expect(screen.getByText(/獲得了 0 分/)).toBeInTheDocument();
+    expect(onBest).toHaveBeenCalledWith(expect.objectContaining({ stars: 3, correct: totalTargets, total: totalTargets }));
     vi.useRealTimers();
     vi.restoreAllMocks();
   });
 });
 
-describe("MeteorGame 切水果版機制", () => {
-  it("切到炸彈立即結束，顯示基地能源耗盡", () => {
-    vi.useFakeTimers();
-    vi.spyOn(Math, "random").mockReturnValue(0.5);
-    const waves = buildMeteorWaves(3, () => 0.5);
+describe("MeteorGame 新手教學", () => {
+  afterEach(() => localStorage.clear());
+
+  it("五步教學走完：點擊→劃切→拖拽→完成卡，並寫入完成紀錄", () => {
     render(<MeteorGame onExit={() => {}} />);
+    expect(screen.getByText(/第一次玩/)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /新手教學/ }));
+    expect(screen.getByText(/三種操作，一起學會/)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /開始練習/ }));
+
+    // 步驟 1：點擊 12
+    fireEvent.click(screen.getByRole("button", { name: "隕石 12" }));
+    // 步驟 2：劃切（點按也可通過）
+    fireEvent.click(screen.getByRole("button", { name: "隕石 14" }));
+    // 步驟 3：拖拽——先點泡泡再點回收槽
+    fireEvent.click(screen.getByRole("button", { name: "隕石 20" }));
+    fireEvent.click(screen.getByRole("button", { name: /基地回收槽/ }));
+
+    expect(screen.getByText(/三種操作都學會了/)).toBeInTheDocument();
+    expect(localStorage.getItem("xue-meteor-tutorial-v1")).toBe("done");
+    // 教學完直接開打
     fireEvent.click(screen.getByRole("button", { name: "開始防衛" }));
-
-    const bomb = waves[0].meteors.find((m) => m.isBomb)!;
-    // 快進讓炸彈登場（炸彈一定在第 4 顆以後）
-    act(() => { vi.advanceTimersByTime(bomb.delayMs + 300); });
-    fireEvent.click(screen.getByRole("button", { name: "炸彈" }));
-
-    expect(screen.getByText(/基地能源耗盡/)).toBeInTheDocument();
-    vi.useRealTimers();
-    vi.restoreAllMocks();
-  });
-
-  it("切割後產生左右兩半分裂碎片", () => {
-    vi.useFakeTimers();
-    vi.spyOn(Math, "random").mockReturnValue(0.5);
-    const waves = buildMeteorWaves(3, () => 0.5);
-    render(<MeteorGame onExit={() => {}} />);
-    fireEvent.click(screen.getByRole("button", { name: "開始防衛" }));
-
-    act(() => { vi.advanceTimersByTime(3200); });
-    const firstTwo = waves[0].meteors.slice(0, 2);
-    const target = firstTwo.find((m) => m.isTarget && !m.isBomb) ?? firstTwo.find((m) => !m.isBomb)!;
-    fireEvent.click(screen.getByRole("button", { name: `隕石 ${target.value}` }));
-
-    // 左右兩半同時出現
-    expect(document.querySelectorAll(".md-frag-l").length).toBeGreaterThanOrEqual(1);
-    expect(document.querySelectorAll(".md-frag-r").length).toBeGreaterThanOrEqual(1);
-    vi.useRealTimers();
-    vi.restoreAllMocks();
+    expect(document.querySelector(".md-field")).toBeTruthy();
   });
 });

@@ -364,3 +364,11 @@ curl -s https://xue-gr3a.onrender.com/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | h
 - 文案：卡片 desc、開始頁規則（💣 切到就結束／一刀連斬有加成）、基地條、漏接/誤切「能量」全改「能源」、波末「個位數特徵小筆記」→「特徵小筆記」。
 - 測試：classroomBank +2（炸彈不變量 8 輪 seed 掃描：1–2 顆、前 3 絕無、目標數恆 7；chainBonus 10/25/40）、ClassroomComponents +2（切炸彈立即結束、切割產生左右兩半）＋文案斷言更新。全量 182 檔 1111 tests 綠、tsc 0 error、build OK。
 - 踩坑：重寫 MeteorGame 時 flash 浮條漏渲染（slice 邏輯對但 UI 沒元素），用 dbg 測試掃 body.innerHTML 才抓到——改互動元件時先盤點「所有會出現/消失的 UI 元素」再動筆。
+
+## 2026-09-19 倍數防衛戰四模式版：點擊／劃切／拖拽／混合＋新手教學
+- buildMeteorWaves 改為每輪從 4 種模式隨機抽 3 波（不重複，關關換模式）：tap／slash（漂浮隕石 16 顆 7 目標）、drag（純托盤：9 泡泡＝3 目標＋2 炸彈＋4 干擾）、mixed（空中 12 顆 4 目標＋托盤 3 顆＝2 目標＋1 炸彈）；倍數主題（2/5/3/9/10）也隨機組合。
+- 拖拽：pointer 按住泡泡拖動（md-traywrap 托盤＋md-slot 基地回收槽）；放進槽判定 dropTray——目標 +10 分回 1 能、干擾「爆炸」−1 能＋失誤、炸彈「大爆炸」−3 能＋失誤（拖拽炸彈不即死，與漂浮炸彈切到即死區別）；沒拖動直接點泡泡＝點選（is-selected 高亮），再點回收槽放下（無障礙／低年級 fallback）。波次結束未拖進的托盤目標每顆漏接 −2 能。
+- 混合波同場：漂浮隕石（點／切皆可）＋底部托盤與回收槽；slash 的 pointermove 在拖拽時自動讓位（dragRef 判定）。
+- 新手教學（phase="tutorial"）：5 步——總覽卡（三操作＋炸彈警告）→ 點擊練習（點 12）→ 劃切練習（滑過 14，點按也可過）→ 拖拽練習（拖 20 進槽或點選＋點槽）→ 完成卡；完成寫 localStorage xue-meteor-tutorial-v1，開始頁首次顯示「第一次玩？」提示，教學按鈕常駐可重看。
+- 測試：findSeedForFirstWaveMode(mode, extra?) 以亂數常數掃描控制第 1 波模式與組成；bank +模式結構/拖拽炸彈不變量；components +拖拽三態（對/錯/炸彈）、教學五步 E2E、三波混合全對 3 星；全量 182 檔 1113 tests 綠、tsc 0 error、build OK。
+- 踩坑：getByText(/爆炸/) 會撞到拖拽模式的說明文案（md-modehint），改驗 .md-flash 內容；波內兩顆炸彈同時在場要用 getAllByRole。
