@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { buildPaperDeck, buildSubjectWrongReviewDeck, getPaperNextGroupStrategyHint, getPaperStrategyRecap, getReviewSelfCheckAdaptation, isMatchingQuestion, mixPaperMatching, questionIndexToAltitude, scorePaper, type PaperQuestion } from "./paperExam";
+import { buildPaperDeck, buildSubjectWrongReviewDeck, getPaperNextGroupStrategyHint, getPaperStrategyRecap, getReviewSelfCheckAdaptation, isMatchingQuestion, mixPaperMatching, mixPaperVariants, questionIndexToAltitude, scorePaper, type PaperQuestion } from "./paperExam";
 
 const questions: PaperQuestion[] = [
   { id: "l", grade: 4, subject: "國語", difficulty: "基礎", learningTopic: "詞義", prompt: "題目", options: ["A", "B"], answer: 0, explanation: "解析" },
@@ -137,5 +137,70 @@ describe("mixPaperMatching", () => {
     const choiceDeck = mixed.filter((question) => question.questionType !== "配對題");
     expect(choiceDeck).toHaveLength(12);
     expect(scorePaper(choiceDeck, { c0: 0 })).toMatchObject({ answered: 1, correct: 1, total: 12 });
+  });
+});
+
+describe("mixPaperVariants", () => {
+  const makeTwelve = (subject: PaperQuestion["subject"]): PaperQuestion[] =>
+    Array.from({ length: 12 }, (_, i) => ({
+      id: `${subject}-${i}`,
+      grade: 4,
+      subject,
+      questionType: "選擇題" as const,
+      difficulty: "標準" as const,
+      learningTopic: `單元${i}`,
+      prompt: `題目${i}`,
+      options: ["A", "B", "C", "D"],
+      answer: 0,
+      explanation: "解析",
+    }));
+
+  it("12 題卷於整體第 5、10、15 題插入填空、配對、排序", () => {
+    const mixed = mixPaperVariants(makeTwelve("數學"), "數學", () => 0.5);
+    expect(mixed).toHaveLength(15);
+    expect(mixed[4].questionType).toBe("填空題");
+    expect(mixed[9].questionType).toBe("配對題");
+    expect(mixed[14].questionType).toBe("排序題");
+    // 原 12 題選擇題維持原相對順序
+    const ordinary = mixed.filter((question) => question.questionType === "選擇題");
+    expect(ordinary).toHaveLength(12);
+  });
+
+  it("填空題為字卡四選一、排序題帶 orderItems 且答案固定 0", () => {
+    const mixed = mixPaperVariants(makeTwelve("自然"), "自然", () => 0.5);
+    const fill = mixed[4];
+    const order = mixed[14];
+    expect(fill.options).toHaveLength(4);
+    expect(fill.answer).toBeGreaterThanOrEqual(0);
+    expect(order.orderItems?.length).toBeGreaterThanOrEqual(3);
+    expect(order.answer).toBe(0);
+    expect(order.options).toEqual([]);
+  });
+
+  it("英語卷沒有排序題時，第三槽以英語配對題遞補（仍是 15 題）", () => {
+    const mixed = mixPaperVariants(makeTwelve("英語"), "英語", () => 0.5);
+    expect(mixed).toHaveLength(15);
+    expect(mixed[4].questionType).toBe("填空題");
+    expect(mixed[9].questionType).toBe("配對題");
+    expect(mixed[14].questionType).toBe("配對題");
+    expect(mixed.filter((question) => question.subject !== "英語")).toHaveLength(0);
+  });
+
+  it("不足 12 題的短文卷不混入任何變體", () => {
+    const short = makeTwelve("數學").slice(0, 5);
+    const result = mixPaperVariants(short, "數學", () => 0.5);
+    expect(result).toHaveLength(5);
+    expect(result.every((question) => question.questionType === "選擇題")).toBe(true);
+  });
+
+  it("填空與排序併入選擇題計分（答對寫 0、答錯寫 -1）", () => {
+    const mixed = mixPaperVariants(makeTwelve("社會"), "社會", () => 0.5);
+    const choiceDeck = mixed.filter((question) => question.questionType !== "配對題");
+    expect(choiceDeck).toHaveLength(14); // 12 選擇 + 填空 + 排序
+    const fillId = mixed[4].id;
+    const orderId = mixed[14].id;
+    const scored = scorePaper(choiceDeck, { [fillId]: mixed[4].answer, [orderId]: 0 });
+    expect(scored.incomplete).toBe(12);
+    expect(scored.correct).toBe(2);
   });
 });

@@ -48,6 +48,8 @@ vi.mock("@/lib/trpc", () => ({
 
 // 隔離 useQuestionBank：測試宇宙只含 mockQuestion，不注入本地英語 seed，維持「單題」假設。
 vi.mock("@/lib/questionBank", () => ({
+  LOCAL_QUESTION_BANK: [],
+  LOCAL_ENGLISH_BANK: [],
   useQuestionBank: () => ({
     questions: [mockQuestion],
     total: 1,

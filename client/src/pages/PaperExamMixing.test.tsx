@@ -46,6 +46,8 @@ vi.mock("@/lib/trpc", () => ({
 }));
 
 vi.mock("@/lib/questionBank", () => ({
+  LOCAL_QUESTION_BANK: [],
+  LOCAL_ENGLISH_BANK: [],
   useQuestionBank: () => ({
     questions: mockQuestions,
     total: mockQuestions.length,
@@ -65,7 +67,7 @@ vi.mock("@/lib/paperExamStrategyCue", () => ({
 
 vi.setConfig({ testTimeout: 20000 });
 
-describe("PaperExam 12 選擇＋3 配對混合試卷", () => {
+describe("PaperExam 12 選擇＋填空/配對/排序混合試卷", () => {
   beforeEach(() => {
     vi.spyOn(window, "scrollTo").mockImplementation(() => {});
   });
@@ -88,6 +90,23 @@ describe("PaperExam 12 選擇＋3 配對混合試卷", () => {
     const optionInput = option?.querySelector<HTMLInputElement>("input[type=radio]");
     expect(optionInput).toBeTruthy();
     fireEvent.click(optionInput as HTMLInputElement);
+  }
+
+  /** 填空題：點第一張字卡（不論對錯，作答後即可往下）。 */
+  function answerCurrentFill() {
+    const card = document.querySelector<HTMLElement>(".cr-fill-card:not(:disabled)");
+    expect(card).toBeTruthy();
+    fireEvent.click(card as HTMLElement);
+  }
+
+  /** 排序題：把待排序項目依畫面順序全部點進序列後確認（不論對錯，完成即可往下）。 */
+  function answerCurrentOrder() {
+    const poolItems = Array.from(document.querySelectorAll<HTMLElement>(".cr-order-pool .cr-order-item"));
+    expect(poolItems.length).toBeGreaterThanOrEqual(3);
+    for (const item of poolItems) {
+      if (item.style.visibility !== "hidden") fireEvent.click(item);
+    }
+    fireEvent.click(screen.getByRole("button", { name: "確認順序" }));
   }
 
   function goNext() {
@@ -119,7 +138,7 @@ describe("PaperExam 12 選擇＋3 配對混合試卷", () => {
     expect(document.querySelectorAll(".paper-matching-summary-row")).toBeTruthy();
   }
 
-  it("平常試卷＝12 題選擇＋3 題配對，配對插在第 5、10、15 題，且不進選擇計分", async () => {
+  it("平常試卷＝12 選擇＋第 5 填空、第 10 配對、第 15 排序；配對不進選擇計分", async () => {
     render(<PaperExam />);
     fireEvent.click(screen.getByRole("button", { name: /開始今日試卷/ }));
     confirmNextGroupStrategy();
@@ -127,19 +146,20 @@ describe("PaperExam 12 選擇＋3 配對混合試卷", () => {
     expect(screen.getByText("第 1 / 15 題")).toBeInTheDocument();
     expect(screen.getByTestId("paper-question-timer")).toBeTruthy();
     const gauge = screen.getByRole("progressbar", { name: "玉山高度計" });
-    expect(gauge).toHaveAttribute("aria-valuemax", "12");
+    // 選擇計分含 12 選擇＋填空＋排序＝14 題（配對獨立計星）。
+    expect(gauge).toHaveAttribute("aria-valuemax", "14");
 
     // 前 4 題選擇
     for (let i = 0; i < 4; i += 1) {
       answerCurrentChoice();
       goNext();
     }
-    // 第 5 題：配對
+    // 第 5 題：填空選字（一樣有 30 秒倒數）
     expect(screen.getByText("第 5 / 15 題")).toBeInTheDocument();
-    expect(document.querySelector(".matching-game")).toBeTruthy();
-    expect(screen.getByText(/配對題/)).toBeInTheDocument();
-    expect(screen.queryByTestId("paper-question-timer")).not.toBeInTheDocument();
-    await playMatching();
+    expect(document.querySelector(".cr-fill-card")).toBeTruthy();
+    expect(screen.getByTestId("paper-question-timer")).toBeTruthy();
+    answerCurrentFill();
+    goNext();
 
     // 6–9 選擇，第 10 題配對
     for (let i = 0; i < 4; i += 1) {
@@ -148,21 +168,25 @@ describe("PaperExam 12 選擇＋3 配對混合試卷", () => {
     }
     expect(screen.getByText("第 10 / 15 題")).toBeInTheDocument();
     expect(document.querySelector(".matching-game")).toBeTruthy();
+    expect(screen.queryByTestId("paper-question-timer")).not.toBeInTheDocument();
     await playMatching();
 
-    // 11–14 選擇，第 15 題配對（收尾）
+    // 11–14 選擇，第 15 題排序（收尾）
     for (let i = 0; i < 4; i += 1) {
       answerCurrentChoice();
       goNext();
     }
     expect(screen.getByText("第 15 / 15 題")).toBeInTheDocument();
-    expect(document.querySelector(".matching-game")).toBeTruthy();
-    await playMatching();
+    expect(document.querySelector(".cr-order-pool")).toBeTruthy();
+    expect(screen.getByTestId("paper-question-timer")).toBeTruthy();
+    answerCurrentOrder();
+    fireEvent.click(screen.getByRole("button", { name: /查看結果總結/ }));
 
-    // 總結：選擇計分只算 12 題，配對成績獨立成 3 張卡
+    // 總結：選擇計分 14 題（12 選擇＋填空＋排序），配對成績獨立成 1 張卡
     expect(screen.getByRole("heading", { name: "學習成果總結" })).toBeInTheDocument();
-    expect(document.querySelectorAll(".paper-matching-summary-row")).toHaveLength(3);
-    expect(screen.getByLabelText("試卷統計")).toHaveTextContent("12 / 12");
+    expect(document.querySelectorAll(".paper-matching-summary-row")).toHaveLength(1);
+    // 填空與排序在測試中只確保「有作答」，答對數可能是 13 或 14；總題數固定 14。
+    expect(screen.getByLabelText("試卷統計")).toHaveTextContent(/\d+ \/ 14/);
   });
 
   it("選擇/是非題顯示 30 秒倒數；時間到自動記為未作答並顯示正確答案", () => {

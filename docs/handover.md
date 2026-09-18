@@ -321,3 +321,13 @@ curl -s https://xue-gr3a.onrender.com/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | h
 - 驗證：sortBank +3、SortGame +3（正確歸位 3 星／錯籃 1 失誤 2 星／時間到 1 星）；受影響 6 檔 31 tests 綠、tsc 0 error、全量回歸綠；build index-DEDEdXIc.js。
 - 修 UX bug：390×844 下分類籃底部被固定底部導覽遮擋點不到 → .matching-page padding-bottom 32→108px、項目區 3 欄改 4 欄（12 項 4 行→3 行）更緊湊。
 - 線上 Playwright 9/9：五 chip、盤面 12 項/4 籃、倒數、歸位成功回饋（sorted≥1）、籃內顯示放入項目、錯籃錯誤提示、38 關選單、選關後 2 籃盤、無 pageerror。
+
+## 2026-09-18 選擇題八變體上線＋答題室改造「我的教室」
+- 題庫（data/，Vite 直接打包、local-first）：fill_bank.json 24 題填空選字（五科，prompt 含 ____、4 字卡）、order_bank.json 16 題排序（3–5 項，items 為正確順序）、trap_bank.json 30 題陷阱選擇題（十類各 3 題，帶 category/trapNote，收錄往年經典易錯題型）。
+- 邏輯層 client/src/lib/classroomBank.ts：FILL/ORDER/TRAP_QUESTIONS 載入校驗、fillToPaper/orderToPaper（排序題 answer=0、options=[]、orderItems 帶正確順序，答對寫 answers[id]=0、答錯/timeout 寫 -1）、buildChoiceDeck/buildTrueFalseDeck（內建 BONUS_TRUE_FALSE 12 題補充）、buildImageQuiz（復用 18 張配對圖，干擾先同組後跨組）、buildRelayRounds（選擇題＋4 對 1 干擾純文字配對同科）、accuracyStars/trapStars、最佳紀錄 `xue-classroom-best-v1`（load/saveClassroomBest）。
+- paperExam.ts：PaperQuestion.questionType 聯集加填空題/排序題、加 orderItems?；新增 mixPaperVariants（12 題卷於整體第 5/10/15 題插入填空/配對/排序，缺題以同科配對遞補；短文卷不混），PaperExam.tsx 兩處建卷改用之（舊 mixPaperMatching 保留，測試仍覆蓋）。
+- 我的教室（原答題室，路由 /quiz-room 不變、頁面 QuizRoom.tsx 改裝）：mc-* 裝潢風（彩帶、海報風 hero、貼紙、斜卡），特別標題「我的教室，隨你玩」＋釋放自我文案；第一區 6 張自由玩法卡（翻牌問答/看圖選答/是非閃電/限時接力/選擇配對接力/陷阱題挑戰）顯示最佳紀錄，第二區保留原 8 個經典模式；頂部/底部導航 label 改「我的教室」、activePrefixes 加 /classroom；Badges hint、週測註釋同步改名。
+- 新頁 /classroom/:gameId（ClassroomPlay.tsx）：flip/image/trap→QuizRunner（每題 30 秒、翻牌模式翻開才起算、答錯 2.3s 顯示解析後換題、accuracyStars）；bolt/rush→RushRunner（總 30 秒循環連答、答對 +10、二連對起每連 +5、答錯斷連顯示正解）；relay→RelayMatch（3 關，先 choice 後 MatchingGame 迷你盤，答錯不阻斷、顯示正解，配對星等合計）。
+- 元件 client/src/components/classroom/：useClassroomSound（ok/no/win/flip/tick WebAudio，muted 可控）、classroom.css（mc- hub＋cr- 遊戲全套，按鈕 ≥44px、520px 手機斷點）、QuizRunner/RushRunner/RelayMatch/FillBlank/OrderSteps；每個互動皆有成功/失敗雙回饋＋音效，所有題目 30 秒倒數。
+- 試卷內嵌：FillBlank（字卡四選一，沿用 answerQuestion 計分）、OrderSteps（打亂項目→依序點選、可撤回、確認後正誤雙回饋並並列正確順序；外部 timeout 自動顯示解答）；排序題在錯題本/AI 複習 payload/總結頁改以 orderItems 箭頭序列呈現。
+- 測試：classroomBank.test.ts（24/16/30 數量、結構校驗、deck 構造、計分、localStorage）、paperExam.test.ts +mixPaperVariants 5 例、ClassroomComponents.test.tsx 9 例（填空/排序/翻牌/看圖/rush/tf）、QuizRoom.test.tsx 改 6 自由玩法＋8 經典模式、TopNavigation 斷言改「我的教室」、PaperExamMixing 整合測試改第 5 填空/10 配對/15 排序（valuemax 14、統計 /14）、兩個 PaperExam 頁測試的 questionBank mock 補 LOCAL_QUESTION_BANK/LOCAL_ENGLISH_BANK 空陣列。

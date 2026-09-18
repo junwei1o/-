@@ -4,7 +4,7 @@ import "./HubPages.css";
 import "@/components/WeeklyQuizCard.css";
 
 /**
- * 本週週測頁：答題室的週測入口目的地。
+ * 本週週測頁：我的教室的週測入口目的地。
  * 每週五（台北時間 00:00）自動出 10 題回顧，完成後跳出成就彈窗並自動前往學習歷程。
  */
 export default function WeeklyQuizPage() {

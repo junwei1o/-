@@ -1,13 +1,14 @@
 import { loadUserPreferences, getTargetDifficultiesFromPrefs, filterQuestionsByGrade, targetDifficulties, type AdaptiveProfile } from "@/game/adaptiveLearning";
 import { shuffleQuestionOptions } from "./optionRandomizer";
 import { MATCHING_SETS, shuffleArray, sliceMatchingSet, type MatchingSet } from "./matchingBank";
+import { FILL_QUESTIONS, ORDER_QUESTIONS, fillToPaper, orderToPaper } from "./classroomBank";
 export type PaperSubject = "數學" | "自然" | "社會" | "國語" | "英語";
 
 export type PaperQuestion = {
   id: string;
   grade: number;
   subject: PaperSubject;
-  questionType?: "選擇題" | "是非題" | "配對題";
+  questionType?: "選擇題" | "是非題" | "配對題" | "填空題" | "排序題";
   difficulty: string;
   learningTopic: string;
   prompt: string;
@@ -18,6 +19,8 @@ export type PaperQuestion = {
   strongDistractor?: { optionIndex: number; note: string };
   /** 配對題專用：試卷內嵌的迷你配對盤（4 對＋1 干擾）。成績獨立計星，不影響選擇/是非分數。 */
   matchingSet?: MatchingSet;
+  /** 排序題專用：由前到後的正確順序，作答時元件打亂呈現；答對寫 answer(=0)、答錯寫 -1。 */
+  orderItems?: string[];
 };
 
 export type PaperScope = "綜合課綱" | PaperSubject;
@@ -81,6 +84,74 @@ export function mixPaperMatching(
   // 插在每 4 題之後：整體第 5、10、15 題（最後一題是配對，收尾最順）。
   [4, 8, 12].forEach((position, index) => {
     result.splice(Math.min(position + index, result.length), 0, matchingQuestions[index]);
+  });
+  return result;
+}
+
+/**
+ * 平常試卷的變體混合：12 題選擇/是非之外，於整體第 5、10、15 題分別插入
+ * 填空選字、配對、排序題各 1 題，讓一張卷子同時體驗三種互動題型。
+ * 短文卷（不足 12 題）不混入；填空/排序找不到同學科題目時，以配對題遞補，維持 3 題進階題。
+ */
+export function mixPaperVariants(
+  deck: readonly PaperQuestion[],
+  scope: PaperScope,
+  random: () => number = Math.random,
+): PaperQuestion[] {
+  if (deck.length < DEFAULT_PAPER_SIZE) return [...deck];
+
+  const inScope = <T extends { subject: PaperSubject }>(items: readonly T[]): T[] =>
+    scope === "綜合課綱" ? [...items] : items.filter((item) => item.subject === scope);
+
+  // 填空題（字卡四選一，計分與選擇題相同）
+  const fillPool = inScope(FILL_QUESTIONS);
+  const fillQuestion: PaperQuestion | null = fillPool.length
+    ? fillToPaper(fillPool[Math.floor(random() * fillPool.length)])
+    : null;
+
+  // 排序題
+  const orderPool = inScope(ORDER_QUESTIONS);
+  const orderQuestion: PaperQuestion | null = orderPool.length
+    ? orderToPaper(orderPool[Math.floor(random() * orderPool.length)])
+    : null;
+
+  // 配對題（純文字組，維持試卷風格）；準備多組以利缺題時遞補。
+  const textOnly = MATCHING_SETS.filter((set) => !set.pairs.some((pair) => pair.img !== undefined));
+  const matchPool = scope === "綜合課綱" ? textOnly : textOnly.filter((set) => set.subject === scope);
+  const matchSets = shuffleArray(matchPool.length >= 3 ? matchPool : MATCHING_SETS, random);
+  const usedMatchIds = new Set<string>();
+  const takeMatch = (): PaperQuestion | null => {
+    const set = matchSets.find((candidate) => !usedMatchIds.has(candidate.id));
+    if (!set) return null;
+    usedMatchIds.add(set.id);
+    const mini = sliceMatchingSet(set, 4, 1, random);
+    return {
+      id: `match-${mini.id}-${usedMatchIds.size}`,
+      grade: 0,
+      subject: mini.subject,
+      questionType: "配對題",
+      difficulty: mini.difficulty,
+      learningTopic: `${mini.title}（配對）`,
+      prompt: mini.instruction,
+      options: [],
+      answer: -1,
+      explanation: "",
+      matchingSet: mini,
+    };
+  };
+  const primaryMatch = takeMatch();
+
+  // 第 5、10、15 題：填空 → 配對 → 排序；缺題時以另一組配對遞補。
+  const slots: Array<PaperQuestion | null> = [fillQuestion, primaryMatch, orderQuestion];
+  const inserts: PaperQuestion[] = [];
+  for (const slot of slots) {
+    inserts.push(slot ?? takeMatch() ?? primaryMatch!);
+  }
+
+  const result = [...deck];
+  [4, 8, 12].forEach((position, index) => {
+    const question = inserts[index];
+    if (question) result.splice(Math.min(position + index, result.length), 0, question);
   });
   return result;
 }

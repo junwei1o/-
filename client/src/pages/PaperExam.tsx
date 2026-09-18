@@ -9,6 +9,8 @@ import { AiReviewPlanCard } from "@/components/AiReviewPlanCard";
 import { QuestionTransition } from "@/components/QuestionTransition";
 import { AnswerCombo } from "@/components/AnswerCombo";
 import MatchingGame from "@/components/MatchingGame";
+import FillBlank from "@/components/classroom/FillBlank";
+import OrderSteps from "@/components/classroom/OrderSteps";
 import { formatMatchingTime, type MatchingResult } from "@/lib/matchingBank";
 import { CompanionReflection } from "@/components/CompanionReflection";
 import { ReflectionWorkspace } from "@/components/reflection/ReflectionWorkspace";
@@ -27,7 +29,7 @@ import {
   getPaperNextGroupStrategyHint,
   getPaperMistakeReason,
   isMatchingQuestion,
-  mixPaperMatching,
+  mixPaperVariants,
   questionIndexToAltitude,
   scorePaper,
   type PaperMistakeReason,
@@ -254,8 +256,10 @@ export default function PaperExam() {
       difficulty: question.difficulty,
       learningTopic: question.learningTopic,
       prompt: question.prompt,
-      selectedAnswer: answers[question.id] !== undefined && answers[question.id] >= 0 ? question.options[answers[question.id]] : "（未作答）",
-      correctAnswer: question.options[question.answer],
+      selectedAnswer: question.questionType === "排序題"
+        ? (answers[question.id] === 0 ? "順序正確" : "順序錯誤或未完成")
+        : answers[question.id] !== undefined && answers[question.id] >= 0 ? question.options[answers[question.id]] : "（未作答）",
+      correctAnswer: question.questionType === "排序題" ? (question.orderItems ?? []).join(" → ") : question.options[question.answer],
       officialExplanation: question.explanation,
     })),
   }), [answers, filteredWrongQuestions, reviewAdaptation, wrongReasonFilter, wrongSubjectFilter]);
@@ -515,7 +519,7 @@ export default function PaperExam() {
   useEffect(() => {
     if (!subjectScope || reviewTopic || wrongOnly || !questions.length || subjectScopeLaunchRef.current === subjectScope) return;
     subjectScopeLaunchRef.current = subjectScope;
-    const nextDeck = mixPaperMatching(buildPaperDeck(questions, subjectScope, DEFAULT_PAPER_SIZE), subjectScope);
+    const nextDeck = mixPaperVariants(buildPaperDeck(questions, subjectScope, DEFAULT_PAPER_SIZE), subjectScope);
     setScope(subjectScope);
     setDeck(nextDeck);
     setAnswers({});
@@ -579,7 +583,7 @@ function pickPoolWithCooldown(nextScope: PaperScope): PaperQuestion[] {
 
   function startPaper(nextScope = scope) {
   const profile = loadAdaptiveProfile();
-        const nextDeck = mixPaperMatching(buildPersonalizedPaperDeck(pickPoolWithCooldown(nextScope), nextScope, DEFAULT_PAPER_SIZE, profile), nextScope);
+        const nextDeck = mixPaperVariants(buildPersonalizedPaperDeck(pickPoolWithCooldown(nextScope), nextScope, DEFAULT_PAPER_SIZE, profile), nextScope);
     setScope(nextScope);
     setPendingPaperScope(null);
     setDeck(nextDeck);
@@ -1087,14 +1091,26 @@ function pickPoolWithCooldown(nextScope: PaperScope): PaperQuestion[] {
                 <div className="paper-wrong-list">
                 {filteredWrongQuestions.map((question) => {
                   const selectedAnswer = answers[question.id];
+                  const isOrderQuestion = question.questionType === "排序題";
+                  const selectedText = isOrderQuestion
+                    ? selectedAnswer === 0 ? "順序正確" : "順序錯誤或未完成"
+                    : selectedAnswer !== undefined && selectedAnswer >= 0 ? question.options[selectedAnswer] : "（未作答）";
+                  const correctText = isOrderQuestion
+                    ? (question.orderItems ?? []).join(" → ")
+                    : question.options[question.answer];
                   return (
                     <article key={`summary-${question.id}`} className="paper-wrong-card">
-                      <p className="paper-question-meta">第 {deck.indexOf(question) + 1} 題 · {question.subject} · {question.learningTopic}</p>
+                      <p className="paper-question-meta">第 {deck.indexOf(question) + 1} 題 · {question.subject} · {question.learningTopic}{question.questionType === "填空題" ? " · 填空題" : isOrderQuestion ? " · 排序題" : ""}</p>
                       <SpeechReadableText as="h3" text={question.prompt} label="錯題題目" className="paper-wrong-prompt" compact={false} />
                       <div className="paper-wrong-answer-grid">
-                        <p><span>你的作答</span><SpeechReadableText as="strong" text={selectedAnswer !== undefined && selectedAnswer >= 0 ? question.options[selectedAnswer] : "（未作答）"} label="你的作答" compact /></p>
-                        <p><span>正確答案</span><SpeechReadableText as="strong" text={question.options[question.answer]} label="正確答案" compact /></p>
+                        <p><span>你的作答</span><SpeechReadableText as="strong" text={selectedText} label="你的作答" compact /></p>
+                        <p><span>正確答案</span><SpeechReadableText as="strong" text={correctText} label="正確答案" compact /></p>
                       </div>
+                      {isOrderQuestion && (
+                        <ol className="paper-order-answer" style={{ margin: "4px 0 8px", paddingLeft: 20, fontSize: 14, lineHeight: 1.8 }}>
+                          {(question.orderItems ?? []).map((item, index) => <li key={`${item}-${index}`}>{item}</li>)}
+                        </ol>
+                      )}
                       <SpeechReadableText as="p" text={question.explanation} label="錯題詳細解析" className="paper-explanation" compact={false} />
                     </article>
                   );
@@ -1222,7 +1238,7 @@ function pickPoolWithCooldown(nextScope: PaperScope): PaperQuestion[] {
 	            const summitStrategySpeechText = `${summitStrategyRecap.title}。${summitStrategyRecap.summary} ${summitStrategyRecap.strategies.join(" ")}${summitStrategyRecap.knowledgeTopics.length ? ` 本組知識點：${summitStrategyRecap.knowledgeTopics.join("、")}。` : ""}`;
             return (
               <div className="paper-question-journey">
-                <div className="paper-progress-row"><span>第 {currentIndex + 1} / {deck.length} 題</span><span>{scope} · {current.subject} · {current.learningTopic}{current.questionType === "是非題" ? " · 是非題" : current.questionType === "配對題" ? " · 配對題" : ""}</span></div>
+                <div className="paper-progress-row"><span>第 {currentIndex + 1} / {deck.length} 題</span><span>{scope} · {current.subject} · {current.learningTopic}{current.questionType === "是非題" ? " · 是非題" : current.questionType === "配對題" ? " · 配對題" : current.questionType === "填空題" ? " · 填空題" : current.questionType === "排序題" ? " · 排序題" : ""}</span></div>
                 {current.questionType !== "配對題" && !currentAnswered && (
                   <div className={`paper-question-timer ${timeLeft <= 10 ? "is-urgent" : ""}`} role="timer" aria-label={`剩餘 ${timeLeft} 秒`} data-testid="paper-question-timer">
                     <Timer size={16} aria-hidden="true" />
@@ -1336,6 +1352,97 @@ function pickPoolWithCooldown(nextScope: PaperScope): PaperQuestion[] {
                 }
               />
             )
+          ) : current.questionType === "填空題" ? (
+            <>
+          <div className="paper-question-heading"><div><p className="paper-question-meta">{current.grade} 年級 · {current.difficulty} · 填空選字</p></div></div>
+          <FillBlank
+            question={current}
+            selected={currentAnswer}
+            answered={currentAnswered}
+            onPick={(index) => answerQuestion(current, index)}
+          />
+          {currentAnswered && currentExplanation && (
+            <aside className={`paper-answer-feedback ${currentCorrect ? "is-correct" : "is-wrong"}`} aria-live="polite">
+              <div className="paper-feedback-heading"><SpeechReadableText as="strong" text={currentCorrect ? "答對了！" : timeouts[current.id] ? "時間到！" : "先整理線索"} label="答題結果" compact={false} /></div>
+              {!currentCorrect && <p>正確答案：<SpeechReadableText as="strong" text={current.options[current.answer]} label="正確答案" compact /></p>}
+              {timeouts[current.id] && <p className="paper-timeout-note">30 秒用完，這一題先記為需要複習；看過正確答案與解析後再繼續。</p>}
+              {!currentCorrect && !timeouts[current.id] && (
+                <div className="paper-error-classification" role="group" aria-label="這次答錯的原因">
+                  <span>你覺得這次需要哪種幫助？</span>
+                  <div className="paper-error-classification-actions">
+                    {(["concept", "careless", "memory"] as AdaptiveErrorType[]).map((type) => (
+                      <button key={type} type="button" className={currentErrorType === type ? "is-selected" : ""} aria-pressed={currentErrorType === type} onClick={() => classifyError(current, type)}>
+                        {type === "concept" ? "整理觀念" : type === "careless" ? "檢查細節" : "喚回記憶"}
+                      </button>
+                    ))}
+                  </div>
+                  {currentErrorType && <small>{errorTypeLabel(currentErrorType)}</small>}
+                </div>
+              )}
+              <div className="paper-explanation-stages" aria-label="三段式解析">
+                <p className="paper-explanation-stage-label">速記口訣</p>
+                <SpeechReadableText as="p" text={currentExplanation.summary} label="速記口訣" className="paper-explanation" compact={false} />
+                {currentExplanationStage >= 1 && <div className="paper-explanation-detail"><p className="paper-explanation-stage-label">進一步理解</p><SpeechReadableText as="p" text={currentExplanation.detail} label="進一步理解" className="paper-explanation" compact={false} /></div>}
+                {currentExplanationStage >= 2 && <div className="paper-explanation-detail"><p className="paper-explanation-stage-label">完整深讀</p><SpeechReadableText as="p" text={currentExplanation.deepDive} label="完整深讀" className="paper-explanation" compact={false} /></div>}
+              </div>
+              <div className="paper-explanation-actions">
+                <button type="button" className="paper-explanation-toggle" onClick={() => revealExplanation(current, currentExplanationStage >= 1 ? 0 : 1)} aria-expanded={currentExplanationStage >= 1}>{currentExplanationStage >= 1 ? "收起進一步理解" : "看進一步理解"}</button>
+                {currentExplanationStage >= 1 && <button type="button" className="paper-explanation-toggle" onClick={() => revealExplanation(current, currentExplanationStage >= 2 ? 1 : 2)} aria-expanded={currentExplanationStage >= 2}>{currentExplanationStage >= 2 ? "收起完整深讀" : "進入完整深讀"}</button>}
+                <button type="button" className={`paper-doubt-button ${flaggedQuestions[current.id] ? "is-flagged" : ""}`} aria-pressed={Boolean(flaggedQuestions[current.id])} onClick={() => toggleDoubt(current)}><Flag size={16} aria-hidden="true" />{flaggedQuestions[current.id] ? "已標記疑惑" : "標記疑惑"}</button>
+              </div>
+              {!timeouts[current.id] && (
+                <CompanionReflection
+                  question={current.prompt}
+                  options={current.options}
+                  selectedIndex={answers[current.id] ?? -1}
+                  answerIndex={current.answer}
+                  subject={current.subject}
+                  learningTopic={current.learningTopic}
+                />
+              )}
+            </aside>
+          )}
+            </>
+          ) : current.questionType === "排序題" ? (
+            <>
+          <div className="paper-question-heading"><div><p className="paper-question-meta">{current.grade} 年級 · {current.difficulty} · 排序題</p></div></div>
+          <OrderSteps
+            question={current}
+            answered={currentAnswered}
+            onResolve={(correct) => answerQuestion(current, correct ? 0 : -1)}
+          />
+          {currentAnswered && currentExplanation && (
+            <aside className={`paper-answer-feedback ${currentCorrect ? "is-correct" : "is-wrong"}`} aria-live="polite">
+              <div className="paper-feedback-heading"><SpeechReadableText as="strong" text={currentCorrect ? "順序正確！" : timeouts[current.id] ? "時間到！" : "順序再想想"} label="答題結果" compact={false} /></div>
+              {!currentCorrect && <p>正確順序已用綠色標示在上方，可對照自己的排列。</p>}
+              {timeouts[current.id] && <p className="paper-timeout-note">30 秒用完，這一題先記為需要複習；看過正確順序與解析後再繼續。</p>}
+              {!currentCorrect && !timeouts[current.id] && (
+                <div className="paper-error-classification" role="group" aria-label="這次答錯的原因">
+                  <span>你覺得這次需要哪種幫助？</span>
+                  <div className="paper-error-classification-actions">
+                    {(["concept", "careless", "memory"] as AdaptiveErrorType[]).map((type) => (
+                      <button key={type} type="button" className={currentErrorType === type ? "is-selected" : ""} aria-pressed={currentErrorType === type} onClick={() => classifyError(current, type)}>
+                        {type === "concept" ? "整理觀念" : type === "careless" ? "檢查細節" : "喚回記憶"}
+                      </button>
+                    ))}
+                  </div>
+                  {currentErrorType && <small>{errorTypeLabel(currentErrorType)}</small>}
+                </div>
+              )}
+              <div className="paper-explanation-stages" aria-label="三段式解析">
+                <p className="paper-explanation-stage-label">速記口訣</p>
+                <SpeechReadableText as="p" text={currentExplanation.summary} label="速記口訣" className="paper-explanation" compact={false} />
+                {currentExplanationStage >= 1 && <div className="paper-explanation-detail"><p className="paper-explanation-stage-label">進一步理解</p><SpeechReadableText as="p" text={currentExplanation.detail} label="進一步理解" className="paper-explanation" compact={false} /></div>}
+                {currentExplanationStage >= 2 && <div className="paper-explanation-detail"><p className="paper-explanation-stage-label">完整深讀</p><SpeechReadableText as="p" text={currentExplanation.deepDive} label="完整深讀" className="paper-explanation" compact={false} /></div>}
+              </div>
+              <div className="paper-explanation-actions">
+                <button type="button" className="paper-explanation-toggle" onClick={() => revealExplanation(current, currentExplanationStage >= 1 ? 0 : 1)} aria-expanded={currentExplanationStage >= 1}>{currentExplanationStage >= 1 ? "收起進一步理解" : "看進一步理解"}</button>
+                {currentExplanationStage >= 1 && <button type="button" className="paper-explanation-toggle" onClick={() => revealExplanation(current, currentExplanationStage >= 2 ? 1 : 2)} aria-expanded={currentExplanationStage >= 2}>{currentExplanationStage >= 2 ? "收起完整深讀" : "進入完整深讀"}</button>}
+                <button type="button" className={`paper-doubt-button ${flaggedQuestions[current.id] ? "is-flagged" : ""}`} aria-pressed={Boolean(flaggedQuestions[current.id])} onClick={() => toggleDoubt(current)}><Flag size={16} aria-hidden="true" />{flaggedQuestions[current.id] ? "已標記疑惑" : "標記疑惑"}</button>
+              </div>
+            </aside>
+          )}
+            </>
           ) : (
             <>
           <div className="paper-question-heading"><div><p className="paper-question-meta">{current.grade} 年級 · {current.difficulty}</p><SpeechReadableText as="h2" text={current.prompt} label="題目" className="paper-question-prompt" compact={false} /></div></div>

@@ -18,12 +18,12 @@ type NavGroup = { id: string; label: string; items: NavItem[] };
 
 /**
  * 頂層導航（22 入口 → 7 → 5，設計稿 P1 問題10 收斂）。
- * 「今日遠征」為每日作答任務，併入答題室；「知識展廳」為探索收集內容，併入藏寶圖。
+ * 「今日遠征」為每日作答任務，併入我的教室；「知識展廳」為探索收集內容，併入藏寶圖。
  * 被收斂頁面的路由全部保留，並在對應 Hub 頁提供入口卡，不再各自佔一個頂層入口。
  */
 const PRIMARY_ITEMS: NavItem[] = [
   { id: "home", label: "首頁", icon: Compass, href: "/", activePrefixes: ["/map", "/regions/"] },
-  { id: "quiz-room", label: "答題室", icon: BookOpenCheck, href: "/quiz-room", activePrefixes: ["/quiz-room", "/weekly-quiz", "/practice", "/battle", "/knowledge-duel", "/duel", "/wrong-answers", "/review-hub", "/community", "/expedition", "/camp", "/guardian", "/guardian-expedition"] },
+  { id: "quiz-room", label: "我的教室", icon: BookOpenCheck, href: "/quiz-room", activePrefixes: ["/quiz-room", "/classroom", "/weekly-quiz", "/practice", "/battle", "/knowledge-duel", "/duel", "/wrong-answers", "/review-hub", "/community", "/expedition", "/camp", "/guardian", "/guardian-expedition"] },
   { id: "learning", label: "學習歷程", icon: BarChart3, href: "/learning", activePrefixes: ["/learning", "/learning-insights", "/learning-report", "/error-statistics", "/learning-summary", "/adventure-journal"] },
   { id: "treasure", label: "藏寶圖", icon: MapIcon, href: "/treasure", activePrefixes: ["/treasure", "/badges", "/tavern", "/gallery", "/wisdom", "/astronomy", "/principles", "/observatory", "/safety", "/study-tips"] },
   { id: "settings", label: "設定", icon: Settings, href: "/settings", activePrefixes: ["/settings", "/teacher", "/class", "/features"] },
@@ -34,7 +34,7 @@ const MOBILE_GROUPS: NavGroup[] = [
   { id: "main", label: "主選單", items: PRIMARY_ITEMS },
 ];
 
-/** 手機底部固定快捷：最常用的四個（首頁／答題室／學習歷程／藏寶圖）。 */
+/** 手機底部固定快捷：最常用的四個（首頁／我的教室／學習歷程／藏寶圖）。 */
 const MOBILE_PRIORITY_ITEMS: NavItem[] = [PRIMARY_ITEMS[0], PRIMARY_ITEMS[1], PRIMARY_ITEMS[2], PRIMARY_ITEMS[3]];
 
 function isItemActive(item: NavItem, pathname: string) {

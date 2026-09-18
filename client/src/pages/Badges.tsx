@@ -161,7 +161,7 @@ export default function Badges() {
       title: "每週遠征家",
       description: "完成一次本週週測",
       earned: player.badges.includes("weekly-quiz-voyager"),
-      hint: { label: "去答題室週測", href: "/quiz-room" },
+      hint: { label: "去我的教室週測", href: "/quiz-room" },
     },
     {
       id: "companions-3",

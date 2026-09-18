@@ -1,0 +1,270 @@
+{
+  "version": 1,
+  "note": "填空選字題庫（local-first）：prompt 中以 ____ 標示空格，options 為字卡（含正解與干擾），answer 為正解 index。可混入平常試卷，也供我的教室使用。",
+  "questions": [
+    {
+      "id": "fill-ch-01",
+      "grade": 3,
+      "subject": "國語",
+      "difficulty": "基礎",
+      "learningTopic": "量詞搭配",
+      "prompt": "雨過天晴，天空出現一 ____ 彩虹。",
+      "options": ["道", "條", "片", "彎"],
+      "answer": 0,
+      "explanation": "彩虹的量詞用「道」，如「一道彩虹」；「條」用於細長物品，「片」用於成片的東西。"
+    },
+    {
+      "id": "fill-ch-02",
+      "grade": 4,
+      "subject": "國語",
+      "difficulty": "標準",
+      "learningTopic": "量詞搭配",
+      "prompt": "美術課上，老師展示了一 ____ 名畫。",
+      "options": ["幅", "張", "面", "本"],
+      "answer": 0,
+      "explanation": "圖畫、書畫作品的量詞用「幅」，如「一幅畫」；「張」用於紙、桌椅，「本」用於書籍。"
+    },
+    {
+      "id": "fill-ch-03",
+      "grade": 4,
+      "subject": "國語",
+      "difficulty": "標準",
+      "learningTopic": "量詞搭配",
+      "prompt": "音樂教室裡擺著一 ____ 鋼琴。",
+      "options": ["架", "臺", "張", "個"],
+      "answer": 0,
+      "explanation": "鋼琴、飛機等大型器物的量詞用「架」；「臺」用於機器、車輛，如「一臺車」。"
+    },
+    {
+      "id": "fill-ch-04",
+      "grade": 5,
+      "subject": "國語",
+      "difficulty": "標準",
+      "learningTopic": "成語運用",
+      "prompt": "他做事總是 ____ ，一點兒也不馬虎。",
+      "options": ["一絲不苟", "七上八下", "三心二意", "五光十色"],
+      "answer": 0,
+      "explanation": "「一絲不苟」形容做事非常認真、連最細小的地方也不馬虎；「三心二意」是心意不專一。"
+    },
+    {
+      "id": "fill-ch-05",
+      "grade": 5,
+      "subject": "國語",
+      "difficulty": "挑戰",
+      "learningTopic": "成語運用",
+      "prompt": "這首歌旋律動聽、歌詞感人，一時 ____ ，大家都會唱。",
+      "options": ["膾炙人口", "漠不關心", "一蹶不振", "狼狽為奸"],
+      "answer": 0,
+      "explanation": "「膾炙人口」比喻好的詩文或事物為眾人所稱讚、流傳很廣；其餘三個都是負面意思的成語。"
+    },
+    {
+      "id": "fill-ch-06",
+      "grade": 3,
+      "subject": "國語",
+      "difficulty": "基礎",
+      "learningTopic": "詞語搭配",
+      "prompt": "春風吹來，花兒在風中輕輕 ____ 。",
+      "options": ["搖曳", "奔跑", "品嘗", "閱讀"],
+      "answer": 0,
+      "explanation": "「搖曳」是輕輕擺動的樣子，適合形容花草隨風擺動；奔跑、品嘗、閱讀都不是花兒會做的動作。"
+    },
+    {
+      "id": "fill-ma-01",
+      "grade": 3,
+      "subject": "數學",
+      "difficulty": "基礎",
+      "learningTopic": "長度單位換算",
+      "prompt": "3 公尺 50 公分＝ ____ 公分。",
+      "options": ["350", "3050", "35", "305"],
+      "answer": 0,
+      "explanation": "1 公尺＝100 公分，3 公尺＝300 公分，再加 50 公分，共 350 公分。"
+    },
+    {
+      "id": "fill-ma-02",
+      "grade": 3,
+      "subject": "數學",
+      "difficulty": "基礎",
+      "learningTopic": "重量單位換算",
+      "prompt": "1 公斤＝ ____ 公克。",
+      "options": ["1000", "100", "10", "10000"],
+      "answer": 0,
+      "explanation": "公制單位中，「千」代表 1000 倍，所以 1 公斤＝1000 公克。"
+    },
+    {
+      "id": "fill-ma-03",
+      "grade": 4,
+      "subject": "數學",
+      "difficulty": "標準",
+      "learningTopic": "時間單位換算",
+      "prompt": "2 小時 15 分＝ ____ 分。",
+      "options": ["135", "215", "125", "95"],
+      "answer": 0,
+      "explanation": "1 小時＝60 分，2 小時＝120 分，再加 15 分，共 135 分。"
+    },
+    {
+      "id": "fill-ma-04",
+      "grade": 3,
+      "subject": "數學",
+      "difficulty": "基礎",
+      "learningTopic": "幾何圖形",
+      "prompt": "正方形的四個角都是 ____ 角。",
+      "options": ["直", "銳", "鈍", "平"],
+      "answer": 0,
+      "explanation": "正方形每個角都是 90 度，90 度的角稱為直角；比 90 度小是銳角，比 90 度大是鈍角。"
+    },
+    {
+      "id": "fill-ma-05",
+      "grade": 5,
+      "subject": "數學",
+      "difficulty": "挑戰",
+      "learningTopic": "容量單位換算",
+      "prompt": "3 公升 250 毫升＝ ____ 毫升。",
+      "options": ["3250", "3025", "325", "30250"],
+      "answer": 0,
+      "explanation": "1 公升＝1000 毫升，3 公升＝3000 毫升，再加 250 毫升，共 3250 毫升。"
+    },
+    {
+      "id": "fill-so-01",
+      "grade": 3,
+      "subject": "社會",
+      "difficulty": "基礎",
+      "learningTopic": "台灣縣市地標",
+      "prompt": "台北 101 位於 ____ 市。",
+      "options": ["台北", "新北", "基隆", "桃園"],
+      "answer": 0,
+      "explanation": "台北 101 位於台北市信義區，是台北市最著名的地標；野柳女王頭才在新北市。"
+    },
+    {
+      "id": "fill-so-02",
+      "grade": 4,
+      "subject": "社會",
+      "difficulty": "標準",
+      "learningTopic": "節慶習俗",
+      "prompt": "中秋節是農曆 ____ ，這一天的月亮又圓又亮。",
+      "options": ["八月十五日", "五月五日", "正月十五日", "九月九日"],
+      "answer": 0,
+      "explanation": "中秋節在農曆八月十五日，月圓人團圓；五月五日是端午節，正月十五日是元宵節。"
+    },
+    {
+      "id": "fill-so-03",
+      "grade": 4,
+      "subject": "社會",
+      "difficulty": "標準",
+      "learningTopic": "台灣縣市地標",
+      "prompt": "台灣本島最南端的燈塔是 ____ 燈塔。",
+      "options": ["鵝鑾鼻", "富貴角", "漁翁島", "三仙台"],
+      "answer": 0,
+      "explanation": "鵝鑾鼻燈塔在屏東縣恆春半島最南端；富貴角燈塔在台灣本島最北端的新北市石門。"
+    },
+    {
+      "id": "fill-so-04",
+      "grade": 5,
+      "subject": "社會",
+      "difficulty": "標準",
+      "learningTopic": "節慶習俗",
+      "prompt": "冬至時，台灣民間有吃 ____ 、添歲數的習俗。",
+      "options": ["湯圓", "粽子", "月餅", "潤餅"],
+      "answer": 0,
+      "explanation": "冬至吃湯圓象徵團圓、長一歲；端午節吃粽子，中秋節吃月餅。"
+    },
+    {
+      "id": "fill-sc-01",
+      "grade": 3,
+      "subject": "自然",
+      "difficulty": "基礎",
+      "learningTopic": "磁鐵特性",
+      "prompt": "磁鐵的 ____ 會互相吸引。",
+      "options": ["異極", "同極", "斷面", "中間"],
+      "answer": 0,
+      "explanation": "磁鐵「異極相吸、同極相斥」：N 極和 S 極靠近會吸在一起，兩個 N 極靠近會推開。"
+    },
+    {
+      "id": "fill-sc-02",
+      "grade": 4,
+      "subject": "自然",
+      "difficulty": "標準",
+      "learningTopic": "植物生理",
+      "prompt": "植物行光合作用，會製造養分並放出 ____ 。",
+      "options": ["氧氣", "二氧化碳", "氮氣", "水蒸氣"],
+      "answer": 0,
+      "explanation": "植物利用陽光、水和二氧化碳行光合作用，製造養分，同時釋放氧氣；呼吸時才是吸氧氣、呼二氧化碳。"
+    },
+    {
+      "id": "fill-sc-03",
+      "grade": 4,
+      "subject": "自然",
+      "difficulty": "基礎",
+      "learningTopic": "月相變化",
+      "prompt": "月亮看起來最圓、最亮的時候，稱為 ____ 。",
+      "options": ["滿月", "新月", "上弦月", "下弦月"],
+      "answer": 0,
+      "explanation": "農曆十五日前後月亮又圓又亮，叫滿月（望月）；新月時幾乎看不到月亮，弦月只亮一半。"
+    },
+    {
+      "id": "fill-sc-04",
+      "grade": 4,
+      "subject": "自然",
+      "difficulty": "標準",
+      "learningTopic": "電路與導體",
+      "prompt": "下列物品中，容易讓電流通過的是 ____ 。",
+      "options": ["鐵釘", "塑膠尺", "橡皮筋", "玻璃珠"],
+      "answer": 0,
+      "explanation": "鐵釘是金屬製品，屬於導體，容易導電；塑膠、橡膠、玻璃都是絕緣體，不容易導電。"
+    },
+    {
+      "id": "fill-sc-05",
+      "grade": 5,
+      "subject": "自然",
+      "difficulty": "挑戰",
+      "learningTopic": "動物分類",
+      "prompt": "蠶的一生正確順序是卵→幼蟲→ ____ →成蟲。",
+      "options": ["蛹", "繭", "若蟲", "蝌蚪"],
+      "answer": 0,
+      "explanation": "蠶是完全變態的昆蟲，一生經過卵、幼蟲、蛹、成蟲四個階段；「繭」是蛹外面的絲殼，不是一個階段。"
+    },
+    {
+      "id": "fill-en-01",
+      "grade": 3,
+      "subject": "英語",
+      "difficulty": "基礎",
+      "learningTopic": "be 動詞",
+      "prompt": "I ____ a student.（我是一位學生）",
+      "options": ["am", "is", "are", "be"],
+      "answer": 0,
+      "explanation": "be 動詞搭配：I 用 am，he/she/it 用 is，you/we/they 用 are。"
+    },
+    {
+      "id": "fill-en-02",
+      "grade": 4,
+      "subject": "英語",
+      "difficulty": "標準",
+      "learningTopic": "have/has",
+      "prompt": "She ____ long black hair.（她有一頭長黑髮）",
+      "options": ["has", "have", "is", "are"],
+      "answer": 0,
+      "explanation": "第三人稱單數（he/she/it）用 has；I、you、we、they 用 have。"
+    },
+    {
+      "id": "fill-en-03",
+      "grade": 3,
+      "subject": "英語",
+      "difficulty": "基礎",
+      "learningTopic": "數字",
+      "prompt": "three ＋ four ＝ ____ .",
+      "options": ["seven", "six", "eight", "five"],
+      "answer": 0,
+      "explanation": "three 是 3，four 是 4，3＋4＝7，seven 是 7。"
+    },
+    {
+      "id": "fill-en-04",
+      "grade": 4,
+      "subject": "英語",
+      "difficulty": "基礎",
+      "learningTopic": "問候用語",
+      "prompt": "Good ____ !（傍晚見面時的問候語）",
+      "options": ["evening", "morning", "night", "bye"],
+      "answer": 0,
+      "explanation": "Good evening 是傍晚見面的問候語；Good morning 是早安，Good night 是睡前道別。"
+    }
+  ]
+}

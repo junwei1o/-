@@ -43,10 +43,10 @@ describe("TopNavigation（22 入口 → 7 → 5 頂層，P1 導航收斂）", ()
     const primary = screen.getByRole("navigation", { name: "主要功能選單" });
     expect(screen.getByRole("navigation", { name: "手機版核心入口" })).toBeInTheDocument();
     expect(within(primary).getByRole("button", { name: "首頁" })).toHaveAttribute("aria-current", "page");
-    for (const label of ["答題室", "學習歷程", "藏寶圖", "設定"]) {
+    for (const label of ["我的教室", "學習歷程", "藏寶圖", "設定"]) {
       expect(within(primary).getByRole("button", { name: label })).toBeInTheDocument();
     }
-    // P1 收斂：今日遠征併入答題室、知識展廳併入藏寶圖，不再各自佔頂層按鈕。
+    // P1 收斂：今日遠征併入我的教室、知識展廳併入藏寶圖，不再各自佔頂層按鈕。
     expect(within(primary).queryByRole("button", { name: "今日遠征" })).not.toBeInTheDocument();
     expect(within(primary).queryByRole("button", { name: "知識展廳" })).not.toBeInTheDocument();
     // 22 個舊入口不再各自佔一個頂層按鈕。
@@ -59,7 +59,7 @@ describe("TopNavigation（22 入口 → 7 → 5 頂層，P1 導航收斂）", ()
 
     const primary = screen.getByRole("navigation", { name: "主要功能選單" });
     const cases: Array<[string, string]> = [
-      ["答題室", "/quiz-room"],
+      ["我的教室", "/quiz-room"],
       ["學習歷程", "/learning"],
       ["藏寶圖", "/treasure"],
       ["設定", "/settings"],
@@ -75,7 +75,7 @@ describe("TopNavigation（22 入口 → 7 → 5 頂層，P1 導航收斂）", ()
     currentPath = "/battle";
     render(<TopNavigation />);
     const primary = screen.getByRole("navigation", { name: "主要功能選單" });
-    expect(within(primary).getByRole("button", { name: "答題室" })).toHaveAttribute("aria-current", "page");
+    expect(within(primary).getByRole("button", { name: "我的教室" })).toHaveAttribute("aria-current", "page");
     cleanup();
 
     currentPath = "/learning-summary";
@@ -90,11 +90,11 @@ describe("TopNavigation（22 入口 → 7 → 5 頂層，P1 導航收斂）", ()
     expect(within(primary3).getByRole("button", { name: "首頁" })).toHaveAttribute("aria-current", "page");
     cleanup();
 
-    // P1 收斂歸併：今日遠征深層頁標記答題室、知識展廳深層頁標記藏寶圖。
+    // P1 收斂歸併：今日遠征深層頁標記我的教室、知識展廳深層頁標記藏寶圖。
     currentPath = "/expedition";
     render(<TopNavigation />);
     const primary4 = screen.getByRole("navigation", { name: "主要功能選單" });
-    expect(within(primary4).getByRole("button", { name: "答題室" })).toHaveAttribute("aria-current", "page");
+    expect(within(primary4).getByRole("button", { name: "我的教室" })).toHaveAttribute("aria-current", "page");
     cleanup();
 
     currentPath = "/gallery";
@@ -118,13 +118,13 @@ describe("TopNavigation（22 入口 → 7 → 5 頂層，P1 導航收斂）", ()
 
     fireEvent.click(screen.getByRole("button", { name: "開啟功能選單" }));
     const all = screen.getByRole("navigation", { name: "全部功能" });
-    expect(within(all).getByRole("button", { name: "答題室" })).toBeInTheDocument();
+    expect(within(all).getByRole("button", { name: "我的教室" })).toBeInTheDocument();
     expect(within(all).queryByRole("button", { name: "今日遠征" })).not.toBeInTheDocument();
     fireEvent.click(within(all).getByRole("button", { name: "藏寶圖" }));
     expect(setLocation).toHaveBeenCalledWith("/treasure");
   });
 
-  it("手機底部快捷：首頁／答題室／學習歷程／藏寶圖", () => {
+  it("手機底部快捷：首頁／我的教室／學習歷程／藏寶圖", () => {
     render(<TopNavigation />);
 
     const mobile = screen.getByRole("navigation", { name: "手機版核心入口" });
