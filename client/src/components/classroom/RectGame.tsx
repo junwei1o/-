@@ -87,7 +87,9 @@ export default function RectGame({ muted = false, onExit, onBest, bestStars }: P
   const draggingRef = useRef(false);
   const dragAnchorRef = useRef<Cell | null>(null);
   const anchoredRef = useRef<Cell | null>(null);
-  const suppressClickRef = useRef(false);
+  // pointer 事件已完成的互動要擋掉緊接著的 click（click 在 pointerup 之後的獨立 task 派發，
+  // 不能用 setTimeout 清旗標）；pointerdown 一律重置、commit 時設立。
+  const pointerHandledRef = useRef(false);
   const reportedRef = useRef(false);
   const flashTimerRef = useRef<number | null>(null);
   const gridRef = useRef<HTMLDivElement | null>(null);
@@ -148,6 +150,11 @@ export default function RectGame({ muted = false, onExit, onBest, bestStars }: P
   }, [bestStars, onBest, play]);
 
   /** 送出一次拼法：面積等於 n 且沒找過就成立；全部找到即過關。 */
+  const applyAnchor = useCallback((cell: Cell | null) => {
+    anchoredRef.current = cell;
+    setAnchored(cell);
+  }, []);
+
   const commit = useCallback(
     (a: Cell, b: Cell) => {
       if (levelDoneRef.current) return;
@@ -155,7 +162,7 @@ export default function RectGame({ muted = false, onExit, onBest, bestStars }: P
       if (!round) return;
       const sel = normalize(a, b);
       setPreview(null);
-      setAnchored(null);
+      applyAnchor(null);
       if (rectArea(sel) !== round.n) {
         mistakesRef.current += 1;
         setMistakes(mistakesRef.current);
@@ -183,7 +190,7 @@ export default function RectGame({ muted = false, onExit, onBest, bestStars }: P
         play("win");
       }
     },
-    [play, showFlash],
+    [play, showFlash, applyAnchor],
   );
 
   // 每關 60 秒倒數；時間到直接揭曉解答進下一關。
@@ -227,15 +234,14 @@ export default function RectGame({ muted = false, onExit, onBest, bestStars }: P
 
   const onGridPointerDown = (e: React.PointerEvent) => {
     if (phase !== "play" || levelDoneRef.current) return;
+    pointerHandledRef.current = false;
     const cell = cellFromEvent(e);
     if (!cell) return;
     // 已有錨點時，點到別格直接成立（點兩下玩法）。
-    if (anchored && (anchored.r !== cell.r || anchored.c !== cell.c)) {
-      suppressClickRef.current = true;
-      window.setTimeout(() => {
-        suppressClickRef.current = false;
-      }, 0);
-      commit(anchored, cell);
+    const anchor = anchoredRef.current;
+    if (anchor && (anchor.r !== cell.r || anchor.c !== cell.c)) {
+      pointerHandledRef.current = true;
+      commit(anchor, cell);
       return;
     }
     draggingRef.current = true;
@@ -258,32 +264,27 @@ export default function RectGame({ muted = false, onExit, onBest, bestStars }: P
     dragAnchorRef.current = null;
     if (!anchor || phase !== "play" || levelDoneRef.current) return;
     const cell = cellFromEvent(e);
-    // 沒拖動（原地放開）＝留下錨點，等第二次點擊成立。
-    if (!cell || (cell.r === anchor.r && cell.c === anchor.c)) {
-      setPreview({ r1: anchor.r, c1: anchor.c, r2: anchor.r, c2: anchor.c });
-      setAnchored(anchor);
-      return;
+    // 沒拖動（原地放開）＝交給 click 事件處理錨點切換；真的拖動才成立。
+    if (cell && (cell.r !== anchor.r || cell.c !== anchor.c)) {
+      pointerHandledRef.current = true;
+      commit(anchor, cell);
     }
-    suppressClickRef.current = true;
-    window.setTimeout(() => {
-      suppressClickRef.current = false;
-    }, 0);
-    commit(anchor, cell);
   };
 
   const onCellClick = (cell: Cell) => {
-    if (suppressClickRef.current || phase !== "play" || levelDoneRef.current) return;
-    if (anchored) {
-      if (anchored.r === cell.r && anchored.c === cell.c) {
+    if (pointerHandledRef.current || phase !== "play" || levelDoneRef.current) return;
+    const anchor = anchoredRef.current;
+    if (anchor) {
+      if (anchor.r === cell.r && anchor.c === cell.c) {
         // 再點同一格＝取消錨點。
-        setAnchored(null);
+        applyAnchor(null);
         setPreview(null);
         return;
       }
-      commit(anchored, cell);
+      commit(anchor, cell);
       return;
     }
-    setAnchored(cell);
+    applyAnchor(cell);
     setPreview({ r1: cell.r, c1: cell.c, r2: cell.r, c2: cell.c });
   };
 
