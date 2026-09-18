@@ -30,6 +30,7 @@ const GAME_META: Record<string, { title: string }> = {
   trap: { title: "陷阱題挑戰" },
   factor: { title: "因數探險" },
   meteor: { title: "倍數防衛戰" },
+  rect: { title: "長方形拼拼樂" },
 };
 
 export default function ClassroomPlay() {
