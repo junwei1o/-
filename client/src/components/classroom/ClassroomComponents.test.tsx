@@ -7,6 +7,8 @@ import FillBlank from "./FillBlank";
 import OrderSteps from "./OrderSteps";
 import QuizRunner, { type RunnerQuestion } from "./QuizRunner";
 import RushRunner from "./RushRunner";
+import FactorGame from "./FactorGame";
+import { buildFactorRounds } from "@/lib/classroomBank";
 import type { PaperQuestion } from "@/lib/paperExam";
 
 afterEach(() => {
@@ -202,5 +204,84 @@ describe("RushRunner 限時接力", () => {
     expect(screen.getByRole("button", { name: /錯誤/ })).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: /正確/ }));
     expect(within(document.querySelector(".cr-stats")!).getByText("10")).toBeInTheDocument();
+  });
+});
+
+describe("FactorGame 因數探險", () => {
+  it("開始後顯示神祕數字與數字泡泡，未選時確認鈕停用", () => {
+    vi.spyOn(Math, "random").mockReturnValue(0.5);
+    render(<FactorGame onExit={() => {}} />);
+    fireEvent.click(screen.getByRole("button", { name: "開始探險" }));
+
+    expect(document.querySelector(".fc-n")?.textContent).toBeTruthy();
+    expect(document.querySelectorAll(".fc-bubble").length).toBeGreaterThanOrEqual(8);
+    expect(screen.getByRole("button", { name: /確認找出的因數/ })).toBeDisabled();
+
+    fireEvent.click(document.querySelectorAll(".fc-bubble")[0]);
+    expect(screen.getByRole("button", { name: /確認找出的因數/ })).not.toBeDisabled();
+    vi.restoreAllMocks();
+  });
+
+  it("五關全部選對因數，結算三顆星並回報最佳紀錄", () => {
+    vi.spyOn(Math, "random").mockReturnValue(0.5);
+    const rounds = buildFactorRounds(5, () => 0.5);
+    const onBest = vi.fn();
+    render(<FactorGame onExit={() => {}} onBest={onBest} />);
+    fireEvent.click(screen.getByRole("button", { name: "開始探險" }));
+
+    for (let r = 0; r < rounds.length; r += 1) {
+      for (const factor of rounds[r].factors) {
+        fireEvent.click(screen.getByRole("button", { name: String(factor) }));
+      }
+      fireEvent.click(screen.getByRole("button", { name: /確認找出的因數/ }));
+      expect(screen.getByText(/個因數全部找齊/)).toBeInTheDocument();
+      // 因數兩兩成對都要列出，乘起來等於 n
+      expect(document.querySelectorAll(".fc-pair").length).toBe(rounds[r].pairs.length);
+      if (r < rounds.length - 1) {
+        fireEvent.click(screen.getByRole("button", { name: /前進下一關/ }));
+      } else {
+        fireEvent.click(screen.getByRole("button", { name: /看探險結果/ }));
+      }
+    }
+
+    expect(screen.getByText(/完美過關 5 \/ 5 關/)).toBeInTheDocument();
+    expect(screen.getByText("★★★")).toBeInTheDocument();
+    expect(onBest).toHaveBeenCalledWith(expect.objectContaining({ stars: 3, correct: 5, total: 5 }));
+    vi.restoreAllMocks();
+  });
+
+  it("誤選干擾、漏選因數時標紅/標金，並提示漏掉數量", () => {
+    vi.spyOn(Math, "random").mockReturnValue(0.5);
+    const rounds = buildFactorRounds(5, () => 0.5);
+    render(<FactorGame onExit={() => {}} />);
+    fireEvent.click(screen.getByRole("button", { name: "開始探險" }));
+
+    // 只點一個干擾項（保證不是因數）
+    const distractor = rounds[0].distractors[0];
+    fireEvent.click(screen.getByRole("button", { name: String(distractor) }));
+    fireEvent.click(screen.getByRole("button", { name: /確認找出的因數/ }));
+
+    const wrong = document.querySelector(".fc-bubble.is-wrong");
+    expect(wrong?.textContent).toContain(String(distractor));
+    expect(document.querySelectorAll(".fc-bubble.is-miss").length).toBe(rounds[0].factors.length);
+    expect(screen.getByText(/漏掉/)).toBeInTheDocument();
+    vi.restoreAllMocks();
+  });
+
+  it("30 秒時間到自動揭曉因數成對解答", () => {
+    vi.useFakeTimers();
+    vi.spyOn(Math, "random").mockReturnValue(0.5);
+    render(<FactorGame onExit={() => {}} />);
+    fireEvent.click(screen.getByRole("button", { name: "開始探險" }));
+    expect(screen.queryByText(/因數兩兩成對/)).not.toBeInTheDocument();
+
+    act(() => {
+      vi.advanceTimersByTime(30_500);
+    });
+
+    expect(screen.getByText(/時間到/)).toBeInTheDocument();
+    expect(screen.getByText(/因數兩兩成對/)).toBeInTheDocument();
+    vi.useRealTimers();
+    vi.restoreAllMocks();
   });
 });

@@ -287,6 +287,100 @@ export function buildRelayRounds(count = 3, random: () => number = Math.random):
   return rounds;
 }
 
+/* ============================== 因數探險 ============================== */
+
+export type FactorRound = {
+  id: string;
+  /** 本關要找因數的目標數。 */
+  n: number;
+  /** n 的所有因數（由小到大，含 1 與 n）。 */
+  factors: number[];
+  /** 因數成對 [a, b]（a<=b、a*b=n）；完全平方數最後一對為 [r, r]。 */
+  pairs: Array<[number, number]>;
+  /** 畫面數字泡泡（因數＋非因數干擾，已洗牌）。 */
+  choices: number[];
+  /** 非因數干擾（誘答）。 */
+  distractors: number[];
+  /** 關卡標記：一般合成數／完全平方數／質數驚喜關。 */
+  kind: "normal" | "square" | "prime";
+};
+
+/** 列出 n 的所有正因數（由小到大）。 */
+export function listFactors(n: number): number[] {
+  const out: number[] = [];
+  for (let d = 1; d <= n; d += 1) {
+    if (n % d === 0) out.push(d);
+  }
+  return out;
+}
+
+/** 把因數兩兩成對（a×b=n）；完全平方數的平方根自己成對。 */
+export function factorPairs(n: number): Array<[number, number]> {
+  const pairs: Array<[number, number]> = [];
+  for (let a = 1; a * a <= n; a += 1) {
+    if (n % a === 0) {
+      const b = n / a;
+      pairs.push(a === b ? [a, a] : [a, b]);
+    }
+  }
+  return pairs;
+}
+
+// 五上「倍數與因數」適用範圍（60 以內），依教學重點分層。
+const FACTOR_EASY = [14, 15, 21, 22, 26, 27, 33, 34, 35, 38, 39, 46];
+const FACTOR_MEDIUM = [18, 20, 28, 32, 44, 45];
+const FACTOR_SQUARE = [16, 25];
+const FACTOR_PRIME = [23, 29, 31, 37, 41, 43, 47, 53, 59];
+const FACTOR_TARGET_CHOICES = 9;
+
+function makeFactorRound(n: number, id: string, kind: FactorRound["kind"], random: () => number): FactorRound {
+  const factors = listFactors(n);
+  const pairs = factorPairs(n);
+  const nonFactors: number[] = [];
+  for (let d = 2; d < n; d += 1) {
+    if (n % d !== 0) nonFactors.push(d);
+  }
+  const distractorCount = Math.max(1, FACTOR_TARGET_CHOICES - factors.length);
+  const distractors = shuffleArray(nonFactors, random).slice(0, distractorCount);
+  const choices = shuffleArray([...factors, ...distractors], random);
+  return { id, n, factors, pairs, choices, distractors, kind };
+}
+
+/**
+ * 因數探險關卡：預設 5 關，由簡單合成數→中等合成數→完全平方數→質數驚喜關。
+ * 完全平方數含「自己成對」的中間因數；質數只有 1 和自己兩個因數。
+ */
+export function buildFactorRounds(count = 5, random: () => number = Math.random): FactorRound[] {
+  const tiers: Array<{ pool: number[]; kind: FactorRound["kind"] }> = [
+    { pool: FACTOR_EASY, kind: "normal" },
+    { pool: FACTOR_EASY, kind: "normal" },
+    { pool: FACTOR_MEDIUM, kind: "normal" },
+    { pool: FACTOR_SQUARE, kind: "square" },
+    { pool: FACTOR_PRIME, kind: "prime" },
+  ];
+  const used = new Set<number>();
+  const rounds: FactorRound[] = [];
+  for (let i = 0; i < count; i += 1) {
+    const tier = tiers[i % tiers.length];
+    let n = tier.pool[Math.floor(random() * tier.pool.length)];
+    let guard = 0;
+    while (used.has(n) && guard < 25) {
+      n = tier.pool[Math.floor(random() * tier.pool.length)];
+      guard += 1;
+    }
+    used.add(n);
+    rounds.push(makeFactorRound(n, `factor-${i + 1}`, tier.kind, random));
+  }
+  return rounds;
+}
+
+/** 因數探險星等：零失誤 3 星、總失誤 ≤3 二星，其餘 1 星。 */
+export function factorStars(totalErrors: number): 1 | 2 | 3 {
+  if (totalErrors <= 0) return 3;
+  if (totalErrors <= 3) return 2;
+  return 1;
+}
+
 /* ============================== 計分 ============================== */
 
 /** 依正確率給 1–3 星（全對 3 星、≥7 成 2 星，其餘 1 星）。 */

@@ -331,3 +331,11 @@ curl -s https://xue-gr3a.onrender.com/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | h
 - 元件 client/src/components/classroom/：useClassroomSound（ok/no/win/flip/tick WebAudio，muted 可控）、classroom.css（mc- hub＋cr- 遊戲全套，按鈕 ≥44px、520px 手機斷點）、QuizRunner/RushRunner/RelayMatch/FillBlank/OrderSteps；每個互動皆有成功/失敗雙回饋＋音效，所有題目 30 秒倒數。
 - 試卷內嵌：FillBlank（字卡四選一，沿用 answerQuestion 計分）、OrderSteps（打亂項目→依序點選、可撤回、確認後正誤雙回饋並並列正確順序；外部 timeout 自動顯示解答）；排序題在錯題本/AI 複習 payload/總結頁改以 orderItems 箭頭序列呈現。
 - 測試：classroomBank.test.ts（24/16/30 數量、結構校驗、deck 構造、計分、localStorage）、paperExam.test.ts +mixPaperVariants 5 例、ClassroomComponents.test.tsx 9 例（填空/排序/翻牌/看圖/rush/tf）、QuizRoom.test.tsx 改 6 自由玩法＋8 經典模式、TopNavigation 斷言改「我的教室」、PaperExamMixing 整合測試改第 5 填空/10 配對/15 排序（valuemax 14、統計 /14）、兩個 PaperExam 頁測試的 questionBank mock 補 LOCAL_QUESTION_BANK/LOCAL_ENGLISH_BANK 空陣列。
+
+## 2026-09-18 我的教室第七種玩法「因數探險」上線
+- 數學五上「倍數與因數」單元多選玩法（gameId=factor，路由 /classroom/factor），hub 第 7 張卡（Hash icon、#d5699e 桃粉、mc-tilt-l），標題改「自由玩法（7 種新玩法）」。
+- 邏輯層 classroomBank.ts：listFactors（列舉因數）、factorPairs（由 1..√n 生成兩兩成對，a===b 為平方自己成對）、分層池 FACTOR_EASY（12 個合成數）/FACTOR_MEDIUM（6）/FACTOR_SQUARE（16,25）/FACTOR_PRIME（9 個質數）；buildFactorRounds(count=5) 五關固定 easy/easy/medium/square/prime、同輪不重複 N；makeFactorRound 9 泡泡（全部因數＋非因數干擾，干擾從 2..n-1 非整除數洗牌）；FactorRound={id,n,factors,pairs,choices,distractors,kind:normal|square|prime}；factorStars（0 失誤 3 星／≤3 二星／其餘 1 星）。
+- FactorGame.tsx：start/play/result 三階段；3×3 數字泡泡多選，確認後選中因數轉綠✓、誤選轉紅✕抖動、漏選因數金色虛框、其餘變暗，接著揭曉因數兩兩成對 chips（a × b = n，平方中間因數標「自己成對」），平方關/質數關教學註記；每關獨立 30 秒倒數（最後 5 秒 tick）、timeout 自動對答案；結果頁星等/完美過關 X/5/總失誤/新紀錄，回我的教室/再探險一次（begin 重建題目）；最佳紀錄存 xue-classroom-best-v1（factor: {stars,correct,total}）。
+- 樣式 classroom.css：fc-* 全套（fc-n 海藍漸層方圓章、fc-bubble 立體泡泡四態、fc-pairs 米黃虛線盒、fc-shake keyframes、prefers-reduced-motion 關抖動、520px 手機微調）。
+- 測試：classroomBank.test.ts +5（listFactors/factorPairs 攤平等於因數/五關不變量/第4平方第5質數/factorStars）、ClassroomComponents.test.tsx +4（開始頁 disabled、五關全對 3 星 onBest、誤選漏選雙回饋、timeout 自動揭曉）、QuizRoom.test.tsx 改 7 張卡；受影響 3 檔 33 tests 綠、tsc 0 error、vite build OK。
+- 踩坑：tsconfig target 不支援 Set 展開（TS2802），用 Array.from(set)；getByRole 無 exact 選項（那是 getByText 的）。

@@ -3,6 +3,7 @@ import { useLocation, useRoute } from "wouter";
 import QuizRunner, { type RunnerQuestion } from "@/components/classroom/QuizRunner";
 import RushRunner from "@/components/classroom/RushRunner";
 import RelayMatch from "@/components/classroom/RelayMatch";
+import FactorGame from "@/components/classroom/FactorGame";
 import {
   TRAP_QUESTIONS,
   buildChoiceDeck,
@@ -16,7 +17,7 @@ import { IMAGE_MATCHING_SETS, shuffleArray } from "@/lib/matchingBank";
 
 /**
  * 我的教室自由玩法頁：/classroom/:gameId
- * flip 翻牌問答 / image 看圖選答 / bolt 是非閃電 / rush 限時接力 / relay 選擇配對接力 / trap 陷阱題挑戰
+ * flip 翻牌問答 / image 看圖選答 / bolt 是非閃電 / rush 限時接力 / relay 選擇配對接力 / trap 陷阱題挑戰 / factor 因數探險
  */
 const GAME_META: Record<string, { title: string }> = {
   flip: { title: "翻牌問答" },
@@ -25,6 +26,7 @@ const GAME_META: Record<string, { title: string }> = {
   rush: { title: "限時接力" },
   relay: { title: "選擇配對接力" },
   trap: { title: "陷阱題挑戰" },
+  factor: { title: "因數探險" },
 };
 
 export default function ClassroomPlay() {
@@ -184,6 +186,15 @@ export default function ClassroomPlay() {
       return (
         <RelayMatch
           key="relay"
+          bestStars={record?.stars}
+          onBest={(r) => updateBest({ stars: r.stars, correct: r.correct, total: r.total })}
+          onExit={exit}
+        />
+      );
+    case "factor":
+      return (
+        <FactorGame
+          key="factor"
           bestStars={record?.stars}
           onBest={(r) => updateBest({ stars: r.stars, correct: r.correct, total: r.total })}
           onExit={exit}

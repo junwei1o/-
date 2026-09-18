@@ -6,6 +6,7 @@ import {
   CalendarDays,
   Compass,
   Crosshair,
+  Hash,
   Image as ImageIcon,
   Layers,
   Link2,
@@ -92,6 +93,16 @@ export default function QuizRoom() {
       tilt: "mc-tilt-r",
       best: starLabel(best.trap?.stars),
     },
+    {
+      id: "factor",
+      label: "因數探險",
+      desc: "數學五上：把神祕數字的因數全部點出來，再看因數兩兩成對。",
+      href: "/classroom/factor",
+      icon: Hash,
+      color: "#d5699e",
+      tilt: "mc-tilt-l",
+      best: starLabel(best.factor?.stars),
+    },
   ];
 
   const modes = [
@@ -128,7 +139,7 @@ export default function QuizRoom() {
 
       <h2 className="mc-section-title">
         <span className="mc-doodle" aria-hidden="true"><Layers size={18} /></span>
-        自由玩法（6 種新玩法）
+        自由玩法（7 種新玩法）
       </h2>
       <div className="mc-play-grid">
         {plays.map(({ id, label, desc, href, icon: Icon, color, tilt, best: bestText }) => (

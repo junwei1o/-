@@ -7,10 +7,14 @@ import {
   TRAP_QUESTIONS,
   accuracyStars,
   buildChoiceDeck,
+  buildFactorRounds,
   buildImageQuiz,
   buildRelayRounds,
   buildTrueFalseDeck,
+  factorPairs,
+  factorStars,
   fillToPaper,
+  listFactors,
   loadClassroomBest,
   orderToPaper,
   saveClassroomBest,
@@ -126,6 +130,68 @@ describe("教室玩法題庫構造", () => {
     }
     // 三回合不重複用同一組配對
     expect(setIds.size).toBe(3);
+  });
+});
+
+describe("因數探險", () => {
+  it("listFactors 正確列舉合成數、完全平方數與質數", () => {
+    expect(listFactors(12)).toEqual([1, 2, 3, 4, 6, 12]);
+    expect(listFactors(18)).toEqual([1, 2, 3, 6, 9, 18]);
+    expect(listFactors(16)).toEqual([1, 2, 4, 8, 16]);
+    expect(listFactors(25)).toEqual([1, 5, 25]);
+    expect(listFactors(23)).toEqual([1, 23]);
+    expect(listFactors(1)).toEqual([1]);
+  });
+
+  it("factorPairs 兩兩相乘等於 n，攤平後即全部因數；平方數含自己成對", () => {
+    for (const n of [12, 18, 20, 45, 16, 25, 23, 60]) {
+      const pairs = factorPairs(n);
+      for (const [a, b] of pairs) expect(a * b).toBe(n);
+      const flat = pairs.flatMap(([a, b]) => (a === b ? [a] : [a, b]));
+      expect([...flat].sort((x, y) => x - y)).toEqual(listFactors(n));
+    }
+    expect(factorPairs(16)).toContainEqual([4, 4]);
+    expect(factorPairs(25)).toContainEqual([5, 5]);
+    expect(factorPairs(23)).toEqual([[1, 23]]);
+  });
+
+  it("buildFactorRounds 5 關：泡泡含全部因數、干擾都不是因數、無重複且 ≤9 個", () => {
+    const rounds = buildFactorRounds(5, seeded());
+    expect(rounds).toHaveLength(5);
+    for (const round of rounds) {
+      // 無重複數字
+      expect(new Set(round.choices).size).toBe(round.choices.length);
+      // 每個因數都在泡泡裡，1 與 n 一定是因數
+      for (const factor of round.factors) expect(round.choices).toContain(factor);
+      expect(round.choices).toContain(1);
+      expect(round.choices).toContain(round.n);
+      // 干擾項保證無法整除 n，且不會混入真因數
+      for (const distractor of round.distractors) {
+        expect(round.n % distractor).not.toBe(0);
+        expect(round.factors).not.toContain(distractor);
+      }
+      expect(round.choices.length).toBeLessThanOrEqual(9);
+    }
+  });
+
+  it("第 4 關為完全平方數、第 5 關為質數驚喜關", () => {
+    const rounds = buildFactorRounds(5, seeded());
+    const square = rounds[3];
+    expect(square.kind).toBe("square");
+    const root = Math.round(Math.sqrt(square.n));
+    expect(root * root).toBe(square.n);
+    expect(square.factors).toContain(root);
+
+    const prime = rounds[4];
+    expect(prime.kind).toBe("prime");
+    expect(prime.factors).toEqual([1, prime.n]);
+    expect(prime.pairs).toEqual([[1, prime.n]]);
+  });
+
+  it("factorStars 零失誤 3 星、失誤 ≤3 二星、其餘 1 星", () => {
+    expect(factorStars(0)).toBe(3);
+    expect(factorStars(3)).toBe(2);
+    expect(factorStars(8)).toBe(1);
   });
 });
 
