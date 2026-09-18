@@ -67,7 +67,7 @@ export default function QuizRunner({
   const [errors, setErrors] = useState(0);
   const [timeLeft, setTimeLeft] = useState(Math.round(timePerQuestionMs / 1000));
   const [flipping, setFlipping] = useState(false);
-  const [revealed, setRevealed] = useState(variant !== "flip");
+  const [revealed, setRevealed] = useState(variant === "image" || variant === "trap");
   const [newBest, setNewBest] = useState(false);
   const [nonce, setNonce] = useState(0);
 
@@ -101,7 +101,7 @@ export default function QuizRunner({
     errorsRef.current = 0;
     setNewBest(false);
     setNonce((n) => n + 1);
-    if (variant === "flip") {
+    if (variant === "flip" || variant === "flipdex") {
       setFlipping(false);
       setRevealed(false);
     } else {
@@ -247,7 +247,7 @@ export default function QuizRunner({
       <div className="cr-progress"><i style={{ width: `${(qIndex / total) * 100}%` }} /></div>
 
       <div className="cr-q-card" key={question.id}>
-        {variant === "flip" && !revealed && (
+        {(variant === "flip" || variant === "flipdex") && !revealed && (
           <div className="cr-flip-scene">
             <button
               type="button"
