@@ -381,6 +381,54 @@ export function factorStars(totalErrors: number): 1 | 2 | 3 {
   return 1;
 }
 
+/* ============================== 因數雙重奏 ============================== */
+
+/**
+ * 因數雙重奏關卡：同一個目標數先「找因數」（因數探險玩法），
+ * 再「拼長方形」（長方形拼拼樂玩法）——兩段玩法接續，用同一組因數對貫穿。
+ * 數字池沿用拼磚格線放得下的合成數（含完全平方數彩蛋關）。
+ */
+export type DuoRound = {
+  id: string;
+  /** 本關目標數（找因數與拼長方形共用）。 */
+  n: number;
+  /** 第一段：因數探險關卡資料。 */
+  factor: FactorRound;
+  /** 第二段：長方形拼拼樂關卡資料。 */
+  rect: RectRound;
+};
+
+export function buildDuoRounds(count = 4, random: () => number = Math.random): DuoRound[] {
+  const used = new Set<number>();
+  const rounds: DuoRound[] = [];
+  for (let i = 0; i < count; i += 1) {
+    const tier = RECT_TIERS[i % RECT_TIERS.length];
+    let n = tier.pool[Math.floor(random() * tier.pool.length)];
+    let guard = 0;
+    while (used.has(n) && guard < 25) {
+      n = tier.pool[Math.floor(random() * tier.pool.length)];
+      guard += 1;
+    }
+    used.add(n);
+    const squareRoot = Math.round(Math.sqrt(n));
+    const factorKind: FactorRound["kind"] = squareRoot * squareRoot === n ? "square" : "normal";
+    rounds.push({
+      id: `duo-${i + 1}-${n}`,
+      n,
+      factor: makeFactorRound(n, `duo-factor-${i + 1}`, factorKind, random),
+      rect: makeRectRound(n, `duo-rect-${i + 1}`, tier.kind),
+    });
+  }
+  return rounds;
+}
+
+/** 因數雙重奏星等：找因數＋拼磚的總失誤，零失誤 3 星、≤3 二星，其餘 1 星。 */
+export function duoStars(totalMistakes: number): 1 | 2 | 3 {
+  if (totalMistakes <= 0) return 3;
+  if (totalMistakes <= 3) return 2;
+  return 1;
+}
+
 /* ============================== 倍數防衛戰 ============================== */
 
 /** 單顆隕石腳本：value 為石上數字；x 為水平落點（%）；delayMs 為開波後幾毫秒出現；durationMs 為落地秒數；isBomb 為炸彈（切到即結束）。 */

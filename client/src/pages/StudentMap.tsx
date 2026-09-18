@@ -99,6 +99,7 @@ export default function StudentMap() {
         onOpenSubject={(subject: KnowledgeIslandSubject) => setLocation(`/practice?subject=${encodeURIComponent(subject)}&source=taiwan-main-map`)}
         onOpenTopic={(subject: KnowledgeIslandSubject, topic) => setLocation(`/practice?subject=${encodeURIComponent(subject)}&reviewTopic=${encodeURIComponent(topic)}&source=taiwan-main-map`)}
         onOpenWrongAnswers={(subject: KnowledgeIslandSubject) => setLocation(`/practice?subject=${encodeURIComponent(subject)}&wrongOnly=1&source=taiwan-main-map`)}
+        onOpenGame={(gameId: string) => setLocation(`/classroom/${gameId}`)}
         unlockedRouteIds={rpgState.mapVictoryProgress?.unlockedRouteIds ?? []}
         supplyMarkerIds={rpgState.mapVictoryProgress?.supplyMarkerIds ?? []}
         reinforcementReward={reinforcementReward}

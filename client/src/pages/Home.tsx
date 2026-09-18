@@ -210,8 +210,9 @@ export default function Home() {
             islands={islands}
             onOpenSubject={openSubject}
             onStartIslandQuiz={openIslandQuiz}
-          onOpenTopic={(subject, topic) => setLocation(`/practice?subject=${encodeURIComponent(subject)}&reviewTopic=${encodeURIComponent(topic)}&source=home-dashboard`)}
+            onOpenTopic={(subject, topic) => setLocation(`/practice?subject=${encodeURIComponent(subject)}&reviewTopic=${encodeURIComponent(topic)}&source=home-dashboard`)}
           onOpenWrongAnswers={(subject) => setLocation(`/practice?subject=${encodeURIComponent(subject)}&wrongOnly=1&source=home-dashboard`)}
+          onOpenGame={(gameId) => setLocation(`/classroom/${gameId}`)}
           unlockedRouteIds={rpgState.mapVictoryProgress?.unlockedRouteIds ?? []}
           supplyMarkerIds={rpgState.mapVictoryProgress?.supplyMarkerIds ?? []}
             reinforcementJournal={journal}

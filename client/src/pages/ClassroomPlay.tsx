@@ -4,6 +4,7 @@ import QuizRunner, { type RunnerQuestion } from "@/components/classroom/QuizRunn
 import RushRunner from "@/components/classroom/RushRunner";
 import RelayMatch from "@/components/classroom/RelayMatch";
 import FactorGame from "@/components/classroom/FactorGame";
+import FactorDuoGame from "@/components/classroom/FactorDuoGame";
 import MeteorGame from "@/components/classroom/MeteorGame";
 import RectGame from "@/components/classroom/RectGame";
 import {
@@ -31,6 +32,9 @@ const GAME_META: Record<string, { title: string }> = {
   factor: { title: "因數探險" },
   meteor: { title: "倍數防衛戰" },
   rect: { title: "長方形拼拼樂" },
+  duo: { title: "因數雙重奏" },
+  flashrush: { title: "閃電接力" },
+  flipdex: { title: "翻牌圖鑑" },
 };
 
 export default function ClassroomPlay() {
@@ -66,6 +70,26 @@ export default function ClassroomPlay() {
       })),
       bolt: buildTrueFalseDeck(10).map(choiceToRunner),
       rush: buildChoiceDeck(24, "綜合").map(choiceToRunner),
+      // 閃電接力：是非題＋四選一混合牌堆（RushRunner mixed 逐題判斷出大鍵或四選一）。
+      flashrush: [
+        ...buildTrueFalseDeck(12).map(choiceToRunner),
+        ...buildChoiceDeck(12, "綜合").map(choiceToRunner),
+      ],
+      // 翻牌圖鑑：看圖選答＋純文字選擇題混合牌堆（QuizRunner flipdex 先翻牌再作答）。
+      flipdex: [
+        ...IMAGE_MATCHING_SETS.flatMap((set) => buildImageQuiz(set))
+          .slice(0, 9)
+          .map((q) => ({
+            id: q.id,
+            prompt: "看圖選出正確的名稱",
+            img: q.img,
+            options: q.options,
+            answer: q.options.indexOf(q.answer),
+            explanation: `這是「${q.answer}」（${q.setTitle}）。`,
+            meta: `${q.subject} · 圖鑑卡`,
+          })),
+        ...buildChoiceDeck(9, "綜合").map(choiceToRunner),
+      ],
       trap: shuffleArray(TRAP_QUESTIONS).slice(0, 10).map((q) => ({
         id: q.id,
         prompt: q.prompt,
@@ -217,6 +241,49 @@ export default function ClassroomPlay() {
       return (
         <RectGame
           key="rect"
+          bestStars={record?.stars}
+          onBest={(r) => updateBest({ stars: r.stars, correct: r.correct, total: r.total })}
+          onExit={exit}
+        />
+      );
+    case "duo":
+      return (
+        <FactorDuoGame
+          key="duo"
+          bestStars={record?.stars}
+          onBest={(r) => updateBest({ stars: r.stars, correct: r.correct, total: r.total })}
+          onExit={exit}
+        />
+      );
+    case "flashrush":
+      return (
+        <RushRunner
+          key="flashrush"
+          variant="mixed"
+          emoji="⚡"
+          tag="閃電接力"
+          tagClass="gold"
+          startTitle="閃電接力"
+          startDesc="是非閃電 ＋ 限時接力的混合賽道：對錯大鍵和四選一輪流上場，30 秒內挑戰最高分！"
+          rules={["30 秒無限連答", "是非＋四選一混合", "答對 +10 分", "連對每連 +5"]}
+          questions={decks.flashrush}
+          bestScore={record?.score}
+          onBest={(r) => updateBest({ score: r.score, maxCombo: r.maxCombo, correct: r.correct, total: r.answered })}
+          onExit={exit}
+        />
+      );
+    case "flipdex":
+      return (
+        <QuizRunner
+          key="flipdex"
+          variant="flipdex"
+          emoji="📇"
+          tag="翻牌圖鑑"
+          tagClass="green"
+          startTitle="翻牌圖鑑"
+          startDesc="翻牌問答 ＋ 看圖選答的混編圖鑑：先翻牌，翻開後可能是實景照片、也可能是文字題，一輪蒐集 18 張卡片！"
+          rules={["一輪 18 張卡片", "翻牌後每題 30 秒", "照片卡＋文字題混編", "全對三顆星"]}
+          questions={decks.flipdex}
           bestStars={record?.stars}
           onBest={(r) => updateBest({ stars: r.stars, correct: r.correct, total: r.total })}
           onExit={exit}

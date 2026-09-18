@@ -10,6 +10,7 @@ import { routeIdForRegion, supplyMarkerIdForRegion } from "@/game/mapVictoryProg
 import type { MapReinforcementJournalEntry, MapReinforcementReward } from "@/game/mapReinforcementReward";
 import { getInventory, tryDropSpecialty, type InventoryItem } from "@/game/inventoryService";
 import type { RandomAdventureRouteReward } from "@/game/randomAdventureRouteReward";
+import { loadClassroomBest, type ClassroomBestMap } from "@/lib/classroomBank";
 import { BxEmptyState } from "@/components/bx/EmptyState";
 import "./TaiwanMainNavigationMap.css";
 
@@ -19,6 +20,8 @@ type TaiwanMainNavigationMapProps = {
   onStartIslandQuiz?: (subject: KnowledgeIslandSubject) => void;
   onOpenTopic: (subject: KnowledgeIslandSubject, topic: string) => void;
   onOpenWrongAnswers?: (subject: KnowledgeIslandSubject) => void;
+  /** 開啟教室融合玩法（關卡碼頭）；未提供時碼頭只顯示資訊不可點。 */
+  onOpenGame?: (gameId: string) => void;
   unlockedRouteIds?: string[];
   supplyMarkerIds?: string[];
   reinforcementReward?: MapReinforcementReward | null;
@@ -54,19 +57,19 @@ const ISLAND_REGION_BY_ID: Record<KnowledgeIslandId, RegionKey> = {
 };
 
 const ISLAND_POSITIONS: Record<KnowledgeIslandId, IslandPosition> = {
-  language: { left: "47%", top: "17%", region: "北部・古書樓" },
-  math: { left: "49%", top: "42%", region: "中部・量測塔" },
-  social: { left: "44%", top: "72%", region: "南部・生活港" },
-  science: { left: "74%", top: "51%", region: "東部・山海觀察站" },
-  english: { left: "22%", top: "43%", region: "西部・英語港" },
+  language: { left: "46.4%", top: "10.3%", region: "北部・古書樓" },
+  math: { left: "48.8%", top: "40.3%", region: "中部・量測塔" },
+  social: { left: "42.8%", top: "76.3%", region: "南部・生活港" },
+  science: { left: "78.8%", top: "51.2%", region: "東部・山海觀察站" },
+  english: { left: "16.4%", top: "41.7%", region: "西部・英語港" },
 };
 
 const ISLAND_ROUTE_PATHS: Record<KnowledgeIslandId, string> = {
-  language: "M248 365 C316 304 397 165 470 105",
-  math: "M248 365 C332 350 421 290 490 260",
-  social: "M248 365 C314 404 381 434 440 446",
-  science: "M248 365 C394 330 578 316 740 316",
-  english: "M248 365 C192 356 141 342 115 323",
+  language: "M248 365 C316 290 390 130 464 64",
+  math: "M248 365 C332 350 420 285 488 250",
+  social: "M248 365 C314 404 375 445 428 473",
+  science: "M248 365 C394 330 600 317 788 317",
+  english: "M248 365 C195 350 175 300 164 258",
 };
 
 const ISLAND_ICONS: Record<KnowledgeIslandId, LucideIcon> = {
@@ -118,6 +121,59 @@ const ISLAND_LANDSCAPES: Record<KnowledgeIslandId, { summary: string; icons: Lan
       { symbol: "🔤", label: "字母旗幟" },
     ],
   },
+};
+
+/** 各區真實地標：在地圖上以小地標章呈現，也在島嶼面板「真實地標」列出（奇幻島嶼＋真實台灣地標）。 */
+const ISLAND_LANDMARKS: Record<KnowledgeIslandId, Array<{ symbol: string; name: string; note: string; left: string; top: string }>> = {
+  language: [
+    { symbol: "🏺", name: "故宮博物院", note: "世界級中華文物寶庫，藏在台北外雙溪。", left: "39.5%", top: "11.3%" },
+    { symbol: "🏢", name: "台北 101", note: "曾經的世界第一高樓，北部文化城的天際線。", left: "42.5%", top: "19.4%" },
+    { symbol: "🏮", name: "九份老街", note: "山城紅燈籠與芋圓，像走進神隱少女的場景。", left: "40%", top: "27.4%" },
+  ],
+  math: [
+    { symbol: "🌅", name: "高美濕地", note: "台中清水的泥灘地，風車與夕陽一起算角度。", left: "37.2%", top: "40.3%" },
+    { symbol: "🐑", name: "清境農場", note: "海拔 1700 公尺的高山牧場，綿羊成群。", left: "39.2%", top: "47.6%" },
+    { symbol: "⛵", name: "日月潭", note: "台灣最大的天然湖泊，湖面像一個大圓。", left: "40.8%", top: "54.8%" },
+  ],
+  social: [
+    { symbol: "🏛️", name: "赤崁樓", note: "台南的古蹟，見證荷蘭、明鄭到清領的歷史。", left: "56.5%", top: "82.3%" },
+    { symbol: "⚓", name: "高雄港", note: "台灣最大的港口，貨櫃船日夜進出。", left: "58.5%", top: "89.5%" },
+    { symbol: "🏖️", name: "墾丁沙灘", note: "台灣本島最南端的白沙灣與珊瑚礁。", left: "60%", top: "96%" },
+  ],
+  science: [
+    { symbol: "🪨", name: "清水斷崖", note: "花蓮的懸崖直落太平洋，斷層岩壁壯觀。", left: "66%", top: "38.7%" },
+    { symbol: "🏞️", name: "太魯閣峽谷", note: "大理石峽谷是立霧溪切了幾百萬年的作品。", left: "67.2%", top: "48.4%" },
+    { symbol: "🌉", name: "三仙台", note: "台東的八拱跨海步橋與離岸小島。", left: "66.8%", top: "59.7%" },
+  ],
+  english: [
+    { symbol: "🏮", name: "鹿港老街", note: "彰化的百年老街，「一府二鹿三艋舺」的二鹿。", left: "31.5%", top: "54%" },
+    { symbol: "⛩️", name: "北港朝天宮", note: "雲林的媽祖信仰中心，香火綿延三百年。", left: "30%", top: "67.7%" },
+    { symbol: "💗", name: "澎湖雙心石滬", note: "七美的雙心石滬，用玄武岩堆出的愛心捕魚堰。", left: "13.5%", top: "77.4%" },
+  ],
+};
+
+/** 關卡碼頭：每座島停靠的教室融合玩法（成績只存本機）。 */
+const ISLAND_DOCKS: Record<KnowledgeIslandId, Array<{ gameId: string; emoji: string; label: string; hint: string }>> = {
+  language: [
+    { gameId: "flipdex", emoji: "🃏", label: "翻牌圖鑑", hint: "翻牌問答＋看圖選答混編" },
+    { gameId: "relay", emoji: "🔗", label: "選擇配對接力", hint: "選擇題解鎖配對盤" },
+  ],
+  math: [
+    { gameId: "duo", emoji: "🎶", label: "因數雙重奏", hint: "找因數＋拼長方形接續" },
+    { gameId: "meteor", emoji: "🛡️", label: "倍數防衛戰", hint: "攔截目標倍數隕石" },
+  ],
+  social: [
+    { gameId: "trap", emoji: "🪤", label: "陷阱題挑戰", hint: "經典陷阱題全解析" },
+    { gameId: "flashrush", emoji: "⚡", label: "閃電接力", hint: "是非＋四選一混賽道" },
+  ],
+  science: [
+    { gameId: "flashrush", emoji: "⚡", label: "閃電接力", hint: "是非＋四選一混賽道" },
+    { gameId: "trap", emoji: "🪤", label: "陷阱題挑戰", hint: "經典陷阱題全解析" },
+  ],
+  english: [
+    { gameId: "flipdex", emoji: "🃏", label: "翻牌圖鑑", hint: "翻牌問答＋看圖選答混編" },
+    { gameId: "relay", emoji: "🔗", label: "選擇配對接力", hint: "選擇題解鎖配對盤" },
+  ],
 };
 
 function islandStatus(island: KnowledgeIslandSnapshot) {
@@ -181,7 +237,7 @@ function formatMapReinforcementJournalTime(timestamp: number) {
   return new Intl.DateTimeFormat("zh-TW", { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" }).format(new Date(timestamp));
 }
 
-export function TaiwanMainNavigationMap({ islands, onOpenSubject, onStartIslandQuiz, onOpenTopic, onOpenWrongAnswers, unlockedRouteIds = [], supplyMarkerIds = [], reinforcementReward = null, reinforcementJournal = [], reinforcementSuggestion = "", randomAdventureRouteReward = null }: TaiwanMainNavigationMapProps) {
+export function TaiwanMainNavigationMap({ islands, onOpenSubject, onStartIslandQuiz, onOpenTopic, onOpenWrongAnswers, onOpenGame, unlockedRouteIds = [], supplyMarkerIds = [], reinforcementReward = null, reinforcementJournal = [], reinforcementSuggestion = "", randomAdventureRouteReward = null }: TaiwanMainNavigationMapProps) {
   const [activeIslandId, setActiveIslandId] = useState<KnowledgeIslandId | null>(null);
   const [showStrategyPanel, setShowStrategyPanel] = useState(false);
   const [showRestoredPreferenceNotice, setShowRestoredPreferenceNotice] = useState(false);
@@ -199,6 +255,7 @@ export function TaiwanMainNavigationMap({ islands, onOpenSubject, onStartIslandQ
   const strategyTriggerRefs = useRef<Partial<Record<KnowledgeIslandId, HTMLButtonElement | null>>>({});
   const strategyPanelRef = useRef<HTMLElement | null>(null);
   const activeIsland = islands.find((island) => island.id === activeIslandId) ?? null;
+  const classroomBest: ClassroomBestMap = loadClassroomBest();
   const activeIslandHasSupply = activeIsland
     ? supplyMarkerIds.includes(supplyMarkerIdForRegion(ISLAND_REGION_BY_ID[activeIsland.id]))
     : false;
@@ -496,7 +553,7 @@ export function TaiwanMainNavigationMap({ islands, onOpenSubject, onStartIslandQ
         <svg className="taiwan-map-outline" viewBox="0 0 1000 620" aria-hidden="true" focusable="false">
           <path
             className="taiwan-map-land"
-            d="M551 56 C596 89 610 135 599 171 C588 207 607 244 594 278 C579 313 590 347 566 381 C545 411 548 447 523 483 C498 519 460 544 433 527 C407 511 419 471 404 438 C388 405 402 366 387 332 C373 299 394 267 391 232 C389 198 414 171 424 138 C435 105 493 68 551 56 Z"
+            d="M561 5 C615 45 632 100 619 143 C606 186 628 231 613 272 C595 314 608 354 579 395 C554 431 558 474 528 518 C498 561 452 591 420 570 C388 551 403 503 385 464 C366 424 382 377 364 336 C348 297 373 258 369 216 C367 176 397 143 409 104 C422 64 492 20 561 5 Z"
           />
           {routeSegments.map((segment, index) => {
             const routeSupplyId = supplyMarkerIdForRegion(ISLAND_REGION_BY_ID[segment.id]);
@@ -530,6 +587,24 @@ export function TaiwanMainNavigationMap({ islands, onOpenSubject, onStartIslandQ
           <circle className="taiwan-map-boat-ring" cx="248" cy="365" r="14" />
           <text className="taiwan-map-boat-mark" x="248" y="371" textAnchor="middle">我</text>
         </svg>
+
+        {/* 真實地標章：各地區地標直接點在地圖上（奇幻島嶼＋真實台灣並置） */}
+        {islands.flatMap((island) => {
+          const landmarks = ISLAND_LANDMARKS[island.id] ?? [];
+          return landmarks.map((landmark) => (
+            <span
+              key={`${island.id}-${landmark.name}`}
+              className="taiwan-map-landmark"
+              style={{ left: landmark.left, top: landmark.top } as CSSProperties}
+              role="img"
+              aria-label={`${island.shortTitle}地區地標：${landmark.name}`}
+              data-testid={`taiwan-map-landmark-${island.id}`}
+            >
+              <span aria-hidden="true">{landmark.symbol}</span>
+              <small>{landmark.name}</small>
+            </span>
+          ));
+        })}
 
         <p className="taiwan-map-boat-label"><Anchor size={15} aria-hidden="true" /> 我的船標</p>
 

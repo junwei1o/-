@@ -5,7 +5,7 @@ import type { RunnerQuestion } from "./QuizRunner";
 import "./classroom.css";
 
 type Props = {
-  variant: "choice" | "tf";
+  variant: "choice" | "tf" | "mixed";
   emoji: string;
   tag: string;
   tagClass?: string;
@@ -23,8 +23,9 @@ type Props = {
 type Phase = "start" | "play" | "result";
 
 /**
- * 限時接力（choice，四選一）／是非閃電（tf，對錯大鍵）：
+ * 限時接力（choice，四選一）／是非閃電（tf，對錯大鍵）／閃電接力（mixed，是非＋四選一混牌堆）：
  * 30 秒內循環連答，答對 +10、二連對起每連 +5，答錯中斷連對並顯示正解。
+ * mixed 模式逐題判斷：選項只有兩個（正確／錯誤）就出對錯大鍵，否則出四選一。
  */
 export default function RushRunner({
   variant,
@@ -67,6 +68,8 @@ export default function RushRunner({
   const play = useClassroomSound(muted);
 
   const question = questions[order[qIndex]];
+  // mixed 模式：本題選項只有兩個＝是非題，出對錯大鍵；其餘出四選一。
+  const isTfQuestion = variant === "tf" || (variant === "mixed" && question?.options.length === 2);
 
   const clearAdvance = () => {
     if (advanceRef.current !== null) {
@@ -207,10 +210,10 @@ export default function RushRunner({
       </div>
 
       <div className="cr-q-card" key={`${qIndex}-${answered}`}>
-        <span className="cr-q-meta">{variant === "tf" ? "是非判斷" : `${question.meta ?? "選擇題"}`}</span>
+        <span className="cr-q-meta">{isTfQuestion ? "是非判斷" : `${question.meta ?? "選擇題"}`}</span>
         <p className="cr-q-prompt">{question.prompt}</p>
 
-        {variant === "tf" ? (
+        {isTfQuestion ? (
           <div className="cr-tf-options">
             {question.options.map((option, index) => {
               let cls = "cr-tf-btn " + (index === 0 ? "cr-tf-yes" : "cr-tf-no");

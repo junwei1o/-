@@ -6,8 +6,6 @@ import {
   CalendarDays,
   Compass,
   Crosshair,
-  Hash,
-  Image as ImageIcon,
   Layers,
   LayoutGrid,
   Link2,
@@ -84,46 +82,27 @@ export default function QuizRoom() {
   const starLabel = (stars?: number) => (stars ? `最佳 ${stars}★` : "尚無紀錄");
   const scoreLabel = (score?: number) => (score !== undefined ? `最佳 ${score} 分` : "尚無紀錄");
 
+  // 融合玩法大本營：9 種舊玩法整併成 6 張卡（舊路由 /classroom/flip、/classroom/image 等全部保留相容）。
   const plays = [
     {
-      id: "flip",
-      label: "翻牌問答",
-      desc: "題目藏在卡片背面，翻開才開始 30 秒倒數，憑直覺作答。",
-      href: "/classroom/flip",
+      id: "flipdex",
+      label: "翻牌圖鑑",
+      desc: "翻牌問答 ＋ 看圖選答混編圖鑑：翻開可能是實景照片、也可能是文字題，一輪蒐集 18 張卡。",
+      href: "/classroom/flipdex",
       icon: Layers,
       color: "#0B6E8E",
       tilt: "mc-tilt-l",
-      best: starLabel(best.flip?.stars),
+      best: starLabel(best.flipdex?.stars),
     },
     {
-      id: "image",
-      label: "看圖選答",
-      desc: "用圖片配對的 18 張實景照片，看一張圖選出正確名稱。",
-      href: "/classroom/image",
-      icon: ImageIcon,
-      color: "#6C8460",
-      tilt: "mc-tilt-r",
-      best: starLabel(best.image?.stars),
-    },
-    {
-      id: "bolt",
-      label: "是非閃電",
-      desc: "30 秒無限連判對錯，兩顆大鍵，訓練又快又準的手感。",
-      href: "/classroom/bolt",
+      id: "flashrush",
+      label: "閃電接力",
+      desc: "是非閃電 ＋ 限時接力混合賽道：對錯大鍵和四選一輪流上場，30 秒挑戰最高分。",
+      href: "/classroom/flashrush",
       icon: Zap,
       color: "#E8B84B",
-      tilt: "mc-tilt-l",
-      best: scoreLabel(best.bolt?.score),
-    },
-    {
-      id: "rush",
-      label: "限時接力",
-      desc: "30 秒四選一連續接力，連對愈久加分愈多，挑戰最高分。",
-      href: "/classroom/rush",
-      icon: Timer,
-      color: "#E8754A",
       tilt: "mc-tilt-r",
-      best: scoreLabel(best.rush?.score),
+      best: scoreLabel(best.flashrush?.score),
     },
     {
       id: "relay",
@@ -146,34 +125,24 @@ export default function QuizRoom() {
       best: starLabel(best.trap?.stars),
     },
     {
-      id: "factor",
-      label: "因數探險",
-      desc: "數學五上：把神祕數字的因數全部點出來，再看因數兩兩成對。",
-      href: "/classroom/factor",
-      icon: Hash,
-      color: "#d5699e",
-      tilt: "mc-tilt-l",
-      best: starLabel(best.factor?.stars),
-    },
-    {
       id: "meteor",
       label: "倍數防衛戰",
       desc: "數學五上：滑動切割目標倍數隕石，一刀連斬有加成，小心炸彈！",
       href: "/classroom/meteor",
       icon: Shield,
       color: "#1B7082",
-      tilt: "mc-tilt-r",
+      tilt: "mc-tilt-l",
       best: starLabel(best.meteor?.stars),
     },
     {
-      id: "rect",
-      label: "長方形拼拼樂",
-      desc: "數學五上：把方格拖曳拼成長方形，長×寬就是因數對，完全平方數有正方形彩蛋。",
-      href: "/classroom/rect",
+      id: "duo",
+      label: "因數雙重奏",
+      desc: "因數探險 ＋ 長方形拼拼樂接續：同一個數先點因數、再拼長方形，雙重玩法互相印證。",
+      href: "/classroom/duo",
       icon: LayoutGrid,
-      color: "#64866D",
-      tilt: "mc-tilt-l",
-      best: starLabel(best.rect?.stars),
+      color: "#d5699e",
+      tilt: "mc-tilt-r",
+      best: starLabel(best.duo?.stars),
     },
   ];
 
@@ -188,8 +157,8 @@ export default function QuizRoom() {
     { id: "expedition", label: "今日遠征", desc: "每日三線任務，答題收集線索、修復學習星圖。", href: "/expedition", icon: Compass },
   ];
 
-  // 探索進度：七種自由玩法中，已在本機留下星等/分數紀錄的數量
-  const playRecords = [best.flip, best.image, best.bolt, best.rush, best.relay, best.trap, best.factor, best.meteor, best.rect];
+  // 探索進度：六種融合玩法中，已在本機留下星等/分數紀錄的數量
+  const playRecords = [best.flipdex, best.flashrush, best.relay, best.trap, best.meteor, best.duo];
   const doneCount = playRecords.filter((record) => Boolean(record && ((record.stars ?? 0) > 0 || (record.score ?? 0) > 0))).length;
   const progressPct = Math.round((doneCount / plays.length) * 100);
   const helperTip = HELPER_TIPS[tipIndex];
@@ -297,7 +266,7 @@ export default function QuizRoom() {
 
       <h2 className="mc-section-title">
         <span className="mc-doodle" aria-hidden="true"><Layers size={18} /></span>
-        自由玩法（9 種新玩法）
+        自由玩法（6 種融合玩法）
       </h2>
       <div className="mc-play-grid">
         {plays.map(({ id, label, desc, href, icon: Icon, color, tilt, best: bestText }) => (

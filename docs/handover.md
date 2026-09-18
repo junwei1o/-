@@ -394,3 +394,17 @@ curl -s https://xue-gr3a.onrender.com/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | h
 - 硬編碼清掃：classroom.css 19 處舊 rgba（232,132,58／62,124,177／47,125,143）全換 coral/tidal rgba；MeteorGame 光刀 stroke 同步；QuizRoom 玩法卡強調色對齊（flip #0B6E8E、image #6C8460、bolt #E8B84B、rush #E8754A、meteor #1B7082、rect #64866D，紫/粉/磚紅保留做區別）。
 - 極簡紫→極簡海：concise 皮全組紫色（#6d5bd0/#5b4bc4/#6454d6 漸層/#a78bfa/#d6cff7/#e8e3f8/#f1edfd…）重著色為品牌海藍家族，label 改「極簡海」、色點 #0B6E8E；skin id 不變（concise），既有使用者本機偏好自動沿用新配色，測試僅改名。
 - 驗證：tsc 0 錯、1119 tests 綠、bundle index-s6OndpMm.js 一致；線上回歸 rect 10/10＋10 頁截圖審計（home/quiz-room/practice/battle/review-hub/weekly-quiz/factor/rect/expedition/gallery）全部呈現同一套米黃＋海藍＋暖橙。battle 為刻意的夜戰深色主題、quiz-room 另兩張皮（孟菲斯／經典海報）為可切換的佈置主題，非不一致。
+
+## 2026-09-19 教室融合玩法（任天堂式合併）＋台灣地圖 2.0
+- 9 種自由玩法整併為 6 張卡（卡面 9→6，舊路由 /classroom/flip、/image、/bolt、/rush、/factor、/rect 全部保留相容，GAME_META 未刪）：
+  1. 因數雙重奏（/classroom/duo，新元件 FactorDuoGame）：factor＋rect 接續——同一個目標數先點因數（30s）→看因數成對揭曉→再用同數拼長方形（60s），4 關；星等＝兩段總失誤（duoStars）。bank 新增 buildDuoRounds/DuoRound（數字池沿用 RECT_TIERS，格線放得下）。
+  2. 閃電接力（/classroom/flashrush）：bolt＋rush 混合——RushRunner 新增 variant "mixed"，逐題判斷（選項兩個=對錯大鍵，否則四選一），牌堆 = 12 是非＋12 選擇。
+  3. 翻牌圖鑑（/classroom/flipdex）：flip＋image 混牌堆——QuizRunner 新增 variant "flipdex"（先翻牌再作答，帶 img 的題翻開後圖片＋題目一起出現），牌堆 = 9 圖卡＋9 文字題。
+  4. 保留卡：陷阱題挑戰（trap）、選擇配對接力（relay）、倍數防衛戰（meteor）。
+- 台灣地圖 2.0（TaiwanMainNavigationMap）：
+  - 放大：canvas width 60rem→68rem、aspect-ratio 16/9→1000/620（消除 letterbox，座標線性映射）、land path 以 x'=1.2x-100、y'=1.2y-62 放大重繪（M561 5 起）；ISLAND_POSITIONS/Routes 端點同步重算。
+  - 真實地標：ISLAND_LANDMARKS 每區 3 個地標章（北：故宮/101/九份；中：高美/清境/日月潭；南：赤崁樓/高雄港/墾丁；東：清水斷崖/太魯閣/三仙台；西：鹿港/北港朝天宮/澎湖雙心石滬）直接釘在地圖上（.taiwan-map-landmark，translate(-50%,-50%)，≤640px 只顯示 emoji），面板新增「真實地標」清單（奇幻島嶼名＋真實地標＋一句注解）。
+  - 關卡碼頭：面板新增 ISLAND_DOCKS（島嶼→2 款融合玩法），顯示本機最佳星等/分數，新 prop onOpenGame（Home.tsx/StudentMap.tsx 傳 setLocation(`/classroom/${id}`)；未傳時唯讀，測試不需 Router）。
+- QuizRoom hub：cards 9→6（flipdex/flashrush/relay/trap/meteor/duo）、playRecords 同步、「自由玩法（6 種融合玩法）」；測試改 6 卡。
+- 驗證：tsc 0 錯、1119 tests 全綠、build 成功。
+- 踩坑：Edit 工具批次多檔編輯會「部分静默丟失」（本輪 6 處），每個 Edit 後必 grep 驗證；span 地標章不能放進 <svg> 內，要放 canvas div 層。

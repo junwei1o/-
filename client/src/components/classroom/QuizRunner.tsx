@@ -17,7 +17,7 @@ export type RunnerQuestion = {
 };
 
 type Props = {
-  variant: "flip" | "image" | "trap";
+  variant: "flip" | "image" | "trap" | "flipdex";
   emoji: string;
   tag: string;
   tagClass?: string;
@@ -37,8 +37,9 @@ type Phase = "start" | "play" | "result";
 const LETTERS = ["A", "B", "C", "D", "E", "F"];
 
 /**
- * 翻牌問答（flip）／看圖選答（image）／陷阱題挑戰（trap）共用骨架：
+ * 翻牌問答（flip）／看圖選答（image）／陷阱題挑戰（trap）／翻牌圖鑑（flipdex，翻牌＋看圖混牌堆）共用骨架：
  * 每題 30 秒、答錯立即雙回饋＋音效、結束依正確率給星。
+ * flipdex 與 flip 同樣「先翻牌再作答」，但牌堆混有帶圖的看圖題（翻開後圖片與題目一起出現）。
  */
 export default function QuizRunner({
   variant,
@@ -132,7 +133,7 @@ export default function QuizRunner({
     setLocked(false);
     setTimedOut(false);
     setTimeLeft(Math.round(timePerQuestionMs / 1000));
-    if (variant === "flip") {
+    if (variant === "flip" || variant === "flipdex") {
       setFlipping(false);
       setRevealed(false);
     }
