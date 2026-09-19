@@ -4,6 +4,7 @@ import {
   AlertTriangle,
   BookOpenCheck,
   CalendarDays,
+  Clapperboard,
   Compass,
   Layers,
   LayoutGrid,
@@ -18,6 +19,13 @@ import {
   Zap,
 } from "lucide-react";
 import { loadClassroomBest, type ClassroomBestMap } from "@/lib/classroomBank";
+import {
+  FRACTION_COURSE,
+  completedLayerCount,
+  courseProgress,
+  courseTotalStars,
+  loadOnionProgress,
+} from "@/lib/onionLessons";
 import "./HubPages.css";
 import "@/components/classroom/classroom.css";
 
@@ -68,6 +76,16 @@ export default function QuizRoom() {
   const best: ClassroomBestMap = loadClassroomBest();
   const [skin, setSkin] = useState<SkinId>(loadSkin);
   const [tipIndex, setTipIndex] = useState(0);
+
+  // 洋蔥式動畫微課進度（local-first）
+  const onionLayers = courseProgress(loadOnionProgress(), FRACTION_COURSE.id);
+  const onionDone = completedLayerCount(FRACTION_COURSE, onionLayers);
+  const onionStars = courseTotalStars(FRACTION_COURSE, onionLayers);
+  const lessonState = onionDone >= FRACTION_COURSE.layers.length
+    ? `已完成 ${onionStars}★`
+    : onionDone > 0
+      ? `已剝 ${onionDone}/${FRACTION_COURSE.layers.length} 層`
+      : "新課上線";
 
   const changeSkin = (next: SkinId) => {
     setSkin(next);
@@ -261,6 +279,20 @@ export default function QuizRoom() {
           </div>
         </div>
       )}
+
+      <h2 className="mc-section-title">
+        <span className="mc-doodle" aria-hidden="true"><Clapperboard size={18} /></span>
+        動畫微課（像洋蔥一樣分層學）
+      </h2>
+      <button type="button" className="mc-lesson-card" onClick={() => setLocation("/classroom/onion")}>
+        <span className="mc-lesson-icon" aria-hidden="true"><Clapperboard size={26} /></span>
+        <span className="mc-lesson-body">
+          <h3>分數工坊 <span className="mc-lesson-badge">{lessonState}</span></h3>
+          <p>數學三年級：先看披薩、巧克力的小動畫，一層只講一個觀念，看完馬上答 2 題、答錯給提示，過關才解鎖下一層。</p>
+          <span className="mc-lesson-meta">🧅 4 層知識點 · 🎬 動畫講解 · 🔓 逐層解鎖 · ⭐ 星星獎勵</span>
+        </span>
+        <span className="mc-lesson-go" aria-hidden="true">→</span>
+      </button>
 
       <h2 className="mc-section-title">
         <span className="mc-doodle" aria-hidden="true"><Layers size={18} /></span>

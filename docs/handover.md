@@ -524,3 +524,11 @@ curl -s https://xue-gr3a.onrender.com/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | h
 - 應使用者要求移除桌寵品質網頁寵物燈寶：刪除 components/classroom/ClassroomPet.tsx、classroom.css 結尾整段 .pet-* 樣式（含 reduced-motion 與 520px 兩個寵物專用 media 區）、QuizRoom.tsx 的 import 與 `<ClassroomPet/>` 掛載、QuizRoom.test.tsx 兩例（摸頭好感、餵糖點燈）。
 - 好感度 localStorage key `xue-pet-bond-v1` 不再讀寫（殘留於使用者本機的舊資料無害、不影響）。
 - 教室三皮膚切換（極簡海／孟菲斯／經典海報）與其餘玩法、燈寶以外功能全部保留。
+
+## 2026-09-20 洋蔥式動畫微課「分數工坊」上線
+- 對齊洋蔥學院方法論（5–8 分鐘動畫微課、單一知識點極細分、概念視覺化、看完隨即測驗、分層提示、解鎖成就）。受限於無法產影片檔，改用**程序化 SVG/CSS 動畫分鏡**做可互動微課：可暫停/重播/逐鏡/略過，天然嵌入即時測驗，local-first、手機可看。
+- 第一輪單元：國小數學三年級「分數工坊」，剝洋蔥 4 層，一次一觀點：①公平的平均分 ②分母與分子 ③看圖寫出分數 ④等值分數（1/2=2/4=3/6）。每層 3 個動畫分鏡（披薩扇形旋轉進場、塗色浮起、巧克力切格、分數符號組裝、等值並排）＋2 題即時測驗，答錯給三級提示、不擋關，通過才解鎖下一層。
+- 遊戲化：4 層解鎖路徑地圖、每層星等（零失誤 3 星／錯 1 次 2 星／否則 1 星）、學習稱號（新手洋蔥→剝皮助手→分數學徒→概念行家→分數小達人）、過層與完課彩紙、最佳星等回報 classroom best。
+- 新增檔案：`lib/onionLessons.ts`（課程/分鏡/測驗資料模型、分層解鎖與星等函數、localStorage `xue-onion-progress-v1`）、`components/classroom/FractionStage.tsx`（資料驅動 SVG 動畫舞台，5 種 scene）、`OnionLesson.tsx`（地圖→分鏡播放器→測驗→過層→結算狀態機）、`onion.css`、兩支測試（lib 9 例、元件 5 例）。
+- 整合：`ClassroomPlay.tsx` 註冊 gameId `onion`（路由 /classroom/onion）；`QuizRoom.tsx` 在自由玩法上方新增「動畫微課」全寬精選卡（含完成進度徽章），樣式 `.mc-lesson-card` 寫在 classroom.css。
+- 驗收：tsc 通過；classroom＋onion＋QuizRoom＋App 共 73 例全綠；vite build 通過；本地手機預覽逐鏡檢查 5 種 scene、地圖、測驗、過層彩紙、結算皆正確且無 pageerror。

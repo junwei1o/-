@@ -35,6 +35,15 @@ describe("QuizRoom 我的教室", () => {
     }
   });
 
+  it("展示動畫微課入口並導向分數工坊", () => {
+    render(<QuizRoom />);
+    const card = screen.getByRole("button", { name: /分數工坊/ });
+    expect(card).toBeInTheDocument();
+    expect(screen.getByText(/像洋蔥一樣分層學/)).toBeInTheDocument();
+    fireEvent.click(card);
+    expect(setLocation).toHaveBeenCalledWith("/classroom/onion");
+  });
+
   it("保留經典答題模式並導向對應目的地", () => {
     render(<QuizRoom />);
     const cases: Array<[string, string]> = [

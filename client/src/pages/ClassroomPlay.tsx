@@ -7,6 +7,7 @@ import FactorGame from "@/components/classroom/FactorGame";
 import FactorDuoGame from "@/components/classroom/FactorDuoGame";
 import MeteorGame from "@/components/classroom/MeteorGame";
 import RectGame from "@/components/classroom/RectGame";
+import OnionLesson from "@/components/classroom/OnionLesson";
 import {
   TRAP_QUESTIONS,
   buildChoiceDeck,
@@ -24,6 +25,7 @@ import { recordPipiEvent } from "@/game/pipiCompanion";
  * flip 翻牌問答 / image 看圖選答 / bolt 是非閃電 / rush 限時接力 / relay 選擇配對接力 / trap 陷阱題挑戰 / factor 因數探險 / meteor 倍數防衛戰 / rect 長方形拼拼樂
  */
 const GAME_META: Record<string, { title: string }> = {
+  onion: { title: "分數工坊" },
   flip: { title: "翻牌問答" },
   image: { title: "看圖選答" },
   bolt: { title: "是非閃電" },
@@ -127,6 +129,15 @@ export default function ClassroomPlay() {
   };
 
   switch (gameId) {
+    case "onion":
+      return (
+        <OnionLesson
+          key="onion"
+          bestStars={record?.stars}
+          onBest={(r) => updateBest({ stars: r.stars, correct: r.correct, total: r.total })}
+          onExit={exit}
+        />
+      );
     case "flip":
       return (
         <QuizRunner
