@@ -332,7 +332,9 @@ export function PipiPet() {
       setTimeout(() => setEmote(null), 1800);
     }
     addAffection(aff);
-    spawnParticles(emojis.split(""), 5 + aff);
+    // 用 Array.from 而非 split("")：emoji 多為輔助平面字元（surrogate pair），
+    // split("") 會把一個 emoji 拆成兩個半字，畫面會出現問號。
+    spawnParticles(Array.from(emojis), 5 + aff);
   }, [addAffection, spawnParticles]);
 
   const onClick = useCallback(() => {
@@ -482,7 +484,7 @@ export function PipiPet() {
     const loop = () => {
       timer = setTimeout(() => {
         if (!roaming && !actionAnim && !bubble && !menuOpen && !trivia) {
-          const kinds = ["tilt", "wiggle", "hop"];
+          const kinds = ["tilt", "wiggle", "hop", "giggle"];
           setMicro(kinds[Math.floor(Math.random() * kinds.length)]);
           setTimeout(() => setMicro(null), 950);
         }
