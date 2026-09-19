@@ -430,3 +430,14 @@ curl -s https://xue-gr3a.onrender.com/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | h
 - 修 bug：右鍵/長按/☰開選單時收起其他面板避免遮擋；選單項目 19 個超過視窗高度 → .pipi-menu max-height min(70vh,560px) 可捲動。
 - 驗證：tsc 0 錯、1129 tests 全綠（+10 pipiCompanion）、build 成功；本機 Playwright 冒煙 11/11（寵物/選單/看板 3 列/衣櫥 6 卡/跳舞 anim/注入進度後領取→已領取/無 pageerror）。
 - 踩坑：並行 session 同時 push（12c1f72→a4e4dac→83d3c8d），push 兩次被拒需 rebase；bash 與 host 檔案視圖延遲持續存在，驗證一律以 Grep 工具＋build 產物為準。
+
+## 2026-09-19 小寶 v6 生動感升級
+- 對標 WorkBuddy 貓的活潑度，補齊 idle 微行為（86d3902）：
+  1. 隨機眨眼：每 3.2–7.4s img scaleY(0.9) 壓扁一下（.pipi-pet.blink）。
+  2. 隨機微動作：每 9–18s（idle 且無泡泡時）隨機歪頭 micro-tilt／扭一扭 micro-wiggle／原地小跳 micro-hop，各約 0.95s。
+  3. 走路搖擺：roaming 移動時 img 左右 rotate ±5°（waddle），不再純滑行。
+  4. 滿級光環：好感度 Lv3「寶島守護者」時 .pipi-pet.lv-3::before 金色呼吸光環（z-index:-1 墊在精靈下）。
+  5. 連點彩蛋：1.5s 內連點 3 下 → 😤「喵嗚～戳癢了啦！」（tapTimesRef 滑動窗口）。
+  6. 說夢話：睡覺時每 8–15s 冒 💭＋夢話泡泡。
+- 驗證：tsc 0 錯、1129 tests 綠、本機 Playwright 7/7（lv-3 class、pipi-aura、blink、😤、micro- 均觀察到，無 pageerror）、線上 bundle index-B7x7Bisi.js hash 一致、線上同套 7/7 通過。
+- 備註：待機呼吸（pipi-breathe）與點擊 bounce 為遠端小寶版既有，v6 只做加法。
