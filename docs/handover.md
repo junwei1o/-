@@ -453,3 +453,10 @@ curl -s https://xue-gr3a.onrender.com/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | h
   - 版型：新 .taiwan-map-layout grid（地圖 minmax(0,1fr) ＋ 對話框 minmax(19rem,23rem)）；.taiwan-island-panel 為 sticky 雙邊框羊皮紙「太閤」風對話框，≤900px 退回單欄。
 - 驗證：tsc 0 錯、1129 tests 綠、build 成功；本機 Playwright（map-v7.mjs）：landmark=0、船標=0、畫布內背包/傳聞=0、tools 在 header、點 math 船 248/365→336/292、對話框在地圖右側、關閉回港、無 pageerror。測試前須關閉 .daily-signin-modal（Escape）。
 - 線上：bundle index-BCdIDk2G.js 與本機 dist hash 一致。
+
+## 2026-09-19 首頁地圖 v8 格狀模塊版（PaGamO 式）
+- 需求：地圖太空、要有 PaGamO 的格狀模塊感、方便日後加地標/活動；船移除跳動。commit 2b4de92（rebase 到遠端小寶表情更新 a49f12c 之上）。
+- TaiwanMainNavigationMap.tsx：整塊台灣本島 SVG path 改為 16×10 格線（MAP_TERRAIN 字串遮罩，X=陸地模塊）；新增 exported：MAP_GRID_COLS/ROWS、MAP_TERRAIN、mapCellCenter/mapCellPercent、MapCellFeature 型別、MAP_CELL_FEATURES 登記處（現有 5 地標＋1 活動預備格 demo；日後加地標/活動只要在這裡加 col/row 一筆）。島嶼改為格線上的板塊模塊群（ISLAND_CELLS：main 主格放按鈕、cells 同色領土格、port 海面停靠格）；ISLAND_ROUTE_PATHS 改為沿海外海航道折線；HOME_PORT=(2,6)、各島港口皆海域格。地區標籤重新定位（北部移到 700,78）。
+- CSS：新增 .taiwan-map-cell-sea（虛線淡藍海格）/.taiwan-map-cell-land（米黃陸模塊）/island-cell-<id>（五科領土色）/.taiwan-map-feature（地標章，activity 虛線框）；島嶼按鈕縮成格內尺寸（6.6%×10.6%、flex column、字級 clamp）；移除 taiwan-boat-bob/rock 全部跳動動畫（船平穩航行）。
+- 驗證：tsc 0 錯、1129 tests 綠、build 成功；本機 Playwright map-v8.mjs 14/14（格線 160、陸模塊 47、島按鈕在格線座標、6 個地標章、船母港 (170,400)→數學港 (350,160)→關閉回港、glyph animationName=none、對話框在地圖右側、無 pageerror）。「回到航海圖」真實點擊可關閉（先前自動化失敗是 fresh-profile 每日簽到 backdrop 反覆重現攔截指標，非產品 bug；預 seed localStorage xueSignIn 可避開）。
+- 線上：bundle index-DgekqrsA.js 與本機 dist hash 一致。
