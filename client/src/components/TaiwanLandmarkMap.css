@@ -1,0 +1,162 @@
+.taiwan-landmark-map {
+  border: 1px solid rgba(43, 83, 82, 0.2);
+  border-radius: 1.5rem;
+  padding: clamp(1rem, 3vw, 1.75rem);
+  background: linear-gradient(145deg, #f9f0d7 0%, #d9eadf 100%);
+  box-shadow: 0 18px 42px rgba(41, 79, 77, 0.12);
+}
+
+.taiwan-landmark-map-heading {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.taiwan-landmark-map-heading h2 {
+  margin: 0.2rem 0 0.45rem;
+  color: #123d44;
+}
+
+.taiwan-landmark-map-heading p:not(.eyebrow) {
+  margin: 0;
+  color: #2c5a58;
+}
+
+.taiwan-landmark-map-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.9rem;
+  margin: 0;
+  padding: 0.5rem 0.8rem;
+  list-style: none;
+  border-radius: 999px;
+  background: rgba(255, 253, 245, 0.7);
+  border: 1px solid rgba(43, 83, 82, 0.16);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #27524c;
+}
+
+.taiwan-landmark-map-legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.taiwan-landmark-legend-dot {
+  width: 0.62rem;
+  height: 0.62rem;
+  border-radius: 50%;
+  border: 1.5px solid #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+}
+
+.taiwan-landmark-map-scroll {
+  margin-top: 1.1rem;
+}
+
+.taiwan-landmark-map-canvas {
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  aspect-ratio: 1000 / 620;
+  overflow: hidden;
+  border: 1px solid rgba(21, 81, 96, 0.25);
+  border-radius: 1.25rem;
+  background:
+    radial-gradient(circle at 17% 56%, rgba(251, 239, 170, 0.5), transparent 18rem),
+    radial-gradient(circle at 85% 30%, rgba(255, 255, 255, 0.18), transparent 12rem),
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.1) 0 1px, transparent 1px 22px),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.06) 0 1px, transparent 1px 22px),
+    linear-gradient(135deg, #3d7a8c 0%, #5d979f 45%, #7bb3b1 100%);
+}
+
+.taiwan-landmark-map-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.taiwan-landmark-land {
+  fill: rgba(246, 223, 161, 0.9);
+  stroke: rgba(102, 75, 43, 0.55);
+  stroke-width: 6;
+  filter: drop-shadow(0 4px 6px rgba(23, 61, 74, 0.3));
+}
+
+.taiwan-landmark-region-label {
+  fill: rgba(92, 61, 38, 0.5);
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  paint-order: stroke;
+  stroke: rgba(249, 243, 232, 0.75);
+  stroke-width: 5px;
+  pointer-events: none;
+  user-select: none;
+}
+
+.taiwan-landmark-pin-dot {
+  stroke: #fff;
+  stroke-width: 2;
+  filter: drop-shadow(0 1px 2px rgba(15, 45, 55, 0.5));
+}
+
+.taiwan-landmark-pin-label {
+  fill: #ffffff;
+  font-size: 15px;
+  font-weight: 700;
+  paint-order: stroke;
+  stroke: rgba(15, 45, 55, 0.9);
+  stroke-width: 3.5px;
+  stroke-linejoin: round;
+  pointer-events: none;
+  user-select: none;
+}
+
+.taiwan-landmark-boat-ring {
+  fill: rgba(250, 233, 152, 0.35);
+  stroke: #173d4a;
+  stroke-width: 2;
+}
+
+.taiwan-landmark-boat {
+  animation: taiwan-landmark-boat-bob 2.8s ease-in-out infinite;
+  transform-origin: center;
+  filter: drop-shadow(0 3px 4px rgba(23, 61, 74, 0.4));
+}
+
+@keyframes taiwan-landmark-boat-bob {
+  0%, 100% { transform: translate(248px, 365px) rotate(0deg); }
+  25% { transform: translate(248px, 363px) rotate(-2deg); }
+  75% { transform: translate(248px, 367px) rotate(2deg); }
+}
+
+.taiwan-landmark-compass {
+  opacity: 0.85;
+}
+
+/* 手機：維持地圖可讀性，開放左右滑動檢視 */
+@media (max-width: 720px) {
+  .taiwan-landmark-map-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .taiwan-landmark-map-canvas {
+    min-width: 680px;
+  }
+
+  .taiwan-landmark-compass {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .taiwan-landmark-boat {
+    animation: none;
+  }
+}
