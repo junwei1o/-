@@ -10,7 +10,7 @@ import { consumeRandomAdventureRouteReward } from "@/game/randomAdventureRouteRe
 import { loadRpgState } from "@/game/rpgStorage";
 import { getJournalEntries } from "@/game/adventureJournal";
 import { generateDailyAdventureSummary } from "@/game/academyExpansion";
-import { TaiwanLandmarkMap } from "@/components/TaiwanLandmarkMap";
+import { TaiwanMainNavigationMap } from "@/components/TaiwanMainNavigationMap";
 import { QuizModal } from "@/components/QuizModal";
 import { consumeStorageNotice, getDailySignIn, getLearningRecord, getPlayerData, getPlayerName, getSelectedTitle, hasSignedInToday, type LearningRecord } from "@/utils/storage";
 import { loadSignInState, hasSignedInToday as hasGoldSignedInToday } from "@/game/dailySignIn";
@@ -206,7 +206,18 @@ export default function Home() {
   return (
     <main className="home-dashboard" aria-label="寶島探險家學習儀表板">
       <div className="home-dashboard-map-layer" aria-hidden="false">
-          <TaiwanLandmarkMap />
+          <TaiwanMainNavigationMap
+            islands={islands}
+            onOpenSubject={openSubject}
+            onOpenTopic={(subject, topic) => setLocation(`/practice?subject=${encodeURIComponent(subject)}&reviewTopic=${encodeURIComponent(topic)}&source=home-dashboard`)}
+            onOpenWrongAnswers={(subject) => setLocation(`/practice?subject=${encodeURIComponent(subject)}&wrongOnly=1&source=home-dashboard`)}
+            onOpenGame={(gameId) => setLocation(`/classroom/${gameId}`)}
+            unlockedRouteIds={rpgState.mapVictoryProgress?.unlockedRouteIds ?? []}
+            supplyMarkerIds={rpgState.mapVictoryProgress?.supplyMarkerIds ?? []}
+            reinforcementJournal={journal}
+            reinforcementSuggestion={weeklySuggestion}
+            randomAdventureRouteReward={randomAdventureRouteReward}
+          />
       </div>
       <div className="home-dashboard-hud">
         <FirstLightQuest />
