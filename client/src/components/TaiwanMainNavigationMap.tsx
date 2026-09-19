@@ -555,6 +555,12 @@ export function TaiwanMainNavigationMap({ islands, onOpenSubject, onStartIslandQ
             className="taiwan-map-land"
             d="M561 5 C615 45 632 100 619 143 C606 186 628 231 613 272 C595 314 608 354 579 395 C554 431 558 474 528 518 C498 561 452 591 420 570 C388 551 403 503 385 464 C366 424 382 377 364 336 C348 297 373 258 369 216 C367 176 397 143 409 104 C422 64 492 20 561 5 Z"
           />
+          {/* 區域名稱直接嵌在台灣本島上 */}
+          <text className="taiwan-map-region-label" x="510" y="75">北部</text>
+          <text className="taiwan-map-region-label" x="475" y="265">中部</text>
+          <text className="taiwan-map-region-label" x="448" y="500">南部</text>
+          <text className="taiwan-map-region-label" x="600" y="290">東部</text>
+          <text className="taiwan-map-region-label" x="365" y="290">西部</text>
           {routeSegments.map((segment, index) => {
             const routeSupplyId = supplyMarkerIdForRegion(ISLAND_REGION_BY_ID[segment.id]);
             const isRouteGlowing = recentlyCompletedSupplyMarkerIds.includes(routeSupplyId);

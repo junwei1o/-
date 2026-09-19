@@ -38,9 +38,9 @@
 .taiwan-map-canvas {
   position: relative;
   isolation: isolate;
-  width: min(100%, 68rem);
+  width: min(100%, 82rem);
   aspect-ratio: 1000 / 620;
-  min-height: 30rem;
+  min-height: 32rem;
   margin: 1.1rem auto;
   overflow: hidden;
   border: 1px solid rgba(21, 81, 96, 0.25);
@@ -78,6 +78,19 @@
   stroke: rgba(102, 75, 43, 0.55);
   stroke-width: 6;
   filter: drop-shadow(0 4px 6px rgba(23, 61, 74, 0.3));
+}
+
+.taiwan-map-region-label {
+  fill: rgba(92, 61, 38, 0.55);
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  text-anchor: middle;
+  paint-order: stroke;
+  stroke: rgba(249, 243, 232, 0.6);
+  stroke-width: 3px;
+  pointer-events: none;
+  user-select: none;
 }
 
 .taiwan-map-route {
