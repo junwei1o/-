@@ -49,10 +49,6 @@ vi.mock("@/lib/trpc", () => ({
     },
   },
 }));
-vi.mock("@/components/TaiwanMainNavigationMap", () => ({
-  TaiwanMainNavigationMap: () => <div data-testid="home-dashboard-map" aria-label="台灣主航海圖背景" />,
-}));
-
 describe("首頁沉浸式儀表板", () => {
   afterEach(() => {
     cleanup();
@@ -66,7 +62,7 @@ describe("首頁沉浸式儀表板", () => {
     render(<Home />);
 
     expect(screen.getByRole("main", { name: "寶島探險家學習儀表板" })).toBeInTheDocument();
-    expect(screen.getByTestId("home-dashboard-map")).toBeInTheDocument();
+    expect(screen.queryByTestId("home-dashboard-map")).not.toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "小晴，見習航海士" })).toBeInTheDocument();
     expect(screen.getByRole("progressbar", { name: "目前等級經驗值" })).toHaveAttribute("aria-valuenow", "0");
     // 學伴派任務已從主頁移除，深度伴讀只留答題後單一入口

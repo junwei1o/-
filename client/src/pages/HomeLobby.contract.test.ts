@@ -23,9 +23,9 @@ describe("首頁沉浸式航海儀表板契約", () => {
     expect(source).toContain('[refreshLearningData, learningRecords.length]');
   });
 
-  it("把主航海圖維持為絕對背景並讓狀態與行動層可操作", () => {
-    expect(source).toContain('className="home-dashboard-map-layer"');
-    expect(source).toContain('<TaiwanMainNavigationMap');
+  it("首頁不再掛航海圖，狀態與行動層直接可操作", () => {
+    expect(source).not.toContain('className="home-dashboard-map-layer"');
+    expect(source).not.toContain("TaiwanMainNavigationMap");
     expect(source).toContain('className="home-dashboard-hud"');
     expect(source).toContain('className="home-dashboard-status"');
     expect(source).toContain('className="home-dashboard-actions"');

@@ -5,12 +5,9 @@ import { useLocation } from "wouter";
 import { useQuestionBank } from "@/lib/questionBank";
 import { getMemoryAlarmCount, loadAdaptiveProfile } from "@/game/adaptiveLearning";
 import { getInventory } from "@/game/inventoryService";
-import { loadCurrentWeekReinforcementJournal } from "@/game/mapReinforcementReward";
-import { consumeRandomAdventureRouteReward } from "@/game/randomAdventureRouteReward";
 import { loadRpgState } from "@/game/rpgStorage";
 import { getJournalEntries } from "@/game/adventureJournal";
 import { generateDailyAdventureSummary } from "@/game/academyExpansion";
-import { TaiwanMainNavigationMap } from "@/components/TaiwanMainNavigationMap";
 import { QuizModal } from "@/components/QuizModal";
 import { consumeStorageNotice, getDailySignIn, getLearningRecord, getPlayerData, getPlayerName, getSelectedTitle, hasSignedInToday, type LearningRecord } from "@/utils/storage";
 import { loadSignInState, hasSignedInToday as hasGoldSignedInToday } from "@/game/dailySignIn";
@@ -64,7 +61,6 @@ export default function Home() {
   const [rpgState, setRpgState] = useState(() => loadRpgState());
   const [profile, setProfile] = useState(() => loadAdaptiveProfile());
   const [inventory, setInventory] = useState(() => getInventory());
-  const [journal, setJournal] = useState(() => loadCurrentWeekReinforcementJournal());
   const [learningRecords, setLearningRecords] = useState<LearningRecord[]>(() => getLearningRecord());
   const [playerData, setPlayerData] = useState(() => getPlayerData());
   const [selectedTitle, setSelectedTitle] = useState(() => getSelectedTitle());
@@ -73,7 +69,6 @@ export default function Home() {
   const previousGoldRef = useRef(playerData.gold);
   const [isGoldPulseActive, setIsGoldPulseActive] = useState(false);
   const [quizSubject, setQuizSubject] = useState<KnowledgeIslandSubject | null>(null);
-  const [randomAdventureRouteReward] = useState(() => consumeRandomAdventureRouteReward());
   const [showBackpack, setShowBackpack] = useState(false);
   const [isActionsOpen, setIsActionsOpen] = useState(false);
   // 訂閱 BX 偏好：快速行動側邊欄總開關與懸浮鈕開關可在設定頁隨時切換。
@@ -91,7 +86,6 @@ export default function Home() {
   const nextIsland = availableIslands.find((island) => island.attemptCount > 0 && island.attemptCount < 4) ?? availableIslands[0] ?? islands[0];
   const questions = questionBankRows as PaperQuestion[];
   const memoryAlarmCount = useMemo(() => getMemoryAlarmCount(profile), [profile]);
-  const weeklySuggestion = useMemo(() => buildWeeklySuggestion(learningRecords), [learningRecords]);
   const dailyAdventureSummary = useMemo(() => generateDailyAdventureSummary({ date: Date.now(), entries: getJournalEntries() }), [learningRecords.length, rpgState.correctAnswerCount]);
   const signedInToday = hasSignedInToday(dailySignIn);
 
@@ -137,7 +131,6 @@ export default function Home() {
     setRpgState(loadRpgState());
     setProfile(loadAdaptiveProfile());
     setInventory(getInventory());
-    setJournal(loadCurrentWeekReinforcementJournal());
     setLearningRecords(getLearningRecord());
     setPlayerData(getPlayerData());
     setSelectedTitle(getSelectedTitle());
@@ -205,20 +198,6 @@ export default function Home() {
 
   return (
     <main className="home-dashboard" aria-label="寶島探險家學習儀表板">
-      <div className="home-dashboard-map-layer" aria-hidden="false">
-          <TaiwanMainNavigationMap
-            islands={islands}
-            onOpenSubject={openSubject}
-            onOpenTopic={(subject, topic) => setLocation(`/practice?subject=${encodeURIComponent(subject)}&reviewTopic=${encodeURIComponent(topic)}&source=home-dashboard`)}
-            onOpenWrongAnswers={(subject) => setLocation(`/practice?subject=${encodeURIComponent(subject)}&wrongOnly=1&source=home-dashboard`)}
-            onOpenGame={(gameId) => setLocation(`/classroom/${gameId}`)}
-            unlockedRouteIds={rpgState.mapVictoryProgress?.unlockedRouteIds ?? []}
-            supplyMarkerIds={rpgState.mapVictoryProgress?.supplyMarkerIds ?? []}
-            reinforcementJournal={journal}
-            reinforcementSuggestion={weeklySuggestion}
-            randomAdventureRouteReward={randomAdventureRouteReward}
-          />
-      </div>
       <div className="home-dashboard-hud">
         <FirstLightQuest />
         <header className="home-dashboard-status">

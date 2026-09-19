@@ -1,15 +1,12 @@
-import { StudentRelationMap } from "@/components/StudentRelationMap";
 import { BookOpenCheck, Lightbulb, Orbit, ShieldCheck, TrendingUp } from "lucide-react";
 import { loadAdaptiveProfile } from "@/game/adaptiveLearning";
 import { loadRpgState } from "@/game/rpgStorage";
-import { consumeMapReinforcementReward, loadCurrentWeekReinforcementJournal } from "@/game/mapReinforcementReward";
 import { getAnimeWorldviewProgressSummary } from "@/game/animeWorldviewProgress";
 import { getTodayLearningGuide } from "@/game/todayLearningGuide";
 import { OBSERVATORY_ENTRIES } from "@/lib/mediaObservatory";
 import { loadScenarioFavorites } from "@/lib/scenarioFavorites";
-import { buildKnowledgeIslandSnapshots, type KnowledgeIslandSubject } from "@/lib/studentKnowledgeIslands";
 import { buildStudentLivingConnections } from "@/lib/studentLivingConnections";
-import { TaiwanMainNavigationMap } from "@/components/TaiwanMainNavigationMap";
+import { StudentRelationMap } from "@/components/StudentRelationMap";
 import React, { useMemo, useState } from "react";
 import { useLocation } from "wouter";
 
@@ -24,15 +21,12 @@ function initialPuzzleProgress(answerCount: number) {
 export default function StudentMap() {
   const [, setLocation] = useLocation();
   const [rpgState] = useState(() => loadRpgState());
-  const [reinforcementReward] = useState(() => consumeMapReinforcementReward());
-  const [reinforcementJournal] = useState(() => loadCurrentWeekReinforcementJournal());
   const [adaptiveProfile] = useState(() => loadAdaptiveProfile());
   const [scenarioFavorites] = useState(() => loadScenarioFavorites());
   const [todayGuide] = useState(() => getTodayLearningGuide(adaptiveProfile));
   const completedCount = rpgState.correctAnswerCount ?? rpgState.answeredEventIds.length;
   const activeCompanion = rpgState.companions.find((companion) => companion.id === rpgState.activeCompanionId) ?? rpgState.companions[0];
   const [observatoryProgress] = useState(() => getAnimeWorldviewProgressSummary(rpgState.animeWorldviewProgress));
-  const knowledgeIslands = useMemo(() => buildKnowledgeIslandSnapshots(adaptiveProfile), [adaptiveProfile]);
   const livingConnections = useMemo(() => buildStudentLivingConnections({
     profile: adaptiveProfile,
     favoriteScenarioIds: scenarioFavorites,
@@ -94,17 +88,6 @@ export default function StudentMap() {
           })}
         </ul>
       </section>
-      <TaiwanMainNavigationMap
-        islands={knowledgeIslands}
-        onOpenSubject={(subject: KnowledgeIslandSubject) => setLocation(`/practice?subject=${encodeURIComponent(subject)}&source=taiwan-main-map`)}
-        onOpenTopic={(subject: KnowledgeIslandSubject, topic) => setLocation(`/practice?subject=${encodeURIComponent(subject)}&reviewTopic=${encodeURIComponent(topic)}&source=taiwan-main-map`)}
-        onOpenWrongAnswers={(subject: KnowledgeIslandSubject) => setLocation(`/practice?subject=${encodeURIComponent(subject)}&wrongOnly=1&source=taiwan-main-map`)}
-        onOpenGame={(gameId: string) => setLocation(`/classroom/${gameId}`)}
-        unlockedRouteIds={rpgState.mapVictoryProgress?.unlockedRouteIds ?? []}
-        supplyMarkerIds={rpgState.mapVictoryProgress?.supplyMarkerIds ?? []}
-        reinforcementReward={reinforcementReward}
-        reinforcementJournal={reinforcementJournal}
-      />
       <StudentRelationMap
         studentName="我"
         level={levelFromAnswers(completedCount)}

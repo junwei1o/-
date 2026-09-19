@@ -18,89 +18,6 @@
   background-size: 14px 14px;
 }
 
-.home-dashboard-map-layer {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  overflow: hidden;
-}
-
-.home-dashboard-map-layer .taiwan-navigation-map {
-  min-height: 100%;
-  height: 100%;
-  margin: 0;
-  border: 0;
-  border-radius: 0;
-  background: transparent;
-  box-shadow: none;
-}
-
-.home-dashboard-map-layer .taiwan-navigation-map-heading,
-.home-dashboard-map-layer .taiwan-map-reinforcement-journal,
-.home-dashboard-map-layer .taiwan-map-route-hint,
-.home-dashboard-map-layer .taiwan-map-reinforcement-reward {
-  display: none;
-}
-
-.home-dashboard-map-layer .taiwan-map-random-route-reward {
-  position: absolute;
-  z-index: 6;
-  top: 5.35rem;
-  left: clamp(0.85rem, 4vw, 2rem);
-  width: min(20rem, calc(100vw - 1.7rem));
-  margin: 0;
-}
-
-.home-dashboard-map-layer .taiwan-map-canvas {
-  min-height: 100%;
-  height: 100%;
-  border-radius: 0;
-  background: linear-gradient(145deg, rgba(232, 246, 241, 0.84), rgba(250, 242, 226, 0.72));
-}
-
-/* v9：首頁地圖鋪滿整個背景層（放大十倍視野），對話框浮在右上 */
-.home-dashboard-map-layer .taiwan-map-layout {
-  display: block;
-  width: 100%;
-  height: 100%;
-  margin: 0;
-}
-.home-dashboard-map-layer .taiwan-map-layout > .taiwan-map-canvas {
-  width: 100%;
-  height: 100%;
-  min-height: 0;
-  aspect-ratio: auto;
-  margin: 0;
-  background: linear-gradient(135deg, #8fc4dc 0%, #9fcde3 45%, #b4ddec 100%);
-}
-.home-dashboard-map-layer .taiwan-map-layout .taiwan-map-panel,
-.home-dashboard-map-layer .taiwan-map-layout .taiwan-island-panel {
-  position: absolute;
-  top: 0.9rem;
-  right: 0.9rem;
-  width: min(21rem, calc(100% - 1.8rem));
-  max-height: calc(100% - 1.8rem);
-  z-index: 6;
-  box-shadow: 0 16px 34px rgba(23, 61, 74, 0.28);
-}
-.home-dashboard-map-layer .taiwan-map-layout .taiwan-map-waiting {
-  position: absolute;
-  top: 0.9rem;
-  right: 0.9rem;
-  width: min(15.5rem, calc(100% - 1.8rem));
-  z-index: 6;
-  margin: 0;
-}
-
-.home-dashboard-map-layer .taiwan-map-island {
-  animation: home-dashboard-island-in 380ms var(--ease-out, cubic-bezier(0.23, 1, 0.32, 1)) both;
-}
-
-.home-dashboard-map-layer .taiwan-map-island:nth-of-type(1) { animation-delay: 80ms; }
-.home-dashboard-map-layer .taiwan-map-island:nth-of-type(2) { animation-delay: 160ms; }
-.home-dashboard-map-layer .taiwan-map-island:nth-of-type(3) { animation-delay: 240ms; }
-.home-dashboard-map-layer .taiwan-map-island:nth-of-type(4) { animation-delay: 320ms; }
-
 .home-dashboard-hud {
   position: relative;
   z-index: 10;
@@ -111,23 +28,13 @@
   pointer-events: none;
 }
 
-/* Desktop follows the same interaction contract as mobile: the map occupies its
-   own section, and status/journal/action cards follow it rather than covering
-   island nodes. */
+/* Desktop follows the same interaction contract as mobile: status/journal/action
+   cards flow in their own section. */
 @media (min-width: 651px) {
   .home-dashboard {
     display: flex;
     flex-direction: column;
     overflow: visible;
-  }
-
-  .home-dashboard-map-layer {
-    position: relative;
-    inset: auto;
-    flex: 0 0 auto;
-    width: 100%;
-    height: clamp(37rem, calc(100dvh - 72px), 48rem);
-    min-height: 37rem;
   }
 
   .home-dashboard-hud {
@@ -207,7 +114,6 @@
 .home-dashboard-backpack-panel li { padding: 6px; border-radius: 10px; background: rgba(249, 243, 232, 0.9); text-align: center; font-size: 0.78rem; }
 .home-dashboard-backpack-panel li span { display: block; font-size: 1.3rem; }
 
-@keyframes home-dashboard-island-in { from { opacity: 0; transform: translateY(12px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
 
 @media (max-width: 650px) {
   .home-dashboard { min-height: calc(100dvh - 62px); }
@@ -216,11 +122,9 @@
   .home-dashboard-status-side { justify-content: space-between; }
   .home-dashboard-progress { width: 100%; }
   .home-dashboard-action { min-height: 54px; }
-  .home-dashboard-map-layer .taiwan-map-extras { top: 138px; }
-  .home-dashboard-map-layer .taiwan-map-easter-egg-trigger { top: 202px; }
 }
 
-@media (prefers-reduced-motion: reduce) { .home-dashboard-map-layer .taiwan-map-island { animation: none; } .home-dashboard-action, .home-dashboard-progress > span { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .home-dashboard-action, .home-dashboard-progress > span { transition: none; } }
 
 .home-dashboard-memory-alarm { position: relative; }
 .home-dashboard-memory-alarm.has-due { border-color: rgba(255, 107, 53, 0.42); background: rgba(255, 246, 235, 0.9); color: #8a4a2a; }
@@ -244,29 +148,12 @@
   }
 }
 
-/* 在手機上讓地圖成為獨立的第一段內容；狀態與日誌資訊會在地圖結束後才出現，
-   不再以浮層方式壓住可點擊的島嶼節點。 */
+/* 手機上讓狀態與日誌依序排列為獨立段落 */
 @media (max-width: 650px) {
   .home-dashboard {
     display: flex;
     flex-direction: column;
     padding-bottom: calc(76px + env(safe-area-inset-bottom));
-  }
-
-  .home-dashboard-map-layer {
-    position: relative;
-    inset: auto;
-    order: 1;
-    width: 100%;
-    height: clamp(31rem, 78dvh, 37rem);
-    min-height: 31rem;
-    overflow: hidden;
-  }
-
-  .home-dashboard-map-layer .taiwan-navigation-map,
-  .home-dashboard-map-layer .taiwan-map-canvas {
-    height: 100%;
-    min-height: 100%;
   }
 
   .home-dashboard-hud {
@@ -279,22 +166,6 @@
   .home-dashboard-status,
   .home-adventure-journal-card {
     width: 100%;
-  }
-
-  .home-dashboard-map-layer .taiwan-map-extras {
-    top: 0.65rem;
-    right: 0.65rem;
-  }
-
-  .home-dashboard-map-layer .taiwan-map-easter-egg-trigger {
-    top: auto;
-    right: 0.65rem;
-    bottom: 0.65rem;
-  }
-
-  /* 東部節點在首頁窄畫布中向內收，避免完整按鈕與文字被右緣裁切。 */
-  .home-dashboard-map-layer .taiwan-map-island.island-science {
-    left: 69% !important;
   }
 }
 
@@ -539,7 +410,6 @@
 .quiz-modal-feedback p { margin: .45rem 0 0; line-height: 1.7; }
 .quiz-modal-done { margin-top: .75rem; min-height: 2.75rem; padding: .6rem 1rem; border: 0; border-radius: 999px; background: #ef7546; color: white; font-weight: 700; }
 .quiz-modal-hint { margin: 1rem 0 0; color: #5c6c66; font-size: .92rem; }
-.taiwan-map-reinforcement-suggestion { margin: .75rem 0 0; padding: .7rem .8rem; border-left: 3px solid #ef7546; border-radius: .55rem; background: rgb(255 246 232 / 80%); color: #53615c; font-size: .9rem; line-height: 1.65; }
 
 @media (min-width: 700px) {
   .quiz-modal-backdrop { place-items: center; }
