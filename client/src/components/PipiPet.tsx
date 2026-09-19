@@ -2,67 +2,66 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
 
 /**
- * 琵琵 v3 — 黑面琵鷺浮動吉祥物（寶島探險家桌寵）
- * v3 新增：情境感知問候、心情系統、雙擊撒嬌、丟擲回饋、台灣小知識問答、升級慶祝、時段問候
+ * 小寶 — 寶島探險家的貓耳人形吉祥物
+ * Q版貓耳少女，5套職業套裝依所在頁面自動切換，也可手動更換。
+ * 配色貼合網站：teal #0B6E8E / gold #E8B84B / cream #F9F3E8 / brown #5C3D26
  */
 
-type PetState =
-  | "idle" | "blink" | "tap"
-  | "pet-head" | "feed-fish" | "peek-curious" | "stretch-wing"
-  | "edge-snap" | "notify";
-
+type Outfit = "explorer" | "warrior" | "scholar" | "astronomer" | "tavern";
 type SizeKey = "small" | "normal" | "large";
 type Mood = "grumpy" | "neutral" | "happy" | "joyful";
 type Particle = { id: number; x: number; y: number; emoji: string };
 type Trivia = { q: string; a: string; b: string; correct: "a" | "b"; fact: string };
 
-const FRAME_COUNT: Record<PetState, number> = {
-  idle: 5, blink: 5, tap: 5, "pet-head": 5, "feed-fish": 5,
-  "peek-curious": 5, "stretch-wing": 5, "edge-snap": 5, notify: 5,
+type OutfitInfo = { name: string; emoji: string; img: string; auto?: string };
+
+const OUTFITS: Record<Outfit, OutfitInfo> = {
+  explorer:   { name: "探險家",   emoji: "🧭", img: "/pipi/outfits/explorer.webp" },
+  warrior:    { name: "戰士",     emoji: "⚔️", img: "/pipi/outfits/warrior.webp" },
+  scholar:    { name: "學者",     emoji: "📚", img: "/pipi/outfits/scholar.webp" },
+  astronomer: { name: "觀測員",   emoji: "🔭", img: "/pipi/outfits/astronomer.webp" },
+  tavern:     { name: "酒館常客", emoji: "🍺", img: "/pipi/outfits/tavern.webp" },
 };
-const FRAME_MS: Record<PetState, number> = {
-  idle: 220, blink: 80, tap: 110, "pet-head": 150, "feed-fish": 160,
-  "peek-curious": 130, "stretch-wing": 140, "edge-snap": 120, notify: 100,
-};
+
 const SIZE_PX: Record<SizeKey, number> = { small: 78, normal: 110, large: 150 };
 
-const INTERACTIONS: { id: PetState; emoji: string; label: string; lines: string[]; affection: number }[] = [
-  { id: "pet-head", emoji: "🪶", label: "摸摸頭", lines: ["舒服到眯起眼睛～", "羽毛被梳理好了！", "再摸一下嘛～"], affection: 8 },
-  { id: "feed-fish", emoji: "🐟", label: "餵小魚", lines: ["湯匙喙叼住小魚！", "新鮮小魚乾最棒了～", "嘎嗚！好吃！"], affection: 12 },
-  { id: "peek-curious", emoji: "❓", label: "歪頭好奇", lines: ["？？？這是什麼？", "讓我仔細看看～", "好奇寶寶誕生！"], affection: 6 },
-  { id: "stretch-wing", emoji: "🕊️", label: "伸懶腰", lines: ["撐——活動翅膀！", "久站真的會酸～", "準備展翅高飛！"], affection: 5 },
-];
+// 依路徑自動決定套裝
+function outfitForRoute(pathname: string): Outfit {
+  if (/\/battle/.test(pathname)) return "warrior";
+  if (/\/astronomy/.test(pathname)) return "astronomer";
+  if (/\/tavern/.test(pathname)) return "tavern";
+  if (/\/practice|\/study|\/report|\/learning/.test(pathname)) return "scholar";
+  return "explorer";
+}
 
-// 情境問候：根據所在頁面
 const ROUTE_GREETINGS: [RegExp, string][] = [
   [/^\/$/, "歡迎回來！今天想去哪個島探險？"],
-  [/\/battle/, "戰鬥加油！琵琵在旁邊幫你搖旗～"],
-  [/\/tavern/, "酒館！來找夥伴喝杯果汁吧～"],
-  [/\/astronomy/, "觀測站！今晚星星超美嘎～"],
+  [/\/battle/, "戰鬥開始！我已經握好劍了嘎！"],
+  [/\/tavern/, "酒館！來杯果汁休息一下吧～"],
+  [/\/astronomy/, "觀測站！今晚星星超美～"],
   [/\/cards?|\/collection/, "卡牌收集！又抽到新卡了嗎？"],
   [/\/learning-insights|\/report/, "看看你的學習報告吧！"],
-  [/\/practice|\/study/, "讀書時間～琵琵陪你！"],
+  [/\/practice|\/study/, "讀書時間！我陪你一起唸～"],
   [/\/setting/, "設定調整好了嗎？"],
   [/\/map/, "打開地圖，規劃下一次探險！"],
-  [/\/quiz|\/duel/, "答題挑戰！冷靜思考嘎！"],
+  [/\/quiz|\/duel/, "答題挑戰！冷靜思考！"],
 ];
 
 const MOOD_CHATTER: Record<Mood, string[]> = {
-  grumpy: ["嘎……無聊……", "摸摸我嘛……", "今天不想動……"],
-  neutral: ["嘎～今天也要探索寶島！", "發現新卡牌了嗎？", "琵琵在這邊喔！"],
-  happy: ["琵琵好開心！嘎！", "跟你一起探險真好～", "想去看海邊！"],
-  joyful: ["最喜歡你了嘎！💖", "寶島守護者上線！", "今天的你也超棒的！"],
+  grumpy: ["喵……無力……", "摸摸我嘛……", "今天不想動……"],
+  neutral: ["喵～今天也要探索寶島！", "發現新卡牌了嗎？", "小寶在這邊喔！"],
+  happy: ["小寶好開心喵！", "跟你一起探險真好～", "想去海邊看看！"],
+  joyful: ["最喜歡你了！💖", "寶島守護者上線！", "今天的你也超棒的！"],
 };
 
 const TRIVIA_BANK: Trivia[] = [
-  { q: "黑面琵鷺為什麼叫「琵琶」？", a: "湯匙狀的喙像樂器", b: "羽毛會發出琴聲", correct: "a", fact: "牠的黑喙末端扁平，像樂器琵琶！" },
-  { q: "黑面琵鷺主要越冬地在台灣哪裡？", a: "曾文溪口", b: "墾丁南灣", correct: "a", fact: "台南曾文溪口是全球最大度冬區！" },
-  { q: "黑面琵鷺是幾級保育類？", a: "瀕臨絕種", b: "一般保育", correct: "a", fact: "全球僅約 6000 隻，是一級保育鳥！" },
-  { q: "台灣的別稱是什麼？", a: "寶島", b: "綠島", correct: "a", fact: "寶島！富饒美麗的福爾摩沙～" },
-  { q: "澎湖著名的海中奇景是？", a: "海底玻璃", b: "雙心石滬", correct: "b", fact: "七美鄉的雙心石滬，浪漫捕魚法！" },
+  { q: "黑面琵鷺的喙像什麼樂器？", a: "琵琶", b: "吉他", correct: "a", fact: "扁平湯匙狀的黑喙像樂器琵琶！" },
+  { q: "黑面琵鷺主要在台灣哪裡越冬？", a: "曾文溪口", b: "墾丁南灣", correct: "a", fact: "台南曾文溪口是全球最大度冬區！" },
+  { q: "台灣的別稱？", a: "寶島", b: "綠島", correct: "a", fact: "寶島！富饒美麗的福爾摩沙～" },
+  { q: "澎湖著名浪漫景點？", a: "雙心石滬", b: "海底玻璃", correct: "a", fact: "七美鄉雙心石滬，浪漫捕魚法！" },
+  { q: "貓一天大約睡多久？", a: "12-16小時", b: "6小時", correct: "a", fact: "喵～小寶也想睡這麼久！" },
 ];
 
-const SLEEP_LINES = ["呼……呼……", "琵琵睡著了～", "zzz..."];
 const LEVEL_NAMES = ["路過的", "認識的", "親密夥伴", "寶島守護者"];
 const MOOD_NAMES: Record<Mood, string> = { grumpy: "睏", neutral: "平靜", happy: "開心", joyful: "興奮" };
 
@@ -74,6 +73,12 @@ function loadCount(): number {
 }
 function loadSize(): SizeKey {
   try { const s = localStorage.getItem("pipi-size"); return (s === "small" || s === "large") ? s : "normal"; } catch { return "normal"; }
+}
+function loadOutfitOverride(): Outfit | null {
+  try {
+    const s = localStorage.getItem("pipi-outfit");
+    return (s && s in OUTFITS) ? s as Outfit : null;
+  } catch { return null; }
 }
 function affectionLevel(a: number): number {
   if (a >= 500) return 3;
@@ -89,18 +94,16 @@ function moodOf(a: number): Mood {
 }
 function timeGreeting(): string {
   const h = new Date().getHours();
-  if (h < 5) return "半夜了嘎……早點休息吧";
+  if (h < 5) return "半夜了喵……早點休息吧";
   if (h < 11) return "早安！晨光正好，適合探險！";
   if (h < 14) return "中午好！吃過飯了嗎？";
   if (h < 18) return "下午時光～去海邊走走？";
   if (h < 22) return "晚上好！今天收穫不少吧！";
-  return "夜深了嘎……琵琵陪你收尾～";
+  return "夜深了喵……小寶陪你收尾～";
 }
 
 export function PipiPet() {
   const [location] = useLocation();
-  const [state, setState] = useState<PetState>("idle");
-  const [frame, setFrame] = useState(0);
   const [pos, setPos] = useState<{ x: number; y: number } | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [panelOpen, setPanelOpen] = useState(false);
@@ -110,104 +113,77 @@ export function PipiPet() {
   const [affection, setAffection] = useState(loadAffection);
   const [count, setCount] = useState(loadCount);
   const [size, setSize] = useState<SizeKey>(loadSize);
+  const [outfitOverride, setOutfitOverride] = useState<Outfit | null>(loadOutfitOverride);
   const [particles, setParticles] = useState<Particle[]>([]);
   const [roaming, setRoaming] = useState(false);
-  const [floatPhase, setFloatPhase] = useState(0);
-  const [mood, setMood] = useState<Mood>(() => moodOf(loadAffection()));
-  const [trivia, setTrivia] = useState<Trivia | null>(null);
+  const [bounce, setBounce] = useState(false);
   const [celebrating, setCelebrating] = useState(false);
+  const [trivia, setTrivia] = useState<Trivia | null>(null);
+  const [mood, setMood] = useState<Mood>(() => moodOf(loadAffection()));
 
   const rootRef = useRef<HTMLDivElement>(null);
-  const dragRef = useRef<{ startX: number; startY: number; origX: number; origY: number; moved: boolean; startTime: number; lastX: number; lastY: number; velocity: number } | null>(null);
+  const dragRef = useRef<{ startX: number; startY: number; origX: number; origY: number; moved: boolean; velocity: number; lastX: number; lastY: number } | null>(null);
   const particleId = useRef(0);
   const lastRoute = useRef(location);
 
+  const autoOutfit = outfitForRoute(location);
+  const outfit = outfitOverride ?? autoOutfit;
+  const outfitInfo = OUTFITS[outfit];
   const lvl = affectionLevel(affection);
 
-  // Sprite animation
-  useEffect(() => {
-    if (sleeping) return;
-    const timer = setInterval(() => {
-      setFrame((f) => {
-        const next = f + 1;
-        if (next >= FRAME_COUNT[state]) {
-          if (state !== "idle" && state !== "blink" && state !== "edge-snap") setState("idle");
-          return 0;
-        }
-        return next;
-      });
-    }, FRAME_MS[state]);
-    return () => clearInterval(timer);
-  }, [state, sleeping]);
-
-  // Float phase
-  useEffect(() => {
-    const t = setInterval(() => setFloatPhase((p) => p + 1), 120);
-    return () => clearInterval(t);
-  }, []);
-
-  // Random blink
-  useEffect(() => {
-    if (sleeping || trivia) return;
-    const t = setInterval(() => {
-      if (state === "idle" && Math.random() < 0.35) {
-        setState("blink"); setFrame(0);
-        setTimeout(() => { setState("idle"); setFrame(0); }, FRAME_MS.blink * 5);
-      }
-    }, 4000);
-    return () => clearInterval(t);
-  }, [state, sleeping, trivia]);
-
-  // Route change -> context greeting
+  // Route change -> context greeting + auto outfit
   useEffect(() => {
     if (lastRoute.current === location) return;
     lastRoute.current = location;
     if (sleeping) return;
+    const auto = outfitForRoute(location);
+    // 自動換裝提示（只有在手動未覆蓋時）
+    if (!outfitOverride && auto !== outfit) {
+      setBubble(`換上${OUTFITS[auto].emoji}${OUTFITS[auto].name}裝！`);
+      setBounce(true);
+      setTimeout(() => { setBubble(null); setBounce(false); }, 2500);
+    }
     const hit = ROUTE_GREETINGS.find(([re]) => re.test(location));
     if (hit) {
-      setBubble(hit[1]);
-      setState("notify"); setFrame(0);
-      setTimeout(() => { setBubble(null); setState("idle"); setFrame(0); }, 4000);
+      setTimeout(() => { setBubble(hit[1]); setTimeout(() => setBubble(null), 3500); }, 2600);
     }
-  }, [location, sleeping]);
+  }, [location, sleeping, outfitOverride, outfit]);
 
-  // Time greeting on first mount
+  // Time greeting on mount
   useEffect(() => {
-    const g = timeGreeting();
-    setBubble(g);
-    setState("notify"); setFrame(0);
-    const t = setTimeout(() => { setBubble(null); setState("idle"); setFrame(0); }, 4500);
+    setBubble(timeGreeting());
+    setBounce(true);
+    const t = setTimeout(() => { setBubble(null); setBounce(false); }, 4000);
     return () => clearTimeout(t);
   }, []);
 
-  // Random mood-based chatter
+  // Random mood chatter
   useEffect(() => {
     if (sleeping || trivia) return;
     const t = setInterval(() => {
-      if (state === "idle" && !bubble && !roaming && !menuOpen) {
+      if (!bubble && !roaming && !menuOpen) {
         const lines = MOOD_CHATTER[mood];
         setBubble(lines[Math.floor(Math.random() * lines.length)]);
         setTimeout(() => setBubble(null), 3500);
       }
     }, 22000);
     return () => clearInterval(t);
-  }, [state, bubble, roaming, sleeping, mood, trivia, menuOpen]);
+  }, [bubble, roaming, sleeping, mood, trivia, menuOpen]);
 
   // Roaming
   useEffect(() => {
     if (sleeping || trivia) return;
     const t = setInterval(() => {
-      if (state === "idle" && !roaming && Math.random() < 0.4 && !bubble) {
+      if (!roaming && Math.random() < 0.35 && !bubble) {
         setRoaming(true);
-        setState("edge-snap"); setFrame(0);
         const nx = 40 + Math.random() * (window.innerWidth - 220);
         const ny = 80 + Math.random() * (window.innerHeight - 240);
         setPos({ x: nx, y: ny });
-        setTimeout(() => { setRoaming(false); setState("idle"); setFrame(0); }, 2000);
+        setTimeout(() => setRoaming(false), 2000);
       }
     }, 35000);
     return () => clearInterval(t);
-  }, [state, roaming, bubble, sleeping, trivia]);
+  }, [roaming, bubble, sleeping, trivia]);
 
   const spawnParticles = useCallback((emojis: string[], n = 6) => {
     const pet = rootRef.current?.getBoundingClientRect();
@@ -231,7 +207,6 @@ export function PipiPet() {
   const addAffection = useCallback((amount: number) => {
     setAffection((a) => {
       const na = a + amount;
-      // Level up celebration
       const oldLvl = affectionLevel(a);
       const newLvl = affectionLevel(na);
       if (newLvl > oldLvl) {
@@ -248,41 +223,41 @@ export function PipiPet() {
       try { localStorage.setItem("pipi-count", String(nc)); } catch {}
       return nc;
     });
-    setMood(moodOf(affection + amount));
-  }, [spawnParticles, affection]);
+    setMood(moodOf(loadAffection() + amount));
+  }, [spawnParticles]);
 
-  const play = useCallback((s: PetState, line?: string, aff?: number, particleEmojis?: string) => {
-    setState(s); setFrame(0); setMenuOpen(false);
-    if (line) { setBubble(line); setTimeout(() => setBubble(null), 3000); }
-    if (aff) { addAffection(aff); spawnParticles(particleEmojis ? particleEmojis.split("") : ["💖"], 5 + aff); }
+  const interact = useCallback((line: string, aff: number, emojis: string) => {
+    setBubble(line);
+    setBounce(true);
+    setTimeout(() => setBubble(false), 500);
+    setTimeout(() => setBubble(null), 3000);
+    addAffection(aff);
+    spawnParticles(emojis.split(""), 5 + aff);
   }, [addAffection, spawnParticles]);
 
-  // Single click -> tap
   const onClick = useCallback(() => {
     if (dragRef.current?.moved || sleeping || trivia) return;
-    play("tap", undefined, 4, "💖✨");
-  }, [play, sleeping, trivia]);
+    const lines = ["喵！", "嘿嘿～", "摸摸！", "開心！"];
+    interact(lines[Math.floor(Math.random() * lines.length)], 4, "💖✨");
+  }, [interact, sleeping, trivia]);
 
-  // Double click -> love burst
   const onDoubleClick = useCallback(() => {
     if (sleeping || trivia) return;
-    play("pet-head", "最喜歡你了嘎！", 10, "💖💖💖✨");
-  }, [play, sleeping, trivia]);
+    interact("最喜歡你了喵！", 10, "💖💖💖✨");
+  }, [interact, sleeping, trivia]);
 
   const onContextMenu = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     setMenuOpen((v) => !v);
   }, []);
 
-  // Drag with velocity for throw detection
   const onPointerDown = useCallback((e: React.PointerEvent) => {
     const rect = rootRef.current?.getBoundingClientRect();
     dragRef.current = {
       startX: e.clientX, startY: e.clientY,
       origX: rect ? rect.left : window.innerWidth - 180,
       origY: rect ? rect.top : window.innerHeight - 180,
-      moved: false, startTime: Date.now(),
-      lastX: e.clientX, lastY: e.clientY, velocity: 0,
+      moved: false, velocity: 0, lastX: e.clientX, lastY: e.clientY,
     };
     (e.target as HTMLElement).setPointerCapture(e.pointerId);
   }, []);
@@ -291,8 +266,7 @@ export function PipiPet() {
     if (!d) return;
     const dx = e.clientX - d.startX, dy = e.clientY - d.startY;
     if (Math.abs(dx) > 4 || Math.abs(dy) > 4) d.moved = true;
-    const instV = Math.hypot(e.clientX - d.lastX, e.clientY - d.lastY);
-    d.velocity = d.velocity * 0.7 + instV * 0.3;
+    d.velocity = d.velocity * 0.7 + Math.hypot(e.clientX - d.lastX, e.clientY - d.lastY) * 0.3;
     d.lastX = e.clientX; d.lastY = e.clientY;
     if (d.moved) {
       setPos({ x: Math.max(0, Math.min(window.innerWidth - 100, d.origX + dx)), y: Math.max(0, Math.min(window.innerHeight - 100, d.origY + dy)) });
@@ -301,19 +275,17 @@ export function PipiPet() {
   const onPointerUp = useCallback(() => {
     const d = dragRef.current;
     if (d && d.moved && d.velocity > 30) {
-      // Thrown! Pet reacts
-      setState("notify"); setFrame(0);
-      setBubble("哇哦——！太慢丟啦嘎！");
+      setBubble("哇哦——！太快了喵！");
+      setBounce(true);
       spawnParticles(["💫", "✨"], 6);
-      setTimeout(() => { setBubble(null); setState("idle"); setFrame(0); }, 2500);
+      setTimeout(() => { setBubble(null); setBounce(false); }, 2500);
     }
     dragRef.current = null;
   }, [spawnParticles]);
 
   const askTrivia = useCallback(() => {
     setMenuOpen(false);
-    const t = TRIVIA_BANK[Math.floor(Math.random() * TRIVIA_BANK.length)];
-    setTrivia(t);
+    setTrivia(TRIVIA_BANK[Math.floor(Math.random() * TRIVIA_BANK.length)]);
   }, []);
 
   const answerTrivia = useCallback((choice: "a" | "b") => {
@@ -322,21 +294,35 @@ export function PipiPet() {
       addAffection(20);
       setBubble(`答對了！${trivia.fact}`);
       spawnParticles(["🎉", "⭐", "💖"], 10);
-      setState("notify"); setFrame(0);
+      setBounce(true);
+      setTimeout(() => setBounce(false), 500);
     } else {
-      setBubble("再想想～提示：跟琵琵有關！");
+      setBubble("再想想～提示：跟小寶有關！");
       spawnParticles(["🤔"], 3);
-      setState("peek-curious"); setFrame(0);
     }
-    setTimeout(() => { setTrivia(null); setBubble(null); setState("idle"); setFrame(0); }, 4000);
+    setTimeout(() => { setTrivia(null); setBubble(null); }, 4000);
   }, [trivia, addAffection, spawnParticles]);
+
+  const setOutfit = useCallback((o: Outfit | null) => {
+    setOutfitOverride(o);
+    try {
+      if (o) localStorage.setItem("pipi-outfit", o);
+      else localStorage.removeItem("pipi-outfit");
+    } catch {}
+    setMenuOpen(false);
+    if (o) {
+      setBubble(`換上${OUTFITS[o].emoji}${OUTFITS[o].name}裝！`);
+      setBounce(true);
+      setTimeout(() => { setBubble(null); setBounce(false); }, 2000);
+    }
+  }, []);
 
   const toggleSleep = useCallback(() => {
     setMenuOpen(false);
     setSleeping((s) => {
       const ns = !s;
-      if (ns) { setBubble(SLEEP_LINES[0]); setTimeout(() => setBubble(null), 2500); }
-      else { setBubble("嘎！醒來了！精神百倍！"); setTimeout(() => setBubble(null), 2500); }
+      setBubble(ns ? "呼……小寶睡了……" : "喵！醒來了！精神百倍！");
+      setTimeout(() => setBubble(null), 2500);
       return ns;
     });
   }, []);
@@ -352,14 +338,18 @@ export function PipiPet() {
   }, []);
 
   const petPx = SIZE_PX[size];
-  const bob = Math.sin(floatPhase * 0.15) * 4;
-  const shadowScale = 1 - Math.sin(floatPhase * 0.15) * 0.08;
 
   if (hidden) {
-    return <button className="pipi-pet-reopen" onClick={() => setHidden(false)} title="叫出琵琵" aria-label="叫出琵琵">🪶</button>;
+    return <button className="pipi-pet-reopen" onClick={() => setHidden(false)} title="叫出小寶" aria-label="叫出小寶">🐱</button>;
   }
 
-  const frameUrl = `/pipi/${sleeping ? "idle" : state}/frame-${String(frame + 1).padStart(2, "0")}.webp`;
+  const cls = [
+    "pipi-pet",
+    roaming ? "roaming" : "",
+    sleeping ? "sleeping" : "",
+    celebrating ? "celebrating" : "",
+    bounce ? "bounce" : "",
+  ].join(" ");
 
   return (
     <>
@@ -367,9 +357,8 @@ export function PipiPet() {
         <div key={p.id} className="pipi-particle" style={{ left: p.x, top: p.y }}>{p.emoji}</div>
       ))}
 
-      {bubble && <div className="pipi-bubble" role="status">{bubble}</div>}
+      {bubble && !trivia && <div className="pipi-bubble" role="status">{bubble}</div>}
 
-      {/* Trivia question */}
       {trivia && (
         <div className="pipi-bubble pipi-trivia" role="dialog" aria-label="小知識問答">
           <div className="pipi-trivia-q">{trivia.q}</div>
@@ -380,13 +369,15 @@ export function PipiPet() {
         </div>
       )}
 
-      {/* Context menu */}
       {menuOpen && (
         <div className="pipi-menu" role="menu">
-          <div className="pipi-menu-title">琵琵 · Lv.{lvl} · {MOOD_NAMES[mood]}</div>
-          {INTERACTIONS.map((it) => (
-            <button key={it.id} onClick={() => play(it.id, it.lines[Math.floor(Math.random() * it.lines.length)], it.affection, "💖🐟")}>
-              <span aria-hidden>{it.emoji}</span> {it.label}
+          <div className="pipi-menu-title">小寶 · Lv.{lvl} · {MOOD_NAMES[mood]}</div>
+          <button onClick={() => setOutfit(null)}>
+            <span aria-hidden>🧭</span> 自動換裝{!outfitOverride ? " ✓" : ""}
+          </button>
+          {(Object.keys(OUTFITS) as Outfit[]).map((o) => (
+            <button key={o} onClick={() => setOutfit(o)}>
+              <span aria-hidden>{OUTFITS[o].emoji}</span> {OUTFITS[o].name}{outfit === o ? " ✓" : ""}
             </button>
           ))}
           <button onClick={askTrivia}><span aria-hidden>📚</span> 小知識問答</button>
@@ -397,38 +388,35 @@ export function PipiPet() {
         </div>
       )}
 
-      {/* Pet panel */}
       {panelOpen && (
         <div className="pipi-panel" role="dialog" aria-label="寵物面板">
           <div className="pipi-panel-head">
-            <img src={frameUrl} alt="琵琵" width={64} height={64} />
+            <img src={outfitInfo.img} alt="小寶" width={64} height={64} />
             <div>
-              <strong>琵琵</strong>
-              <small>黑面琵鷺 · {LEVEL_NAMES[lvl]} · {MOOD_NAMES[mood]}</small>
+              <strong>小寶</strong>
+              <small>貓耳探險家 · {LEVEL_NAMES[lvl]}</small>
             </div>
             <button className="pipi-panel-close" onClick={() => setPanelOpen(false)} aria-label="關閉">✕</button>
           </div>
           <div className="pipi-panel-bar">
-            <div className="pipi-panel-bar-fill" style={{ width: `${Math.min(100, (affection % 100) / 1)}%` }} />
+            <div className="pipi-panel-bar-fill" style={{ width: `${Math.min(100, affection % 100)}%` }} />
           </div>
           <div className="pipi-panel-stats">
             <div><span>💖 好感度</span><strong>{affection}</strong></div>
             <div><span>🤝 互動次數</span><strong>{count}</strong></div>
+            <div><span>👗 目前套裝</span><strong>{outfitInfo.emoji} {outfitInfo.name}</strong></div>
             <div><span>😊 心情</span><strong>{MOOD_NAMES[mood]}</strong></div>
-            <div><span>📏 大小</span><strong>{size === "small" ? "小" : size === "normal" ? "中" : "大"}</strong></div>
           </div>
-          <div className="pipi-panel-hint">點擊互動 · 雙擊撒嬌 · 右鍵選單 · 拖曳丟擲</div>
+          <div className="pipi-panel-hint">點擊互動 · 雙擊撒嬌 · 右鍵換裝選單 · 拖曳丟擲</div>
         </div>
       )}
 
-      {/* Pet */}
       <div
         ref={rootRef}
-        className={`pipi-pet ${roaming ? "roaming" : ""} ${sleeping ? "sleeping" : ""} ${celebrating ? "celebrating" : ""}`}
+        className={cls}
         style={{
           ...(pos ? { left: pos.x, top: pos.y, right: "auto", bottom: "auto" } : {}),
           width: petPx, height: petPx,
-          transform: `translateY(${bob}px)`,
         }}
         onClick={onClick}
         onDoubleClick={onDoubleClick}
@@ -437,11 +425,11 @@ export function PipiPet() {
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
         role="button"
-        aria-label="琵琵（黑面琵鷺吉祥物）"
-        title="點擊互動 · 雙擊撒嬌 · 右鍵選單 · 拖曳移動"
+        aria-label="小寶（貓耳探險家吉祥物）"
+        title="點擊互動 · 雙擊撒嬌 · 右鍵換裝 · 拖曳移動"
       >
-        <img src={frameUrl} alt="" draggable={false} width={petPx} height={petPx} />
-        <div className="pipi-shadow" style={{ transform: `scaleX(${shadowScale})` }} />
+        <img src={outfitInfo.img} alt={`小寶 - ${outfitInfo.name}`} draggable={false} width={petPx} height={petPx} />
+        <div className="pipi-shadow" />
       </div>
     </>
   );

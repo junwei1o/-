@@ -1,6 +1,6 @@
-/* 琵琵 v2 — 黑面琵鷺浮動吉祥物 */
+/* 小寶 — 貓耳人形吉祥物（寶島探險家） */
 
-/* ===== 本體：3D 浮動 + 陰影 ===== */
+/* ===== 本體：待機浮動 + 陰影 ===== */
 .pipi-pet {
   position: fixed;
   right: 20px;
@@ -11,6 +11,11 @@
   touch-action: none;
   transition: left 2s ease, top 2s ease;
   will-change: transform, left, top;
+  animation: pipi-breathe 3.2s ease-in-out infinite;
+}
+@keyframes pipi-breathe {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
 }
 .pipi-pet:active { cursor: grabbing; }
 .pipi-pet img {
@@ -25,7 +30,15 @@
   filter: drop-shadow(0 12px 16px rgba(11, 110, 142, 0.4)) drop-shadow(0 4px 6px rgba(92, 61, 38, 0.2));
 }
 
-/* 地面橢圓陰影（隨浮動縮放） */
+/* 點擊 bounce */
+.pipi-pet.bounce { animation: pipi-bounce 0.5s ease; }
+@keyframes pipi-bounce {
+  0%, 100% { transform: translateY(0) scale(1); }
+  30% { transform: translateY(-18px) scale(1.08, 0.95); }
+  60% { transform: translateY(0) scale(0.95, 1.05); }
+}
+
+/* 地面橢圓陰影 */
 .pipi-shadow {
   position: absolute;
   bottom: -8px;
@@ -34,11 +47,11 @@
   height: 12px;
   background: radial-gradient(ellipse, rgba(92, 61, 38, 0.3) 0%, transparent 70%);
   transform: translateX(-50%);
-  transition: transform 0.12s ease;
   pointer-events: none;
 }
 
 /* 睡眠狀態 */
+.pipi-pet.sleeping { animation: pipi-breathe 6s ease-in-out infinite; }
 .pipi-pet.sleeping img { filter: grayscale(0.3) brightness(0.9); }
 .pipi-pet.sleeping::after {
   content: "💤";
