@@ -110,7 +110,10 @@ export function BxEmptyState({ slot, filled }: { slot: BxSlotKey; filled?: React
   return (
     <div className="bx-empty-host">
       <div className="bx-empty">
-        <Art art={row.art} />
+        <div className="bx-empty__art-row">
+          <Art art={row.art} />
+          <img className="bx-empty__pipi" src="/pipi/idle/frame-01.webp" alt="" aria-hidden="true" draggable={false} loading="lazy" />
+        </div>
         <h4 className="bx-empty__title">{row.title}</h4>
         <p className="bx-empty__body">{body}</p>
         <Link className="bx-btn bx-btn--outline" href={row.route}>{row.cta}</Link>

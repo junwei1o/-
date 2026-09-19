@@ -209,3 +209,49 @@
 .illustration-hero-copy .hub-sub { margin: 0; font-size: 0.85rem; max-width: 46ch; }
 @media (max-width: 560px) { .illustration-hero { min-height: 138px; } .illustration-hero-copy .hub-title { font-size: 1.2rem; } }
 :root[data-theme="dark"] .illustration-hero::after { background: linear-gradient(180deg, rgba(20,32,40,0.12) 0%, rgba(20,32,40,0.72) 48%, var(--card) 100%); }
+
+/* ── 2026-09-19 現代學生風格：hub 卡片、圖標晶片與標題 ── */
+
+/* 標題：品牌漸層文字（emoji 為彩色字形不受影響） */
+.hub-title {
+  background: linear-gradient(115deg, var(--tidal-deep, #0B4F63) 0%, #0B6E8E 52%, #E8754A 130%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hub-card {
+  gap: 10px;
+  padding: 20px;
+  border-radius: 20px;
+  box-shadow: 0 2px 10px rgba(23, 65, 80, 0.05);
+}
+
+.hub-card:hover,
+.hub-card:focus-visible {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 30px rgba(11, 110, 142, 0.15);
+}
+
+/* 圖標晶片：每張卡輪替品牌漸層（原本為單一淡灰藍） */
+.hub-card-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  color: #fff;
+  background: linear-gradient(135deg, #0B6E8E, #1596b8);
+  box-shadow: inset 0 -6px 12px rgba(255, 255, 255, 0.14), 0 6px 14px rgba(23, 65, 80, 0.16);
+}
+.hub-card:nth-child(5n + 2) .hub-card-icon { background: linear-gradient(135deg, #E8754A, #f0975f); }
+.hub-card:nth-child(5n + 3) .hub-card-icon { background: linear-gradient(135deg, #6C8460, #8aa377); }
+.hub-card:nth-child(5n + 4) .hub-card-icon { background: linear-gradient(135deg, #E8B84B, #f2cf70); }
+.hub-card:nth-child(5n + 5) .hub-card-icon { background: linear-gradient(135deg, #7c6bb5, #9d8ed0); }
+
+.hub-card:hover .hub-card-icon {
+  transform: scale(1.06) rotate(-3deg);
+  transition: transform 0.18s var(--ease, ease);
+}
+
+/* 分頁：hover 帶品牌色而非灰褐 */
+.hub-tab:hover { background: rgba(11, 110, 142, 0.12); color: var(--tidal-deep, #0B4F63); }
+.hub-tab.on { background: linear-gradient(135deg, #0B6E8E, #1596b8); box-shadow: 0 4px 12px rgba(11, 110, 142, 0.28); }
