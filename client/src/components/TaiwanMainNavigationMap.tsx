@@ -584,8 +584,25 @@ export function TaiwanMainNavigationMap({ islands, onOpenSubject, onStartIslandQ
               />
             );
           })}
-          <circle className="taiwan-map-boat-ring" cx="248" cy="365" r="14" />
-          <text className="taiwan-map-boat-mark" x="248" y="371" textAnchor="middle">我</text>
+          <circle className="taiwan-map-boat-ring" cx="248" cy="365" r="18" />
+          <g className="taiwan-map-boat-glyph" transform="translate(248 365)">
+            {/* 船身 */}
+            <path d="M-13 4 Q0 9 13 4 L10 10 L-10 10 Z" fill="#8B4A2B" stroke="#5C3D26" strokeWidth="1.5" />
+            {/* 主帆 */}
+            <path d="M-2 -2 L-2 -16 L9 -6 Z" fill="#F9F3E8" stroke="#5C3D26" strokeWidth="1.5" />
+            {/* 副帆 */}
+            <path d="M2 -2 L2 -12 L-7 -5 Z" fill="#E8B84B" stroke="#5C3D26" strokeWidth="1.5" />
+            {/* 船旗 */}
+            <line x1="0" y1="-16" x2="0" y2="-20" stroke="#5C3D26" strokeWidth="1.5" />
+            <path d="M0 -20 L6 -18 L0 -16 Z" fill="#E74C3C" />
+          </g>
+          {/* 羅盤裝飾 */}
+          <g className="taiwan-map-compass" transform="translate(930 80)">
+            <circle r="26" fill="rgba(249,243,232,0.85)" stroke="#173d4a" strokeWidth="1.5" />
+            <path d="M0 -20 L5 0 L0 20 L-5 0 Z" fill="#173d4a" />
+            <path d="M-20 0 L0 -5 L20 0 L0 5 Z" fill="rgba(23,61,74,0.35)" />
+            <text y="-30" textAnchor="middle" fontSize="11" fontWeight="800" fill="#173d4a">N</text>
+          </g>
         </svg>
 
         {/* 真實地標章：各地區地標直接點在地圖上（奇幻島嶼＋真實台灣並置） */}

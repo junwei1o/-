@@ -46,9 +46,22 @@
   border: 1px solid rgba(21, 81, 96, 0.25);
   border-radius: 1.25rem;
   background:
-    radial-gradient(circle at 17% 56%, rgba(251, 239, 170, 0.55), transparent 18rem),
-    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.14) 0 1px, transparent 1px 12px),
-    linear-gradient(130deg, #5d979f, #7bb3b1);
+    radial-gradient(circle at 17% 56%, rgba(251, 239, 170, 0.5), transparent 18rem),
+    radial-gradient(circle at 85% 30%, rgba(255, 255, 255, 0.18), transparent 12rem),
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.1) 0 1px, transparent 1px 22px),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.06) 0 1px, transparent 1px 22px),
+    linear-gradient(135deg, #3d7a8c 0%, #5d979f 45%, #7bb3b1 100%);
+}
+
+.taiwan-map-canvas::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 24% 70%, rgba(255,255,255,0.12) 0%, transparent 8rem),
+    radial-gradient(ellipse at 70% 85%, rgba(255,255,255,0.1) 0%, transparent 10rem);
+  pointer-events: none;
+  z-index: 0;
 }
 
 .taiwan-map-outline {
@@ -57,22 +70,28 @@
   width: 100%;
   height: 100%;
   pointer-events: none;
+  z-index: 1;
 }
 
 .taiwan-map-land {
-  fill: rgba(246, 223, 161, 0.84);
-  stroke: rgba(102, 75, 43, 0.48);
-  stroke-width: 8;
+  fill: rgba(246, 223, 161, 0.88);
+  stroke: rgba(102, 75, 43, 0.55);
+  stroke-width: 6;
+  filter: drop-shadow(0 4px 6px rgba(23, 61, 74, 0.3));
 }
 
 .taiwan-map-route {
   fill: none;
   stroke: #f8dc74;
   stroke-linecap: round;
-  stroke-width: 7;
-  stroke-dasharray: 1;
+  stroke-width: 6;
+  stroke-dasharray: 1 8;
   stroke-dashoffset: 0;
-  filter: drop-shadow(0 1px 2px rgba(23, 61, 74, 0.26));
+  filter: drop-shadow(0 0 6px rgba(248, 220, 116, 0.7));
+  animation: taiwan-route-flow 1.6s linear infinite;
+}
+@keyframes taiwan-route-flow {
+  to { stroke-dashoffset: -18; }
 }
 
 .taiwan-map-route.is-route-interactive {
@@ -87,15 +106,24 @@
 }
 
 .taiwan-map-boat-ring {
-  fill: #fae998;
+  fill: rgba(250, 233, 152, 0.35);
   stroke: #173d4a;
-  stroke-width: 4;
+  stroke-width: 2;
 }
 
-.taiwan-map-boat-mark {
-  fill: #173d4a;
-  font-size: 18px;
-  font-weight: 800;
+.taiwan-map-boat-glyph {
+  animation: taiwan-boat-bob 2.8s ease-in-out infinite;
+  transform-origin: center;
+  filter: drop-shadow(0 3px 4px rgba(23, 61, 74, 0.4));
+}
+@keyframes taiwan-boat-bob {
+  0%, 100% { transform: translate(248px, 365px) rotate(0deg); }
+  25% { transform: translate(248px, 363px) rotate(-2deg); }
+  75% { transform: translate(248px, 367px) rotate(2deg); }
+}
+
+.taiwan-map-compass {
+  opacity: 0.85;
 }
 
 .taiwan-map-boat-label {
@@ -106,36 +134,49 @@
   gap: 0.35rem;
   align-items: center;
   margin: 0;
-  color: #173d4a;
+  color: #f9f3e8;
   font-size: 0.8rem;
   font-weight: 800;
+  text-shadow: 0 1px 3px rgba(23, 61, 74, 0.8);
 }
 
 .taiwan-map-island {
   position: absolute;
-  z-index: 1;
+  z-index: 2;
   left: var(--island-left);
   top: var(--island-top);
   display: grid;
   min-width: clamp(6.7rem, 15vw, 9.4rem);
   padding: 0.65rem 0.75rem;
   border: 2px solid rgba(27, 76, 78, 0.68);
-  border-radius: 1rem;
+  border-radius: 1.2rem 1.2rem 2rem 2rem;
   transform: translate(-50%, -50%);
   text-align: left;
   color: #143f43;
-  background: rgba(249, 241, 210, 0.96);
-  box-shadow: 0 8px 0 rgba(31, 82, 85, 0.18);
+  background: rgba(249, 241, 210, 0.97);
+  box-shadow: 0 10px 0 rgba(31, 82, 85, 0.22), 0 14px 18px rgba(23, 61, 74, 0.25);
   cursor: pointer;
   transition: transform 180ms cubic-bezier(0.23, 1, 0.32, 1), box-shadow 180ms cubic-bezier(0.23, 1, 0.32, 1), background-color 180ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.taiwan-map-island::after {
+  content: "";
+  position: absolute;
+  left: 10%;
+  right: 10%;
+  bottom: -8px;
+  height: 10px;
+  background: radial-gradient(ellipse at center, rgba(23, 61, 74, 0.35), transparent 70%);
+  border-radius: 50%;
+  z-index: -1;
 }
 
 .taiwan-map-island:hover,
 .taiwan-map-island:focus-visible,
 .taiwan-map-island.is-selected {
-  transform: translate(-50%, -54%);
+  transform: translate(-50%, -56%);
   outline: none;
-  box-shadow: 0 12px 0 rgba(31, 82, 85, 0.2), 0 0 0 4px rgba(248, 220, 116, 0.72);
+  box-shadow: 0 14px 0 rgba(31, 82, 85, 0.22), 0 18px 22px rgba(23, 61, 74, 0.3), 0 0 0 4px rgba(248, 220, 116, 0.72);
 }
 
 .taiwan-map-island:active {
@@ -794,6 +835,10 @@
     top: 64%;
   }
 
+  .taiwan-map-compass {
+    display: none;
+  }
+
   .taiwan-map-panel {
     grid-template-columns: 1fr;
   }
@@ -899,6 +944,8 @@
   .taiwan-map-route.is-route-glowing,
   .taiwan-map-route.is-route-random-adventure-lit,
   .taiwan-map-route.is-route-interactive,
+  .taiwan-map-boat-glyph,
+  .taiwan-map-route,
   .taiwan-map-supply-marker.is-supply-completing {
     transition: none;
     animation: none;
