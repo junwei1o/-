@@ -217,9 +217,12 @@
 }
 .pipi-pet-reopen:hover { transform: scale(1.1); }
 
-/* ===== 手機版縮小 ===== */
-@media (max-width: 640px) {
-  .pipi-pet { right: 10px; bottom: 10px; }
-  .pipi-bubble { right: 100px; bottom: 100px; font-size: 12px; }
-  .pipi-menu, .pipi-panel { right: 10px; bottom: 120px; }
+/* ===== 手機版：坐在快速行動欄上方 ===== */
+@media (max-width: 720px) {
+  .pipi-pet { right: 12px; bottom: 72px; width: 72px !important; height: 72px !important; }
+  .pipi-pet img { width: 72px; height: 72px; }
+  .pipi-bubble { right: 96px; bottom: 150px; font-size: 12px; max-width: 180px; }
+  .pipi-menu { right: 12px; bottom: 150px; min-width: 150px; }
+  .pipi-panel { right: 12px; bottom: 150px; width: 230px; }
+  .pipi-pet-reopen { right: 12px; bottom: 72px; width: 44px; height: 44px; font-size: 20px; }
 }

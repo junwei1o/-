@@ -14,6 +14,7 @@ import { initGameData } from "@/utils/storage";
 import { OfflineBanner } from "@/components/OfflineBanner";
 import { PipiPet } from "@/components/PipiPet";
 import "@/components/PipiPet.css";
+import MobileBottomNav from "@/components/MobileBottomNav";
 
 // 路由懶加載：首頁與導覽保持直接載入（首屏最快），其餘頁面進入時才下載。
 const PaperExam = React.lazy(() => import("./pages/PaperExam"));
@@ -162,6 +163,7 @@ function App() {
             <Router />
           </div>
           <PipiPet />
+          <MobileBottomNav />
         </TooltipProvider>
       </ThemeProvider>
     </ErrorBoundary>
