@@ -1,16 +1,16 @@
-/* 琵琵 — 黑面琵鷺浮動吉祥物 */
+/* 琵琵 v2 — 黑面琵鷺浮動吉祥物 */
+
+/* ===== 本體：3D 浮動 + 陰影 ===== */
 .pipi-pet {
   position: fixed;
   right: 20px;
   bottom: 20px;
   z-index: 9000;
-  width: 110px;
-  height: 110px;
   cursor: grab;
   user-select: none;
   touch-action: none;
-  filter: drop-shadow(0 6px 10px rgba(11, 110, 142, 0.25));
-  transition: transform 0.15s ease;
+  transition: left 2s ease, top 2s ease;
+  will-change: transform, left, top;
 }
 .pipi-pet:active { cursor: grabbing; }
 .pipi-pet img {
@@ -18,40 +18,89 @@
   height: 100%;
   object-fit: contain;
   pointer-events: none;
+  filter: drop-shadow(0 8px 12px rgba(11, 110, 142, 0.3)) drop-shadow(0 2px 4px rgba(92, 61, 38, 0.15));
+  transition: filter 0.2s;
+}
+.pipi-pet:hover img {
+  filter: drop-shadow(0 12px 16px rgba(11, 110, 142, 0.4)) drop-shadow(0 4px 6px rgba(92, 61, 38, 0.2));
 }
 
+/* 地面橢圓陰影（隨浮動縮放） */
+.pipi-shadow {
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  width: 60%;
+  height: 12px;
+  background: radial-gradient(ellipse, rgba(92, 61, 38, 0.3) 0%, transparent 70%);
+  transform: translateX(-50%);
+  transition: transform 0.12s ease;
+  pointer-events: none;
+}
+
+/* 睡眠狀態 */
+.pipi-pet.sleeping img { filter: grayscale(0.3) brightness(0.9); }
+.pipi-pet.sleeping::after {
+  content: "💤";
+  position: absolute;
+  top: -10px;
+  right: 0;
+  font-size: 20px;
+  animation: pipi-zzz 2s ease-in-out infinite;
+}
+@keyframes pipi-zzz {
+  0%, 100% { transform: translateY(0) scale(1); opacity: 0.7; }
+  50% { transform: translateY(-8px) scale(1.1); opacity: 1; }
+}
+
+/* ===== 粒子特效 ===== */
+.pipi-particle {
+  position: fixed;
+  z-index: 9003;
+  font-size: 18px;
+  pointer-events: none;
+  animation: pipi-float-up 1.5s ease-out forwards;
+  transform: translate(-50%, -50%);
+}
+@keyframes pipi-float-up {
+  0% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -160px) scale(1.4); }
+}
+
+/* ===== 對話泡泡 ===== */
 .pipi-bubble {
   position: fixed;
-  right: 130px;
-  bottom: 110px;
+  right: 140px;
+  bottom: 120px;
   z-index: 9001;
-  background: #F9F3E8;
+  background: linear-gradient(135deg, #F9F3E8, #F5E6C8);
   color: #5C3D26;
   border: 2px solid #5C3D26;
   border-radius: 16px 16px 4px 16px;
   padding: 8px 14px;
   font-size: 14px;
   font-weight: 600;
-  max-width: 220px;
-  box-shadow: 0 4px 12px rgba(92, 61, 38, 0.18);
+  max-width: 230px;
+  box-shadow: 0 4px 14px rgba(92, 61, 38, 0.2);
   animation: pipi-pop 0.25s ease;
 }
 @keyframes pipi-pop {
-  from { transform: scale(0.7); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
+  from { transform: scale(0.7) translateY(8px); opacity: 0; }
+  to { transform: scale(1) translateY(0); opacity: 1; }
 }
 
+/* ===== 右鍵選單 ===== */
 .pipi-menu {
   position: fixed;
   right: 24px;
-  bottom: 140px;
+  bottom: 150px;
   z-index: 9002;
-  background: #F9F3E8;
+  background: linear-gradient(160deg, #F9F3E8, #F0E2C4);
   border: 2px solid #5C3D26;
   border-radius: 18px;
   padding: 10px;
-  min-width: 160px;
-  box-shadow: 0 8px 24px rgba(92, 61, 38, 0.25);
+  min-width: 170px;
+  box-shadow: 0 10px 28px rgba(92, 61, 38, 0.3);
   animation: pipi-pop 0.2s ease;
 }
 .pipi-menu-title {
@@ -76,9 +125,81 @@
   border-radius: 10px;
   cursor: pointer;
   text-align: left;
+  transition: background 0.15s;
 }
-.pipi-menu button:hover { background: rgba(11, 110, 142, 0.12); }
+.pipi-menu button:hover { background: rgba(11, 110, 142, 0.14); }
 
+/* ===== 寵物面板 ===== */
+.pipi-panel {
+  position: fixed;
+  right: 24px;
+  bottom: 150px;
+  z-index: 9004;
+  width: 260px;
+  background: linear-gradient(160deg, #F9F3E8, #F0E2C4);
+  border: 2px solid #5C3D26;
+  border-radius: 20px;
+  padding: 14px;
+  box-shadow: 0 12px 32px rgba(92, 61, 38, 0.3);
+  animation: pipi-pop 0.25s ease;
+}
+.pipi-panel-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.pipi-panel-head img {
+  border-radius: 12px;
+  background: rgba(11, 110, 142, 0.1);
+}
+.pipi-panel-head strong { display: block; font-size: 16px; color: #5C3D26; }
+.pipi-panel-head small { color: #0B6E8E; font-weight: 600; }
+.pipi-panel-close {
+  margin-left: auto;
+  border: none;
+  background: rgba(92, 61, 38, 0.1);
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  cursor: pointer;
+  color: #5C3D26;
+  font-weight: 700;
+}
+.pipi-panel-close:hover { background: rgba(92, 61, 38, 0.25); }
+.pipi-panel-bar {
+  height: 10px;
+  background: rgba(92, 61, 38, 0.15);
+  border-radius: 5px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+.pipi-panel-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #E8B84B, #0B6E8E);
+  border-radius: 5px;
+  transition: width 0.4s ease;
+}
+.pipi-panel-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.pipi-panel-stats > div {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #5C3D26;
+}
+.pipi-panel-stats strong { color: #0B6E8E; }
+.pipi-panel-hint {
+  margin-top: 10px;
+  font-size: 11px;
+  color: #8B6F47;
+  text-align: center;
+}
+
+/* ===== 叫回按鈕 ===== */
 .pipi-pet-reopen {
   position: fixed;
   right: 20px;
@@ -88,8 +209,17 @@
   height: 52px;
   border-radius: 50%;
   border: 2px solid #5C3D26;
-  background: #F9F3E8;
+  background: linear-gradient(135deg, #F9F3E8, #E8D5A8);
   font-size: 24px;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(92, 61, 38, 0.2);
+  box-shadow: 0 4px 14px rgba(92, 61, 38, 0.25);
+  transition: transform 0.2s;
+}
+.pipi-pet-reopen:hover { transform: scale(1.1); }
+
+/* ===== 手機版縮小 ===== */
+@media (max-width: 640px) {
+  .pipi-pet { right: 10px; bottom: 10px; }
+  .pipi-bubble { right: 100px; bottom: 100px; font-size: 12px; }
+  .pipi-menu, .pipi-panel { right: 10px; bottom: 120px; }
 }
