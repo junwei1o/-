@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useClassroomSound } from "./useClassroomSound";
 
 /**
- * 燈寶 —— 燈台指航中心的小燈靈（桌寵品質網頁寵物）。
+ * 燈寶 —— 我的教室的小燈靈（桌寵品質網頁寵物）。
  *
  * 桌寵對標：
  * - 待機：呼吸微動（程序形變）+ 眨眼（素材級狀態切換）
@@ -17,7 +17,7 @@ export type PetSize = "mini" | "small" | "standard" | "large";
 const PET_BOND_KEY = "xue-pet-bond-v1";
 
 const BOND_LINES = [
-  "燈塔亮著，等你回來。",
+  "教室亮著，等你回來。",
   "星星糖好好吃，謝謝你！",
   "摸頭最舒服了～",
   "點燈！照亮今天的題目！",

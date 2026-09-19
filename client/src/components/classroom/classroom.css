@@ -1763,6 +1763,8 @@
   .rg-status.is-ok {
     animation: none;
   }
+}
+
 /* ============================================================
    燈寶 —— 我的教室桌寵品質小夥伴（燈台指航中心小燈靈）
    ============================================================ */
@@ -2008,15 +2010,15 @@
 .pet-widget-concise .pet-size-btn,
 .pet-widget-concise .pet-info-btn,
 .pet-widget-concise .pet-action-btn {
-  border-color: #d9d2f5;
+  border-color: #cfe3ea;
   background: #fff;
-  color: #6d5bd0;
+  color: var(--tidal);
 }
 .pet-widget-concise .pet-speech,
 .pet-widget-concise .pet-panel {
-  border-color: #e2dcf7;
+  border-color: #dcecf1;
   background: #fff;
-  box-shadow: 0 8px 18px rgba(109, 91, 208, 0.14);
+  box-shadow: 0 8px 18px rgba(11, 110, 142, 0.14);
 }
 
 @media (prefers-reduced-motion: reduce) {
