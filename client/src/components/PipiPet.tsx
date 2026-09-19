@@ -42,7 +42,7 @@ const OUTFITS: Record<Outfit, OutfitInfo> = {
   warrior:    { name: "戰士",     emoji: "⚔️", img: "/pipi/outfits/warrior.webp" },
   scholar:    { name: "學者",     emoji: "📚", img: "/pipi/outfits/scholar.webp" },
   astronomer: { name: "觀測員",   emoji: "🔭", img: "/pipi/outfits/astronomer.webp" },
-  tavern:     { name: "酒館常客", emoji: "🍺", img: "/pipi/outfits/tavern.webp" },
+  tavern:     { name: "休閒遊客", emoji: "🏖️", img: "/pipi/outfits/tavern.webp" },
 };
 
 const SIZE_PX: Record<SizeKey, number> = { small: 78, normal: 110, large: 150 };
@@ -66,7 +66,7 @@ function outfitForRoute(pathname: string): Outfit {
 const ROUTE_GREETINGS: [RegExp, string][] = [
   [/^\/$/, "歡迎回來！今天想去哪個島探險？"],
   [/\/battle/, "戰鬥開始！我已經握好劍了嘎！"],
-  [/\/tavern/, "酒館！來杯果汁休息一下吧～"],
+  [/\/tavern/, "度假小站！來杯飲料放鬆一下吧～"],
   [/\/astronomy/, "觀測站！今晚星星超美～"],
   [/\/cards?|\/collection/, "卡牌收集！又抽到新卡了嗎？"],
   [/\/learning-insights|\/report/, "看看你的學習報告吧！"],
@@ -183,6 +183,16 @@ export function PipiPet() {
   const [micro, setMicro] = useState<string | null>(null);
   // v7 表情差分換圖
   const [faceExpr, setFaceExpr] = useState<FaceExpr | null>(null);
+  // v8 眼球跟隨指標
+  const eyeLRef = useRef<HTMLSpanElement>(null);
+  const eyeRRef = useRef<HTMLSpanElement>(null);
+  // v8 閒置自動休息：nap=自動睡著 / outing=外出逛逛
+  const [idleMode, setIdleMode] = useState<"nap" | "outing" | null>(null);
+  const idleModeRef = useRef<"nap" | "outing" | null>(null);
+  const lastActiveRef = useRef<number>(Date.now());
+  const autoNapRef = useRef(false);
+  const outingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const IDLE_LIMIT_MS = 5 * 60 * 1000; // 5 分鐘未操作
 
   const rootRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef<{ startX: number; startY: number; origX: number; origY: number; moved: boolean; velocity: number; lastX: number; lastY: number } | null>(null);
@@ -371,6 +381,104 @@ export function PipiPet() {
     return () => { if (faceTimer.current) clearTimeout(faceTimer.current); };
   }, []);
 
+  // v8：眼球跟隨滑鼠／手指（直接改 DOM style，避免每 frame re-render）
+  useEffect(() => {
+    const onMove = (e: PointerEvent) => {
+      lastActiveRef.current = Date.now();
+      const rect = rootRef.current?.getBoundingClientRect();
+      if (!rect) return;
+      // 眼球中心約在寵物頭部 42% 高度
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height * 0.42;
+      const dx = e.clientX - cx;
+      const dy = e.clientY - cy;
+      const dist = Math.hypot(dx, dy);
+      const maxR = 4.5; // 眼球最大偏移 px
+      // 越遠轉越多，但 120px 外就封頂
+      const r = Math.min(maxR, dist / 12);
+      const angle = Math.atan2(dy, dx);
+      const tx = Math.cos(angle) * r;
+      const ty = Math.sin(angle) * r * 0.7;
+      const t = `translate(${tx.toFixed(2)}px, ${ty.toFixed(2)}px)`;
+      eyeLRef.current?.style.setProperty("transform", t);
+      eyeRRef.current?.style.setProperty("transform", t);
+    };
+    window.addEventListener("pointermove", onMove, { passive: true });
+    return () => window.removeEventListener("pointermove", onMove);
+  }, []);
+
+  // v8：閒置 5 分鐘 → 自動 nap（睡覺）或 outing（外出逛逛）；任何活動即時喚醒
+  useEffect(() => {
+    const goOuting = () => {
+      idleModeRef.current = "outing";
+      setIdleMode("outing");
+      setBubble("小寶出去走走，馬上回來～");
+      setTimeout(() => setBubble(null), 3000);
+      const backAt = 15000 + Math.random() * 12000; // 15–27 秒
+      outingTimerRef.current = setTimeout(() => {
+        if (idleModeRef.current === "outing") {
+          const nx = 40 + Math.random() * (window.innerWidth - 220);
+          const ny = 80 + Math.random() * (window.innerHeight - 240);
+          setPos({ x: nx, y: ny });
+          idleModeRef.current = null;
+          setIdleMode(null);
+          setBubble("我回來了！路上看到好多有趣的事～");
+          setTimeout(() => setBubble(null), 3000);
+        }
+      }, backAt);
+    };
+    const goNap = () => {
+      autoNapRef.current = true;
+      idleModeRef.current = "nap";
+      setIdleMode("nap");
+      setSleeping(true);
+      setBubble("呼……有點睏，小寶先去睡一下……");
+      setTimeout(() => setBubble(null), 3000);
+    };
+    const wake = () => {
+      lastActiveRef.current = Date.now();
+      const m = idleModeRef.current;
+      if (m === "outing") {
+        if (outingTimerRef.current) clearTimeout(outingTimerRef.current);
+        idleModeRef.current = null;
+        setIdleMode(null);
+        setBubble("我回來啦！剛才去附近晃晃～");
+        setTimeout(() => setBubble(null), 3000);
+      } else if (m === "nap" && autoNapRef.current) {
+        autoNapRef.current = false;
+        idleModeRef.current = null;
+        setIdleMode(null);
+        setSleeping(false);
+        setBubble("咦？你回來啦！精神又來了！");
+        setTimeout(() => setBubble(null), 3000);
+      }
+    };
+    const onKey = () => wake();
+    const onPointerDown = () => wake();
+    const onWheel = () => { lastActiveRef.current = Date.now(); };
+    window.addEventListener("keydown", onKey, { passive: true });
+    window.addEventListener("pointerdown", onPointerDown, { passive: true });
+    window.addEventListener("wheel", onWheel, { passive: true });
+
+    const tick = setInterval(() => {
+      const idle = Date.now() - lastActiveRef.current;
+      if (idle < IDLE_LIMIT_MS) return;
+      // 正在互動、開面板、手動睡、隱藏中就不打擾
+      if (menuOpen || panelOpen || questsOpen || wardrobeOpen || trivia || hidden || focusMode) return;
+      if (idleModeRef.current) return;
+      // 隨機：一半去 nap，一半 outing
+      if (Math.random() < 0.5) goNap(); else goOuting();
+    }, 1000);
+
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      window.removeEventListener("pointerdown", onPointerDown);
+      window.removeEventListener("wheel", onWheel);
+      clearInterval(tick);
+      if (outingTimerRef.current) clearTimeout(outingTimerRef.current);
+    };
+  }, [menuOpen, panelOpen, questsOpen, wardrobeOpen, trivia, hidden, focusMode]);
+
   const onClick = useCallback(() => {
     if (dragRef.current?.moved || sleeping || trivia) return;
     // v6 彩蛋：1.5 秒內連點 3 下會嘟嘴生氣
@@ -476,6 +584,7 @@ export function PipiPet() {
     setMenuOpen(false);
     setSleeping((s) => {
       const ns = !s;
+      autoNapRef.current = false; // 手動切換睡/醒，視為非自動 nap
       setBubble(ns ? "呼……小寶睡了……" : "喵！醒來了！精神百倍！");
       setTimeout(() => setBubble(null), 2500);
       return ns;
@@ -673,6 +782,7 @@ export function PipiPet() {
     actionAnim ? `anim-${actionAnim}` : "",
     blink ? "blink" : "",
     micro ? `micro-${micro}` : "",
+    idleMode === "outing" ? "outing" : "",
     `lv-${lvl}`,
   ].join(" ");
 
@@ -856,6 +966,13 @@ export function PipiPet() {
           height={petPx}
           onError={() => { /* 表情差分載入失敗時退回套裝基礎圖，避免破圖 */ if (faceExpr) setFaceExpr(null); }}
         />
+        {/* v8：疊在立繪上的黑瞳孔，跟隨指標移動（睡覺時不顯示，看起來像閉眼） */}
+        {!sleeping && !hidden && (
+          <>
+            <span ref={eyeLRef} className="pipi-eye pipi-eye-l" aria-hidden />
+            <span ref={eyeRRef} className="pipi-eye pipi-eye-r" aria-hidden />
+          </>
+        )}
         {!sleeping && wornItems.map((c) => (
           <span key={c.id} className={`pipi-costume pipi-costume-${c.slot}`} aria-hidden>{c.emoji}</span>
         ))}
@@ -869,6 +986,25 @@ export function PipiPet() {
           aria-label="開啟小寶選單"
         >
           ☰
+        </button>
+      )}
+
+      {/* v8：外出逛逛時的召回按鈕 */}
+      {idleMode === "outing" && (
+        <button
+          className="pipi-pet-reopen"
+          onClick={() => {
+            if (outingTimerRef.current) clearTimeout(outingTimerRef.current);
+            idleModeRef.current = null;
+            setIdleMode(null);
+            lastActiveRef.current = Date.now();
+            setBubble("我回來啦！想我了對吧～");
+            setTimeout(() => setBubble(null), 2500);
+          }}
+          title="叫小寶回來"
+          aria-label="叫小寶回來"
+        >
+          🚶
         </button>
       )}
     </>

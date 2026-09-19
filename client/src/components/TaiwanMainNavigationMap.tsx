@@ -1,5 +1,5 @@
 import { BookOpenCheck, BookText, Compass, FlaskConical, Landmark, Languages, RotateCcw, Ruler, Sparkles, Volume2, type LucideIcon } from "lucide-react";
-import React, { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+import React, { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { createSpeechController, type SpeechStatus } from "@/lib/speechSynthesis";
 import { getPaperNextGroupStrategyHint } from "@/lib/paperExam";
 import { loadMapRouteFirstUseHint, markMapRouteFirstUseHintSeen } from "@/lib/mapRouteFirstUseHint";
@@ -54,36 +54,55 @@ type LearningRouteSegment = {
 };
 
 /* =========================================================
- * v8 PaGamO 式格狀模塊地圖
- * 地圖由 16×10 格線組成，台灣本島與離島由「陸地模塊」拼出。
+ * v9 PaGamO 式六角格大地圖
+ * 40×26＝1040 個六角格（v8 方格版的 6.5 倍），台灣由六角陸地模塊拼出；
+ * 海域分深淺、陸地分草原／森林／山地／沙岸，並畫上樹、山與浪花。
  * 之後要加地標、活動、新玩法：在 MAP_TERRAIN 補 X（造陸）、
  * 在 MAP_CELL_FEATURES 加一筆（col/row 定位）即可，不必動渲染邏輯。
  * ======================================================= */
-export const MAP_GRID_COLS = 16;
-export const MAP_GRID_ROWS = 10;
-/** 格狀地形：每行 16 字，X＝陸地模塊、.＝海域（第 0 行是最北）。 */
+export const MAP_GRID_COLS = 40;
+export const MAP_GRID_ROWS = 26;
+/** 六角地形：每行 40 字，X＝陸地模塊、.＝海域（第 0 行最北；pointy-top hex，奇數行右移半格）。 */
 export const MAP_TERRAIN: string[] = [
-  ".........XX.....",
-  "........XXXX....",
-  ".......XXXXX....",
-  "......XXXXXX....",
-  "..XX..XXXXXX....",
-  "..XX.XXXXXX.....",
-  ".....XXXXX......",
-  ".....XXXX.......",
-  ".....XXX........",
-  ".....XX.........",
+  "......................XXXX..............",
+  "......................XXXX..............",
+  "....................XXXXXXXX............",
+  "....................XXXXXXXX............",
+  "..................XXXXXXXXXX............",
+  "..................XXXXXXXXXX............",
+  "................XXXXXXXXXXXX............",
+  "................XXXXXXXXXXXX............",
+  "........XXXX....XXXXXXXXXXXX............",
+  "........XXXX....XXXXXXXXXXXX............",
+  "........XXXX..XXXXXXXXXXXX..............",
+  "........XXXX..XXXXXXXXXXXX..............",
+  "..............XXXXXXXXXX................",
+  "..............XXXXXXXXXX................",
+  "..............XXXXXXXX..................",
+  "..............XXXXXXXX..................",
+  "..............XXXXXX....................",
+  "..............XXXXXX....................",
+  "..............XXXX......................",
+  "..............XXXX......................",
+  "........................................",
+  "........................................",
+  "........................................",
+  "........................................",
+  "........................................",
+  "........................................",
 ];
 
-const MAP_CELL_SIZE = 60;
-const MAP_OFFSET_X = 20;
-const MAP_OFFSET_Y = 10;
+const HEX_SIZE = 13.5;
+const HEX_WIDTH = Math.sqrt(3) * HEX_SIZE;
+const HEX_VSTEP = 1.5 * HEX_SIZE;
+const MAP_OFFSET_X = 26;
+const MAP_OFFSET_Y = 42;
 
-/** 格線座標 → SVG 中心點（viewBox 0 0 1000 620）。 */
+/** 六角格座標 → SVG 中心點（viewBox 0 0 1000 620，pointy-top、奇數行右移半格）。 */
 export function mapCellCenter(col: number, row: number) {
   return {
-    x: MAP_OFFSET_X + col * MAP_CELL_SIZE + MAP_CELL_SIZE / 2,
-    y: MAP_OFFSET_Y + row * MAP_CELL_SIZE + MAP_CELL_SIZE / 2,
+    x: MAP_OFFSET_X + col * HEX_WIDTH + (row % 2 === 1 ? HEX_WIDTH / 2 : 0) + HEX_WIDTH / 2,
+    y: MAP_OFFSET_Y + row * HEX_VSTEP + HEX_SIZE,
   };
 }
 
@@ -105,12 +124,12 @@ export type MapCellFeature = {
 };
 /** 地標／活動登記處：之後的新地標、新活動都在這裡登記一筆就會長到地圖上。 */
 export const MAP_CELL_FEATURES: MapCellFeature[] = [
-  { id: "feature-tpe101", col: 8, row: 2, icon: "🏢", label: "台北 101", kind: "landmark", note: "北部真實地標" },
-  { id: "feature-taroko", col: 11, row: 3, icon: "🏔️", label: "太魯閣", kind: "landmark", note: "東部真實地標" },
-  { id: "feature-sunmoon", col: 8, row: 5, icon: "⛵", label: "日月潭", kind: "landmark", note: "中部真實地標" },
-  { id: "feature-chihkan", col: 6, row: 6, icon: "🏛️", label: "赤崁樓", kind: "landmark", note: "南部真實地標" },
-  { id: "feature-kenting", col: 5, row: 9, icon: "🗼", label: "墾丁", kind: "landmark", note: "台灣本島最南端" },
-  { id: "feature-activity-slot", col: 9, row: 6, icon: "🎪", label: "活動預備格", kind: "activity", note: "之後的新活動會落在這種格子上" },
+  { id: "feature-tpe101", col: 20, row: 3, icon: "🏢", label: "台北 101", kind: "landmark", note: "北部真實地標" },
+  { id: "feature-taroko", col: 26, row: 6, icon: "🏔️", label: "太魯閣", kind: "landmark", note: "東部真實地標" },
+  { id: "feature-sunmoon", col: 20, row: 11, icon: "⛵", label: "日月潭", kind: "landmark", note: "中部真實地標" },
+  { id: "feature-chihkan", col: 16, row: 14, icon: "🏛️", label: "赤崁樓", kind: "landmark", note: "南部真實地標" },
+  { id: "feature-kenting", col: 14, row: 18, icon: "🗼", label: "墾丁", kind: "landmark", note: "台灣本島最南端" },
+  { id: "feature-activity-slot", col: 22, row: 13, icon: "🎪", label: "活動預備格", kind: "activity", note: "之後的新活動會落在這種格子上" },
 ];
 
 const ISLAND_REGION_BY_ID: Record<KnowledgeIslandId, RegionKey> = {
@@ -121,51 +140,95 @@ const ISLAND_REGION_BY_ID: Record<KnowledgeIslandId, RegionKey> = {
   english: "south",
 };
 
-/** 島嶼＝格線上的板塊模塊群（主格可點、其餘為同色領土格）。 */
+/** 島嶼＝六角格上的板塊模塊群（主格放按鈕，其餘為同色領土格）。 */
 const ISLAND_CELLS: Record<KnowledgeIslandId, IslandCellLayout> = {
   language: {
-    main: { col: 9, row: 1 },
-    cells: [{ col: 9, row: 0 }, { col: 8, row: 1 }, { col: 9, row: 1 }, { col: 10, row: 1 }],
-    port: { col: 8, row: 0 },
+    main: { col: 23, row: 1 },
+    cells: [
+      { col: 22, row: 0 }, { col: 23, row: 0 }, { col: 24, row: 0 }, { col: 25, row: 0 },
+      { col: 22, row: 1 }, { col: 23, row: 1 }, { col: 24, row: 1 }, { col: 25, row: 1 },
+      { col: 22, row: 2 }, { col: 23, row: 2 },
+    ],
+    port: { col: 21, row: 0 },
     region: "北部・古書樓",
   },
   math: {
-    main: { col: 7, row: 3 },
-    cells: [{ col: 6, row: 3 }, { col: 7, row: 3 }, { col: 6, row: 4 }, { col: 7, row: 4 }],
-    port: { col: 5, row: 2 },
+    main: { col: 17, row: 7 },
+    cells: [
+      { col: 16, row: 6 }, { col: 17, row: 6 },
+      { col: 16, row: 7 }, { col: 17, row: 7 }, { col: 18, row: 7 },
+      { col: 16, row: 8 }, { col: 17, row: 8 }, { col: 18, row: 8 },
+      { col: 17, row: 9 },
+    ],
+    port: { col: 15, row: 7 },
     region: "中部・量測塔",
   },
   social: {
-    main: { col: 6, row: 7 },
-    cells: [{ col: 5, row: 7 }, { col: 6, row: 7 }, { col: 5, row: 8 }, { col: 6, row: 8 }],
-    port: { col: 4, row: 8 },
+    main: { col: 15, row: 15 },
+    cells: [
+      { col: 14, row: 14 }, { col: 15, row: 14 },
+      { col: 14, row: 15 }, { col: 15, row: 15 }, { col: 16, row: 15 },
+      { col: 14, row: 16 }, { col: 15, row: 16 },
+      { col: 14, row: 17 }, { col: 15, row: 17 },
+    ],
+    port: { col: 13, row: 15 },
     region: "南部・生活港",
   },
   science: {
-    main: { col: 11, row: 4 },
-    cells: [{ col: 10, row: 4 }, { col: 11, row: 4 }, { col: 10, row: 5 }],
-    port: { col: 12, row: 5 },
+    main: { col: 25, row: 9 },
+    cells: [
+      { col: 24, row: 8 }, { col: 25, row: 8 }, { col: 26, row: 8 },
+      { col: 24, row: 9 }, { col: 25, row: 9 }, { col: 26, row: 9 },
+      { col: 24, row: 10 }, { col: 25, row: 10 },
+    ],
+    port: { col: 27, row: 10 },
     region: "東部・山海觀察站",
   },
   english: {
-    main: { col: 3, row: 4 },
-    cells: [{ col: 2, row: 4 }, { col: 3, row: 4 }, { col: 3, row: 5 }],
-    port: { col: 1, row: 4 },
+    main: { col: 9, row: 9 },
+    cells: [
+      { col: 8, row: 8 }, { col: 9, row: 8 },
+      { col: 8, row: 9 }, { col: 9, row: 9 }, { col: 10, row: 9 },
+      { col: 8, row: 10 }, { col: 9, row: 10 },
+    ],
+    port: { col: 7, row: 9 },
     region: "西部離島・英語港",
   },
 };
 
-/** 航線＝沿海外海航道折線（格狀地圖的海上航道）。 */
-const ISLAND_ROUTE_PATHS: Record<KnowledgeIslandId, string> = {
-  language: "M170 400 L110 340 L110 70 L410 40 L530 40",
-  math: "M170 400 L110 340 L230 220 L350 160",
-  social: "M170 400 L170 520 L290 520",
-  science: "M170 400 L110 460 L170 520 L290 580 L770 580 L770 340",
-  english: "M170 400 L110 340 L110 280",
+/** 航線＝沿海外海航道（以海域六角格座標描述，載入時轉成 SVG 折線）。 */
+const ROUTE_WAYPOINTS: Record<KnowledgeIslandId, Array<{ col: number; row: number }>> = {
+  language: [
+    { col: 4, row: 12 }, { col: 2, row: 10 }, { col: 2, row: 2 }, { col: 10, row: 1 }, { col: 21, row: 0 },
+  ],
+  math: [
+    { col: 4, row: 12 }, { col: 2, row: 10 }, { col: 6, row: 6 }, { col: 10, row: 7 }, { col: 15, row: 7 },
+  ],
+  social: [
+    { col: 4, row: 12 }, { col: 4, row: 15 }, { col: 9, row: 16 }, { col: 13, row: 15 },
+  ],
+  science: [
+    { col: 4, row: 12 }, { col: 2, row: 14 }, { col: 4, row: 17 }, { col: 8, row: 20 }, { col: 16, row: 22 }, { col: 27, row: 22 }, { col: 27, row: 10 },
+  ],
+  english: [
+    { col: 4, row: 12 }, { col: 2, row: 11 }, { col: 7, row: 9 },
+  ],
 };
 
+const ISLAND_ROUTE_PATHS = Object.fromEntries(
+  Object.entries(ROUTE_WAYPOINTS).map(([id, waypoints]) => [
+    id,
+    waypoints
+      .map((point, index) => {
+        const { x, y } = mapCellCenter(point.col, point.row);
+        return `${index === 0 ? "M" : "L"}${x.toFixed(1)} ${y.toFixed(1)}`;
+      })
+      .join(" "),
+  ]),
+) as Record<KnowledgeIslandId, string>;
+
 /** 母港與各島港口（皆為海域格中心，船會實際航行過去）。 */
-const HOME_PORT = mapCellCenter(2, 6);
+const HOME_PORT = mapCellCenter(4, 12);
 const ISLAND_PORTS: Record<KnowledgeIslandId, { x: number; y: number }> = {
   language: mapCellCenter(ISLAND_CELLS.language.port.col, ISLAND_CELLS.language.port.row),
   math: mapCellCenter(ISLAND_CELLS.math.port.col, ISLAND_CELLS.math.port.row),
@@ -181,6 +244,148 @@ const ISLAND_ICONS: Record<KnowledgeIslandId, LucideIcon> = {
   science: FlaskConical,
   english: Languages,
 };
+
+/* ----- v9 六角格地形貼圖（海、草原、森林、山地、沙岸） ----- */
+
+type HexTerrain = "deepsea" | "shallow" | "grass" | "forest" | "mountain" | "sand";
+
+const HEX_POINTS = (() => {
+  const halfW = (HEX_WIDTH / 2).toFixed(2);
+  const s = HEX_SIZE.toFixed(2);
+  const halfS = (HEX_SIZE / 2).toFixed(2);
+  return `0,-${s} ${halfW},-${halfS} ${halfW},${halfS} 0,${s} -${halfW},${halfS} -${halfW},-${halfS}`;
+})();
+
+function hexHash(col: number, row: number) {
+  let h = Math.imul(col + 1, 374761393) + Math.imul(row + 1, 668265263);
+  h = Math.imul(h ^ (h >>> 13), 1274126177);
+  return Math.abs((h ^ (h >>> 16)) >>> 0);
+}
+
+const LAND_KEY_SET = new Set(
+  MAP_TERRAIN.flatMap((line, row) =>
+    line.split("").map((ch, col) => (ch === "X" ? `${col},${row}` : "")),
+  ).filter(Boolean),
+);
+
+function isLandCell(col: number, row: number) {
+  return row >= 0 && row < MAP_TERRAIN.length && col >= 0 && col < (MAP_TERRAIN[row]?.length ?? 0) && LAND_KEY_SET.has(`${col},${row}`);
+}
+
+/** 六鄰居中是陸地的數量（0＝深海，1-5＝近岸，6＝內陸）。 */
+function landNeighborCount(col: number, row: number) {
+  const offsets = row % 2 === 1
+    ? [[-1, 0], [1, 0], [0, -1], [1, -1], [0, 1], [1, 1]]
+    : [[-1, 0], [1, 0], [-1, -1], [0, -1], [-1, 1], [0, 1]];
+  return offsets.filter(([dc, dr]) => isLandCell(col + dc, row + dr)).length;
+}
+
+function hexTree(dx: number, dy: number, scale: number, key: string) {
+  return (
+    <g key={key} transform={`translate(${dx.toFixed(1)} ${dy.toFixed(1)}) scale(${scale.toFixed(2)})`}>
+      <rect x={-0.7} y={-1} width={1.4} height={2.4} rx={0.4} fill="#8a5a34" />
+      <circle cx={0} cy={-2.8} r={2.4} fill="#3f7f46" />
+      <circle cx={-1.3} cy={-1.7} r={1.6} fill="#4f9451" />
+    </g>
+  );
+}
+
+type MapHex = {
+  key: string;
+  col: number;
+  row: number;
+  x: number;
+  y: number;
+  terrain: HexTerrain;
+  cluster: KnowledgeIslandId | null;
+  deco: ReactNode;
+};
+
+function buildMapHexes(): MapHex[] {
+  const clusterLookup = new Map<string, KnowledgeIslandId>();
+  (Object.entries(ISLAND_CELLS) as Array<[KnowledgeIslandId, IslandCellLayout]>).forEach(([id, layout]) => {
+    layout.cells.forEach((cell) => clusterLookup.set(`${cell.col},${cell.row}`, id));
+  });
+
+  const hexes: MapHex[] = [];
+  MAP_TERRAIN.forEach((line, row) => {
+    line.split("").forEach((char, col) => {
+      const { x, y } = mapCellCenter(col, row);
+      const cluster = clusterLookup.get(`${col},${row}`) ?? null;
+      const isLand = char === "X";
+      const landNeighbors = landNeighborCount(col, row);
+      const seed = hexHash(col, row);
+      let terrain: HexTerrain;
+      let deco: ReactNode = null;
+
+      if (!isLand) {
+        terrain = landNeighbors > 0 ? "shallow" : "deepsea";
+        if (seed % 5 === 0) {
+          const dx = (seed % 3) - 1;
+          deco = (
+            <path
+              d={`M${-5 + dx} 1 Q${-2.5 + dx} -1.6 ${dx} 1 Q${2.5 + dx} 3.6 ${5 + dx} 1`}
+              fill="none"
+              stroke="#6fa9c7"
+              strokeWidth={1.1}
+              strokeLinecap="round"
+              opacity={0.6}
+            />
+          );
+        }
+      } else if (cluster) {
+        // 板塊領土格：主題色乾淨呈現（CSS island-cell-*），不放雜物
+        terrain = "grass";
+      } else if (landNeighbors < 6) {
+        // 海岸帶：沙岸＋偶爾小石
+        terrain = "sand";
+        if (seed % 6 === 0) {
+          deco = (
+            <g key="pebbles">
+              <circle cx={-3} cy={2} r={1.1} fill="#d3ba7e" />
+              <circle cx={3.4} cy={-1.6} r={0.9} fill="#d3ba7e" />
+            </g>
+          );
+        }
+      } else {
+        // 內陸：草原／森林／山地
+        const roll = seed % 10;
+        if (roll <= 3) {
+          terrain = "forest";
+          const jitterX = ((seed >>> 3) % 5) - 2;
+          const jitterY = ((seed >>> 5) % 3) - 1;
+          deco = (
+            <>
+              {hexTree(jitterX - 3, jitterY, 1, "t1")}
+              {hexTree(jitterX + 3.4, jitterY + 2.2, 0.85, "t2")}
+            </>
+          );
+        } else if (roll <= 5) {
+          terrain = "mountain";
+          const jitterX = ((seed >>> 3) % 5) - 2;
+          deco = (
+            <g key="peak">
+              <path d={`M${-5.5 + jitterX} 4.5 L${jitterX} -5.5 L${5.5 + jitterX} 4.5 Z`} fill="#9a917d" />
+              <path d={`M${-1.9 + jitterX} -1.6 L${jitterX} -5.5 L${1.9 + jitterX} -1.6 Z`} fill="#f7f4ec" />
+            </g>
+          );
+        } else {
+          terrain = "grass";
+          if (seed % 3 === 0) {
+            deco = hexTree(((seed >>> 3) % 7) - 3, ((seed >>> 5) % 3) - 1, 0.8, "tree");
+          } else if (seed % 3 === 1) {
+            deco = <circle key="bush" cx={((seed >>> 3) % 7) - 3} cy={2.2} r={1.5} fill="#7fbf6f" />;
+          }
+        }
+      }
+
+      hexes.push({ key: `${col}-${row}`, col, row, x, y, terrain, cluster, deco });
+    });
+  });
+  return hexes;
+}
+
+const MAP_HEXES = buildMapHexes();
 
 const ISLAND_LANDSCAPES: Record<KnowledgeIslandId, { summary: string; icons: LandscapeIcon[] }> = {
   language: {
@@ -693,38 +898,25 @@ export function TaiwanMainNavigationMap({ islands, onOpenSubject, onOpenTopic, o
           </aside>
         ) : null}
         <svg className="taiwan-map-outline" viewBox="0 0 1000 620" aria-hidden="true" focusable="false">
-          {/* v8 PaGamO 式格狀模塊：海域格＋陸地格（台灣由模塊拼出，日後擴建加格即可） */}
+          {/* v9 六角格模塊：深淺海＋草原／森林／山地／沙岸（台灣由六角模塊拼出） */}
           <g className="taiwan-map-grid" data-testid="taiwan-map-grid">
-            {MAP_TERRAIN.map((line, row) =>
-              line.split("").map((char, col) => {
-                const isLand = char === "X";
-                const islandCell = isLand
-                  ? (Object.entries(ISLAND_CELLS) as Array<[KnowledgeIslandId, IslandCellLayout]>).find(([, layout]) =>
-                      layout.cells.some((cell) => cell.col === col && cell.row === row),
-                    )
-                  : undefined;
-                const { x, y } = { x: MAP_OFFSET_X + col * MAP_CELL_SIZE, y: MAP_OFFSET_Y + row * MAP_CELL_SIZE };
-                const cellClass = islandCell ? `taiwan-map-cell-island island-cell-${islandCell[0]}` : isLand ? "taiwan-map-cell-land" : "taiwan-map-cell-sea";
-                return (
-                  <rect
-                    key={`${col}-${row}`}
-                    className={`taiwan-map-cell ${cellClass}`}
-                    x={x + 3}
-                    y={y + 3}
-                    width={MAP_CELL_SIZE - 6}
-                    height={MAP_CELL_SIZE - 6}
-                    rx={7}
-                  />
-                );
-              }),
-            )}
+            {MAP_HEXES.map((hex) => (
+              <g
+                key={hex.key}
+                className={`taiwan-map-hex taiwan-map-hex-${hex.terrain}${hex.cluster ? ` island-cell-${hex.cluster}` : ""}`}
+                transform={`translate(${hex.x.toFixed(2)} ${hex.y.toFixed(2)})`}
+              >
+                <polygon className="taiwan-map-hex-base" points={HEX_POINTS} />
+                {hex.deco}
+              </g>
+            ))}
           </g>
-          {/* 區域名稱嵌在格線之間 */}
-          <text className="taiwan-map-region-label" x="700" y="78">北部</text>
-          <text className="taiwan-map-region-label" x="480" y="415">中部</text>
-          <text className="taiwan-map-region-label" x="490" y="600">南部</text>
-          <text className="taiwan-map-region-label" x="780" y="450">東部</text>
-          <text className="taiwan-map-region-label" x="170" y="140">西部</text>
+          {/* 區域名稱嵌在板塊之間 */}
+          <text className="taiwan-map-region-label" x="660" y="58">北部</text>
+          <text className="taiwan-map-region-label" x="450" y="300">中部</text>
+          <text className="taiwan-map-region-label" x="420" y="565">南部</text>
+          <text className="taiwan-map-region-label" x="770" y="420">東部</text>
+          <text className="taiwan-map-region-label" x="180" y="180">西部</text>
           {routeSegments.map((segment, index) => {
             const routeSupplyId = supplyMarkerIdForRegion(ISLAND_REGION_BY_ID[segment.id]);
             const isRouteGlowing = recentlyCompletedSupplyMarkerIds.includes(routeSupplyId);

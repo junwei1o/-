@@ -58,6 +58,40 @@
   background: linear-gradient(145deg, rgba(232, 246, 241, 0.84), rgba(250, 242, 226, 0.72));
 }
 
+/* v9：首頁地圖鋪滿整個背景層（放大十倍視野），對話框浮在右上 */
+.home-dashboard-map-layer .taiwan-map-layout {
+  display: block;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+}
+.home-dashboard-map-layer .taiwan-map-layout > .taiwan-map-canvas {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  aspect-ratio: auto;
+  margin: 0;
+  background: linear-gradient(135deg, #8fc4dc 0%, #9fcde3 45%, #b4ddec 100%);
+}
+.home-dashboard-map-layer .taiwan-map-layout .taiwan-map-panel,
+.home-dashboard-map-layer .taiwan-map-layout .taiwan-island-panel {
+  position: absolute;
+  top: 0.9rem;
+  right: 0.9rem;
+  width: min(21rem, calc(100% - 1.8rem));
+  max-height: calc(100% - 1.8rem);
+  z-index: 6;
+  box-shadow: 0 16px 34px rgba(23, 61, 74, 0.28);
+}
+.home-dashboard-map-layer .taiwan-map-layout .taiwan-map-waiting {
+  position: absolute;
+  top: 0.9rem;
+  right: 0.9rem;
+  width: min(15.5rem, calc(100% - 1.8rem));
+  z-index: 6;
+  margin: 0;
+}
+
 .home-dashboard-map-layer .taiwan-map-island {
   animation: home-dashboard-island-in 380ms var(--ease-out, cubic-bezier(0.23, 1, 0.32, 1)) both;
 }

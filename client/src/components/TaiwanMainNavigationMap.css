@@ -1262,13 +1262,13 @@
 
 /* ===== v7 航海圖淨空版：太閤／大航海式純展示地圖＋外側系統對話框 ===== */
 
-/* 版面：地圖為主體，系統對話框在外側欄 */
+/* 版面：地圖為主體（v9 放大，佔更多寬度），系統對話框在外側欄 */
 .taiwan-map-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(19rem, 23rem);
-  gap: 1rem;
+  grid-template-columns: minmax(0, 1fr) minmax(15.5rem, 18rem);
+  gap: 0.9rem;
   align-items: start;
-  width: min(100%, 82rem);
+  width: min(100%, 96rem);
   margin: 1.1rem auto 0;
 }
 .taiwan-map-layout > .taiwan-map-canvas {
@@ -1405,31 +1405,28 @@
   to { opacity: 1; transform: translate(-50%, calc(-100% - 2.4rem)) scale(1); }
 }
 
-/* ===== v8 PaGamO 式格狀模塊地圖 ===== */
-/* 海域格：淡海藍虛線模塊（之後的海上活動也長在這種格子上） */
-.taiwan-map-cell-sea {
-  fill: rgba(126, 178, 201, 0.10);
-  stroke: rgba(23, 61, 74, 0.16);
+/* ===== v9 PaGamO 式六角格大地圖（遊戲貼圖：深淺海、草原、森林、山地、沙岸） ===== */
+.taiwan-map-hex-base {
+  stroke: rgba(255, 255, 255, 0.55);
   stroke-width: 1;
-  stroke-dasharray: 3 4;
+  stroke-linejoin: round;
 }
-/* 陸地模塊：米黃羊皮紙＋暖棕描邊 */
-.taiwan-map-cell-land {
-  fill: rgba(240, 219, 165, 0.94);
-  stroke: rgba(122, 94, 52, 0.55);
-  stroke-width: 1.5;
-}
-/* 島嶼領土模塊：各科主題色 */
-.taiwan-map-cell-island.island-cell-language { fill: #f2d8c4; stroke: #b5764a; }
-.taiwan-map-cell-island.island-cell-math { fill: #d7e7f4; stroke: #4a7fa5; }
-.taiwan-map-cell-island.island-cell-social { fill: #f3e2ae; stroke: #a8842e; }
-.taiwan-map-cell-island.island-cell-science { fill: #dcedd7; stroke: #5d8a52; }
-.taiwan-map-cell-island.island-cell-english { fill: #e6dcf2; stroke: #7a5f9e; }
-.taiwan-map-layout .taiwan-map-cell-island {
-  filter: drop-shadow(0 2px 3px rgba(23, 61, 74, 0.18));
-}
+/* 海域：深海藍／近岸淺水 */
+.taiwan-map-hex-deepsea .taiwan-map-hex-base { fill: #9fcde3; }
+.taiwan-map-hex-shallow .taiwan-map-hex-base { fill: #c3e4f2; }
+/* 陸地：草原／森林／山地／沙岸 */
+.taiwan-map-hex-grass .taiwan-map-hex-base { fill: #a9d489; }
+.taiwan-map-hex-forest .taiwan-map-hex-base { fill: #8cc774; }
+.taiwan-map-hex-mountain .taiwan-map-hex-base { fill: #cbc4ad; }
+.taiwan-map-hex-sand .taiwan-map-hex-base { fill: #ecdca6; }
+/* 島嶼板塊領土格：各科主題色 */
+.taiwan-map-hex.island-cell-language .taiwan-map-hex-base { fill: #f6d7c4; }
+.taiwan-map-hex.island-cell-math .taiwan-map-hex-base { fill: #cfe3f4; }
+.taiwan-map-hex.island-cell-social .taiwan-map-hex-base { fill: #f2dfa8; }
+.taiwan-map-hex.island-cell-science .taiwan-map-hex-base { fill: #d3ecc8; }
+.taiwan-map-hex.island-cell-english .taiwan-map-hex-base { fill: #e4d8f0; }
 
-/* 地標／活動章：長在格線交叉的小徽章（之後活動上線即可點） */
+/* 地標／活動章：長在六角格上的小徽章（之後活動上線即可點） */
 .taiwan-map-feature {
   position: absolute;
   z-index: 2;
@@ -1437,7 +1434,7 @@
   flex-direction: column;
   align-items: center;
   gap: 0;
-  width: 6%;
+  width: 4.6%;
   padding: 0;
   border: 0;
   background: none;
@@ -1448,23 +1445,23 @@
 .taiwan-map-feature-icon {
   display: grid;
   place-items: center;
-  width: clamp(1.15rem, 2.2vw, 1.5rem);
-  height: clamp(1.15rem, 2.2vw, 1.5rem);
+  width: clamp(1.05rem, 1.9vw, 1.4rem);
+  height: clamp(1.05rem, 1.9vw, 1.4rem);
   border: 1.5px solid rgba(122, 94, 52, 0.5);
   border-radius: 0.45rem;
   background: rgba(255, 252, 244, 0.94);
   box-shadow: 0 2px 4px rgba(23, 61, 74, 0.22);
-  font-size: clamp(0.62rem, 1.2vw, 0.85rem);
+  font-size: clamp(0.58rem, 1.05vw, 0.8rem);
   line-height: 1;
 }
 .taiwan-map-feature-label {
-  max-width: 200%;
+  max-width: 220%;
   overflow: hidden;
   color: #4c3a20;
-  font-size: clamp(0.5rem, 0.9vw, 0.66rem);
+  font-size: clamp(0.48rem, 0.85vw, 0.64rem);
   font-weight: 700;
   line-height: 1.2;
-  text-shadow: 0 1px 0 rgba(255, 252, 244, 0.9);
+  text-shadow: 0 1px 0 rgba(255, 252, 244, 0.9), 0 0 3px rgba(255, 252, 244, 0.9);
   white-space: nowrap;
 }
 .taiwan-map-feature-activity .taiwan-map-feature-icon {
@@ -1474,7 +1471,7 @@
 }
 .taiwan-map-feature-activity .taiwan-map-feature-label { color: #a84a24; }
 
-/* 島嶼按鈕縮進格線模塊內（佔一格大小，PaGamO 據點感） */
+/* 島嶼據點按鈕：跨約 3 個六角格的據點標記（PaGamO 建築感） */
 .taiwan-map-layout .taiwan-map-island {
   left: var(--island-left);
   top: var(--island-top);
@@ -1484,22 +1481,22 @@
   justify-content: center;
   gap: 0.05rem;
   min-width: 0;
-  width: 6.6%;
-  height: 10.6%;
+  width: 7.6%;
+  height: 12.4%;
   padding: 0.15rem;
   border-width: 2px;
-  border-radius: 0.55rem;
+  border-radius: 0.6rem;
   transform: translate(-50%, -50%);
   text-align: center;
   box-shadow: 0 4px 0 rgba(31, 82, 85, 0.2), 0 6px 10px rgba(23, 61, 74, 0.22);
 }
 .taiwan-map-layout .taiwan-map-island strong {
   margin: 0;
-  font-size: clamp(0.58rem, 1.05vw, 0.78rem);
+  font-size: clamp(0.6rem, 1.1vw, 0.82rem);
   line-height: 1.15;
   letter-spacing: 0.02em;
 }
-.taiwan-map-layout .taiwan-map-island .taiwan-map-island-icon svg { width: clamp(13px, 1.7vw, 17px); height: clamp(13px, 1.7vw, 17px); }
+.taiwan-map-layout .taiwan-map-island .taiwan-map-island-icon svg { width: clamp(13px, 1.8vw, 18px); height: clamp(13px, 1.8vw, 18px); }
 .taiwan-map-layout .taiwan-map-island .taiwan-map-island-flag { right: 0.14rem; top: 0.12rem; }
 .taiwan-map-layout .taiwan-map-island .taiwan-map-supply-marker { transform: scale(0.82); }
 

@@ -91,7 +91,7 @@ export default function Tavern() {
       {/* 下一步目標提示 */}
       <p className="tavern-next-goal" role="status">{goal.text}</p>
 
-      {/* 窗＋酒瓶木層架（純裝飾） */}
+      {/* 窗＋木層架（純裝飾） */}
       <div className="tavern-window-row" aria-hidden="true">
         <span className="tavern-window">🌙</span>
         <span className="tavern-shelf">🧭🗺️📜⚓</span>
