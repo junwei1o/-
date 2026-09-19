@@ -113,6 +113,9 @@
   border-radius: 18px;
   padding: 10px;
   min-width: 170px;
+  max-height: min(70vh, 560px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
   box-shadow: 0 10px 28px rgba(92, 61, 38, 0.3);
   animation: pipi-pop 0.2s ease;
 }
