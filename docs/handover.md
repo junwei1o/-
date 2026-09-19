@@ -441,3 +441,15 @@ curl -s https://xue-gr3a.onrender.com/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | h
   6. 說夢話：睡覺時每 8–15s 冒 💭＋夢話泡泡。
 - 驗證：tsc 0 錯、1129 tests 綠、本機 Playwright 7/7（lv-3 class、pipi-aura、blink、😤、micro- 均觀察到，無 pageerror）、線上 bundle index-B7x7Bisi.js hash 一致、線上同套 7/7 通過。
 - 備註：待機呼吸（pipi-breathe）與點擊 bounce 為遠端小寶版既有，v6 只做加法。
+
+## 2026-09-19 首頁航海圖 v7 淨空版（太閤／大航海風）
+- 需求：首頁台灣地圖去雜物、純展示用；船實際航行到所選島；點島在外側展開「系統對話框」；回饋對話直接顯示在地圖上。commit：4d66867 + e15e8d5（rebase 到並行 6ad35aa 之後，Home 改回互動式 v7 地圖；TaiwanLandmarkMap.tsx 保留為備用元件但 Home 不再使用）。
+- TaiwanMainNavigationMap.tsx：
+  - 新增 HOME_PORT {x:248,y:365} 與 ISLAND_PORTS（language 402/52、math 336/292、social 330/540、science 706/384、english 148/300，viewBox 0 0 1000 620）。
+  - 船以 SVG transform translate＋1.9s cubic-bezier 過渡真正「航行」到被點島的港口；關閉對話框時航回 HOME_PORT；首次渲染不播動畫。
+  - 移除全部 15 個 .taiwan-map-landmark 釘選、「我的船標」標籤、島嶼的區域/星級/景觀小字（只留圖示＋名稱＋sr-only＋旗子＋補給星章）。
+  - 背包＋海風傳聞移出畫布進 header .taiwan-map-tools；加強/隨機冒險獎勵改為跟船的 .taiwan-map-speech 泡泡（含尾巴、taiwan-speech-pop 動畫、操作按鈕）。
+  - 關鍵：移除 onStartIslandQuiz prop，島嶼 onClick 一律 toggleIsland(id)（舊版會繞過對話框直接跳答題）。
+  - 版型：新 .taiwan-map-layout grid（地圖 minmax(0,1fr) ＋ 對話框 minmax(19rem,23rem)）；.taiwan-island-panel 為 sticky 雙邊框羊皮紙「太閤」風對話框，≤900px 退回單欄。
+- 驗證：tsc 0 錯、1129 tests 綠、build 成功；本機 Playwright（map-v7.mjs）：landmark=0、船標=0、畫布內背包/傳聞=0、tools 在 header、點 math 船 248/365→336/292、對話框在地圖右側、關閉回港、無 pageerror。測試前須關閉 .daily-signin-modal（Escape）。
+- 線上：bundle index-BCdIDk2G.js 與本機 dist hash 一致。
