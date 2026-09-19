@@ -503,3 +503,11 @@ curl -s https://xue-gr3a.onrender.com/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | h
 - 刻意保留：/battle（BattleScene＋battle* 模組）、trumpCardData（adventureChapters 只 import type CardTheme；守護者遠征 RpgAdventure/adventureEngine 依賴）、adventureChapters、歷史玩家的卡牌收藏與稱號存檔（無 UI 顯示，休眠）。
 - 測試同步：App.routes.test（tavern 路由改斷言不存在）、titleCatalog.test（21→17＋新增下架斷言）、TreasureHub.test（卡牌入口改 not.toBeInTheDocument）、Home.modeHub.test（四入口→三入口）。
 - 驗證：tsc 0 錯、1042 tests 綠、build 成功；本機 Playwright tavern-removal.mjs 10/10（首頁無燈塔卡、四條 /tavern* 無 UI、藏寶圖無卡牌入口、/battle 正常、無 pageerror）。
+
+## 2026-09-19 下架守護者遠征
+- 需求：守護者遠征刪除。commit be37872（25 檔，淨刪 1469 行）。/battle、/expedition 保留。
+- 刪除（15 檔）：pages/GuardianExpedition.tsx；components RpgAdventure.tsx/.test、MainlineGuardianPanel.tsx；game adventureChapters、adventureEngine、adaptiveBoss（含 .guardian.test）、guardianCeremonyFeedback、trumpCardData（各含 test）。trumpCardData 因唯一使用者 adventureChapters 一併刪。
+- 入口清理：App.tsx /guardian＋/guardian-expedition 路由＋lazy import；homeFeatureDirectory、featureSearch（含 id union）；遠征頁「今日任務」卡改指向 /battle；Badges boss-1/boss-4 hint 改 BATTLE_HINT、rare-titles-5 改 EXPEDITION_HINT（/expedition）；titleCatalog 稀有遠征稱號 hint 改 /expedition（稱號本身由 /expedition 稀有怪物授予，保留）。
+- 刻意保留：mainlineFeatures（ParentLearningView/WeeklyQuestPanel/pinCloudSync 仍用）、rpgBattle/battle* 模組（BattleScene 用）、expeditionContent/expeditionUnlocks（Expedition 頁用）、academyExpansion 的 guardian 行為函式（BattleScene 引用的 worldStateForTime 同檔，暫不拆）。debugGate 的 guardian 只是教師解鎖閘命名，無關。
+- 測試同步：App.routes.test、featureSearch.test、Expedition.test 改斷言守護者不存在／今日任務指向 /battle。
+- 驗證：tsc 0 錯、1014 tests 綠、build 成功；本機 Playwright guardian-removal.mjs 6/6（/guardian 無 UI、遠征頁無守護者卡、今日任務→/battle、無 pageerror）。
