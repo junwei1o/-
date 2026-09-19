@@ -16,8 +16,8 @@
   animation: pipi-breathe 3.2s ease-in-out infinite;
 }
 @keyframes pipi-breathe {
-  0%, 100% { transform: translateY(0) scale(1, 1) rotate(var(--look-deg, 0deg)); }
-  50% { transform: translateY(-4px) scale(1.02, 0.98) rotate(calc(var(--look-deg, 0deg) * 1.2)); }
+  0%, 100% { transform: translateY(0) scale(1, 1); }
+  50% { transform: translateY(-4px) scale(1.02, 0.98); }
 }
 .pipi-pet:active { cursor: grabbing; }
 .pipi-pet img {

@@ -377,18 +377,9 @@ export function PipiPet() {
     return () => { if (faceTimer.current) clearTimeout(faceTimer.current); };
   }, []);
 
-  // v8：身體微傾跟隨滑鼠／手指（直接改 CSS 變數，避免每 frame re-render）
+  // v8.1：只追蹤指標活動（閒置判定用）；身體微傾跟隨已移除（視覺不和諧）
   useEffect(() => {
-    const onMove = (e: PointerEvent) => {
-      lastActiveRef.current = Date.now();
-      const root = rootRef.current;
-      if (!root) return;
-      const rect = root.getBoundingClientRect();
-      const dx = e.clientX - (rect.left + rect.width / 2);
-      // 身體微傾：指標偏左就微歪左，偏右就微歪右（±2.5 度），像在轉頭看你
-      const deg = Math.max(-2.5, Math.min(2.5, (dx / Math.max(rect.width, 1)) * 5));
-      root.style.setProperty("--look-deg", `${deg.toFixed(2)}deg`);
-    };
+    const onMove = () => { lastActiveRef.current = Date.now(); };
     window.addEventListener("pointermove", onMove, { passive: true });
     return () => window.removeEventListener("pointermove", onMove);
   }, []);
