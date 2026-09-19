@@ -484,3 +484,14 @@ curl -s https://xue-gr3a.onrender.com/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | h
   5. .md-tut-slot 流式排版撞到教學氣泡 → position:absolute; bottom:14px；教學氣泡從 md-static 改新 class md-tut-bubble（absolute＋translate(-50%,-50%)，避開 md-static 的 left/top auto !important 覆寫）。
 - 驗證：tsc 0 錯、1129 tests 綠、build 成功。本機 Playwright（vite preview :4173）：meteor-v2.mjs 教學 16/16（步驟 1–5 真實手勢、拖拽＋點選兩條路徑、錯位拖拽被拒、開局、無 pageerror）；meteor-v2b.mjs 深度玩法 6/6（拖拽波 2.5s 提前過波＋能源存活、點擊波實點得分 score=45、無炸彈誤觸）。
 - 陷阱：meteor-v2b 舊版「tap 模式 score=0」是測試腳本 parseInt(banner) 對「第 1 波：2 的倍數」回傳 NaN 所致，不是遊戲 bug；解析要 regex /(\d+)\s*的倍數/（同時是→10）。freshPage 偶發定位逾時，加重試＋reload 容錯。
+
+## 2026-09-19 移除首頁台灣地圖與航海玩法（整套下架）
+- 需求：刪除首頁地圖與相關玩法，與整體預期不符合。commit 54dd7a0（淨刪 3561 行）。
+- 移除範圍：
+  - Home.tsx：home-dashboard-map-layer 整層移除（TaiwanMainNavigationMap、journal/randomAdventureRouteReward/weeklySuggestion 相關 state 一起清）。
+  - /map 頁（StudentMap.tsx）：只拆台灣地圖區塊，學習關係圖/觀測站進度/今日推薦/學習指南全保留。
+  - 刪除檔案：TaiwanMainNavigationMap.tsx/.css/.test.tsx/.css.test.ts、HomeDashboard.css.test.ts（斷言全是地圖版面）。
+  - HomeDashboard.css：map-layer 全部規則、home-dashboard-island-in keyframes、taiwan-map-reinforcement-suggestion 清掉。
+  - 契約測試改寫：mobileEditionAssets.test.ts、HomeLobby.contract.test.ts 改為斷言「不再有地圖」；HomeDashboard.test.tsx 移除 mock 改查 not.toBeInTheDocument。
+- 刻意保留（休眠，無 UI 引用）：mapVictoryProgress（rpgStorage/rpgTypes，BattleScene 仍會寫入）、mapReinforcementReward（TeacherParentSummary 仍讀）、randomAdventureRouteReward（PaperExam 仍會發）、TaiwanLandmarkMap.tsx（本來就無人引用）。之後要徹底清這些再開一個 task。
+- 驗證：tsc 0 錯、1102 tests 綠（183→180 檔，少的正是刪掉的地圖測試）、build 成功；本機 Playwright map-removal.mjs 9/9（首頁無 map-layer/hex、狀態與模式樞紐正常、/map 頁保留關係圖、無 pageerror）。
