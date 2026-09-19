@@ -460,3 +460,16 @@ curl -s https://xue-gr3a.onrender.com/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | h
 - CSS：新增 .taiwan-map-cell-sea（虛線淡藍海格）/.taiwan-map-cell-land（米黃陸模塊）/island-cell-<id>（五科領土色）/.taiwan-map-feature（地標章，activity 虛線框）；島嶼按鈕縮成格內尺寸（6.6%×10.6%、flex column、字級 clamp）；移除 taiwan-boat-bob/rock 全部跳動動畫（船平穩航行）。
 - 驗證：tsc 0 錯、1129 tests 綠、build 成功；本機 Playwright map-v8.mjs 14/14（格線 160、陸模塊 47、島按鈕在格線座標、6 個地標章、船母港 (170,400)→數學港 (350,160)→關閉回港、glyph animationName=none、對話框在地圖右側、無 pageerror）。「回到航海圖」真實點擊可關閉（先前自動化失敗是 fresh-profile 每日簽到 backdrop 反覆重現攔截指標，非產品 bug；預 seed localStorage xueSignIn 可避開）。
 - 線上：bundle index-DgekqrsA.js 與本機 dist hash 一致。
+
+## 2026-09-19 首頁地圖 v9 六角格放大版（PaGamO 式）
+- 需求：地圖擴大十倍以上、格子改六角形（更像 PaGamO）、貼圖要有海／綠地／樹／地形區分。commit 3f95d64。
+- TaiwanMainNavigationMap.tsx：
+  - 格線 16×10 方格 → 40×26 pointy-top 六角格（1040 格＝6.5 倍；陸地模塊 47→188）。HEX_SIZE=13.5、HEX_WIDTH=√3·s、奇數行右移半格；mapCellCenter/mapCellPercent 改六角座標。
+  - MAP_TERRAIN 為 20×13 遮罩的字元加倍放大（26 行×40 字，land=188 已驗證）；改地形只改這裡。
+  - 地形貼圖（buildMapHexes，模組載入時建一次）：海分 deepsea/shallow（鄰陸為淺水）＋確定性 hash 浪花；陸地海岸帶沙岸（adjacentLand<6）、內陸 hash 分草原（含灌木/樹）/森林（2 樹）/山地（峰＋雪頂）。hexTree() 畫小樹。
+  - 島嶼板塊群 ISLAND_CELLS、港口、ROUTE_WAYPOINTS（海域格座標→載入時轉折線）、MAP_CELL_FEATURES（5 地標＋1 活動預備格）全部重定位到新格線。
+- CSS：.taiwan-map-hex-* 地形色（海 #9fcde3/#c3e4f2、草 #a9d489、森 #8cc774、山 #cbc4ad、沙 #ecdca6、五科領土色）；島嶼據點按鈕 7.6%×12.4%；layout 對話欄縮為 minmax(15.5rem,18rem)。
+- 首頁放大：HomeDashboard.css 讓 .taiwan-map-layout height:100%（畫布鋪滿背景層，畫布底色改海藍漸層融入海洋）、島嶼對話框改 absolute 浮右上（min(21rem,…)）。
+- 驗證：tsc 0 錯、1129 tests 綠、本機＋線上 Playwright map-v9.mjs 各 14/14（1040 hex、land 188、地形多樣性 deep770/shallow82/forest44/mt18/sand53、浪花 166、島在六角座標、船母港 (131.2,298.5)→數學港 (400.1,197.3)→回港、glyph 無動畫、對話框浮右上 panel.x=1250、無 pageerror）。
+- 線上：bundle index-U7IMpLP-.js 與 HEAD 精確重建一致（注意：本機 working tree 有並行 session 的 PipiPet WIP，比 hash 前要先 stash 再 build）。
+- 附帶：commit 3f95d64 因 stash pop 順序意外把並行 session 的 PipiPet.css/.tsx/Tavern.tsx WIP 一併提交（tsc/1129 測試/build 全綠，無破壞；該 session 後續注意 pull）。
