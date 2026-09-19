@@ -1478,9 +1478,16 @@
   transform: none;
   animation: md-appear 0.25s ease-out;
 }
-.md-meteor.md-static.is-selected {
+.md-meteor.md-static.is-selected,
+.md-tut-bubble.is-selected {
   border-color: var(--cr-orange-d);
   box-shadow: 0 0 0 4px rgba(232, 117, 74, 0.35), 0 4px 0 rgba(58, 47, 35, 0.22);
+}
+/* 教學泡泡：絕對定位（尊重 left/top）、可拖拽位移 */
+.md-tut-bubble {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  animation: md-appear 0.25s ease-out;
 }
 @keyframes md-appear {
   from { opacity: 0; transform: scale(0.7); }
@@ -1512,7 +1519,13 @@
 .md-tut-field { height: 320px; }
 .md-tut-ask { text-align: center; }
 .md-tut-list p { margin: 8px 0; font-size: 14.5px; line-height: 1.8; color: var(--cr-ink); }
-.md-tut-slot { width: 80%; margin: 0 auto; }
+.md-tut-slot {
+  position: absolute;
+  bottom: 14px;
+  left: 10%;
+  width: 80%;
+  margin: 0;
+}
 
 @media (max-width: 520px) {
   .md-traywrap--full { top: 8px; }

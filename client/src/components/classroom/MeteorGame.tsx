@@ -73,6 +73,11 @@ export default function MeteorGame({ muted = false, onExit, onBest, bestStars, b
   const [dragOffset, setDragOffset] = useState<{ id: string; dx: number; dy: number } | null>(null);
   const [tutStep, setTutStep] = useState(0);
   const [tutSelected, setTutSelected] = useState(false);
+  const [tutDrag, setTutDrag] = useState<{ dx: number; dy: number } | null>(null);
+  const tutDragActiveRef = useRef(false);
+  const tutDragStartRef = useRef({ x: 0, y: 0 });
+  const tutMovedRef = useRef(false);
+  const tutSlashRef = useRef(false);
   const [tutorialDone, setTutorialDone] = useState(() => {
     try {
       return localStorage.getItem(TUTORIAL_KEY) === "done";
@@ -355,6 +360,14 @@ export default function MeteorGame({ muted = false, onExit, onBest, bestStars, b
       if (elapsed >= METEOR_WAVE_TIME * 1000) {
         window.clearInterval(timer);
         endWave();
+        return;
+      }
+      // 提前過波：隕石全spawn完、場上清空、托盤也處理完，不必乾等倒數。
+      const allSpawned = spawnCursorRef.current >= wave.meteors.length;
+      const trayCleared = wave.tray.length === 0 || trayLeftRef.current.length === 0;
+      if (allSpawned && meteorsRef.current.length === 0 && trayCleared && elapsed > 2500) {
+        window.clearInterval(timer);
+        endWave();
       }
     }, TICK_MS);
     return () => window.clearInterval(timer);
@@ -438,6 +451,10 @@ export default function MeteorGame({ muted = false, onExit, onBest, bestStars, b
   const startTutorial = () => {
     setTutStep(0);
     setTutSelected(false);
+    setTutDrag(null);
+    tutDragActiveRef.current = false;
+    tutMovedRef.current = false;
+    tutSlashRef.current = false;
     setPhase("tutorial");
     window.scrollTo({ top: 0 });
   };
@@ -516,51 +533,90 @@ export default function MeteorGame({ muted = false, onExit, onBest, bestStars, b
               {tutStep === 2 && <>【劃切練習】任務「2 的倍數」：用手指<b>滑過</b>下面 2 的倍數的泡泡，把它切開！</>}
               {tutStep === 3 && <>【拖拽練習】任務「2 的倍數」：<b>按住</b> 2 的倍數的泡泡<b>拖進</b>基地回收槽（也可以先點泡泡、再點回收槽）。</>}
             </p>
-            <div className="md-field md-tut-field">
+            <div
+              className="md-field md-tut-field"
+              onPointerDown={(e) => {
+                if (tutStep !== 2) return;
+                tutSlashRef.current = true;
+                void e;
+              }}
+              onPointerMove={(e) => {
+                // 劃切練習跟正式遊戲同規則：按住（任意處）滑過泡泡就算切到。
+                if (tutStep !== 2 || !tutSlashRef.current) return;
+                const hit = document.elementFromPoint(e.clientX, e.clientY);
+                if (hit instanceof Element && hit.closest(".md-meteor")) {
+                  tutSlashRef.current = false;
+                  advanceTut(3);
+                }
+              }}
+              onPointerUp={() => { if (tutStep === 2) tutSlashRef.current = false; }}
+              onPointerCancel={() => { if (tutStep === 2) tutSlashRef.current = false; }}
+            >
               {tutStep === 1 && (
-                <button type="button" className="md-meteor md-static" style={{ left: "50%", top: "30%" }} aria-label="隕石 12" onClick={() => advanceTut(2)}>12</button>
+                <button type="button" className="md-meteor md-tut-bubble" style={{ left: "50%", top: "30%" }} aria-label="隕石 12" onClick={() => advanceTut(2)}>12</button>
               )}
               {tutStep === 2 && (
                 <button
                   type="button"
-                  className="md-meteor md-static"
+                  className="md-meteor md-tut-bubble"
                   style={{ left: "50%", top: "30%" }}
                   aria-label="隕石 14"
                   onClick={() => advanceTut(3)}
-                  onPointerDown={() => setTutSelected(false)}
-                  onPointerMove={(e) => {
-                    const hit = document.elementFromPoint(e.clientX, e.clientY);
-                    const bubble = hit instanceof Element ? hit.closest(".md-meteor") : null;
-                    if (bubble) advanceTut(3);
-                  }}
                 >14</button>
               )}
               {tutStep === 3 && (
                 <>
                   <button
                     type="button"
-                    className={`md-meteor md-static${tutSelected ? " is-selected" : ""}`}
-                    style={{ left: "50%", top: "22%" }}
+                    className={`md-meteor md-tut-bubble${tutSelected ? " is-selected" : ""}`}
+                    style={tutDrag ? { transform: `translate(calc(-50% + ${tutDrag.dx}px), calc(-50% + ${tutDrag.dy}px))` } : { left: "50%", top: "22%" }}
                     aria-label="隕石 20"
-                    onClick={() => setTutSelected((v) => !v)}
+                    onPointerDown={(e) => {
+                      // 真拖拽：按住移動，放手在回收槽上完成教學（指標捕捉讓手勢跟手）。
+                      try { e.currentTarget.setPointerCapture(e.pointerId); } catch { /* 無 capture 就用點選後備 */ }
+                      tutDragActiveRef.current = true;
+                      tutMovedRef.current = false;
+                      tutDragStartRef.current = { x: e.clientX, y: e.clientY };
+                      setTutDrag({ dx: 0, dy: 0 });
+                    }}
+                    onPointerMove={(e) => {
+                      if (!tutDragActiveRef.current) return;
+                      const dx = e.clientX - tutDragStartRef.current.x;
+                      const dy = e.clientY - tutDragStartRef.current.y;
+                      if (Math.hypot(dx, dy) > 8) tutMovedRef.current = true;
+                      setTutDrag({ dx, dy });
+                    }}
+                    onPointerUp={(e) => {
+                      if (!tutDragActiveRef.current) return;
+                      tutDragActiveRef.current = false;
+                      const moved = tutMovedRef.current;
+                      setTutDrag(null);
+                      if (!moved) return; // 沒真的拖動 → 留給 onClick 當「點選」
+                      const rect = slotRef.current?.getBoundingClientRect();
+                      if (rect && e.clientX >= rect.left && e.clientX <= rect.right && e.clientY >= rect.top && e.clientY <= rect.bottom) {
+                        finishTutorial();
+                      }
+                    }}
+                    onPointerCancel={() => {
+                      tutDragActiveRef.current = false;
+                      setTutDrag(null);
+                    }}
+                    onClick={() => {
+                      if (!tutMovedRef.current) setTutSelected((v) => !v);
+                    }}
                   >20</button>
                   <div
                     ref={slotRef}
-                    className="md-slot md-tut-slot"
+                    className={`md-slot md-tut-slot${tutSelected ? " is-active" : ""}`}
                     role="button"
+                    tabIndex={0}
                     aria-label="基地回收槽"
                     onClick={() => {
                       if (tutSelected) finishTutorial();
                     }}
-                    onPointerUp={(e) => {
-                      const rect = slotRef.current?.getBoundingClientRect();
-                      const bx = rect ? rect.left + rect.width / 2 : 0;
-                      const by = rect ? rect.top + rect.height / 2 : 0;
-                      void bx; void by;
-                      // 拖拽版：泡泡 pointerup 不會落到這裡（教學只有一顆泡泡，拖進來時 pointerup 在槽上）
-                      const hit = document.elementFromPoint(e.clientX, e.clientY);
-                      if (hit instanceof Element && hit.closest(".md-meteor")) {
-                        // 拖著泡泡放到槽上
+                    onKeyDown={(e) => {
+                      if ((e.key === "Enter" || e.key === " ") && tutSelected) {
+                        e.preventDefault();
                         finishTutorial();
                       }
                     }}
