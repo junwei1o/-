@@ -495,3 +495,11 @@ curl -s https://xue-gr3a.onrender.com/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | h
   - 契約測試改寫：mobileEditionAssets.test.ts、HomeLobby.contract.test.ts 改為斷言「不再有地圖」；HomeDashboard.test.tsx 移除 mock 改查 not.toBeInTheDocument。
 - 刻意保留（休眠，無 UI 引用）：mapVictoryProgress（rpgStorage/rpgTypes，BattleScene 仍會寫入）、mapReinforcementReward（TeacherParentSummary 仍讀）、randomAdventureRouteReward（PaperExam 仍會發）、TaiwanLandmarkMap.tsx（本來就無人引用）。之後要徹底清這些再開一個 task。
 - 驗證：tsc 0 錯、1102 tests 綠（183→180 檔，少的正是刪掉的地圖測試）、build 成功；本機 Playwright map-removal.mjs 9/9（首頁無 map-layer/hex、狀態與模式樞紐正常、/map 頁保留關係圖、無 pageerror）。
+
+## 2026-09-19 下架燈塔指航中心（卡牌遊戲整體刪除）
+- 需求：把卡牌遊戲整體刪除。commit 44ee897（33 檔，淨刪 2710 行）。保留 /battle（答題戰鬥）。
+- 刪除檔案（21）：pages Tavern.tsx/.css/.test、CardCollection.tsx/.css/.test；components TavernBar、TavernCompanion、TrumpDuelBoard.tsx/.css/.test、AdventureViewer.tsx/.test、CardArt.tsx/.test；game tavernKeeper、cardCollection、trumpDuel（各含 test）。
+- 入口清理：App.tsx 四條 /tavern* 路由＋lazy import；首頁模式樞紐燈塔卡（剩 3 卡）；homeFeatureDirectory、featureSearch（含 id union 型別）、TreasureHub 卡牌入口＋文案、TopNavigation treasure activePrefixes 的 /tavern；titleCatalog 移除 4 個稱號（牌局好手/潮汐牌王/燈塔嚮導/古籍尋跡者，目錄 21→17，歷史存檔已取得稱號仍正常顯示）；LeagueArena 排名獎不再 addCardToCollection。
+- 刻意保留：/battle（BattleScene＋battle* 模組）、trumpCardData（adventureChapters 只 import type CardTheme；守護者遠征 RpgAdventure/adventureEngine 依賴）、adventureChapters、歷史玩家的卡牌收藏與稱號存檔（無 UI 顯示，休眠）。
+- 測試同步：App.routes.test（tavern 路由改斷言不存在）、titleCatalog.test（21→17＋新增下架斷言）、TreasureHub.test（卡牌入口改 not.toBeInTheDocument）、Home.modeHub.test（四入口→三入口）。
+- 驗證：tsc 0 錯、1042 tests 綠、build 成功；本機 Playwright tavern-removal.mjs 10/10（首頁無燈塔卡、四條 /tavern* 無 UI、藏寶圖無卡牌入口、/battle 正常、無 pageerror）。
