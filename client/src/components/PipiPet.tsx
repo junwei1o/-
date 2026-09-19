@@ -30,7 +30,7 @@ type SizeKey = "small" | "normal" | "large";
 type Mood = "grumpy" | "neutral" | "happy" | "joyful";
 type Particle = { id: number; x: number; y: number; emoji: string };
 type Trivia = { q: string; a: string; b: string; correct: "a" | "b"; fact: string };
-type ActionKey = "dance" | "spin" | "hop";
+type ActionKey = "dance" | "hop";
 /** v7 表情差分：開心 / 生氣 / 害羞，各套裝都有一張換圖 */
 type FaceExpr = "happy" | "angry" | "shy";
 const FACE_EXPRS: FaceExpr[] = ["happy", "angry", "shy"];
@@ -50,7 +50,6 @@ const SIZE_PX: Record<SizeKey, number> = { small: 78, normal: 110, large: 150 };
 /** v5 表演動作（CSS 動畫疊加） */
 const ACTIONS: Record<ActionKey, { label: string; emoji: string; line: string; particles: string[] }> = {
   dance: { label: "跳舞", emoji: "🎵", line: "喵喵喵～跟著節奏搖擺！", particles: ["🎵", "✨"] },
-  spin: { label: "轉圈", emoji: "🌀", line: "轉圈圈～頭好暈喵！", particles: ["💫", "🌊"] },
   hop: { label: "跳跳", emoji: "🦘", line: "跳跳跳！活力滿點！", particles: ["⭐", "✨"] },
 };
 
@@ -183,9 +182,6 @@ export function PipiPet() {
   const [micro, setMicro] = useState<string | null>(null);
   // v7 表情差分換圖
   const [faceExpr, setFaceExpr] = useState<FaceExpr | null>(null);
-  // v8 眼球跟隨指標
-  const eyeLRef = useRef<HTMLSpanElement>(null);
-  const eyeRRef = useRef<HTMLSpanElement>(null);
   // v8 閒置自動休息：nap=自動睡著 / outing=外出逛逛
   const [idleMode, setIdleMode] = useState<"nap" | "outing" | null>(null);
   const idleModeRef = useRef<"nap" | "outing" | null>(null);
@@ -381,27 +377,17 @@ export function PipiPet() {
     return () => { if (faceTimer.current) clearTimeout(faceTimer.current); };
   }, []);
 
-  // v8：眼球跟隨滑鼠／手指（直接改 DOM style，避免每 frame re-render）
+  // v8：身體微傾跟隨滑鼠／手指（直接改 CSS 變數，避免每 frame re-render）
   useEffect(() => {
     const onMove = (e: PointerEvent) => {
       lastActiveRef.current = Date.now();
-      const rect = rootRef.current?.getBoundingClientRect();
-      if (!rect) return;
-      // 眼球中心約在寵物頭部 42% 高度
-      const cx = rect.left + rect.width / 2;
-      const cy = rect.top + rect.height * 0.42;
-      const dx = e.clientX - cx;
-      const dy = e.clientY - cy;
-      const dist = Math.hypot(dx, dy);
-      const maxR = 4.5; // 眼球最大偏移 px
-      // 越遠轉越多，但 120px 外就封頂
-      const r = Math.min(maxR, dist / 12);
-      const angle = Math.atan2(dy, dx);
-      const tx = Math.cos(angle) * r;
-      const ty = Math.sin(angle) * r * 0.7;
-      const t = `translate(${tx.toFixed(2)}px, ${ty.toFixed(2)}px)`;
-      eyeLRef.current?.style.setProperty("transform", t);
-      eyeRRef.current?.style.setProperty("transform", t);
+      const root = rootRef.current;
+      if (!root) return;
+      const rect = root.getBoundingClientRect();
+      const dx = e.clientX - (rect.left + rect.width / 2);
+      // 身體微傾：指標偏左就微歪左，偏右就微歪右（±2.5 度），像在轉頭看你
+      const deg = Math.max(-2.5, Math.min(2.5, (dx / Math.max(rect.width, 1)) * 5));
+      root.style.setProperty("--look-deg", `${deg.toFixed(2)}deg`);
     };
     window.addEventListener("pointermove", onMove, { passive: true });
     return () => window.removeEventListener("pointermove", onMove);
@@ -516,6 +502,7 @@ export function PipiPet() {
       moved: false, velocity: 0, lastX: e.clientX, lastY: e.clientY,
     };
     (e.target as HTMLElement).setPointerCapture(e.pointerId);
+    rootRef.current?.classList.add("dragging");
   }, []);
   const onPointerMove = useCallback((e: React.PointerEvent) => {
     const d = dragRef.current;
@@ -529,6 +516,7 @@ export function PipiPet() {
     }
   }, []);
   const onPointerUp = useCallback(() => {
+    rootRef.current?.classList.remove("dragging");
     const d = dragRef.current;
     if (d && d.moved && d.velocity > 30) {
       setBubble("哇哦——！太快了喵！");
@@ -656,6 +644,25 @@ export function PipiPet() {
     loop();
     return () => clearTimeout(timer);
   }, [sleeping]);
+
+  // v8：待機時偶爾飄一顆小愛心／星星，更有生命感
+  useEffect(() => {
+    if (sleeping) return;
+    let timer: ReturnType<typeof setTimeout>;
+    const loop = () => {
+      timer = setTimeout(() => {
+        if (!bubble && !menuOpen && !panelOpen && !trivia && !roaming && !actionAnim) {
+          spawnParticles(
+            Math.random() < 0.6 ? ["💗", "💖"] : ["✨", "⭐"],
+            2 + Math.floor(Math.random() * 2),
+          );
+        }
+        loop();
+      }, 25000 + Math.random() * 20000);
+    };
+    loop();
+    return () => clearTimeout(timer);
+  }, [sleeping, bubble, menuOpen, panelOpen, trivia, roaming, actionAnim, spawnParticles]);
 
   // 每日簽到
   const checkIn = useCallback(() => {
@@ -822,7 +829,6 @@ export function PipiPet() {
             </button>
           ))}
           <button onClick={() => playAction("dance")}><span aria-hidden>🎵</span> 跳舞</button>
-          <button onClick={() => playAction("spin")}><span aria-hidden>🌀</span> 轉圈</button>
           <button onClick={() => playAction("hop")}><span aria-hidden>🦘</span> 跳跳</button>
           <button onClick={askTrivia}><span aria-hidden>📚</span> 小知識問答</button>
           <button onClick={cheer}><span aria-hidden>💪</span> 加油打氣</button>
@@ -966,13 +972,6 @@ export function PipiPet() {
           height={petPx}
           onError={() => { /* 表情差分載入失敗時退回套裝基礎圖，避免破圖 */ if (faceExpr) setFaceExpr(null); }}
         />
-        {/* v8：疊在立繪上的黑瞳孔，跟隨指標移動（睡覺時不顯示，看起來像閉眼） */}
-        {!sleeping && !hidden && (
-          <>
-            <span ref={eyeLRef} className="pipi-eye pipi-eye-l" aria-hidden />
-            <span ref={eyeRRef} className="pipi-eye pipi-eye-r" aria-hidden />
-          </>
-        )}
         {!sleeping && wornItems.map((c) => (
           <span key={c.id} className={`pipi-costume pipi-costume-${c.slot}`} aria-hidden>{c.emoji}</span>
         ))}
