@@ -518,3 +518,11 @@ curl -s https://xue-gr3a.onrender.com/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | h
 - 好感度系統：localStorage `xue-pet-bond-v1`（bond/pats/feeds/lights），每 5 點升一級最高 Lv.10；面板顯示等級進度條與三互動計數，可展開/收合；尺寸四檔迷你/小/標準/大（0.65/0.8/1/1.2）循環切換。
 - 三皮適配：memphis 黃底黑邊硬陰影、concise 白底海藍字（對齊遠端「極簡海」品牌色 var(--tidal)）、classic 暖木；reduced-motion 全關動畫；520px 手機縮 0.9、避開底部導覽。
 - 測試：QuizRoom.test.tsx 加 2 例（燈寶出現＋摸頭寫入 bond=1/pats=1＋氣泡；餵糖+2、點燈+1 合計 bond=3）共 8 例綠；tsc 0 error、vite build OK（合併後 index-CbV-mYaK.js）。
+
+## 2026-09-19 卡牌遊戲全面下架（知識決鬥／卡牌決鬥）
+- 刪檔：pages/KnowledgeDuel.tsx(+test)、game/knowledgeDuel.ts(+test)、utils/knowledgeDuelStorage.test.ts。
+- 路由：App.tsx 移除 /knowledge-duel 與 /duel 兩條路由及 lazy import；TopNavigation 我的教室 activePrefixes 移除這兩個前綴。
+- 入口：QuizRoom「經典答題模式」移除卡牌決鬥卡（Crosshair icon 一併移除）；CommunityHub 自我挑戰頁移除「前往知識決鬥」按鈕；featureSearch 移除 duel 搜尋項（BrainCircuit import 移除）；TopNav 搜尋框 placeholder／空結果提示移除「卡牌」字樣。
+- 資料：storage.ts 移除 KNOWLEDGE_DUEL_RECORDS_KEY、KnowledgeDuelRecord 型別、get/saveKnowledgeDuelRecords（僅知識決鬥頁使用）。
+- 樣式：index.css 移除知識決鬥整段壓縮 CSS（.community-duel-link／.duel-page／.duel-panel／.duel-strategy-card／.duel-hand-card 等）。注意：.duel-stage/.duel-character/.duel-vs 屬於潮汐戰鬥 BattleScene 雙方對戰舞台，保留。
+- 測試改為下架斷言：App.routes（路由不存在）、featureSearch（搜卡牌/知識決鬥無結果、無 duel id）、TopNavigation（搜卡牌顯示找不到）、QuizRoom（經典模式不含卡牌決鬥）。受影響 6 檔 37 例綠，tsc 0 error、vite build OK。

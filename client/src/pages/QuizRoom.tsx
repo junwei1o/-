@@ -5,7 +5,6 @@ import {
   BookOpenCheck,
   CalendarDays,
   Compass,
-  Crosshair,
   Layers,
   LayoutGrid,
   Link2,
@@ -150,7 +149,6 @@ export default function QuizRoom() {
   const modes = [
     { id: "free", label: "自由練習", desc: "依科目與進度開始答題，沒有戰鬥、沒有壓力。", href: "/practice", icon: BookOpenCheck },
     { id: "battle", label: "潮汐戰鬥", desc: "答對就攻擊潮芽獸，答錯牠咬你。", href: "/battle", icon: Swords },
-    { id: "duel", label: "卡牌決鬥", desc: "三局兩勝，答對連擊會加倍傷害。", href: "/knowledge-duel", icon: Crosshair },
     { id: "wrong", label: "錯題本", desc: "今日複習中心＋錯題魔王，整理真實弱點。", href: "/review-hub", icon: RotateCcw },
     { id: "topic", label: "專題觀測", desc: "天文／科學／生活安全，一次只鑽一個主題。", href: "/gallery", icon: Telescope },
     { id: "timed", label: "限時挑戰", desc: "十題自我挑戰，留下個人最佳紀錄。", href: "/community?mode=timed", icon: Timer },

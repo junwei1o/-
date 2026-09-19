@@ -29,7 +29,6 @@ const WisdomStoryDetail = React.lazy(() => import("./pages/WisdomStoryDetail"));
 const SafetyAcademy = React.lazy(() => import("./pages/SafetyAcademy"));
 const SafetyAcademyDetail = React.lazy(() => import("./pages/SafetyAcademyDetail"));
 const CommunityHub = React.lazy(() => import("@/pages/CommunityHub"));
-const KnowledgeDuel = React.lazy(() => import("@/pages/KnowledgeDuel"));
 const LearningInsights = React.lazy(() => import("@/pages/LearningInsights"));
 const LearningReport = React.lazy(() => import("@/pages/LearningReport"));
 const ErrorTypeStatistics = React.lazy(() => import("@/pages/ErrorTypeStatistics"));
@@ -105,8 +104,6 @@ function Router() {
         <Route path={"/learning-insights"} component={LearningInsights} />
         <Route path={"/learning-report"} component={LearningReport} />
         <Route path={"/community"} component={CommunityHub} />
-        <Route path={"/knowledge-duel"} component={KnowledgeDuel} />
-        <Route path={"/duel"} component={KnowledgeDuel} />
         <Route path={"/error-statistics"} component={ErrorTypeStatistics} />
         <Route path={"/learning-summary"} component={TeacherParentSummary} />
         <Route path={"/settings"} component={Settings} />

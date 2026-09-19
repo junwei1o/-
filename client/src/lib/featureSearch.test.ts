@@ -8,13 +8,17 @@ describe("核心功能搜尋索引", () => {
 
   it.each([
     ["戰鬥", "battle", "/battle"],
-    ["卡牌", "duel", "/knowledge-duel"],
-    ["知識決鬥", "duel", "/knowledge-duel"],
     ["錯題", "wrongAnswers", "/wrong-answers"],
   ])("可由「%s」找到 %s 功能並提供正確路由", (query, expectedId, expectedHref) => {
     const result = findFeatureSearchResults(query).find((item) => item.id === expectedId);
 
     expect(result).toMatchObject({ id: expectedId, href: expectedHref });
+  });
+
+  it("卡牌決鬥已下架，搜尋卡牌或決鬥不再出現", () => {
+    expect(findFeatureSearchResults("卡牌")).toHaveLength(0);
+    expect(findFeatureSearchResults("知識決鬥")).toHaveLength(0);
+    expect(FEATURE_SEARCH_ITEMS.map((item) => item.id)).not.toContain("duel");
   });
 
   it("守護者 BOSS 主線已下架，搜尋不再出現", () => {

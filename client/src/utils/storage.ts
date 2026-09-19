@@ -8,7 +8,6 @@ export const STORAGE_ERROR_LOG_KEY = "errorLogs";
 export const BATTLE_STATE_KEY = "xueBattleState";
 export const BATTLE_VOLUME_KEY = "xueBattleVolume";
 export const SELF_CHALLENGE_BEST_KEY = "xueSelfChallengeBest";
-export const KNOWLEDGE_DUEL_RECORDS_KEY = "xueKnowledgeDuelRecords";
 export const DAILY_SIGN_IN_KEY = "xueSignIn";
 export const DEFAULT_BATTLE_VOLUME = 0.65;
 
@@ -61,16 +60,6 @@ export type SelfChallengeBest = {
   completed: number;
   correct: number;
   updatedAt: number;
-};
-
-export type KnowledgeDuelRecord = {
-  id: string;
-  timestamp: number;
-  winner: "player" | "ai" | "draw";
-  playerWins: number;
-  aiWins: number;
-  weakSubjects: string[];
-  usedCards: string[];
 };
 
 export type DailySignIn = {
@@ -978,24 +967,4 @@ export function claimDailySignIn(now = Date.now(), storage: StorageLike | null =
   const unlockedWeeklyTitle = streak >= 7 && !getLimitedTitles(storage).includes(weeklyTitle);
   if (unlockedWeeklyTitle) unlockLimitedTitle(weeklyTitle, storage);
   return { signIn, claimed: true, unlockedWeeklyTitle };
-}
-
-export function getKnowledgeDuelRecords(storage: StorageLike | null = browserStorage()): KnowledgeDuelRecord[] {
-  const value = readStoredJson<unknown>(KNOWLEDGE_DUEL_RECORDS_KEY, [], storage);
-  if (!Array.isArray(value)) return [];
-  return value.filter((item): item is KnowledgeDuelRecord => Boolean(
-    item && typeof item === "object" && typeof (item as KnowledgeDuelRecord).id === "string"
-      && typeof (item as KnowledgeDuelRecord).timestamp === "number"
-      && ["player", "ai", "draw"].includes((item as KnowledgeDuelRecord).winner)
-      && typeof (item as KnowledgeDuelRecord).playerWins === "number"
-      && typeof (item as KnowledgeDuelRecord).aiWins === "number"
-      && Array.isArray((item as KnowledgeDuelRecord).weakSubjects)
-      && Array.isArray((item as KnowledgeDuelRecord).usedCards),
-  )).slice(-30);
-}
-
-export function saveKnowledgeDuelRecord(record: KnowledgeDuelRecord, storage: StorageLike | null = browserStorage()): KnowledgeDuelRecord[] {
-  const next = [...getKnowledgeDuelRecords(storage).filter((item) => item.id !== record.id), record].slice(-30);
-  writeStoredJson(KNOWLEDGE_DUEL_RECORDS_KEY, next, storage);
-  return next;
 }

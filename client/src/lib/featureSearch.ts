@@ -1,4 +1,4 @@
-import { BookOpen, BookOpenCheck, BrainCircuit, Compass, Crown, LifeBuoy, Lightbulb, Map as MapIcon, Medal, Orbit, Radar, Swords, Telescope, Tent, type LucideIcon } from "lucide-react";
+import { BookOpen, BookOpenCheck, Compass, Crown, LifeBuoy, Lightbulb, Map as MapIcon, Medal, Orbit, Radar, Swords, Telescope, Tent, type LucideIcon } from "lucide-react";
 
 export type FeatureSearchItem = {
   id: "map" | "battle" | "duel" | "wrongAnswers" | "studyTips" | "dailyCamp" | "badges" | "safetyAcademy" | "worldPrinciples" | "mediaObservatory" | "astronomy" | "wisdomStories";
@@ -25,14 +25,6 @@ export const FEATURE_SEARCH_ITEMS: FeatureSearchItem[] = [
     href: "/battle",
     keywords: ["戰鬥", "答題戰鬥", "怪物", "怒氣", "技能", "連擊"],
     icon: Swords,
-  },
-  {
-    id: "duel",
-    label: "知識決鬥／卡牌對戰",
-    description: "和 AI 對手進行三局兩勝的推理答題與策略卡牌對戰。",
-    href: "/knowledge-duel",
-    keywords: ["知識決鬥", "決鬥", "卡牌", "卡牌對戰", "策略卡", "狼人殺", "AI 對手"],
-    icon: BrainCircuit,
   },
   {
     id: "wrongAnswers",

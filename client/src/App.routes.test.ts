@@ -8,9 +8,10 @@ describe("App 守護者路由相容性", () => {
     expect(appSource).not.toContain('path={"/guardian"');
   });
 
-  it("將附件要求的決鬥短路徑導向既有知識決鬥頁", () => {
-    expect(appSource).toContain('path={"/knowledge-duel"}');
-    expect(appSource).toContain('path={"/duel"} component={KnowledgeDuel}');
+  it("卡牌決鬥已下架，路由不再存在", () => {
+    expect(appSource).not.toContain('path={"/knowledge-duel"}');
+    expect(appSource).not.toContain('path={"/duel"}');
+    expect(appSource).not.toContain("KnowledgeDuel");
   });
 
   it("燈塔指航中心與其子頁面路由已下架", () => {

@@ -23,7 +23,7 @@ type NavGroup = { id: string; label: string; items: NavItem[] };
  */
 const PRIMARY_ITEMS: NavItem[] = [
   { id: "home", label: "首頁", icon: Compass, href: "/", activePrefixes: ["/map", "/regions/"] },
-  { id: "quiz-room", label: "我的教室", icon: BookOpenCheck, href: "/quiz-room", activePrefixes: ["/quiz-room", "/classroom", "/weekly-quiz", "/practice", "/battle", "/knowledge-duel", "/duel", "/wrong-answers", "/review-hub", "/community", "/expedition", "/camp"] },
+  { id: "quiz-room", label: "我的教室", icon: BookOpenCheck, href: "/quiz-room", activePrefixes: ["/quiz-room", "/classroom", "/weekly-quiz", "/practice", "/battle", "/wrong-answers", "/review-hub", "/community", "/expedition", "/camp"] },
   { id: "learning", label: "學習歷程", icon: BarChart3, href: "/learning", activePrefixes: ["/learning", "/learning-insights", "/learning-report", "/error-statistics", "/learning-summary", "/adventure-journal"] },
   { id: "treasure", label: "藏寶圖", icon: MapIcon, href: "/treasure", activePrefixes: ["/treasure", "/badges", "/gallery", "/wisdom", "/astronomy", "/principles", "/observatory", "/safety", "/study-tips"] },
   { id: "settings", label: "設定", icon: Settings, href: "/settings", activePrefixes: ["/settings", "/teacher", "/class", "/features"] },
@@ -156,7 +156,7 @@ export default function TopNavigation() {
               autoFocus
               value={searchQuery}
               onValueChange={setSearchQuery}
-              placeholder="搜尋戰鬥、卡牌、守護者、錯題…"
+              placeholder="搜尋戰鬥、演練、錯題…"
               aria-label="搜尋學習功能"
             />
             <CommandList>
@@ -182,7 +182,7 @@ export default function TopNavigation() {
                   })}
                 </CommandGroup>
               ) : (
-                <p className="global-feature-search-empty" role="status">找不到「{searchQuery}」；可嘗試「戰鬥」、「卡牌」、「守護者」或「錯題」。</p>
+                <p className="global-feature-search-empty" role="status">找不到「{searchQuery}」；可嘗試「戰鬥」、「演練」或「錯題」。</p>
               )}
             </CommandList>
           </Command>
