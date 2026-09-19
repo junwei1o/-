@@ -417,3 +417,16 @@ curl -s https://xue-gr3a.onrender.com/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | h
 - 插圖：BxEmptyState 加入琵琵桌寵（/pipi/idle/frame-01.webp 探頭在插圖右下，bx-empty__art-row + bx-empty__pipi，drop-shadow＋浮動動畫，prefers-reduced-motion 關閉）——全站空狀態（地圖面板、徽章牆、背包等）一處改全站生效。
 - 驗證：tsc 0 錯、1119 tests 綠、bundle index-DWCQIRro.js / index-DQZq46C7.css 線上一致；線上截圖複查 expedition/community/badges 漸層晶片、圓角卡片、琵琵入鏡全部生效。
 - 踩坑：本機 bash 與 host 檔案視圖有同步延遲，grep 空結果可能是延遲而非編輯丟失——以 build 產物與 Grep 工具雙重驗證。
+
+## 2026-09-19 小寶 v5 夥伴系統（派任務＋飾品衣櫥＋板塊事件匯流）
+- 背景：遠端已把桌寵從琵琵（黑面琵鷺 sprite）整個換成「小寶」貓耳人形（5 套職業套裝 /pipi/outfits/*.webp、路線自動換裝、每日簽到、加油打氣、擊掌、專注模式、手機長按選單）；本輪在其上疊加 WorkBuddy 貓派任務式系統，rebase 時 PipiPet.tsx 以遠端小寶版為基底手動合併（保留全部小寶功能）。
+- 新模組 client/src/game/pipiCompanion.ts（純邏輯＋10 個單元測試）：
+  - 每日任務：PIPI_QUEST_POOL 7 種（答題 5/10 題、教室遊戲 1/2 場、地標 1/3 個、週測 1 次），selectDailyQuests 依日期種子 LCG 確定性選 3 個（同一天同一組），跨日自動重置；storage key pipi-quests-v1。
+  - 事件匯流：recordPipiEvent(type) 由各板塊呼叫 → 推進進度 → window CustomEvent「pipi-quest」廣播；claimPipiQuest 領獎（不重複領）；claimableQuests 查可領。
+  - 飾品衣櫥：6 件飾品（學士帽🎓/小魚項鍊🐟/墨鏡🕶️/望遠鏡🔭/慶祝帽🎉/圍巾🧣），解鎖條件＝好感度 50/120/250、互動 40 次、任務 3/7 個；飾品以 emoji 疊層（.pipi-costume-<slot> hat/face/neck/back，em 隨寵物縮放）疊在套裝 webp 上，可多件同戴；存 pipi-worn。
+  - 獎勵入帳：claimQuest 金幣寫回 RPG 狀態（loadRpgState/saveRpgState coins）＋好感度。
+- 板塊接入點（5 處）：ClassroomPlay.updateBest → game-complete；BattleScene 主戰答題與捕捉答題 → answer-correct（correct 時）；QuizModal 島嶼答題 → answer-correct；WeeklyQuizCard 提交成功 → weekly-quiz；TaiwanMainNavigationMap 島嶼按鈕 → map-visit。
+- PipiPet.tsx（v5）：選單新增任務看板（可領數提示）／飾品衣櫥（x/6）／跳舞🎵轉圈🌀跳跳🦘（CSS anim-dance/spin/hop 疊加）；任務看板與衣櫥面板（進度條、🪙💖獎勵、領取按鈕金光 ready 態、已領灰化）；互動表情 emote（點擊😍/雙擊🥰/答對🤩/答錯😯/丟擲😵）；進站 9 秒與跨頁時可領獎勵提醒；pipi-quest 事件到達時慶祝泡泡。
+- 修 bug：右鍵/長按/☰開選單時收起其他面板避免遮擋；選單項目 19 個超過視窗高度 → .pipi-menu max-height min(70vh,560px) 可捲動。
+- 驗證：tsc 0 錯、1129 tests 全綠（+10 pipiCompanion）、build 成功；本機 Playwright 冒煙 11/11（寵物/選單/看板 3 列/衣櫥 6 卡/跳舞 anim/注入進度後領取→已領取/無 pageerror）。
+- 踩坑：並行 session 同時 push（12c1f72→a4e4dac→83d3c8d），push 兩次被拒需 rebase；bash 與 host 檔案視圖延遲持續存在，驗證一律以 Grep 工具＋build 產物為準。
