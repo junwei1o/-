@@ -512,13 +512,6 @@ curl -s https://xue-gr3a.onrender.com/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | h
 - 測試同步：App.routes.test、featureSearch.test、Expedition.test 改斷言守護者不存在／今日任務指向 /battle。
 - 驗證：tsc 0 錯、1014 tests 綠、build 成功；本機 Playwright guardian-removal.mjs 6/6（/guardian 無 UI、遠征頁無守護者卡、今日任務→/battle、無 pageerror）。
 
-## 2026-09-19 我的教室桌寵品質寵物「燈寶」（我的教室小燈靈，純 SVG 手繪）
-- ClassroomPet.tsx（新）：純 SVG 手繪燈寶掛「我的教室」右下角浮窗（fixed 右 12 底 84）。對標桌寵：待機呼吸（1.5% 縱伸+橫向補償，底錨不漂移）+ 眨眼（3.2–6s 隨機，眼睛 ry 收細成線）；互動三式——摸頭（開心回彈 380ms 壓縮—超調—復位＋ok 音＋好感 +1）、餵星星糖（⭐ 飄入＋win 琶音＋好感 +2）、戳戳點燈（燈芯火焰＋sparkles 閃光＋flip 音＋好感 +1）；每互動皆有角色化說話氣泡（7 句隨機台詞，2.4s 消退）。
-- 面板：好感度面板（.pet-panel）浮在燈寶左側，手機上不再遮互動列。
-- 好感度系統：localStorage `xue-pet-bond-v1`（bond/pats/feeds/lights），每 5 點升一級最高 Lv.10；面板顯示等級進度條與三互動計數，可展開/收合；尺寸四檔迷你/小/標準/大（0.65/0.8/1/1.2）循環切換。
-- 三皮適配：memphis 黃底黑邊硬陰影、concise 白底海藍字（對齊遠端「極簡海」品牌色 var(--tidal)）、classic 暖木；reduced-motion 全關動畫；520px 手機縮 0.9、避開底部導覽。
-- 測試：QuizRoom.test.tsx 加 2 例（燈寶出現＋摸頭寫入 bond=1/pats=1＋氣泡；餵糖+2、點燈+1 合計 bond=3）共 8 例綠；tsc 0 error、vite build OK（合併後 index-CbV-mYaK.js）。
-
 ## 2026-09-19 卡牌遊戲全面下架（知識決鬥／卡牌決鬥）
 - 刪檔：pages/KnowledgeDuel.tsx(+test)、game/knowledgeDuel.ts(+test)、utils/knowledgeDuelStorage.test.ts。
 - 路由：App.tsx 移除 /knowledge-duel 與 /duel 兩條路由及 lazy import；TopNavigation 我的教室 activePrefixes 移除這兩個前綴。
@@ -526,3 +519,8 @@ curl -s https://xue-gr3a.onrender.com/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | h
 - 資料：storage.ts 移除 KNOWLEDGE_DUEL_RECORDS_KEY、KnowledgeDuelRecord 型別、get/saveKnowledgeDuelRecords（僅知識決鬥頁使用）。
 - 樣式：index.css 移除知識決鬥整段壓縮 CSS（.community-duel-link／.duel-page／.duel-panel／.duel-strategy-card／.duel-hand-card 等）。注意：.duel-stage/.duel-character/.duel-vs 屬於潮汐戰鬥 BattleScene 雙方對戰舞台，保留。
 - 測試改為下架斷言：App.routes（路由不存在）、featureSearch（搜卡牌/知識決鬥無結果、無 duel id）、TopNavigation（搜卡牌顯示找不到）、QuizRoom（經典模式不含卡牌決鬥）。受影響 6 檔 37 例綠，tsc 0 error、vite build OK。
+
+## 2026-09-20 我的教室寵物「燈寶」下架
+- 應使用者要求移除桌寵品質網頁寵物燈寶：刪除 components/classroom/ClassroomPet.tsx、classroom.css 結尾整段 .pet-* 樣式（含 reduced-motion 與 520px 兩個寵物專用 media 區）、QuizRoom.tsx 的 import 與 `<ClassroomPet/>` 掛載、QuizRoom.test.tsx 兩例（摸頭好感、餵糖點燈）。
+- 好感度 localStorage key `xue-pet-bond-v1` 不再讀寫（殘留於使用者本機的舊資料無害、不影響）。
+- 教室三皮膚切換（極簡海／孟菲斯／經典海報）與其餘玩法、燈寶以外功能全部保留。

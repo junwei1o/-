@@ -18,7 +18,6 @@ import {
   Zap,
 } from "lucide-react";
 import { loadClassroomBest, type ClassroomBestMap } from "@/lib/classroomBank";
-import ClassroomPet from "@/components/classroom/ClassroomPet";
 import "./HubPages.css";
 import "@/components/classroom/classroom.css";
 
@@ -303,9 +302,6 @@ export default function QuizRoom() {
           </button>
         ))}
       </div>
-
-      {/* 燈寶：我的教室桌寵品質小夥伴 */}
-      <ClassroomPet skin={skin} />
     </main>
   );
 }
