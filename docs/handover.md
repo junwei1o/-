@@ -473,3 +473,14 @@ curl -s https://xue-gr3a.onrender.com/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | h
 - 驗證：tsc 0 錯、1129 tests 綠、本機＋線上 Playwright map-v9.mjs 各 14/14（1040 hex、land 188、地形多樣性 deep770/shallow82/forest44/mt18/sand53、浪花 166、島在六角座標、船母港 (131.2,298.5)→數學港 (400.1,197.3)→回港、glyph 無動畫、對話框浮右上 panel.x=1250、無 pageerror）。
 - 線上：bundle index-U7IMpLP-.js 與 HEAD 精確重建一致（注意：本機 working tree 有並行 session 的 PipiPet WIP，比 hash 前要先 stash 再 build）。
 - 附帶：commit 3f95d64 因 stash pop 順序意外把並行 session 的 PipiPet.css/.tsx/Tavern.tsx WIP 一併提交（tsc/1129 測試/build 全綠，無破壞；該 session 後續注意 pull）。
+
+## 2026-09-19 倍數防衛戰修復（新手教學＋玩法）
+- 需求：測試保衛戰有 bug、特別是新手教學、全面檢測。commit f46c500（只含 MeteorGame.tsx＋classroom.css；working tree 另有並行 session 的 PipiPet＋地圖波光 WIP 未提交，勿混入）。
+- 修了 5 個 bug：
+  1. 教學步驟 3（拖拽）氣泡不可拖 → 完整 pointer-capture 拖拽（tutDrag/tutDragActiveRef/tutMovedRef；移動 >8px 視為拖、up 時在槽 bounds 內→finishTutorial，沒移動→onClick 當點選）。
+  2. 教學步驟 2（劃切）hover 就過關 → 改 field 層 onPointerDown（tutStep===2 記 tutSlashRef）＋onPointerMove elementFromPoint 命中 .md-meteor 才 advanceTut(3)，須真的按住滑過。
+  3. 拖拽/混合波托盤清空後要等滿 42 秒才過波 → 主迴圈加提前 endWave 條件（allSpawned＋場上清空＋trayCleared＋elapsed>2500ms），實測 2.5s 過波。
+  4. 教學回收槽點選後無高亮 → md-tut-slot 加 is-active 條件 class。
+  5. .md-tut-slot 流式排版撞到教學氣泡 → position:absolute; bottom:14px；教學氣泡從 md-static 改新 class md-tut-bubble（absolute＋translate(-50%,-50%)，避開 md-static 的 left/top auto !important 覆寫）。
+- 驗證：tsc 0 錯、1129 tests 綠、build 成功。本機 Playwright（vite preview :4173）：meteor-v2.mjs 教學 16/16（步驟 1–5 真實手勢、拖拽＋點選兩條路徑、錯位拖拽被拒、開局、無 pageerror）；meteor-v2b.mjs 深度玩法 6/6（拖拽波 2.5s 提前過波＋能源存活、點擊波實點得分 score=45、無炸彈誤觸）。
+- 陷阱：meteor-v2b 舊版「tap 模式 score=0」是測試腳本 parseInt(banner) 對「第 1 波：2 的倍數」回傳 NaN 所致，不是遊戲 bug；解析要 regex /(\d+)\s*的倍數/（同時是→10）。freshPage 偶發定位逾時，加重試＋reload 容錯。
