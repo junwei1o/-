@@ -65,6 +65,24 @@ const TRIVIA_BANK: Trivia[] = [
 const LEVEL_NAMES = ["路過的", "認識的", "親密夥伴", "寶島守護者"];
 const MOOD_NAMES: Record<Mood, string> = { grumpy: "睏", neutral: "平靜", happy: "開心", joyful: "興奮" };
 
+const CHEER_LINES = [
+  "加油！你一定可以的！", "專注力爆表！繼續衝～", "答對超棒的！",
+  "一步一步來，你做得到！", "小寶在旁邊幫你搖旗！", "錯了不要緊，再試一次！",
+];
+const HIGH_FIVE_LINES = ["擊掌！讚！", "Yahoo！我們最強！", "啪！好默契～", "給你五顆星！"];
+const FOCUS_LINES = ["好，小寶安靜陪你唸書！", "專注模式，不吵你～", "你唸書我守門！"];
+
+function todayKey(): string {
+  const d = new Date();
+  return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+}
+function loadStreak(): number {
+  try { return parseInt(localStorage.getItem("pipi-streak") || "0", 10) || 0; } catch { return 0; }
+}
+function loadChecked(): string {
+  try { return localStorage.getItem("pipi-lastcheck") || ""; } catch { return ""; }
+}
+
 function loadAffection(): number {
   try { return parseInt(localStorage.getItem("pipi-affection") || "0", 10) || 0; } catch { return 0; }
 }
@@ -120,6 +138,11 @@ export function PipiPet() {
   const [celebrating, setCelebrating] = useState(false);
   const [trivia, setTrivia] = useState<Trivia | null>(null);
   const [mood, setMood] = useState<Mood>(() => moodOf(loadAffection()));
+  const [streak, setStreak] = useState(loadStreak);
+  const [checkedToday, setCheckedToday] = useState(loadChecked() === todayKey());
+  const [emote, setEmote] = useState<string | null>(null);
+  const [focusMode, setFocusMode] = useState(false);
+  const [isTouch, setIsTouch] = useState(false);
 
   const rootRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef<{ startX: number; startY: number; origX: number; origY: number; moved: boolean; velocity: number; lastX: number; lastY: number } | null>(null);
@@ -337,6 +360,74 @@ export function PipiPet() {
     });
   }, []);
 
+  // 偵測觸控裝置（手機顯示明顯選單按鈕）
+  useEffect(() => {
+    const touch = "ontouchstart" in window || navigator.maxTouchPoints > 0;
+    setIsTouch(touch);
+  }, []);
+
+  // 每日簽到
+  const checkIn = useCallback(() => {
+    setMenuOpen(false);
+    const today = todayKey();
+    const last = loadChecked();
+    const yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1);
+    const yKey = `${yesterday.getFullYear()}-${yesterday.getMonth() + 1}-${yesterday.getDate()}`;
+    let newStreak = streak;
+    if (last === today) return;
+    if (last === yKey) newStreak = streak + 1; else newStreak = 1;
+    setStreak(newStreak);
+    setCheckedToday(true);
+    try {
+      localStorage.setItem("pipi-streak", String(newStreak));
+      localStorage.setItem("pipi-lastcheck", today);
+    } catch {}
+    addAffection(15 + Math.min(10, newStreak));
+    spawnParticles(["📅", "⭐", "🎉"], 8);
+    setBounce(true);
+    setBubble(newStreak > 1 ? `連續簽到 ${newStreak} 天！+${15 + Math.min(10, newStreak)} 好感！` : "簽到成功！明天再來！");
+    setTimeout(() => { setBounce(false); setBubble(null); }, 3000);
+  }, [streak, addAffection, spawnParticles]);
+
+  // 加油打氣
+  const cheer = useCallback(() => {
+    setMenuOpen(false);
+    interact(CHEER_LINES[Math.floor(Math.random() * CHEER_LINES.length)], 6, "💪🔥✨");
+    setEmote("💪");
+    setTimeout(() => setEmote(null), 2000);
+  }, [interact]);
+
+  // 擊掌
+  const highFive = useCallback(() => {
+    setMenuOpen(false);
+    interact(HIGH_FIVE_LINES[Math.floor(Math.random() * HIGH_FIVE_LINES.length)], 8, "🖐️⭐💖");
+    setEmote("🖐️");
+    setTimeout(() => setEmote(null), 1500);
+  }, [interact]);
+
+  // 專注模式
+  const toggleFocus = useCallback(() => {
+    setMenuOpen(false);
+    setFocusMode((f) => {
+      const nf = !f;
+      setBubble(FOCUS_LINES[Math.floor(Math.random() * FOCUS_LINES.length)]);
+      setEmote(nf ? "🤫" : "😊");
+      setTimeout(() => { setBubble(null); setEmote(null); }, 2500);
+      return nf;
+    });
+  }, []);
+
+  // 長按開選單（手機）
+  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const onTouchStart = useCallback(() => {
+    longPressTimer.current = setTimeout(() => {
+      setMenuOpen((v) => !v);
+    }, 550);
+  }, []);
+  const onTouchEnd = useCallback(() => {
+    if (longPressTimer.current) clearTimeout(longPressTimer.current);
+  }, []);
+
   const petPx = SIZE_PX[size];
 
   if (hidden) {
@@ -381,6 +472,12 @@ export function PipiPet() {
             </button>
           ))}
           <button onClick={askTrivia}><span aria-hidden>📚</span> 小知識問答</button>
+          <button onClick={cheer}><span aria-hidden>💪</span> 加油打氣</button>
+          <button onClick={highFive}><span aria-hidden>🖐️</span> 擊掌</button>
+          <button onClick={toggleFocus}><span aria-hidden>{focusMode ? "😊" : "🤫"}</span> {focusMode ? "結束專注" : "專陪唸書"}</button>
+          <button onClick={checkIn} disabled={checkedToday}>
+            <span aria-hidden>📅</span> {checkedToday ? `今日已簽到（${streak}天）` : `每日簽到（連續${streak}天）`}
+          </button>
           <button onClick={cycleSize}><span aria-hidden>📐</span> 大小：{size === "small" ? "小" : size === "normal" ? "中" : "大"}</button>
           <button onClick={() => { setMenuOpen(false); setPanelOpen(true); }}><span aria-hidden>📋</span> 寵物面板</button>
           <button onClick={toggleSleep}><span aria-hidden>{sleeping ? "☀️" : "💤"}</span> {sleeping ? "醒來" : "睡覺"}</button>
@@ -403,6 +500,7 @@ export function PipiPet() {
           </div>
           <div className="pipi-panel-stats">
             <div><span>💖 好感度</span><strong>{affection}</strong></div>
+            <div><span>🔥 連續簽到</span><strong>{streak} 天</strong></div>
             <div><span>🤝 互動次數</span><strong>{count}</strong></div>
             <div><span>👗 目前套裝</span><strong>{outfitInfo.emoji} {outfitInfo.name}</strong></div>
             <div><span>😊 心情</span><strong>{MOOD_NAMES[mood]}</strong></div>
@@ -424,13 +522,26 @@ export function PipiPet() {
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
+        onTouchStart={onTouchStart}
+        onTouchEnd={onTouchEnd}
+        onTouchCancel={onTouchEnd}
         role="button"
         aria-label="小寶（貓耳探險家吉祥物）"
-        title="點擊互動 · 雙擊撒嬌 · 右鍵換裝 · 拖曳移動"
+        title="點擊互動 · 雙擊撒嬌 · 右鍵/長按換裝 · 拖曳移動"
       >
         <img src={outfitInfo.img} alt={`小寶 - ${outfitInfo.name}`} draggable={false} width={petPx} height={petPx} />
         <div className="pipi-shadow" />
+        {emote && <div className="pipi-emote" aria-hidden>{emote}</div>}
       </div>
+      {isTouch && !hidden && (
+        <button
+          className="pipi-menu-btn"
+          onClick={() => setMenuOpen((v) => !v)}
+          aria-label="開啟小寶選單"
+        >
+          ☰
+        </button>
+      )}
     </>
   );
 }

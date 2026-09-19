@@ -270,13 +270,63 @@
   75% { transform: translateY(-14px) scale(1.08) rotate(4deg); }
 }
 
+/* ===== 頭頂表情浮現 ===== */
+.pipi-emote {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 26px;
+  pointer-events: none;
+  animation: pipi-emote-pop 1.6s ease-out forwards;
+  z-index: 5;
+}
+@keyframes pipi-emote-pop {
+  0% { opacity: 0; transform: translateX(-50%) translateY(6px) scale(0.5); }
+  20% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1.2); }
+  70% { opacity: 1; transform: translateX(-50%) translateY(-12px) scale(1); }
+  100% { opacity: 0; transform: translateX(-50%) translateY(-22px) scale(0.9); }
+}
+
+/* ===== 手機專屬選單按鈕 ===== */
+.pipi-menu-btn {
+  position: fixed;
+  right: 12px;
+  bottom: 72px;
+  z-index: 9000;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 2px solid #5C3D26;
+  background: linear-gradient(135deg, #F9F3E8, #E8D5A8);
+  color: #5C3D26;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(92, 61, 38, 0.25);
+}
+
+/* 選單 disabled（已簽到） */
+.pipi-menu button:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+.pipi-menu button:disabled:hover { background: transparent; }
+
 /* ===== 手機版：坐在快速行動欄上方 ===== */
 @media (max-width: 720px) {
   .pipi-pet { right: 12px; bottom: 72px; width: 72px !important; height: 72px !important; }
   .pipi-pet img { width: 72px; height: 72px; }
   .pipi-bubble { right: 96px; bottom: 150px; font-size: 12px; max-width: 180px; }
   .pipi-trivia { max-width: 200px; }
-  .pipi-menu { right: 12px; bottom: 150px; min-width: 150px; }
-  .pipi-panel { right: 12px; bottom: 150px; width: 230px; }
+  .pipi-menu { right: 12px; bottom: 150px; min-width: 160px; max-height: 60vh; overflow-y: auto; }
+  .pipi-menu button { padding: 10px; font-size: 14px; }
+  .pipi-panel { right: 12px; bottom: 150px; width: 240px; max-height: 70vh; overflow-y: auto; }
   .pipi-pet-reopen { right: 12px; bottom: 72px; width: 44px; height: 44px; font-size: 20px; }
+  .pipi-emote { font-size: 22px; top: -10px; }
+}
+
+/* 桌面不顯示手機選單按鈕 */
+@media (min-width: 721px) {
+  .pipi-menu-btn { display: none; }
 }
