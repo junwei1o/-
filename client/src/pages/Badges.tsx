@@ -20,7 +20,7 @@ interface BadgeDef {
 const PRACTICE_HINT = { label: "去課綱練習", href: "/practice" };
 const CAMP_HINT = { label: "去每日營地", href: "/camp" };
 const BATTLE_HINT = { label: "去答題戰鬥", href: "/battle" };
-const GUARDIAN_HINT = { label: "去守護者遠征", href: "/guardian" };
+const EXPEDITION_HINT = { label: "去遠征挑戰", href: "/expedition" };
 
 export default function Badges() {
   const player = getPlayerData();
@@ -129,7 +129,7 @@ export default function Badges() {
       title: "首領挑戰者",
       description: "擊敗 1 隻區域守護者",
       earned: bossVictories >= 1,
-      hint: GUARDIAN_HINT,
+      hint: BATTLE_HINT,
     },
     {
       id: "boss-4",
@@ -137,7 +137,7 @@ export default function Badges() {
       title: "四海征服者",
       description: "擊敗 4 隻區域守護者",
       earned: bossVictories >= 4,
-      hint: GUARDIAN_HINT,
+      hint: BATTLE_HINT,
     },
     {
       id: "rare-monster",
@@ -193,7 +193,7 @@ export default function Badges() {
       title: "遠征稱號收藏家",
       description: "擊敗稀有怪物，收集 5 個遠征限定稱號",
       earned: rareTitleCount >= 5,
-      hint: GUARDIAN_HINT,
+      hint: EXPEDITION_HINT,
     },
   ];
 

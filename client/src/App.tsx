@@ -43,7 +43,6 @@ const WrongAnswers = React.lazy(() => import("@/pages/WrongAnswers"));
 const ReviewHub = React.lazy(() => import("@/pages/ReviewHub"));
 const Settings = React.lazy(() => import("@/pages/Settings"));
 const StudyTips = React.lazy(() => import("@/pages/StudyTips"));
-const GuardianExpedition = React.lazy(() => import("@/pages/GuardianExpedition"));
 const QuizRoom = React.lazy(() => import("@/pages/QuizRoom"));
 const ClassroomPlay = React.lazy(() => import("@/pages/ClassroomPlay"));
 const WeeklyQuizPage = React.lazy(() => import("@/pages/WeeklyQuizPage"));
@@ -103,8 +102,6 @@ function Router() {
         <Route path={"/safety"} component={SafetyAcademy} />
         <Route path={"/safety/:key"} component={SafetyAcademyDetail} />
         <Route path={"/battle"} component={() => <BattleScene />} />
-        <Route path={"/guardian"} component={GuardianExpedition} />
-        <Route path={"/guardian-expedition"} component={GuardianExpedition} />
         <Route path={"/learning-insights"} component={LearningInsights} />
         <Route path={"/learning-report"} component={LearningReport} />
         <Route path={"/community"} component={CommunityHub} />

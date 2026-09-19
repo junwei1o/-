@@ -38,7 +38,7 @@ const rareExpeditionTitles: readonly TitleDefinition[] = TITLE_SUBJECTS.flatMap(
       displayTitle: stripTitlePrefix(rawTitle),
       category: "稀有遠征" as const,
       condition: `在${label}遠征中連續答對 10 題後遭遇稀有怪物，並擊敗「${monster.name}」`,
-      hint: { label: "去守護者遠征", href: "/guardian" },
+      hint: { label: "去遠征挑戰", href: "/expedition" },
     };
   }),
 );

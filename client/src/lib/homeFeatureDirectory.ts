@@ -56,7 +56,6 @@ export const HOME_FEATURE_GROUPS: HomeFeatureGroup[] = [
     items: [
       { id: "map", label: "主航海圖", description: "瀏覽島嶼與學習路線", href: "/map", icon: ScrollText },
       { id: "battle", label: "答題戰鬥", description: "運用技能迎戰知識怪物", href: "/battle", icon: Swords },
-      { id: "guardian", label: "守護者遠征", description: "挑戰四位區域守護者", href: "/guardian", icon: Crown },
       { id: "self-challenge", label: "自我挑戰", description: "限時答題與個人最佳紀錄", href: "/community", icon: Timer },
       { id: "daily-camp", label: "每日營地", description: "簽到、每日任務、金幣商店與每週王", href: "/camp", icon: Tent },
       { id: "badges", label: "徽章牆", description: "收集探險徽章，點亮成就", href: "/badges", icon: Medal },

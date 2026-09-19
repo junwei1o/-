@@ -1,7 +1,7 @@
 import { BookOpen, BookOpenCheck, BrainCircuit, Compass, Crown, LifeBuoy, Lightbulb, Map as MapIcon, Medal, Orbit, Radar, Swords, Telescope, Tent, type LucideIcon } from "lucide-react";
 
 export type FeatureSearchItem = {
-  id: "map" | "battle" | "duel" | "guardian" | "wrongAnswers" | "studyTips" | "dailyCamp" | "badges" | "safetyAcademy" | "worldPrinciples" | "mediaObservatory" | "astronomy" | "wisdomStories";
+  id: "map" | "battle" | "duel" | "wrongAnswers" | "studyTips" | "dailyCamp" | "badges" | "safetyAcademy" | "worldPrinciples" | "mediaObservatory" | "astronomy" | "wisdomStories";
   label: string;
   description: string;
   href: string;
@@ -33,14 +33,6 @@ export const FEATURE_SEARCH_ITEMS: FeatureSearchItem[] = [
     href: "/knowledge-duel",
     keywords: ["知識決鬥", "決鬥", "卡牌", "卡牌對戰", "策略卡", "狼人殺", "AI 對手"],
     icon: BrainCircuit,
-  },
-  {
-    id: "guardian",
-    label: "守護者 BOSS 主線",
-    description: "完成區域試煉後，挑戰四位最終守護者並解放知識島嶼。",
-    href: "/guardian",
-    keywords: ["守護者", "守護者BOSS", "BOSS", "主線", "區域解放", "最終守護者"],
-    icon: Crown,
   },
   {
     id: "wrongAnswers",
