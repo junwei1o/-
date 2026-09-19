@@ -31,9 +31,13 @@ type TaiwanMainNavigationMapProps = {
   randomAdventureRouteReward?: RandomAdventureRouteReward | null;
 };
 
-type IslandPosition = {
-  left: string;
-  top: string;
+type IslandCellLayout = {
+  /** 板塊主格（可點擊的島嶼按鈕落點） */
+  main: { col: number; row: number };
+  /** 板塊領土格（同色模塊） */
+  cells: Array<{ col: number; row: number }>;
+  /** 船停靠的海面孔位 */
+  port: { col: number; row: number };
   region: string;
 };
 
@@ -49,6 +53,66 @@ type LearningRouteSegment = {
   d: string;
 };
 
+/* =========================================================
+ * v8 PaGamO 式格狀模塊地圖
+ * 地圖由 16×10 格線組成，台灣本島與離島由「陸地模塊」拼出。
+ * 之後要加地標、活動、新玩法：在 MAP_TERRAIN 補 X（造陸）、
+ * 在 MAP_CELL_FEATURES 加一筆（col/row 定位）即可，不必動渲染邏輯。
+ * ======================================================= */
+export const MAP_GRID_COLS = 16;
+export const MAP_GRID_ROWS = 10;
+/** 格狀地形：每行 16 字，X＝陸地模塊、.＝海域（第 0 行是最北）。 */
+export const MAP_TERRAIN: string[] = [
+  ".........XX.....",
+  "........XXXX....",
+  ".......XXXXX....",
+  "......XXXXXX....",
+  "..XX..XXXXXX....",
+  "..XX.XXXXXX.....",
+  ".....XXXXX......",
+  ".....XXXX.......",
+  ".....XXX........",
+  ".....XX.........",
+];
+
+const MAP_CELL_SIZE = 60;
+const MAP_OFFSET_X = 20;
+const MAP_OFFSET_Y = 10;
+
+/** 格線座標 → SVG 中心點（viewBox 0 0 1000 620）。 */
+export function mapCellCenter(col: number, row: number) {
+  return {
+    x: MAP_OFFSET_X + col * MAP_CELL_SIZE + MAP_CELL_SIZE / 2,
+    y: MAP_OFFSET_Y + row * MAP_CELL_SIZE + MAP_CELL_SIZE / 2,
+  };
+}
+
+/** 格線座標 → 畫布百分比（HTML 圖層定位用）。 */
+export function mapCellPercent(col: number, row: number) {
+  const center = mapCellCenter(col, row);
+  return { left: `${(center.x / 1000) * 100}%`, top: `${(center.y / 620) * 100}%` };
+}
+
+export type MapCellFeatureKind = "landmark" | "activity";
+export type MapCellFeature = {
+  id: string;
+  col: number;
+  row: number;
+  icon: string;
+  label: string;
+  kind: MapCellFeatureKind;
+  note?: string;
+};
+/** 地標／活動登記處：之後的新地標、新活動都在這裡登記一筆就會長到地圖上。 */
+export const MAP_CELL_FEATURES: MapCellFeature[] = [
+  { id: "feature-tpe101", col: 8, row: 2, icon: "🏢", label: "台北 101", kind: "landmark", note: "北部真實地標" },
+  { id: "feature-taroko", col: 11, row: 3, icon: "🏔️", label: "太魯閣", kind: "landmark", note: "東部真實地標" },
+  { id: "feature-sunmoon", col: 8, row: 5, icon: "⛵", label: "日月潭", kind: "landmark", note: "中部真實地標" },
+  { id: "feature-chihkan", col: 6, row: 6, icon: "🏛️", label: "赤崁樓", kind: "landmark", note: "南部真實地標" },
+  { id: "feature-kenting", col: 5, row: 9, icon: "🗼", label: "墾丁", kind: "landmark", note: "台灣本島最南端" },
+  { id: "feature-activity-slot", col: 9, row: 6, icon: "🎪", label: "活動預備格", kind: "activity", note: "之後的新活動會落在這種格子上" },
+];
+
 const ISLAND_REGION_BY_ID: Record<KnowledgeIslandId, RegionKey> = {
   language: "north",
   math: "central",
@@ -57,30 +121,57 @@ const ISLAND_REGION_BY_ID: Record<KnowledgeIslandId, RegionKey> = {
   english: "south",
 };
 
-const ISLAND_POSITIONS: Record<KnowledgeIslandId, IslandPosition> = {
-  language: { left: "46.4%", top: "10.3%", region: "北部・古書樓" },
-  math: { left: "48.8%", top: "40.3%", region: "中部・量測塔" },
-  social: { left: "42.8%", top: "76.3%", region: "南部・生活港" },
-  science: { left: "78.8%", top: "51.2%", region: "東部・山海觀察站" },
-  english: { left: "16.4%", top: "41.7%", region: "西部・英語港" },
+/** 島嶼＝格線上的板塊模塊群（主格可點、其餘為同色領土格）。 */
+const ISLAND_CELLS: Record<KnowledgeIslandId, IslandCellLayout> = {
+  language: {
+    main: { col: 9, row: 1 },
+    cells: [{ col: 9, row: 0 }, { col: 8, row: 1 }, { col: 9, row: 1 }, { col: 10, row: 1 }],
+    port: { col: 8, row: 0 },
+    region: "北部・古書樓",
+  },
+  math: {
+    main: { col: 7, row: 3 },
+    cells: [{ col: 6, row: 3 }, { col: 7, row: 3 }, { col: 6, row: 4 }, { col: 7, row: 4 }],
+    port: { col: 5, row: 2 },
+    region: "中部・量測塔",
+  },
+  social: {
+    main: { col: 6, row: 7 },
+    cells: [{ col: 5, row: 7 }, { col: 6, row: 7 }, { col: 5, row: 8 }, { col: 6, row: 8 }],
+    port: { col: 4, row: 8 },
+    region: "南部・生活港",
+  },
+  science: {
+    main: { col: 11, row: 4 },
+    cells: [{ col: 10, row: 4 }, { col: 11, row: 4 }, { col: 10, row: 5 }],
+    port: { col: 12, row: 5 },
+    region: "東部・山海觀察站",
+  },
+  english: {
+    main: { col: 3, row: 4 },
+    cells: [{ col: 2, row: 4 }, { col: 3, row: 4 }, { col: 3, row: 5 }],
+    port: { col: 1, row: 4 },
+    region: "西部離島・英語港",
+  },
 };
 
+/** 航線＝沿海外海航道折線（格狀地圖的海上航道）。 */
 const ISLAND_ROUTE_PATHS: Record<KnowledgeIslandId, string> = {
-  language: "M248 365 C316 290 390 130 464 64",
-  math: "M248 365 C332 350 420 285 488 250",
-  social: "M248 365 C314 404 375 445 428 473",
-  science: "M248 365 C394 330 600 317 788 317",
-  english: "M248 365 C195 350 175 300 164 258",
+  language: "M170 400 L110 340 L110 70 L410 40 L530 40",
+  math: "M170 400 L110 340 L230 220 L350 160",
+  social: "M170 400 L170 520 L290 520",
+  science: "M170 400 L110 460 L170 520 L290 580 L770 580 L770 340",
+  english: "M170 400 L110 340 L110 280",
 };
 
-/** 太閤／大航海式航海圖：船會實際航行到所選島的港口（SVG 座標 1000×620，均在海面上）。 */
-const HOME_PORT = { x: 248, y: 365 };
+/** 母港與各島港口（皆為海域格中心，船會實際航行過去）。 */
+const HOME_PORT = mapCellCenter(2, 6);
 const ISLAND_PORTS: Record<KnowledgeIslandId, { x: number; y: number }> = {
-  language: { x: 402, y: 52 },
-  math: { x: 336, y: 292 },
-  social: { x: 330, y: 540 },
-  science: { x: 706, y: 384 },
-  english: { x: 148, y: 300 },
+  language: mapCellCenter(ISLAND_CELLS.language.port.col, ISLAND_CELLS.language.port.row),
+  math: mapCellCenter(ISLAND_CELLS.math.port.col, ISLAND_CELLS.math.port.row),
+  social: mapCellCenter(ISLAND_CELLS.social.port.col, ISLAND_CELLS.social.port.row),
+  science: mapCellCenter(ISLAND_CELLS.science.port.col, ISLAND_CELLS.science.port.row),
+  english: mapCellCenter(ISLAND_CELLS.english.port.col, ISLAND_CELLS.english.port.row),
 };
 
 const ISLAND_ICONS: Record<KnowledgeIslandId, LucideIcon> = {
@@ -602,16 +693,38 @@ export function TaiwanMainNavigationMap({ islands, onOpenSubject, onOpenTopic, o
           </aside>
         ) : null}
         <svg className="taiwan-map-outline" viewBox="0 0 1000 620" aria-hidden="true" focusable="false">
-          <path
-            className="taiwan-map-land"
-            d="M561 5 C615 45 632 100 619 143 C606 186 628 231 613 272 C595 314 608 354 579 395 C554 431 558 474 528 518 C498 561 452 591 420 570 C388 551 403 503 385 464 C366 424 382 377 364 336 C348 297 373 258 369 216 C367 176 397 143 409 104 C422 64 492 20 561 5 Z"
-          />
-          {/* 區域名稱直接嵌在台灣本島上 */}
-          <text className="taiwan-map-region-label" x="510" y="75">北部</text>
-          <text className="taiwan-map-region-label" x="475" y="265">中部</text>
-          <text className="taiwan-map-region-label" x="448" y="500">南部</text>
-          <text className="taiwan-map-region-label" x="600" y="290">東部</text>
-          <text className="taiwan-map-region-label" x="365" y="290">西部</text>
+          {/* v8 PaGamO 式格狀模塊：海域格＋陸地格（台灣由模塊拼出，日後擴建加格即可） */}
+          <g className="taiwan-map-grid" data-testid="taiwan-map-grid">
+            {MAP_TERRAIN.map((line, row) =>
+              line.split("").map((char, col) => {
+                const isLand = char === "X";
+                const islandCell = isLand
+                  ? (Object.entries(ISLAND_CELLS) as Array<[KnowledgeIslandId, IslandCellLayout]>).find(([, layout]) =>
+                      layout.cells.some((cell) => cell.col === col && cell.row === row),
+                    )
+                  : undefined;
+                const { x, y } = { x: MAP_OFFSET_X + col * MAP_CELL_SIZE, y: MAP_OFFSET_Y + row * MAP_CELL_SIZE };
+                const cellClass = islandCell ? `taiwan-map-cell-island island-cell-${islandCell[0]}` : isLand ? "taiwan-map-cell-land" : "taiwan-map-cell-sea";
+                return (
+                  <rect
+                    key={`${col}-${row}`}
+                    className={`taiwan-map-cell ${cellClass}`}
+                    x={x + 3}
+                    y={y + 3}
+                    width={MAP_CELL_SIZE - 6}
+                    height={MAP_CELL_SIZE - 6}
+                    rx={7}
+                  />
+                );
+              }),
+            )}
+          </g>
+          {/* 區域名稱嵌在格線之間 */}
+          <text className="taiwan-map-region-label" x="700" y="78">北部</text>
+          <text className="taiwan-map-region-label" x="480" y="415">中部</text>
+          <text className="taiwan-map-region-label" x="490" y="600">南部</text>
+          <text className="taiwan-map-region-label" x="780" y="450">東部</text>
+          <text className="taiwan-map-region-label" x="170" y="140">西部</text>
           {routeSegments.map((segment, index) => {
             const routeSupplyId = supplyMarkerIdForRegion(ISLAND_REGION_BY_ID[segment.id]);
             const isRouteGlowing = recentlyCompletedSupplyMarkerIds.includes(routeSupplyId);
@@ -670,16 +783,36 @@ export function TaiwanMainNavigationMap({ islands, onOpenSubject, onOpenTopic, o
           </g>
         </svg>
 
+        {/* v8 地標／活動登記處：MAP_CELL_FEATURES 每一筆都會長在對應格線上 */}
+        {MAP_CELL_FEATURES.map((feature) => {
+          const position = mapCellPercent(feature.col, feature.row);
+          return (
+            <span
+              key={feature.id}
+              className={`taiwan-map-feature taiwan-map-feature-${feature.kind}`}
+              style={{ left: position.left, top: position.top } as CSSProperties}
+              role="img"
+              aria-label={`${feature.label}，${feature.note ?? ""}`}
+              title={`${feature.label}${feature.note ? `・${feature.note}` : ""}`}
+              data-testid={`taiwan-map-feature-${feature.id}`}
+            >
+              <span className="taiwan-map-feature-icon" aria-hidden="true">{feature.icon}</span>
+              <small className="taiwan-map-feature-label" aria-hidden="true">{feature.label}</small>
+            </span>
+          );
+        })}
+
         {islands.map((island) => {
           const region = ISLAND_REGION_BY_ID[island.id];
+          const layout = ISLAND_CELLS[island.id];
           const hasSupplyMarker = supplyMarkerIds.includes(supplyMarkerIdForRegion(region));
-          const position = ISLAND_POSITIONS[island.id];
+          const cellPosition = mapCellPercent(layout.main.col, layout.main.row);
           const Icon = ISLAND_ICONS[island.id];
           const isActive = island.id === activeIslandId;
           const visualState = islandVisualState(island);
           const style = {
-            "--island-left": position.left,
-            "--island-top": position.top,
+            "--island-left": cellPosition.left,
+            "--island-top": cellPosition.top,
           } as CSSProperties;
 
           return (
@@ -691,7 +824,7 @@ export function TaiwanMainNavigationMap({ islands, onOpenSubject, onOpenTopic, o
               style={style}
               aria-pressed={isActive}
               aria-controls={isActive ? `taiwan-island-panel-${island.id}` : undefined}
-              aria-label={`${island.shortTitle}，${position.region}，${islandStatus(island)}`}
+              aria-label={`${island.shortTitle}，${layout.region}，${islandStatus(island)}`}
               data-visual-state={visualState}
               data-testid={`taiwan-map-island-${island.id}`}
               data-island={island.id}
@@ -704,7 +837,7 @@ export function TaiwanMainNavigationMap({ islands, onOpenSubject, onOpenTopic, o
               {/* v7 淨空版島嶼標記：只留圖示＋名稱，細節全收進外側系統對話框 */}
               <span className="taiwan-map-island-icon taiwan-island-icon" aria-hidden="true"><Icon size={17} /></span>
               <strong>{island.shortTitle}</strong>
-              <span className="sr-only">{position.region}</span>
+              <span className="sr-only">{layout.region}</span>
               <span className="sr-only">{islandStatus(island)}</span>
               {island.unlocked ? <span className="taiwan-map-island-flag" aria-hidden="true" /> : null}
               {hasSupplyMarker ? <span
@@ -727,7 +860,7 @@ export function TaiwanMainNavigationMap({ islands, onOpenSubject, onOpenTopic, o
           aria-labelledby={`taiwan-island-panel-title-${activeIsland.id}`}
         >
           <div className="taiwan-map-panel-copy">
-            <p className="eyebrow">{ISLAND_POSITIONS[activeIsland.id].region}</p>
+            <p className="eyebrow">{ISLAND_CELLS[activeIsland.id].region}</p>
             <h3 id={`taiwan-island-panel-title-${activeIsland.id}`}>{activeIsland.title}</h3>
             {showRestoredPreferenceNotice ? (
               <p className="taiwan-map-restored-preference" role="status" data-testid="taiwan-map-restored-preference">
@@ -927,8 +1060,8 @@ export function TaiwanMainNavigationMap({ islands, onOpenSubject, onOpenTopic, o
       ) : (
         <aside className="taiwan-map-waiting" role="status">
           <p className="eyebrow">SYSTEM MESSAGE</p>
-          <strong>點擊任一座島嶼港口</strong>
-          <p>船會航行到該島，並在這裡展開航海對話框。</p>
+          <strong>點擊任一塊島嶼板塊</strong>
+          <p>船會航行到該島海域，並在這裡展開航海對話框。</p>
         </aside>
       )}
       </div>
