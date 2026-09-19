@@ -31,6 +31,9 @@ type Mood = "grumpy" | "neutral" | "happy" | "joyful";
 type Particle = { id: number; x: number; y: number; emoji: string };
 type Trivia = { q: string; a: string; b: string; correct: "a" | "b"; fact: string };
 type ActionKey = "dance" | "spin" | "hop";
+/** v7 表情差分：開心 / 生氣 / 害羞，各套裝都有一張換圖 */
+type FaceExpr = "happy" | "angry" | "shy";
+const FACE_EXPRS: FaceExpr[] = ["happy", "angry", "shy"];
 
 type OutfitInfo = { name: string; emoji: string; img: string; auto?: string };
 
@@ -178,16 +181,21 @@ export function PipiPet() {
   // v6 生動感
   const [blink, setBlink] = useState(false);
   const [micro, setMicro] = useState<string | null>(null);
+  // v7 表情差分換圖
+  const [faceExpr, setFaceExpr] = useState<FaceExpr | null>(null);
 
   const rootRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef<{ startX: number; startY: number; origX: number; origY: number; moved: boolean; velocity: number; lastX: number; lastY: number } | null>(null);
   const particleId = useRef(0);
   const lastRoute = useRef(location);
   const tapTimesRef = useRef<number[]>([]);
+  const faceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const autoOutfit = outfitForRoute(location);
   const outfit = outfitOverride ?? autoOutfit;
   const outfitInfo = OUTFITS[outfit];
+  // v7：有表情差分時換成 {套裝}-{表情}.webp，否則用套裝基礎圖
+  const petSrc = faceExpr ? `/pipi/outfits/${outfit}-${faceExpr}.webp` : outfitInfo.img;
   const lvl = affectionLevel(affection);
   // v5
   const stats = { affection, count, questsClaimed: questState.claimedTotal };
@@ -246,6 +254,9 @@ export function PipiPet() {
         setCelebrating(true);
         spawnParticles(["📜", "🎉", "⭐"], 10);
         setBubble(`任務完成「${done.title}」！快來領獎勵喵！`);
+        if (faceTimer.current) clearTimeout(faceTimer.current);
+        setFaceExpr("happy");
+        faceTimer.current = setTimeout(() => setFaceExpr(null), 3000);
         setTimeout(() => { setCelebrating(false); setBubble(null); }, 3500);
       }
     };
@@ -309,6 +320,9 @@ export function PipiPet() {
         setCelebrating(true);
         spawnParticles(["🎉", "✨", "💖", "⭐"], 14);
         setBubble(`升級了！現在是「${LEVEL_NAMES[newLvl]}」！`);
+        if (faceTimer.current) clearTimeout(faceTimer.current);
+        setFaceExpr("happy");
+        faceTimer.current = setTimeout(() => setFaceExpr(null), 3000);
         setTimeout(() => { setCelebrating(false); setBubble(null); }, 3500);
       }
       try { localStorage.setItem("pipi-affection", String(na)); } catch {}
@@ -322,7 +336,7 @@ export function PipiPet() {
     setMood(moodOf(loadAffection() + amount));
   }, [spawnParticles]);
 
-  const interact = useCallback((line: string, aff: number, emojis: string, face?: string) => {
+  const interact = useCallback((line: string, aff: number, emojis: string, face?: string, expr?: FaceExpr) => {
     setBubble(line);
     setBounce(true);
     setTimeout(() => setBounce(false), 500);
@@ -331,11 +345,31 @@ export function PipiPet() {
       setEmote(face);
       setTimeout(() => setEmote(null), 1800);
     }
+    if (expr) {
+      if (faceTimer.current) clearTimeout(faceTimer.current);
+      setFaceExpr(expr);
+      faceTimer.current = setTimeout(() => setFaceExpr(null), 1700);
+    }
     addAffection(aff);
     // 用 Array.from 而非 split("")：emoji 多為輔助平面字元（surrogate pair），
     // split("") 會把一個 emoji 拆成兩個半字，畫面會出現問號。
     spawnParticles(Array.from(emojis), 5 + aff);
   }, [addAffection, spawnParticles]);
+
+  /** 只換表情不跑完整互動（答對、升級、領獎等場景用） */
+  const showFace = useCallback((expr: FaceExpr, ms = 1700) => {
+    if (faceTimer.current) clearTimeout(faceTimer.current);
+    setFaceExpr(expr);
+    faceTimer.current = setTimeout(() => setFaceExpr(null), ms);
+  }, []);
+
+  // v7：預載全部表情差分，避免第一次互動才下載造成閃爍
+  useEffect(() => {
+    (Object.keys(OUTFITS) as Outfit[]).forEach((o) => {
+      FACE_EXPRS.forEach((e) => { const im = new Image(); im.src = `/pipi/outfits/${o}-${e}.webp`; });
+    });
+    return () => { if (faceTimer.current) clearTimeout(faceTimer.current); };
+  }, []);
 
   const onClick = useCallback(() => {
     if (dragRef.current?.moved || sleeping || trivia) return;
@@ -344,18 +378,18 @@ export function PipiPet() {
     tapTimesRef.current = [...tapTimesRef.current.filter((t) => now - t < 1500), now];
     if (tapTimesRef.current.length >= 3) {
       tapTimesRef.current = [];
-      interact("喵嗚～戳癢了啦！", 2, "💢", "😤");
+      interact("喵嗚～戳癢了啦！", 2, "💢", "😤", "angry");
       return;
     }
     const lines = ["喵！", "嘿嘿～", "摸摸！", "開心！"];
     const faces = ["😍", "😊", "😸", "🥰"];
     const i = Math.floor(Math.random() * lines.length);
-    interact(lines[i], 4, "💖✨", faces[i % faces.length]);
+    interact(lines[i], 4, "💖✨", faces[i % faces.length], "happy");
   }, [interact, sleeping, trivia]);
 
   const onDoubleClick = useCallback(() => {
     if (sleeping || trivia) return;
-    interact("最喜歡你了喵！", 10, "💖💖💖✨", "🥰");
+    interact("最喜歡你了喵……嘿嘿 ♡", 10, "💖💖💖✨", "🫣", "shy");
   }, [interact, sleeping, trivia]);
 
   const onContextMenu = useCallback((e: React.MouseEvent) => {
@@ -392,12 +426,13 @@ export function PipiPet() {
       setBubble("哇哦——！太快了喵！");
       setBounce(true);
       setEmote("😵");
+      showFace("angry", 1800);
       setTimeout(() => setEmote(null), 1800);
       spawnParticles(["💫", "✨"], 6);
       setTimeout(() => { setBubble(null); setBounce(false); }, 2500);
     }
     dragRef.current = null;
-  }, [spawnParticles]);
+  }, [spawnParticles, showFace]);
 
   const askTrivia = useCallback(() => {
     setMenuOpen(false);
@@ -412,6 +447,7 @@ export function PipiPet() {
       spawnParticles(["🎉", "⭐", "💖"], 10);
       setBounce(true);
       setEmote("🤩");
+      showFace("happy", 1700);
       setTimeout(() => { setBounce(false); setEmote(null); }, 1500);
     } else {
       setBubble("再想想～提示：跟小寶有關！");
@@ -420,7 +456,7 @@ export function PipiPet() {
       setTimeout(() => setEmote(null), 1800);
     }
     setTimeout(() => { setTrivia(null); setBubble(null); }, 4000);
-  }, [trivia, addAffection, spawnParticles]);
+  }, [trivia, addAffection, spawnParticles, showFace]);
 
   const setOutfit = useCallback((o: Outfit | null) => {
     setOutfitOverride(o);
@@ -531,20 +567,21 @@ export function PipiPet() {
     addAffection(15 + Math.min(10, newStreak));
     spawnParticles(["📅", "⭐", "🎉"], 8);
     setBounce(true);
+    showFace("happy", 2200);
     setBubble(newStreak > 1 ? `連續簽到 ${newStreak} 天！+${15 + Math.min(10, newStreak)} 好感！` : "簽到成功！明天再來！");
     setTimeout(() => { setBounce(false); setBubble(null); }, 3000);
-  }, [streak, addAffection, spawnParticles]);
+  }, [streak, addAffection, spawnParticles, showFace]);
 
   // 加油打氣
   const cheer = useCallback(() => {
     setMenuOpen(false);
-    interact(CHEER_LINES[Math.floor(Math.random() * CHEER_LINES.length)], 6, "💪🔥✨", "💪");
+    interact(CHEER_LINES[Math.floor(Math.random() * CHEER_LINES.length)], 6, "💪🔥✨", "💪", "happy");
   }, [interact]);
 
   // 擊掌
   const highFive = useCallback(() => {
     setMenuOpen(false);
-    interact(HIGH_FIVE_LINES[Math.floor(Math.random() * HIGH_FIVE_LINES.length)], 8, "🖐️⭐💖", "🖐️");
+    interact(HIGH_FIVE_LINES[Math.floor(Math.random() * HIGH_FIVE_LINES.length)], 8, "🖐️⭐💖", "🖐️", "happy");
   }, [interact]);
 
   // 專注模式
@@ -566,11 +603,12 @@ export function PipiPet() {
     setActionAnim(a);
     setBubble(conf.line);
     setEmote(conf.emoji === "🎵" ? "🎶" : conf.emoji);
+    showFace("happy", 1700);
     setTimeout(() => setEmote(null), 1500);
     addAffection(3);
     spawnParticles(conf.particles, 6);
     setTimeout(() => { setActionAnim(null); setBubble(null); }, 1600);
-  }, [addAffection, spawnParticles]);
+  }, [addAffection, spawnParticles, showFace]);
 
   // v5：領取任務獎勵（金幣入帳 RPG 狀態＋好感度）
   const claimQuest = useCallback((questId: string) => {
@@ -585,8 +623,9 @@ export function PipiPet() {
     setBubble(`領到獎勵！+${reward.rewardCoins} 金幣、+${reward.rewardAffection} 好感喵！`);
     setBounce(true);
     setEmote("🤩");
+    showFace("happy", 2200);
     setTimeout(() => { setBubble(null); setBounce(false); setEmote(null); }, 3000);
-  }, [addAffection, spawnParticles]);
+  }, [addAffection, spawnParticles, showFace]);
 
   // v5：穿脫飾品
   const toggleWear = useCallback((id: string) => {
@@ -809,7 +848,14 @@ export function PipiPet() {
         aria-label="小寶（貓耳探險家吉祥物）"
         title="點擊互動 · 雙擊撒嬌 · 右鍵/長按選單 · 拖曳移動"
       >
-        <img src={outfitInfo.img} alt={`小寶 - ${outfitInfo.name}`} draggable={false} width={petPx} height={petPx} />
+        <img
+          src={petSrc}
+          alt={`小寶 - ${outfitInfo.name}`}
+          draggable={false}
+          width={petPx}
+          height={petPx}
+          onError={() => { /* 表情差分載入失敗時退回套裝基礎圖，避免破圖 */ if (faceExpr) setFaceExpr(null); }}
+        />
         {!sleeping && wornItems.map((c) => (
           <span key={c.id} className={`pipi-costume pipi-costume-${c.slot}`} aria-hidden>{c.emoji}</span>
         ))}
