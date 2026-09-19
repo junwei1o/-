@@ -409,3 +409,11 @@ curl -s https://xue-gr3a.onrender.com/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | h
 - 驗證：tsc 0 錯、1119 tests 全綠、build 成功。
 - 踩坑：Edit 工具批次多檔編輯會「部分静默丟失」（本輪 6 處），每個 Edit 後必 grep 驗證；span 地標章不能放進 <svg> 內，要放 canvas div 層。
 - 補記（同日）：面板「真實地標＋關卡碼頭」與 QuizRunner flipdex 三處（初始 revealed／begin 重置／翻牌渲染）曾因 Edit 靜默丟失，已於 80ec616／482c2e4 補上；最終 bundle index-DnVZPJ5H.js 線上一致，線上 Playwright 回歸 25/25（地標章 15、面板地標 3、碼頭 2 並可導航 /classroom/duo、雙重奏兩段流程、閃電接力 mixed、翻牌圖鑑翻牌、舊路由 6 條相容、Hub 六卡、無 pageerror）。
+
+## 2026-09-19 全站現代學生風格裝潢
+- 審計：Playwright 截圖 14 個主頁面（home/practice/battle/review-hub/weekly-quiz/gallery/expedition/camp/badges/treasure/learning/community/tavern/features），battle 為刻意夜戰主題、tavern 為木質主題保留，其餘做加法升級。
+- 全域（index.css 附加區「現代學生風格裝潢」）：暖橘 ::selection、細緻海藍捲軸（webkit+Firefox）、全站 :focus-visible 海藍光圈、答題選項 hover 右移光條＋選中投影、community 卡片圓角陰影＋漸層進度條、badges-wall 金色暈染底。
+- Hub 頁（HubPages.css 附加區）：.hub-title 品牌漸層文字（emoji 彩色字形不受 text-fill 影響）、.hub-card 20px 圓角＋加深 hover 浮起、.hub-card-icon 由單一淡灰藍改為五色品牌漸層輪替（nth-child 5n 週期：海藍/暖橙/苔綠/金黃/紫）＋hover 縮放微旋轉、hub-tab hover/on 品牌化。
+- 插圖：BxEmptyState 加入琵琵桌寵（/pipi/idle/frame-01.webp 探頭在插圖右下，bx-empty__art-row + bx-empty__pipi，drop-shadow＋浮動動畫，prefers-reduced-motion 關閉）——全站空狀態（地圖面板、徽章牆、背包等）一處改全站生效。
+- 驗證：tsc 0 錯、1119 tests 綠、bundle index-DWCQIRro.js / index-DQZq46C7.css 線上一致；線上截圖複查 expedition/community/badges 漸層晶片、圓角卡片、琵琵入鏡全部生效。
+- 踩坑：本機 bash 與 host 檔案視圖有同步延遲，grep 空結果可能是延遲而非編輯丟失——以 build 產物與 Grep 工具雙重驗證。
