@@ -511,3 +511,9 @@ curl -s https://xue-gr3a.onrender.com/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | h
 - 刻意保留：mainlineFeatures（ParentLearningView/WeeklyQuestPanel/pinCloudSync 仍用）、rpgBattle/battle* 模組（BattleScene 用）、expeditionContent/expeditionUnlocks（Expedition 頁用）、academyExpansion 的 guardian 行為函式（BattleScene 引用的 worldStateForTime 同檔，暫不拆）。debugGate 的 guardian 只是教師解鎖閘命名，無關。
 - 測試同步：App.routes.test、featureSearch.test、Expedition.test 改斷言守護者不存在／今日任務指向 /battle。
 - 驗證：tsc 0 錯、1014 tests 綠、build 成功；本機 Playwright guardian-removal.mjs 6/6（/guardian 無 UI、遠征頁無守護者卡、今日任務→/battle、無 pageerror）。
+
+## 2026-09-19 我的教室桌寵品質寵物「燈寶」（燈台指航中心小燈靈）
+- ClassroomPet.tsx（新）：純 SVG 手繪燈寶掛「我的教室」右下角浮窗（fixed 右 12 底 84）。對標桌寵：待機呼吸（1.5% 縱伸+橫向補償，底錨不漂移）+ 眨眼（3.2–6s 隨機，眼睛 ry 收細成線）；互動三式——摸頭（開心回彈 380ms 壓縮—超調—復位＋ok 音＋好感 +1）、餵星星糖（⭐ 飄入＋win 琶音＋好感 +2）、戳戳點燈（燈芯火焰＋sparkles 閃光＋flip 音＋好感 +1）；每互動皆有角色化說話氣泡（7 句隨機台詞，2.4s 消退）。
+- 好感度系統：localStorage `xue-pet-bond-v1`（bond/pats/feeds/lights），每 5 點升一級最高 Lv.10；面板顯示等級進度條與三互動計數，可展開/收合；尺寸四檔迷你/小/標準/大（0.65/0.8/1/1.2）循環切換。
+- 三皮適配：memphis 黃底黑邊硬陰影、concise 白底紫字、classic 暖木；reduced-motion 全關動畫；520px 手機縮 0.9、避開底部導覽。
+- 測試：QuizRoom.test.tsx 加 2 例（燈寶出現＋摸頭寫入 bond=1/pats=1＋氣泡；餵糖+2、點燈+1 合計 bond=3）共 8 例綠；tsc 0 error、vite build OK（index-Bj-A9BJe.js）。

@@ -1763,4 +1763,281 @@
   .rg-status.is-ok {
     animation: none;
   }
+/* ============================================================
+   燈寶 —— 我的教室桌寵品質小夥伴（燈台指航中心小燈靈）
+   ============================================================ */
+.pet-widget {
+  position: fixed;
+  right: 12px;
+  bottom: 84px;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 172px;
+  filter: drop-shadow(0 10px 18px rgba(60, 44, 20, 0.18));
+  pointer-events: none;
+}
+.pet-widget > * { pointer-events: auto; }
+
+/* 頂部工具列：尺寸 + 好感度 */
+.pet-toolbar {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 4px;
+  align-items: center;
+}
+.pet-size-btn,
+.pet-info-btn {
+  border: 1.5px solid var(--cr-line);
+  background: rgba(255, 253, 246, 0.92);
+  color: var(--cr-ink);
+  border-radius: 999px;
+  min-height: 32px;
+  padding: 4px 11px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.12s ease, background 0.15s ease;
+}
+.pet-size-btn:active,
+.pet-info-btn:active { transform: scale(0.94); }
+
+/* 說話氣泡 */
+.pet-speech {
+  margin: 0 0 6px;
+  max-width: 158px;
+  background: #fffdf6;
+  border: 1.5px solid var(--cr-line);
+  border-radius: 13px 13px 13px 4px;
+  padding: 7px 11px;
+  font-size: 12.5px;
+  font-weight: 700;
+  line-height: 1.45;
+  color: var(--cr-ink);
+  box-shadow: 0 6px 14px rgba(60, 44, 20, 0.12);
+  animation: pet-pop 0.24s ease;
+}
+@keyframes pet-pop {
+  from { transform: scale(0.85) translateY(4px); opacity: 0; }
+  to { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+/* 燈寶本體 */
+.pet-body {
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  display: block;
+  position: relative;
+  -webkit-tap-highlight-color: transparent;
+  transform-origin: 50% 100%;
+  /* 待機呼吸：1.5% 縱向伸縮 + 橫向反向補償，底錨不漂移 */
+  animation: pet-breathe 2.6s ease-in-out infinite;
+}
+.pet-svg { width: 100%; height: 100%; display: block; overflow: visible; }
+@keyframes pet-breathe {
+  0%, 100% { transform: scale(1, 1); }
+  50% { transform: scale(1.008, 1.015); }
+}
+
+/* 互動回彈：壓縮—超調—復位（180–420ms） */
+.pet-bounce { animation: pet-bounce 0.38s cubic-bezier(0.34, 1.56, 0.64, 1); }
+@keyframes pet-bounce {
+  0% { transform: scale(1, 1); }
+  30% { transform: scale(0.93, 1.07); }
+  62% { transform: scale(1.05, 0.94); }
+  100% { transform: scale(1, 1); }
+}
+
+/* 光暈 */
+.pet-halo {
+  fill: rgba(255, 216, 102, 0.35);
+  animation: pet-halo-breathe 2.6s ease-in-out infinite;
+}
+@keyframes pet-halo-breathe {
+  0%, 100% { opacity: 0.75; }
+  50% { opacity: 1; }
+}
+
+/* 燈罩玻璃 */
+.pet-glass {
+  fill: #fff8e7;
+  stroke: #e6c87a;
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+}
+/* 燈芯火焰 */
+.pet-wick path {
+  fill: #ffb347;
+  animation: pet-flicker 1.4s ease-in-out infinite;
+  transform-origin: 66px 46px;
+}
+@keyframes pet-flicker {
+  0%, 100% { transform: scale(1, 1); }
+  50% { transform: scale(0.92, 1.12); }
+}
+/* 燈座環與身體 */
+.pet-collar { fill: #c98d3d; }
+.pet-body-fill {
+  fill: #fff3d1;
+  stroke: #e6c87a;
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+}
+/* 臉頰 */
+.pet-blush { fill: rgba(255, 138, 128, 0.45); }
+/* 眼睛 */
+.pet-eyes ellipse {
+  fill: #3a2f23;
+  transition: ry 0.12s ease;
+  transform-origin: center;
+}
+/* 眨眼：眼睛變細線（素材級眨眼） */
+.pet-blink .pet-eyes ellipse { ry: 1.2; }
+/* 微笑 */
+.pet-mouth { fill: none; stroke: #3a2f23; stroke-width: 2.2; stroke-linecap: round; }
+
+/* 木質燈台底座 */
+.pet-stand { fill: #a8743f; }
+.pet-stand-top { fill: #b9834b; }
+
+/* 餵食狀態：星星糖飄入 */
+.pet-star {
+  fill: #ffd84d;
+  stroke: #1f1b2e;
+  stroke-width: 1.4;
+  animation: pet-star-in 0.7s cubic-bezier(0.34, 1.4, 0.64, 1) forwards;
+  transform-origin: 96px 62px;
+}
+@keyframes pet-star-in {
+  from { transform: translate(14px, -12px) scale(0.4) rotate(0deg); opacity: 0; }
+  to { transform: translate(0, 0) scale(1) rotate(20deg); opacity: 1; }
+}
+.pet-eating .pet-mouth { stroke-width: 3; d: path("M61 82c3 3 7 3 10 0"); }
+
+/* 點燈狀態：閃光 */
+.pet-sparkles path { fill: #ffd84d; animation: pet-sparkle 0.7s ease infinite; transform-origin: center; }
+@keyframes pet-sparkle {
+  0%, 100% { transform: scale(0.7) rotate(0deg); opacity: 0.4; }
+  50% { transform: scale(1.15) rotate(20deg); opacity: 1; }
+}
+.pet-lit .pet-halo { fill: rgba(255, 200, 60, 0.55); }
+
+/* 互動列 */
+.pet-actions {
+  display: flex;
+  gap: 7px;
+  margin-top: 7px;
+}
+.pet-action-btn {
+  border: 1.5px solid var(--cr-line);
+  background: rgba(255, 253, 246, 0.94);
+  color: var(--cr-ink);
+  border-radius: 999px;
+  min-height: 38px;
+  padding: 5px 13px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: transform 0.12s ease, background 0.15s ease;
+}
+.pet-action-btn:active { transform: scale(0.94); }
+
+/* 好感度面板 */
+.pet-panel {
+  position: absolute;
+  bottom: 158px;
+  right: 0;
+  width: 158px;
+  background: #fffdf6;
+  border: 1.5px solid var(--cr-line);
+  border-radius: 16px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  box-shadow: 0 10px 24px rgba(60, 44, 20, 0.18);
+  animation: pet-pop 0.22s ease;
+}
+.pet-panel strong { font-size: 14px; color: var(--cr-ink); }
+.pet-panel span { font-size: 12px; color: var(--cr-muted); font-weight: 700; }
+.pet-bond-track {
+  height: 8px;
+  border-radius: 999px;
+  background: var(--cr-line);
+  overflow: hidden;
+}
+.pet-bond-bar {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #ffb347, #ff8a5c);
+  transition: width 0.4s ease;
+}
+.pet-bond-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--cr-muted);
+}
+.pet-panel small { font-size: 10.5px; color: var(--cr-muted); }
+
+/* 三皮適配 */
+.pet-widget-memphis .pet-size-btn,
+.pet-widget-memphis .pet-info-btn,
+.pet-widget-memphis .pet-action-btn {
+  border-color: #1f1b2e;
+  background: #ffd84d;
+  color: #1f1b2e;
+  box-shadow: 2.5px 2.5px 0 #1f1b2e;
+}
+.pet-widget-memphis .pet-speech,
+.pet-widget-memphis .pet-panel {
+  border-color: #1f1b2e;
+  background: #fff7d1;
+  box-shadow: 4px 4px 0 #1f1b2e;
+}
+.pet-widget-concise .pet-size-btn,
+.pet-widget-concise .pet-info-btn,
+.pet-widget-concise .pet-action-btn {
+  border-color: #d9d2f5;
+  background: #fff;
+  color: #6d5bd0;
+}
+.pet-widget-concise .pet-speech,
+.pet-widget-concise .pet-panel {
+  border-color: #e2dcf7;
+  background: #fff;
+  box-shadow: 0 8px 18px rgba(109, 91, 208, 0.14);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pet-body { animation: none; }
+  .pet-halo { animation: none; }
+  .pet-wick path { animation: none; }
+  .pet-speech { animation: none; }
+  .pet-bounce { animation: none; }
+  .pet-star { animation: none; opacity: 1; transform: none; }
+  .pet-sparkles path { animation: none; }
+}
+
+/* 手機：縮小並避免遮擋主要內容 */
+@media (max-width: 520px) {
+  .pet-widget {
+    right: 8px;
+    bottom: 74px;
+    width: 148px;
+    transform: scale(0.9);
+    transform-origin: 100% 100%;
+  }
+  .pet-speech { font-size: 11.5px; max-width: 140px; }
+  .pet-panel { width: 148px; bottom: 150px; }
 }

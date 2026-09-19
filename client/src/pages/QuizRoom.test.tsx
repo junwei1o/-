@@ -86,4 +86,28 @@ describe("QuizRoom 我的教室", () => {
     render(<QuizRoom />);
     expect(document.querySelector(".mc-page")).toHaveAttribute("data-skin", "memphis");
   });
+
+  it("教室右下角有燈寶，摸頭會說話並累積好感度", () => {
+    render(<QuizRoom />);
+    expect(document.querySelector(".pet-widget")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "摸一摸燈寶" })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "摸一摸燈寶" }));
+    // 好感度寫入本機（摸頭 +1）
+    const bond = JSON.parse(localStorage.getItem("xue-pet-bond-v1") ?? "{}");
+    expect(bond.bond).toBe(1);
+    expect(bond.pats).toBe(1);
+    // 說話氣泡出現
+    expect(document.querySelector(".pet-speech")).toBeInTheDocument();
+  });
+
+  it("餵星星糖與戳戳點燈各自累積好感度", () => {
+    render(<QuizRoom />);
+    fireEvent.click(screen.getByRole("button", { name: "餵星星糖" }));
+    fireEvent.click(screen.getByRole("button", { name: "戳戳點燈" }));
+    const bond = JSON.parse(localStorage.getItem("xue-pet-bond-v1") ?? "{}");
+    // 餵糖 +2、點燈 +1
+    expect(bond.bond).toBe(3);
+    expect(bond.feeds).toBe(1);
+    expect(bond.lights).toBe(1);
+  });
 });
