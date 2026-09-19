@@ -238,11 +238,6 @@ export default function Home() {
             <p>四種單機模式都會保留在你的本機學習軌跡中。</p>
           </div>
           <div className="home-mode-grid">
-            <button type="button" className="home-mode-card is-tavern" onClick={() => setLocation("/tavern")}>
-              <Compass size={25} aria-hidden="true" />
-              <strong>燈塔指航中心</strong>
-              <span>卡牌 · 冒險 · 夥伴</span>
-            </button>
             <button type="button" className="home-mode-card is-wrong-answer" onClick={() => setLocation("/wrong-answers")}>
               <ShieldAlert size={25} aria-hidden="true" />
               <strong>錯題魔王</strong>

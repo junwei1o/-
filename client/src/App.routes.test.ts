@@ -14,10 +14,8 @@ describe("App 守護者路由相容性", () => {
     expect(appSource).toContain('path={"/duel"} component={KnowledgeDuel}');
   });
 
-  it("新增燈塔指航中心與其子頁面路由", () => {
-    expect(appSource).toContain('path={"/tavern"}');
-    expect(appSource).toContain('path={"/tavern/cards"}');
-    expect(appSource).toContain('path={"/tavern/adventure"}');
+  it("燈塔指航中心與其子頁面路由已下架", () => {
+    expect(appSource).not.toContain('path={"/tavern"');
   });
 
   it("新增導航重組（22 → 7）的五個 Hub 入口路由", () => {

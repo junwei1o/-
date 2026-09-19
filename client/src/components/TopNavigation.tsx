@@ -25,7 +25,7 @@ const PRIMARY_ITEMS: NavItem[] = [
   { id: "home", label: "首頁", icon: Compass, href: "/", activePrefixes: ["/map", "/regions/"] },
   { id: "quiz-room", label: "我的教室", icon: BookOpenCheck, href: "/quiz-room", activePrefixes: ["/quiz-room", "/classroom", "/weekly-quiz", "/practice", "/battle", "/knowledge-duel", "/duel", "/wrong-answers", "/review-hub", "/community", "/expedition", "/camp", "/guardian", "/guardian-expedition"] },
   { id: "learning", label: "學習歷程", icon: BarChart3, href: "/learning", activePrefixes: ["/learning", "/learning-insights", "/learning-report", "/error-statistics", "/learning-summary", "/adventure-journal"] },
-  { id: "treasure", label: "藏寶圖", icon: MapIcon, href: "/treasure", activePrefixes: ["/treasure", "/badges", "/tavern", "/gallery", "/wisdom", "/astronomy", "/principles", "/observatory", "/safety", "/study-tips"] },
+  { id: "treasure", label: "藏寶圖", icon: MapIcon, href: "/treasure", activePrefixes: ["/treasure", "/badges", "/gallery", "/wisdom", "/astronomy", "/principles", "/observatory", "/safety", "/study-tips"] },
   { id: "settings", label: "設定", icon: Settings, href: "/settings", activePrefixes: ["/settings", "/teacher", "/class", "/features"] },
 ];
 

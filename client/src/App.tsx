@@ -44,8 +44,6 @@ const ReviewHub = React.lazy(() => import("@/pages/ReviewHub"));
 const Settings = React.lazy(() => import("@/pages/Settings"));
 const StudyTips = React.lazy(() => import("@/pages/StudyTips"));
 const GuardianExpedition = React.lazy(() => import("@/pages/GuardianExpedition"));
-const Tavern = React.lazy(() => import("@/pages/Tavern"));
-const CardCollection = React.lazy(() => import("@/pages/CardCollection"));
 const QuizRoom = React.lazy(() => import("@/pages/QuizRoom"));
 const ClassroomPlay = React.lazy(() => import("@/pages/ClassroomPlay"));
 const WeeklyQuizPage = React.lazy(() => import("@/pages/WeeklyQuizPage"));
@@ -57,8 +55,6 @@ const LeagueArena = React.lazy(() => import("@/pages/LeagueArena"));
 const PKArena = React.lazy(() => import("@/pages/PKArena"));
 const TeacherDashboard = React.lazy(() => import("@/pages/TeacherDashboard"));
 const StudentClass = React.lazy(() => import("@/pages/StudentClass"));
-const TrumpDuelBoard = React.lazy(() => import("@/components/TrumpDuelBoard"));
-const AdventureViewer = React.lazy(() => import("@/components/AdventureViewer"));
 
 // 懶加載時的輕量佔位：品牌色系的帆船載入提示。
 function PageLoader() {
@@ -114,10 +110,6 @@ function Router() {
         <Route path={"/community"} component={CommunityHub} />
         <Route path={"/knowledge-duel"} component={KnowledgeDuel} />
         <Route path={"/duel"} component={KnowledgeDuel} />
-        <Route path={"/tavern"} component={Tavern} />
-        <Route path={"/tavern/cards"} component={() => <TrumpDuelBoard />} />
-        <Route path={"/tavern/adventure"} component={() => <AdventureViewer />} />
-        <Route path={"/tavern/collection"} component={CardCollection} />
         <Route path={"/error-statistics"} component={ErrorTypeStatistics} />
         <Route path={"/learning-summary"} component={TeacherParentSummary} />
         <Route path={"/settings"} component={Settings} />

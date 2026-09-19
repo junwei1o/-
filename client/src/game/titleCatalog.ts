@@ -58,34 +58,8 @@ export const TITLE_CATALOG: readonly TitleDefinition[] = [
     condition: "在答題戰鬥中達成 15 連續答對",
     hint: { label: "去答題戰鬥", href: "/battle" },
   },
-  {
-    id: "牌局好手",
-    displayTitle: "牌局好手",
-    category: "潮汐牌局",
-    condition: "在潮汐牌局累計獲勝 10 場",
-    hint: { label: "去潮汐牌局", href: "/tavern/cards" },
-  },
-  {
-    id: "潮汐牌王",
-    displayTitle: "潮汐牌王",
-    category: "潮汐牌局",
-    condition: "在潮汐牌局累計獲勝 50 場",
-    hint: { label: "去潮汐牌局", href: "/tavern/cards" },
-  },
-  {
-    id: "燈塔嚮導",
-    displayTitle: "燈塔嚮導",
-    category: "文字冒險",
-    condition: "完成冒險《燈塔的呼喚》的美滿結局",
-    hint: { label: "去文字冒險", href: "/tavern/adventure" },
-  },
-  {
-    id: "古籍尋跡者",
-    displayTitle: "古籍尋跡者",
-    category: "文字冒險",
-    condition: "完成冒險《失落的古籍》的美滿結局",
-    hint: { label: "去文字冒險", href: "/tavern/adventure" },
-  },
+  // 潮汐牌局／文字冒險相關稱號（牌局好手、潮汐牌王、燈塔嚮導、古籍尋跡者）
+  // 已隨燈塔指航中心下架移除；歷史玩家已取得的稱號仍保留在本地存檔顯示。
   ...rareExpeditionTitles,
 ];
 

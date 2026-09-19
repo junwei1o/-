@@ -5,12 +5,12 @@ const source = readFileSync(new URL("./Home.tsx", import.meta.url), "utf8");
 const css = readFileSync(new URL("./HomeDashboard.css", import.meta.url), "utf8");
 
 describe("首頁遊戲模式入口", () => {
-  it("提供四個真實單機入口，簽到一律走統一的彈窗", () => {
-    expect(source).toContain("燈塔指航中心");
+  it("提供三個真實單機入口（燈塔指航中心已下架），簽到一律走統一的彈窗", () => {
+    expect(source).not.toContain("燈塔指航中心");
+    expect(source).not.toContain('setLocation("/tavern")');
     expect(source).toContain("錯題魔王");
     expect(source).toContain("限時挑戰");
     expect(source).toContain("每日簽到");
-    expect(source).toContain('setLocation("/tavern")');
     expect(source).toContain('setLocation("/community?mode=timed")');
     // 簽到只有一條路徑：首頁卡片開啟統一彈窗（dailySignIn.ts），
     // 自己再領一次會讓兩份連續天數各自累加。

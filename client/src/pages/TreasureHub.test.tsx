@@ -15,7 +15,7 @@ describe("TreasureHub 藏寶圖", () => {
     setLocation.mockClear();
   });
 
-  it("把徽章、特產、卡牌收在同一頁並導向目的地", () => {
+  it("把徽章、特產收在同一頁並導向目的地（卡牌入口已下架）", () => {
     render(<TreasureHub />);
     expect(screen.getByRole("heading", { name: /藏寶圖/ })).toBeInTheDocument();
 
@@ -27,7 +27,6 @@ describe("TreasureHub 藏寶圖", () => {
     expect(setLocation).toHaveBeenCalledWith("/");
     setLocation.mockClear();
 
-    fireEvent.click(screen.getByRole("button", { name: /卡牌/ }));
-    expect(setLocation).toHaveBeenCalledWith("/tavern");
+    expect(screen.queryByRole("button", { name: /卡牌/ })).not.toBeInTheDocument();
   });
 });

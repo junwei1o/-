@@ -5,13 +5,13 @@ describe("title catalog", () => {
   it("lists every obtainable title with a unique id and complete metadata", () => {
     const ids = TITLE_CATALOG.map((title) => title.id);
     expect(new Set(ids).size).toBe(ids.length);
-    expect(TITLE_CATALOG.length).toBe(21);
+    expect(TITLE_CATALOG.length).toBe(17);
     TITLE_CATALOG.forEach((title) => {
       expect(title.displayTitle.length).toBeGreaterThan(1);
       expect(title.condition.length).toBeGreaterThan(6);
       expect(title.hint.label.length).toBeGreaterThan(0);
       expect(title.hint.href.startsWith("/")).toBe(true);
-      expect(["簽到成長", "連擊挑戰", "稀有遠征", "潮汐牌局", "文字冒險"]).toContain(title.category);
+      expect(["簽到成長", "連擊挑戰", "稀有遠征"]).toContain(title.category);
     });
   });
 
@@ -19,6 +19,12 @@ describe("title catalog", () => {
     expect(TITLE_CATALOG.filter((title) => title.category === "簽到成長")).toHaveLength(1);
     expect(TITLE_CATALOG.filter((title) => title.category === "連擊挑戰")).toHaveLength(1);
     expect(TITLE_CATALOG.filter((title) => title.category === "稀有遠征")).toHaveLength(15);
+  });
+
+  it("潮汐牌局與文字冒險稱號已隨燈塔指航中心下架移除", () => {
+    expect(TITLE_CATALOG.some((title) => title.hint.href.startsWith("/tavern"))).toBe(false);
+    expect(TITLE_CATALOG.some((title) => title.category === "潮汐牌局")).toBe(false);
+    expect(TITLE_CATALOG.some((title) => title.category === "文字冒險")).toBe(false);
   });
 
   it("strips the storage prefix for display but keeps it on the matching id", () => {
