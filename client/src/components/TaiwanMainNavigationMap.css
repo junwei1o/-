@@ -1265,3 +1265,186 @@
     display: none;
   }
 }
+
+/* ===== v7 航海圖淨空版：太閤／大航海式純展示地圖＋外側系統對話框 ===== */
+
+/* 版面：地圖為主體，系統對話框在外側欄 */
+.taiwan-map-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(19rem, 23rem);
+  gap: 1rem;
+  align-items: start;
+  width: min(100%, 82rem);
+  margin: 1.1rem auto 0;
+}
+.taiwan-map-layout > .taiwan-map-canvas {
+  width: 100%;
+  margin: 0;
+}
+
+/* 系統對話框：羊皮紙＋深棕雙線框（太閤立志傳式） */
+.taiwan-map-layout .taiwan-map-panel,
+.taiwan-map-layout .taiwan-island-panel {
+  grid-template-columns: minmax(0, 1fr);
+  position: sticky;
+  top: 1rem;
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
+  border: 3px double rgba(92, 61, 38, 0.72);
+  border-radius: 0.9rem;
+  background: linear-gradient(168deg, #faf3e0 0%, #f2e4c2 100%);
+  box-shadow: 0 16px 36px rgba(32, 60, 60, 0.24), inset 0 0 0 1px rgba(255, 252, 240, 0.85);
+}
+.taiwan-map-layout .taiwan-map-panel h3 {
+  padding-bottom: 0.42rem;
+  margin-bottom: 0.1rem;
+  border-bottom: 2px dashed rgba(92, 61, 38, 0.35);
+  font-size: 1.28rem;
+  color: #5C3D26;
+}
+.taiwan-map-layout .taiwan-map-panel > .taiwan-map-panel-actions {
+  grid-column: 1;
+  flex-direction: column;
+}
+
+/* 無選擇時的系統等待訊息（佔據對話框欄位） */
+.taiwan-map-waiting {
+  position: sticky;
+  top: 1rem;
+  display: grid;
+  gap: 0.28rem;
+  padding: 1.05rem 1rem;
+  border: 2px dashed rgba(92, 61, 38, 0.42);
+  border-radius: 0.9rem;
+  background: rgba(249, 243, 232, 0.75);
+  color: #5C3D26;
+}
+.taiwan-map-waiting .eyebrow { margin: 0; color: #8B6F47; font-size: 0.63rem; font-weight: 900; letter-spacing: 0.08em; }
+.taiwan-map-waiting strong { font-size: 1.02rem; }
+.taiwan-map-waiting p:last-child { margin: 0; font-size: 0.82rem; color: #8B6F47; line-height: 1.55; }
+
+/* 淨空島嶼標記：圓形港口徽章＋銘牌 */
+.taiwan-map-layout .taiwan-map-island {
+  min-width: 0;
+  grid-template-columns: auto auto;
+  align-items: center;
+  gap: 0.32rem;
+  padding: 0.3rem 0.62rem 0.3rem 0.36rem;
+  border-radius: 999px;
+  box-shadow: 0 5px 0 rgba(31, 82, 85, 0.2), 0 10px 14px rgba(23, 61, 74, 0.28);
+}
+.taiwan-map-layout .taiwan-map-island strong { margin: 0; font-size: 0.9rem; }
+.taiwan-map-layout .taiwan-map-island-icon {
+  width: 1.8rem;
+  height: 1.8rem;
+  border-radius: 50%;
+  background: rgba(11, 110, 142, 0.16);
+}
+.taiwan-map-layout .taiwan-map-island::after { bottom: -5px; height: 7px; }
+.taiwan-map-layout .taiwan-map-island:hover,
+.taiwan-map-layout .taiwan-map-island:focus-visible,
+.taiwan-map-layout .taiwan-map-island.is-selected {
+  transform: translate(-50%, -54%);
+}
+
+/* 補給標記縮成小星章 */
+.taiwan-map-layout .taiwan-map-supply-marker {
+  top: -0.6rem;
+  right: -0.4rem;
+  width: 1.5rem;
+  min-height: 1.5rem;
+  padding: 0.1rem;
+  font-size: 0.78rem;
+}
+
+/* 地圖上的回饋對話泡泡（跟著船走） */
+.taiwan-map-speech {
+  position: absolute;
+  z-index: 6;
+  transform: translate(-50%, calc(-100% - 2.4rem));
+  display: grid;
+  gap: 0.24rem;
+  max-width: 15rem;
+  padding: 0.6rem 0.75rem;
+  border: 2px solid rgba(92, 61, 38, 0.75);
+  border-radius: 0.8rem;
+  color: #5C3D26;
+  background: rgba(249, 243, 232, 0.97);
+  box-shadow: 0 10px 22px rgba(23, 61, 74, 0.3);
+  animation: taiwan-speech-pop 0.25s ease;
+}
+.taiwan-map-speech::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -8px;
+  width: 13px;
+  height: 13px;
+  transform: translateX(-50%) rotate(45deg);
+  background: rgba(249, 243, 232, 0.97);
+  border-right: 2px solid rgba(92, 61, 38, 0.75);
+  border-bottom: 2px solid rgba(92, 61, 38, 0.75);
+}
+.taiwan-map-speech strong { font-size: 0.84rem; color: #0B6E8E; }
+.taiwan-map-speech p { margin: 0; font-size: 0.78rem; line-height: 1.5; }
+.taiwan-map-speech-actions { display: flex; gap: 0.4rem; margin-top: 0.1rem; }
+.taiwan-map-speech-actions button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  min-height: 1.7rem;
+  padding: 0.16rem 0.55rem;
+  border: 1px solid rgba(92, 61, 38, 0.5);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  color: #5C3D26;
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.taiwan-map-speech-actions button:hover { background: #0B6E8E; color: #fff; }
+.taiwan-map-speech-actions button:disabled { opacity: 0.55; cursor: default; }
+@keyframes taiwan-speech-pop {
+  from { opacity: 0; transform: translate(-50%, calc(-100% - 2rem)) scale(0.85); }
+  to { opacity: 1; transform: translate(-50%, calc(-100% - 2.4rem)) scale(1); }
+}
+
+/* 船：外層 g 由 inline style 控制航行過渡；內層做浮動／搖擺 */
+.taiwan-map-boat { will-change: transform; }
+.taiwan-map-boat .taiwan-map-boat-glyph { animation: taiwan-boat-bob-v7 2.8s ease-in-out infinite; }
+@keyframes taiwan-boat-bob-v7 {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-2px) rotate(-2deg); }
+  75% { transform: translateY(2px) rotate(2deg); }
+}
+.taiwan-map-boat.is-sailing .taiwan-map-boat-glyph { animation: taiwan-boat-rock 0.55s ease-in-out infinite; }
+@keyframes taiwan-boat-rock {
+  0%, 100% { transform: rotate(-6deg) translateY(-1px); }
+  50% { transform: rotate(6deg) translateY(1px); }
+}
+
+/* 探險小工具移到標題區（地圖畫布內不再有雜物） */
+.taiwan-map-tools {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 0.4rem;
+}
+.taiwan-map-tools .taiwan-map-extras { position: static; display: flex; }
+.taiwan-map-tools .taiwan-map-easter-egg-trigger { position: static; }
+.taiwan-map-tools .taiwan-map-backpack-panel,
+.taiwan-map-tools .taiwan-map-easter-egg-panel {
+  position: static;
+  width: 100%;
+}
+
+/* 窄屏：對話框回到地圖下方 */
+@media (max-width: 900px) {
+  .taiwan-map-layout { grid-template-columns: 1fr; }
+  .taiwan-map-layout .taiwan-map-panel,
+  .taiwan-map-layout .taiwan-island-panel { position: static; max-height: none; overflow: visible; }
+  .taiwan-map-waiting { position: static; }
+}

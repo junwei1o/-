@@ -1,4 +1,4 @@
-import { Anchor, BookOpenCheck, BookText, Compass, FlaskConical, Landmark, Languages, RotateCcw, Ruler, Sparkles, Volume2, type LucideIcon } from "lucide-react";
+import { BookOpenCheck, BookText, Compass, FlaskConical, Landmark, Languages, RotateCcw, Ruler, Sparkles, Volume2, type LucideIcon } from "lucide-react";
 import React, { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { createSpeechController, type SpeechStatus } from "@/lib/speechSynthesis";
 import { getPaperNextGroupStrategyHint } from "@/lib/paperExam";
@@ -71,6 +71,16 @@ const ISLAND_ROUTE_PATHS: Record<KnowledgeIslandId, string> = {
   social: "M248 365 C314 404 375 445 428 473",
   science: "M248 365 C394 330 600 317 788 317",
   english: "M248 365 C195 350 175 300 164 258",
+};
+
+/** 太閤／大航海式航海圖：船會實際航行到所選島的港口（SVG 座標 1000×620，均在海面上）。 */
+const HOME_PORT = { x: 248, y: 365 };
+const ISLAND_PORTS: Record<KnowledgeIslandId, { x: number; y: number }> = {
+  language: { x: 402, y: 52 },
+  math: { x: 336, y: 292 },
+  social: { x: 330, y: 540 },
+  science: { x: 706, y: 384 },
+  english: { x: 148, y: 300 },
 };
 
 const ISLAND_ICONS: Record<KnowledgeIslandId, LucideIcon> = {
@@ -238,7 +248,7 @@ function formatMapReinforcementJournalTime(timestamp: number) {
   return new Intl.DateTimeFormat("zh-TW", { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" }).format(new Date(timestamp));
 }
 
-export function TaiwanMainNavigationMap({ islands, onOpenSubject, onStartIslandQuiz, onOpenTopic, onOpenWrongAnswers, onOpenGame, unlockedRouteIds = [], supplyMarkerIds = [], reinforcementReward = null, reinforcementJournal = [], reinforcementSuggestion = "", randomAdventureRouteReward = null }: TaiwanMainNavigationMapProps) {
+export function TaiwanMainNavigationMap({ islands, onOpenSubject, onOpenTopic, onOpenWrongAnswers, onOpenGame, unlockedRouteIds = [], supplyMarkerIds = [], reinforcementReward = null, reinforcementJournal = [], reinforcementSuggestion = "", randomAdventureRouteReward = null }: TaiwanMainNavigationMapProps) {
   const [activeIslandId, setActiveIslandId] = useState<KnowledgeIslandId | null>(null);
   const [showStrategyPanel, setShowStrategyPanel] = useState(false);
   const [showRestoredPreferenceNotice, setShowRestoredPreferenceNotice] = useState(false);
@@ -250,6 +260,11 @@ export function TaiwanMainNavigationMap({ islands, onOpenSubject, onStartIslandQ
   const [showBackpack, setShowBackpack] = useState(false);
   const [showTyphoonStory, setShowTyphoonStory] = useState(false);
   const [recentlyUnlockedIslandIds, setRecentlyUnlockedIslandIds] = useState<KnowledgeIslandId[]>([]);
+  // v7 航海圖淨空版：船隻航行
+  const [boatPos, setBoatPos] = useState(HOME_PORT);
+  const [isSailing, setIsSailing] = useState(false);
+  const sailTimerRef = useRef<number | null>(null);
+  const firstBoatRunRef = useRef(true);
   const speech = useMemo(() => createSpeechController(), []);
   const [speechStatus, setSpeechStatus] = useState<SpeechStatus>(speech.isSupported ? "idle" : "unsupported");
   const triggerRefs = useRef<Partial<Record<KnowledgeIslandId, HTMLButtonElement | null>>>({});
@@ -314,6 +329,25 @@ export function TaiwanMainNavigationMap({ islands, onOpenSubject, onStartIslandQ
   }, [supplyMarkerSignature]);
 
   useEffect(() => () => speech.stop(), [speech]);
+
+  // v7：選島時船實際航行到該島港口；關閉對話框駛回母港
+  useEffect(() => {
+    const target = activeIslandId ? ISLAND_PORTS[activeIslandId] : HOME_PORT;
+    setBoatPos(target);
+    if (firstBoatRunRef.current) {
+      firstBoatRunRef.current = false;
+      return;
+    }
+    setIsSailing(true);
+    if (sailTimerRef.current !== null) window.clearTimeout(sailTimerRef.current);
+    sailTimerRef.current = window.setTimeout(() => setIsSailing(false), 2000);
+    return () => {
+      if (sailTimerRef.current !== null) {
+        window.clearTimeout(sailTimerRef.current);
+        sailTimerRef.current = null;
+      }
+    };
+  }, [activeIslandId]);
 
   useEffect(() => {
     if (!activeIslandId || !showStrategyPanel) return;
@@ -465,32 +499,55 @@ export function TaiwanMainNavigationMap({ islands, onOpenSubject, onStartIslandQ
           <p>選一座島看見可探索的方向，再決定這次想練習哪一個主題。</p>
         </div>
         <div className="taiwan-navigation-map-key-group">
+          {/* v7：探險小工具移出地圖畫布，讓地圖保持純航海圖 */}
+          <div className="taiwan-map-tools">
+            <div className="taiwan-map-extras" aria-label="探險小工具">
+              <button
+                type="button"
+                className="taiwan-map-backpack-trigger"
+                aria-expanded={showBackpack}
+                aria-controls="taiwan-map-backpack-panel"
+                onClick={() => setShowBackpack((open) => !open)}
+                data-testid="taiwan-map-backpack-trigger"
+              >
+                <span aria-hidden="true">🎒</span> 特產背包 <small>{inventoryItems.length}</small>
+              </button>
+            </div>
+            <button type="button" className="taiwan-map-easter-egg-trigger" onClick={openTyphoonStory} aria-describedby="taiwan-map-easter-egg-description" data-testid="taiwan-map-easter-egg-trigger">
+              <span aria-hidden="true">🌬️</span><span>海風傳聞</span>
+            </button>
+            <span id="taiwan-map-easter-egg-description" className="sr-only">發現一段台灣天氣故事，不會中斷目前探索。</span>
+            {showBackpack ? (
+              <aside id="taiwan-map-backpack-panel" className="taiwan-map-backpack-panel" aria-label="特產背包" data-testid="taiwan-map-backpack-panel">
+                <div>
+                  <p className="eyebrow">TAIWAN SPECIALTIES</p>
+                  <h3>特產背包</h3>
+                </div>
+                <button type="button" onClick={() => setShowBackpack(false)} aria-label="關閉特產背包">關閉</button>
+                {inventoryItems.length ? (
+                  <ul aria-label="已收集的台灣特產">
+                    {inventoryItems.map((item) => <li key={item.id}><span aria-hidden="true">{item.emoji}</span><span>{item.name}</span></li>)}
+                  </ul>
+                ) : <BxEmptyState slot="backpack" />}
+              </aside>
+            ) : null}
+            {showTyphoonStory ? (
+              <aside className="taiwan-map-easter-egg-panel" role="status" aria-live="polite" data-testid="taiwan-map-easter-egg-panel">
+                <div>
+                  <p className="eyebrow">MAP STORY</p>
+                  <h3>颱風的海上來信</h3>
+                  <p>一陣暖濕海風提醒航海家：觀察雲層、整理補給，再依自己的步調前進。這是一段純故事發現，不會改變你的答題進度。</p>
+                </div>
+                <button type="button" onClick={() => setShowTyphoonStory(false)} aria-label="關閉颱風故事">關閉</button>
+              </aside>
+            ) : null}
+          </div>
           <p className="taiwan-navigation-map-key"><Sparkles size={16} aria-hidden="true" /> 光亮表示已留下真實學習線索</p>
           {unlockedSupplyCount > 0 ? <p className="taiwan-navigation-map-supply-summary" role="status">已發現 {unlockedSupplyCount} 個真實學習補給標記</p> : null}
           {showRouteHint ? (
             <p className="taiwan-map-route-hint" role="status" data-testid="taiwan-map-route-hint">
               <Compass size={15} aria-hidden="true" className="taiwan-map-route-hint-compass" data-testid="taiwan-map-route-hint-compass" /> 微光航線可以點一下，查看補給策略
             </p>
-          ) : null}
-          {showReinforcementReward && reinforcementReward ? (
-            <aside className="taiwan-map-reinforcement-reward" role="status" aria-live="polite" data-testid="taiwan-map-reinforcement-reward">
-              <Sparkles size={18} aria-hidden="true" />
-              <div>
-                <strong>已完成一題</strong>
-                <p>{reinforcementReward.subject}的「{reinforcementReward.knowledge}」補強已留在航海圖。</p>
-              </div>
-              <div className="taiwan-map-reinforcement-reward-actions">
-                <button type="button" onClick={() => speech.speak(`已完成一題。${reinforcementReward.subject}的${reinforcementReward.knowledge}補強已留在航海圖。`, setSpeechStatus)} disabled={!speech.isSupported} aria-label="朗讀一題補強獎勵"><Volume2 size={15} aria-hidden="true" /> 朗讀</button>
-                <button type="button" onClick={closeReinforcementReward} aria-label="關閉一題補強獎勵">關閉</button>
-              </div>
-            </aside>
-          ) : null}
-          {showRandomAdventureRouteReward && randomAdventureRouteReward ? (
-            <aside className="taiwan-map-random-route-reward" role="status" aria-live="polite" data-testid="taiwan-map-random-route-reward">
-              <Sparkles size={18} aria-hidden="true" />
-              <div><strong>隨機冒險完成</strong><p>{randomAdventureRouteReward.subject}航線已為這次真實答對點亮。</p></div>
-              <button type="button" onClick={() => setShowRandomAdventureRouteReward(false)} aria-label="關閉隨機冒險航線點亮提示">關閉</button>
-            </aside>
           ) : null}
           <section className="taiwan-map-reinforcement-journal" aria-labelledby="taiwan-map-reinforcement-journal-title" data-testid="taiwan-map-reinforcement-journal">
             <div className="taiwan-map-reinforcement-journal-heading">
@@ -510,45 +567,38 @@ export function TaiwanMainNavigationMap({ islands, onOpenSubject, onStartIslandQ
         </div>
       </header>
 
+      <div className="taiwan-map-layout">
       <div className="taiwan-map-canvas" aria-label="台灣學習航海圖" data-tour="islands">
-        <div className="taiwan-map-extras" aria-label="探險小工具">
-          <button
-            type="button"
-            className="taiwan-map-backpack-trigger"
-            aria-expanded={showBackpack}
-            aria-controls="taiwan-map-backpack-panel"
-            onClick={() => setShowBackpack((open) => !open)}
-            data-testid="taiwan-map-backpack-trigger"
+        {/* v7 回饋對話直接顯示在地圖上（跟著船走） */}
+        {showReinforcementReward && reinforcementReward ? (
+          <aside
+            className="taiwan-map-speech"
+            role="status"
+            aria-live="polite"
+            data-testid="taiwan-map-reinforcement-reward"
+            style={{ left: `${(boatPos.x / 1000) * 100}%`, top: `${(boatPos.y / 620) * 100}%` } as CSSProperties}
           >
-            <span aria-hidden="true">🎒</span> 特產背包 <small>{inventoryItems.length}</small>
-          </button>
-          {showBackpack ? (
-            <aside id="taiwan-map-backpack-panel" className="taiwan-map-backpack-panel" aria-label="特產背包" data-testid="taiwan-map-backpack-panel">
-              <div>
-                <p className="eyebrow">TAIWAN SPECIALTIES</p>
-                <h3>特產背包</h3>
-              </div>
-              <button type="button" onClick={() => setShowBackpack(false)} aria-label="關閉特產背包">關閉</button>
-              {inventoryItems.length ? (
-                <ul aria-label="已收集的台灣特產">
-                  {inventoryItems.map((item) => <li key={item.id}><span aria-hidden="true">{item.emoji}</span><span>{item.name}</span></li>)}
-                </ul>
-              ) : <BxEmptyState slot="backpack" />}
-            </aside>
-          ) : null}
-        </div>
-        <button type="button" className="taiwan-map-easter-egg-trigger" onClick={openTyphoonStory} aria-describedby="taiwan-map-easter-egg-description" data-testid="taiwan-map-easter-egg-trigger">
-          <span aria-hidden="true">🌬️</span><span>海風傳聞</span>
-        </button>
-        <span id="taiwan-map-easter-egg-description" className="sr-only">發現一段台灣天氣故事，不會中斷目前探索。</span>
-        {showTyphoonStory ? (
-          <aside className="taiwan-map-easter-egg-panel" role="status" aria-live="polite" data-testid="taiwan-map-easter-egg-panel">
-            <div>
-              <p className="eyebrow">MAP STORY</p>
-              <h3>颱風的海上來信</h3>
-              <p>一陣暖濕海風提醒航海家：觀察雲層、整理補給，再依自己的步調前進。這是一段純故事發現，不會改變你的答題進度。</p>
+            <strong>✦ 已完成一題</strong>
+            <p>{reinforcementReward.subject}的「{reinforcementReward.knowledge}」補強已留在航海圖。</p>
+            <div className="taiwan-map-speech-actions">
+              <button type="button" onClick={() => speech.speak(`已完成一題。${reinforcementReward.subject}的${reinforcementReward.knowledge}補強已留在航海圖。`, setSpeechStatus)} disabled={!speech.isSupported} aria-label="朗讀一題補強獎勵"><Volume2 size={14} aria-hidden="true" /> 朗讀</button>
+              <button type="button" onClick={closeReinforcementReward} aria-label="關閉一題補強獎勵">關閉</button>
             </div>
-            <button type="button" onClick={() => setShowTyphoonStory(false)} aria-label="關閉颱風故事">關閉</button>
+          </aside>
+        ) : null}
+        {showRandomAdventureRouteReward && randomAdventureRouteReward ? (
+          <aside
+            className="taiwan-map-speech"
+            role="status"
+            aria-live="polite"
+            data-testid="taiwan-map-random-route-reward"
+            style={{ left: `${(boatPos.x / 1000) * 100}%`, top: `${(boatPos.y / 620) * 100}%` } as CSSProperties}
+          >
+            <strong>✦ 隨機冒險完成</strong>
+            <p>{randomAdventureRouteReward.subject}航線已為這次真實答對點亮。</p>
+            <div className="taiwan-map-speech-actions">
+              <button type="button" onClick={() => setShowRandomAdventureRouteReward(false)} aria-label="關閉隨機冒險航線點亮提示">關閉</button>
+            </div>
           </aside>
         ) : null}
         <svg className="taiwan-map-outline" viewBox="0 0 1000 620" aria-hidden="true" focusable="false">
@@ -591,17 +641,25 @@ export function TaiwanMainNavigationMap({ islands, onOpenSubject, onStartIslandQ
               />
             );
           })}
-          <circle className="taiwan-map-boat-ring" cx="248" cy="365" r="18" />
-          <g className="taiwan-map-boat-glyph" transform="translate(248 365)">
-            {/* 船身 */}
-            <path d="M-13 4 Q0 9 13 4 L10 10 L-10 10 Z" fill="#8B4A2B" stroke="#5C3D26" strokeWidth="1.5" />
-            {/* 主帆 */}
-            <path d="M-2 -2 L-2 -16 L9 -6 Z" fill="#F9F3E8" stroke="#5C3D26" strokeWidth="1.5" />
-            {/* 副帆 */}
-            <path d="M2 -2 L2 -12 L-7 -5 Z" fill="#E8B84B" stroke="#5C3D26" strokeWidth="1.5" />
-            {/* 船旗 */}
-            <line x1="0" y1="-16" x2="0" y2="-20" stroke="#5C3D26" strokeWidth="1.5" />
-            <path d="M0 -20 L6 -18 L0 -16 Z" fill="#E74C3C" />
+          {/* v7 船會實際航行：transform 過渡到所選島的港口 */}
+          <g
+            className={`taiwan-map-boat${isSailing ? " is-sailing" : ""}`}
+            style={{ transform: `translate(${boatPos.x}px, ${boatPos.y}px)`, transition: "transform 1.9s cubic-bezier(0.45, 0.05, 0.35, 1)" }}
+            data-testid="taiwan-map-boat"
+            data-sailing={isSailing ? "true" : "false"}
+          >
+            <circle className="taiwan-map-boat-ring" r="18" />
+            <g className="taiwan-map-boat-glyph">
+              {/* 船身 */}
+              <path d="M-13 4 Q0 9 13 4 L10 10 L-10 10 Z" fill="#8B4A2B" stroke="#5C3D26" strokeWidth="1.5" />
+              {/* 主帆 */}
+              <path d="M-2 -2 L-2 -16 L9 -6 Z" fill="#F9F3E8" stroke="#5C3D26" strokeWidth="1.5" />
+              {/* 副帆 */}
+              <path d="M2 -2 L2 -12 L-7 -5 Z" fill="#E8B84B" stroke="#5C3D26" strokeWidth="1.5" />
+              {/* 船旗 */}
+              <line x1="0" y1="-16" x2="0" y2="-20" stroke="#5C3D26" strokeWidth="1.5" />
+              <path d="M0 -20 L6 -18 L0 -16 Z" fill="#E74C3C" />
+            </g>
           </g>
           {/* 羅盤裝飾 */}
           <g className="taiwan-map-compass" transform="translate(930 80)">
@@ -612,35 +670,13 @@ export function TaiwanMainNavigationMap({ islands, onOpenSubject, onStartIslandQ
           </g>
         </svg>
 
-        {/* 真實地標章：各地區地標直接點在地圖上（奇幻島嶼＋真實台灣並置） */}
-        {islands.flatMap((island) => {
-          const landmarks = ISLAND_LANDMARKS[island.id] ?? [];
-          return landmarks.map((landmark) => (
-            <span
-              key={`${island.id}-${landmark.name}`}
-              className="taiwan-map-landmark"
-              style={{ left: landmark.left, top: landmark.top } as CSSProperties}
-              role="img"
-              aria-label={`${island.shortTitle}地區地標：${landmark.name}`}
-              data-testid={`taiwan-map-landmark-${island.id}`}
-            >
-              <span aria-hidden="true">{landmark.symbol}</span>
-              <small>{landmark.name}</small>
-            </span>
-          ));
-        })}
-
-        <p className="taiwan-map-boat-label"><Anchor size={15} aria-hidden="true" /> 我的船標</p>
-
         {islands.map((island) => {
           const region = ISLAND_REGION_BY_ID[island.id];
           const hasSupplyMarker = supplyMarkerIds.includes(supplyMarkerIdForRegion(region));
           const position = ISLAND_POSITIONS[island.id];
           const Icon = ISLAND_ICONS[island.id];
-          const landscape = ISLAND_LANDSCAPES[island.id];
           const isActive = island.id === activeIslandId;
           const visualState = islandVisualState(island);
-          const starRating = islandStarRating(island);
           const style = {
             "--island-left": position.left,
             "--island-top": position.top,
@@ -663,20 +699,13 @@ export function TaiwanMainNavigationMap({ islands, onOpenSubject, onStartIslandQ
               data-region={region}
               data-reinforcement-rewarded={showReinforcementReward && reinforcementRewardIslandId === island.id ? "true" : "false"}
               data-island-unlocking={recentlyUnlockedIslandIds.includes(island.id) ? "true" : "false"}
-              onClick={() => { recordPipiEvent("map-visit"); if (onStartIslandQuiz) { onStartIslandQuiz(island.subject); } else { toggleIsland(island.id); } }}
+              onClick={() => { recordPipiEvent("map-visit"); toggleIsland(island.id); }}
             >
+              {/* v7 淨空版島嶼標記：只留圖示＋名稱，細節全收進外側系統對話框 */}
               <span className="taiwan-map-island-icon taiwan-island-icon" aria-hidden="true"><Icon size={17} /></span>
-              <span className="taiwan-map-island-region">{position.region}</span>
               <strong>{island.shortTitle}</strong>
-              <small>{islandStatus(island)}</small>
-              {starRating > 0 ? (
-                <span className="taiwan-map-island-stars" aria-label={`${island.shortTitle}目前獲得 ${starRating} 星，再練習可以提升星級`}>
-                  {[0, 1, 2].map((index) => (
-                    <span key={index} className={index < starRating ? "is-star-filled" : "is-star-empty"} aria-hidden="true">★</span>
-                  ))}
-                </span>
-              ) : null}
-              <span className="taiwan-map-island-landscape" aria-hidden="true">{landscape.icons.map((icon) => icon.symbol).join(" ")}</span>
+              <span className="sr-only">{position.region}</span>
+              <span className="sr-only">{islandStatus(island)}</span>
               {island.unlocked ? <span className="taiwan-map-island-flag" aria-hidden="true" /> : null}
               {hasSupplyMarker ? <span
                 className={`taiwan-map-supply-marker${recentlyCompletedSupplyMarkerIds.includes(supplyMarkerIdForRegion(region)) ? " is-supply-completing" : ""}`}
@@ -684,12 +713,13 @@ export function TaiwanMainNavigationMap({ islands, onOpenSubject, onStartIslandQ
                 aria-label={`${island.shortTitle}已出現學習補給標記`}
                 data-testid={`taiwan-map-supply-marker-${island.id}`}
                 data-supply-completing={recentlyCompletedSupplyMarkerIds.includes(supplyMarkerIdForRegion(region)) ? "true" : "false"}
-              ><span aria-hidden="true">✦</span><small>補給</small></span> : null}
+              ><span aria-hidden="true">✦</span></span> : null}
             </button>
           );
         })}
       </div>
 
+      {/* v7 系統對話框：點擊板塊後在外側展開（太閤／大航海式） */}
       {activeIsland ? (
         <article
           id={`taiwan-island-panel-${activeIsland.id}`}
@@ -895,8 +925,13 @@ export function TaiwanMainNavigationMap({ islands, onOpenSubject, onStartIslandQ
           </div>
         </article>
       ) : (
-        <p className="taiwan-map-hint" role="status">四座島都能立即探索；亮起的航線代表你已在這裡留下真實學習線索。</p>
+        <aside className="taiwan-map-waiting" role="status">
+          <p className="eyebrow">SYSTEM MESSAGE</p>
+          <strong>點擊任一座島嶼港口</strong>
+          <p>船會航行到該島，並在這裡展開航海對話框。</p>
+        </aside>
       )}
+      </div>
 
       <span className="taiwan-map-sr-only" role="status">
         {speechStatus === "speaking" ? "正在朗讀航線說明" : ""}
