@@ -175,11 +175,15 @@ export function PipiPet() {
   const [questState, setQuestState] = useState<PipiQuestState>(loadQuestState);
   const [worn, setWorn] = useState<string[]>(loadWornCostumes);
   const [actionAnim, setActionAnim] = useState<ActionKey | null>(null);
+  // v6 生動感
+  const [blink, setBlink] = useState(false);
+  const [micro, setMicro] = useState<string | null>(null);
 
   const rootRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef<{ startX: number; startY: number; origX: number; origY: number; moved: boolean; velocity: number; lastX: number; lastY: number } | null>(null);
   const particleId = useRef(0);
   const lastRoute = useRef(location);
+  const tapTimesRef = useRef<number[]>([]);
 
   const autoOutfit = outfitForRoute(location);
   const outfit = outfitOverride ?? autoOutfit;
@@ -333,6 +337,14 @@ export function PipiPet() {
 
   const onClick = useCallback(() => {
     if (dragRef.current?.moved || sleeping || trivia) return;
+    // v6 彩蛋：1.5 秒內連點 3 下會嘟嘴生氣
+    const now = Date.now();
+    tapTimesRef.current = [...tapTimesRef.current.filter((t) => now - t < 1500), now];
+    if (tapTimesRef.current.length >= 3) {
+      tapTimesRef.current = [];
+      interact("喵嗚～戳癢了啦！", 2, "💢", "😤");
+      return;
+    }
     const lines = ["喵！", "嘿嘿～", "摸摸！", "開心！"];
     const faces = ["😍", "😊", "😸", "🥰"];
     const i = Math.floor(Math.random() * lines.length);
@@ -447,6 +459,56 @@ export function PipiPet() {
     const touch = "ontouchstart" in window || navigator.maxTouchPoints > 0;
     setIsTouch(touch);
   }, []);
+
+  // v6：隨機眨眼
+  useEffect(() => {
+    if (sleeping) return;
+    let timer: ReturnType<typeof setTimeout>;
+    const loop = () => {
+      timer = setTimeout(() => {
+        setBlink(true);
+        setTimeout(() => setBlink(false), 180);
+        loop();
+      }, 3200 + Math.random() * 4200);
+    };
+    loop();
+    return () => clearTimeout(timer);
+  }, [sleeping]);
+
+  // v6：隨機微動作（歪頭／扭一扭／原地小跳）
+  useEffect(() => {
+    if (sleeping) return;
+    let timer: ReturnType<typeof setTimeout>;
+    const loop = () => {
+      timer = setTimeout(() => {
+        if (!roaming && !actionAnim && !bubble && !menuOpen && !trivia) {
+          const kinds = ["tilt", "wiggle", "hop"];
+          setMicro(kinds[Math.floor(Math.random() * kinds.length)]);
+          setTimeout(() => setMicro(null), 950);
+        }
+        loop();
+      }, 9000 + Math.random() * 9000);
+    };
+    loop();
+    return () => clearTimeout(timer);
+  }, [sleeping, roaming, actionAnim, bubble, menuOpen, trivia]);
+
+  // v6：睡覺說夢話
+  useEffect(() => {
+    if (!sleeping) return;
+    const DREAMS = ["喵……小魚乾……", "（夢到環島旅行中）", "zzz……寶島真美……"];
+    let timer: ReturnType<typeof setTimeout>;
+    const loop = () => {
+      timer = setTimeout(() => {
+        setBubble(DREAMS[Math.floor(Math.random() * DREAMS.length)]);
+        setEmote("💭");
+        setTimeout(() => { setBubble(null); setEmote(null); }, 2500);
+        loop();
+      }, 8000 + Math.random() * 7000);
+    };
+    loop();
+    return () => clearTimeout(timer);
+  }, [sleeping]);
 
   // 每日簽到
   const checkIn = useCallback(() => {
@@ -568,6 +630,9 @@ export function PipiPet() {
     celebrating ? "celebrating" : "",
     bounce ? "bounce" : "",
     actionAnim ? `anim-${actionAnim}` : "",
+    blink ? "blink" : "",
+    micro ? `micro-${micro}` : "",
+    `lv-${lvl}`,
   ].join(" ");
 
   return (

@@ -38,6 +38,57 @@
   60% { transform: translateY(0) scale(0.95, 1.05); }
 }
 
+/* ===== v6 生動感：眨眼（壓扁一下） ===== */
+.pipi-pet.blink img { animation: pipi-squish 0.18s ease; }
+@keyframes pipi-squish {
+  0%, 100% { transform: scaleY(1); }
+  50% { transform: scaleY(0.9) scaleX(1.04); }
+}
+
+/* ===== v6 隨機微動作：歪頭／扭一扭／原地小跳 ===== */
+.pipi-pet.micro-tilt { animation: pipi-tilt 0.9s ease-in-out; }
+@keyframes pipi-tilt {
+  0%, 100% { transform: rotate(0deg); }
+  35% { transform: rotate(-7deg) translateY(-2px); }
+  70% { transform: rotate(4deg); }
+}
+.pipi-pet.micro-wiggle { animation: pipi-wiggle 0.8s ease-in-out; }
+@keyframes pipi-wiggle {
+  0%, 100% { transform: rotate(0deg); }
+  20% { transform: rotate(-4deg); }
+  45% { transform: rotate(4deg); }
+  70% { transform: rotate(-3deg); }
+}
+.pipi-pet.micro-hop { animation: pipi-mini-hop 0.5s ease; }
+@keyframes pipi-mini-hop {
+  0%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-12px) scale(1.03, 0.97); }
+  75% { transform: translateY(0) scale(0.97, 1.03); }
+}
+
+/* ===== v6 走路搖擺（移動中不再是滑行） ===== */
+.pipi-pet.roaming img { animation: pipi-waddle 0.32s ease-in-out infinite; }
+@keyframes pipi-waddle {
+  0%, 100% { transform: rotate(-5deg) translateY(0); }
+  50% { transform: rotate(5deg) translateY(-4px); }
+}
+
+/* ===== v6 滿級光環（寶島守護者） ===== */
+.pipi-pet.lv-3:not(.sleeping)::before {
+  content: "";
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: -1;
+  background: radial-gradient(circle, transparent 52%, rgba(232, 184, 75, 0.35) 72%, transparent 78%);
+  animation: pipi-aura 2.4s ease-in-out infinite;
+}
+@keyframes pipi-aura {
+  0%, 100% { opacity: 0.45; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.06); }
+}
+
 /* 地面橢圓陰影 */
 .pipi-shadow {
   position: absolute;
