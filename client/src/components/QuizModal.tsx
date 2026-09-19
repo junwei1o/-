@@ -5,6 +5,7 @@ import type { PaperQuestion } from "@/lib/paperExam";
 import type { KnowledgeIslandSubject } from "@/lib/studentKnowledgeIslands";
 import { addRecord, clearBattleState, consumeStorageNotice, getBattleState, getLearningRecord, saveBattleState, getBattleTutorialComplete, saveBattleTutorialComplete, recordAnalyticsEvent, recordRareMonsterDefeat, unlockLimitedTitle } from "@/utils/storage";
 import { recordRpgAnswer } from "@/game/rpgStorage";
+import { recordPipiEvent } from "@/game/pipiCompanion";
 import { playCombatSfx } from "@/game/rpgCombatFeedback";
 import { BattleScene } from "@/components/BattleScene";
 import { BattleState, createBattleDispatcher, type BattleMachine } from "@/engine/BattleState";
@@ -77,6 +78,7 @@ export function QuizModal({ question, subject, onClose, onCompleted }: QuizModal
     try {
       addRecord({ questionId: question.id, subject, isCorrect, errorType: isCorrect ? undefined : "concept", timestamp: Date.now(), flagged: false, knowledge: [question.learningTopic], difficulty: question.difficulty === "標準" || question.difficulty === "挑戰" ? question.difficulty : "基礎", responseMs: 0, timeLimitMs: 25_000 });
       recordRpgAnswer({ eventId: `island-quiz-${question.id}-${Date.now()}`, correct: isCorrect, curriculumDomain: subject, difficulty: question.difficulty, subject });
+      if (isCorrect) recordPipiEvent("answer-correct");
     } catch (error) { console.error("答題資料保存失敗", error); toast.warning("儲存空間不足，部分資料可能無法保存"); }
     if (isCorrect && enemy.isRare && enemy.title) recordRareMonsterDefeat(enemy.id);
     const notice = consumeStorageNotice();

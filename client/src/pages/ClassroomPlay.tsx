@@ -17,6 +17,7 @@ import {
   type ClassroomBestMap,
 } from "@/lib/classroomBank";
 import { IMAGE_MATCHING_SETS, shuffleArray } from "@/lib/matchingBank";
+import { recordPipiEvent } from "@/game/pipiCompanion";
 
 /**
  * 我的教室自由玩法頁：/classroom/:gameId
@@ -117,6 +118,7 @@ export default function ClassroomPlay() {
 
   const record = best[gameId];
   const updateBest = (patch: ClassroomBestMap[string]) => {
+    recordPipiEvent("game-complete");
     setBest((previous) => {
       const next = { ...previous, [gameId]: { ...previous[gameId], ...patch } };
       saveClassroomBest(next);

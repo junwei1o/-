@@ -6,6 +6,7 @@ import { applyBattleAction, applyBattleAnswer, beginBattleQuestion, createBattle
 import { hashStringToSeed, seededRandom, shuffleQuestionOptions } from "@/lib/optionRandomizer";
 import { calculateBattlePerformance } from "@/game/rpgQuestionCombat";
 import { combatStyleForCompanion } from "@/game/companionCombatStyles";
+import { recordPipiEvent } from "@/game/pipiCompanion";
 import { loadRpgState, recordRpgAnswer, saveRpgState } from "@/game/rpgStorage";
 import { consumeLuckyCharm } from "@/game/dailyCamp";
 import { toast } from "sonner";
@@ -547,6 +548,7 @@ export default function BattleScene({ questionPool = [], onClose, modal = false,
     setWrongStreak(nextWrongStreak);
     if (!correct && nextWrongStreak >= 3 && !difficultyAssistApplied) setDifficultyAssistOffered(true);
     setAdaptiveProfile(recordAdaptiveAttempt(adaptiveProfile, { questionId: question.id, curriculumDomain: question.curriculumDomain ?? question.subject, knowledge: [question.learningTopic], difficulty: reviewDifficulty(question.difficulty), correct, responseMs, timeLimitMs: questionTimeLimitMs }));
+    if (correct) recordPipiEvent("answer-correct");
     const nextComboCount = correct ? comboCount + 1 : 0;
     const milestone = correct ? comboMilestoneFor(nextComboCount) : null;
     battleStatsRef.current.maxCombo = Math.max(battleStatsRef.current.maxCombo, nextComboCount);
@@ -695,6 +697,7 @@ export default function BattleScene({ questionPool = [], onClose, modal = false,
       subject: question.subject,
     });
     const afterCost = { ...answered, energy: Math.max(0, answered.energy - encounter.captureCost) };
+    if (performance.correct) recordPipiEvent("answer-correct");
     saveRpgState(afterCost);
     setState(afterCost);
     setCaptureOutcome(outcome);

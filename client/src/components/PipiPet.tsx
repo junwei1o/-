@@ -1,9 +1,27 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
+import {
+  PIPI_COSTUMES,
+  PIPI_QUEST_EVENT,
+  claimPipiQuest,
+  claimableQuests,
+  costumeById,
+  getTodayQuests,
+  loadQuestState,
+  loadWornCostumes,
+  saveWornCostumes,
+  unlockedCostumeIds,
+  type PipiCostumeDef,
+  type PipiQuestDef,
+  type PipiQuestState,
+} from "@/game/pipiCompanion";
+import { loadRpgState, saveRpgState } from "@/game/rpgStorage";
 
 /**
- * 小寶 — 寶島探險家的貓耳人形吉祥物
+ * 小寶 v5 — 寶島探險家的貓耳人形吉祥物
  * Q版貓耳少女，5套職業套裝依所在頁面自動切換，也可手動更換。
+ * v5 新增：每日派任務看板（真實進度＋金幣獎勵）、飾品衣櫥（解鎖＋分層穿搭）、
+ *          互動表情、跳舞／轉圈／跳跳動作、全站板塊事件匯流（答題／遊戲／地圖／週測）。
  * 配色貼合網站：teal #0B6E8E / gold #E8B84B / cream #F9F3E8 / brown #5C3D26
  */
 
@@ -12,6 +30,7 @@ type SizeKey = "small" | "normal" | "large";
 type Mood = "grumpy" | "neutral" | "happy" | "joyful";
 type Particle = { id: number; x: number; y: number; emoji: string };
 type Trivia = { q: string; a: string; b: string; correct: "a" | "b"; fact: string };
+type ActionKey = "dance" | "spin" | "hop";
 
 type OutfitInfo = { name: string; emoji: string; img: string; auto?: string };
 
@@ -24,6 +43,13 @@ const OUTFITS: Record<Outfit, OutfitInfo> = {
 };
 
 const SIZE_PX: Record<SizeKey, number> = { small: 78, normal: 110, large: 150 };
+
+/** v5 表演動作（CSS 動畫疊加） */
+const ACTIONS: Record<ActionKey, { label: string; emoji: string; line: string; particles: string[] }> = {
+  dance: { label: "跳舞", emoji: "🎵", line: "喵喵喵～跟著節奏搖擺！", particles: ["🎵", "✨"] },
+  spin: { label: "轉圈", emoji: "🌀", line: "轉圈圈～頭好暈喵！", particles: ["💫", "🌊"] },
+  hop: { label: "跳跳", emoji: "🦘", line: "跳跳跳！活力滿點！", particles: ["⭐", "✨"] },
+};
 
 // 依路徑自動決定套裝
 function outfitForRoute(pathname: string): Outfit {
@@ -125,6 +151,8 @@ export function PipiPet() {
   const [pos, setPos] = useState<{ x: number; y: number } | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [panelOpen, setPanelOpen] = useState(false);
+  const [questsOpen, setQuestsOpen] = useState(false);
+  const [wardrobeOpen, setWardrobeOpen] = useState(false);
   const [bubble, setBubble] = useState<string | null>(null);
   const [hidden, setHidden] = useState(false);
   const [sleeping, setSleeping] = useState(false);
@@ -143,6 +171,10 @@ export function PipiPet() {
   const [emote, setEmote] = useState<string | null>(null);
   const [focusMode, setFocusMode] = useState(false);
   const [isTouch, setIsTouch] = useState(false);
+  // v5
+  const [questState, setQuestState] = useState<PipiQuestState>(loadQuestState);
+  const [worn, setWorn] = useState<string[]>(loadWornCostumes);
+  const [actionAnim, setActionAnim] = useState<ActionKey | null>(null);
 
   const rootRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef<{ startX: number; startY: number; origX: number; origY: number; moved: boolean; velocity: number; lastX: number; lastY: number } | null>(null);
@@ -153,6 +185,15 @@ export function PipiPet() {
   const outfit = outfitOverride ?? autoOutfit;
   const outfitInfo = OUTFITS[outfit];
   const lvl = affectionLevel(affection);
+  // v5
+  const stats = { affection, count, questsClaimed: questState.claimedTotal };
+  const ownedIds = unlockedCostumeIds(stats);
+  const wornItems = worn
+    .filter((id) => ownedIds.includes(id))
+    .map((id) => costumeById(id))
+    .filter((c): c is PipiCostumeDef => Boolean(c));
+  const todayQuests = getTodayQuests(questState);
+  const claimableN = claimableQuests(questState).length;
 
   // Route change -> context greeting + auto outfit
   useEffect(() => {
@@ -177,8 +218,36 @@ export function PipiPet() {
     setBubble(timeGreeting());
     setBounce(true);
     const t = setTimeout(() => { setBubble(null); setBounce(false); }, 4000);
-    return () => clearTimeout(t);
+    // v5：進站提醒可領任務獎勵
+    const t2 = setTimeout(() => {
+      if (!sleeping && claimableQuests(loadQuestState()).length > 0) {
+        setBubble("今天的任務有獎勵可以領喵！打開任務看板！");
+        setBounce(true);
+        setTimeout(() => { setBubble(null); setBounce(false); }, 4000);
+      }
+    }, 9000);
+    return () => { clearTimeout(t); clearTimeout(t2); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // v5：全站任務事件匯流 — 各板塊 recordPipiEvent()，小寶即時反應
+  useEffect(() => {
+    setQuestState(loadQuestState());
+    const onQuest = (e: Event) => {
+      const detail = (e as CustomEvent<{ state: PipiQuestState; completed: PipiQuestDef[] }>).detail;
+      if (!detail) return;
+      setQuestState(detail.state);
+      const done = detail.completed?.[0];
+      if (done && !sleeping) {
+        setCelebrating(true);
+        spawnParticles(["📜", "🎉", "⭐"], 10);
+        setBubble(`任務完成「${done.title}」！快來領獎勵喵！`);
+        setTimeout(() => { setCelebrating(false); setBubble(null); }, 3500);
+      }
+    };
+    window.addEventListener(PIPI_QUEST_EVENT, onQuest);
+    return () => window.removeEventListener(PIPI_QUEST_EVENT, onQuest);
+  }, [sleeping]);
 
   // Random mood chatter
   useEffect(() => {
@@ -249,11 +318,15 @@ export function PipiPet() {
     setMood(moodOf(loadAffection() + amount));
   }, [spawnParticles]);
 
-  const interact = useCallback((line: string, aff: number, emojis: string) => {
+  const interact = useCallback((line: string, aff: number, emojis: string, face?: string) => {
     setBubble(line);
     setBounce(true);
-    setTimeout(() => setBubble(false), 500);
+    setTimeout(() => setBounce(false), 500);
     setTimeout(() => setBubble(null), 3000);
+    if (face) {
+      setEmote(face);
+      setTimeout(() => setEmote(null), 1800);
+    }
     addAffection(aff);
     spawnParticles(emojis.split(""), 5 + aff);
   }, [addAffection, spawnParticles]);
@@ -261,16 +334,20 @@ export function PipiPet() {
   const onClick = useCallback(() => {
     if (dragRef.current?.moved || sleeping || trivia) return;
     const lines = ["喵！", "嘿嘿～", "摸摸！", "開心！"];
-    interact(lines[Math.floor(Math.random() * lines.length)], 4, "💖✨");
+    const faces = ["😍", "😊", "😸", "🥰"];
+    const i = Math.floor(Math.random() * lines.length);
+    interact(lines[i], 4, "💖✨", faces[i % faces.length]);
   }, [interact, sleeping, trivia]);
 
   const onDoubleClick = useCallback(() => {
     if (sleeping || trivia) return;
-    interact("最喜歡你了喵！", 10, "💖💖💖✨");
+    interact("最喜歡你了喵！", 10, "💖💖💖✨", "🥰");
   }, [interact, sleeping, trivia]);
 
   const onContextMenu = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
+    // 打開選單時收起其他面板，避免互相遮擋
+    setPanelOpen(false); setQuestsOpen(false); setWardrobeOpen(false);
     setMenuOpen((v) => !v);
   }, []);
 
@@ -300,6 +377,8 @@ export function PipiPet() {
     if (d && d.moved && d.velocity > 30) {
       setBubble("哇哦——！太快了喵！");
       setBounce(true);
+      setEmote("😵");
+      setTimeout(() => setEmote(null), 1800);
       spawnParticles(["💫", "✨"], 6);
       setTimeout(() => { setBubble(null); setBounce(false); }, 2500);
     }
@@ -318,10 +397,13 @@ export function PipiPet() {
       setBubble(`答對了！${trivia.fact}`);
       spawnParticles(["🎉", "⭐", "💖"], 10);
       setBounce(true);
-      setTimeout(() => setBounce(false), 500);
+      setEmote("🤩");
+      setTimeout(() => { setBounce(false); setEmote(null); }, 1500);
     } else {
       setBubble("再想想～提示：跟小寶有關！");
       spawnParticles(["🤔"], 3);
+      setEmote("😯");
+      setTimeout(() => setEmote(null), 1800);
     }
     setTimeout(() => { setTrivia(null); setBubble(null); }, 4000);
   }, [trivia, addAffection, spawnParticles]);
@@ -392,17 +474,13 @@ export function PipiPet() {
   // 加油打氣
   const cheer = useCallback(() => {
     setMenuOpen(false);
-    interact(CHEER_LINES[Math.floor(Math.random() * CHEER_LINES.length)], 6, "💪🔥✨");
-    setEmote("💪");
-    setTimeout(() => setEmote(null), 2000);
+    interact(CHEER_LINES[Math.floor(Math.random() * CHEER_LINES.length)], 6, "💪🔥✨", "💪");
   }, [interact]);
 
   // 擊掌
   const highFive = useCallback(() => {
     setMenuOpen(false);
-    interact(HIGH_FIVE_LINES[Math.floor(Math.random() * HIGH_FIVE_LINES.length)], 8, "🖐️⭐💖");
-    setEmote("🖐️");
-    setTimeout(() => setEmote(null), 1500);
+    interact(HIGH_FIVE_LINES[Math.floor(Math.random() * HIGH_FIVE_LINES.length)], 8, "🖐️⭐💖", "🖐️");
   }, [interact]);
 
   // 專注模式
@@ -417,10 +495,59 @@ export function PipiPet() {
     });
   }, []);
 
+  // v5：表演動作（跳舞／轉圈／跳跳）
+  const playAction = useCallback((a: ActionKey) => {
+    setMenuOpen(false);
+    const conf = ACTIONS[a];
+    setActionAnim(a);
+    setBubble(conf.line);
+    setEmote(conf.emoji === "🎵" ? "🎶" : conf.emoji);
+    setTimeout(() => setEmote(null), 1500);
+    addAffection(3);
+    spawnParticles(conf.particles, 6);
+    setTimeout(() => { setActionAnim(null); setBubble(null); }, 1600);
+  }, [addAffection, spawnParticles]);
+
+  // v5：領取任務獎勵（金幣入帳 RPG 狀態＋好感度）
+  const claimQuest = useCallback((questId: string) => {
+    const reward = claimPipiQuest(questId);
+    if (!reward) return;
+    try {
+      const rpg = loadRpgState();
+      saveRpgState({ ...rpg, coins: rpg.coins + reward.rewardCoins });
+    } catch { /* 忽略 */ }
+    addAffection(reward.rewardAffection);
+    spawnParticles(["🪙", "✨", "💖"], 12);
+    setBubble(`領到獎勵！+${reward.rewardCoins} 金幣、+${reward.rewardAffection} 好感喵！`);
+    setBounce(true);
+    setEmote("🤩");
+    setTimeout(() => { setBubble(null); setBounce(false); setEmote(null); }, 3000);
+  }, [addAffection, spawnParticles]);
+
+  // v5：穿脫飾品
+  const toggleWear = useCallback((id: string) => {
+    setWorn((w) => {
+      const next = w.includes(id) ? w.filter((x) => x !== id) : [...w, id];
+      saveWornCostumes(next);
+      return next;
+    });
+  }, []);
+
+  const openQuests = useCallback(() => {
+    setMenuOpen(false); setWardrobeOpen(false); setPanelOpen(false);
+    setQuestState(loadQuestState());
+    setQuestsOpen(true);
+  }, []);
+  const openWardrobe = useCallback(() => {
+    setMenuOpen(false); setQuestsOpen(false); setPanelOpen(false);
+    setWardrobeOpen(true);
+  }, []);
+
   // 長按開選單（手機）
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const onTouchStart = useCallback(() => {
     longPressTimer.current = setTimeout(() => {
+      setPanelOpen(false); setQuestsOpen(false); setWardrobeOpen(false);
       setMenuOpen((v) => !v);
     }, 550);
   }, []);
@@ -440,6 +567,7 @@ export function PipiPet() {
     sleeping ? "sleeping" : "",
     celebrating ? "celebrating" : "",
     bounce ? "bounce" : "",
+    actionAnim ? `anim-${actionAnim}` : "",
   ].join(" ");
 
   return (
@@ -463,6 +591,12 @@ export function PipiPet() {
       {menuOpen && (
         <div className="pipi-menu" role="menu">
           <div className="pipi-menu-title">小寶 · Lv.{lvl} · {MOOD_NAMES[mood]}</div>
+          <button onClick={openQuests}>
+            <span aria-hidden>📜</span> 任務看板{claimableN > 0 ? `（${claimableN} 可領！）` : ""}
+          </button>
+          <button onClick={openWardrobe}>
+            <span aria-hidden>🎀</span> 飾品衣櫥（{ownedIds.length}/{PIPI_COSTUMES.length}）
+          </button>
           <button onClick={() => setOutfit(null)}>
             <span aria-hidden>🧭</span> 自動換裝{!outfitOverride ? " ✓" : ""}
           </button>
@@ -471,6 +605,9 @@ export function PipiPet() {
               <span aria-hidden>{OUTFITS[o].emoji}</span> {OUTFITS[o].name}{outfit === o ? " ✓" : ""}
             </button>
           ))}
+          <button onClick={() => playAction("dance")}><span aria-hidden>🎵</span> 跳舞</button>
+          <button onClick={() => playAction("spin")}><span aria-hidden>🌀</span> 轉圈</button>
+          <button onClick={() => playAction("hop")}><span aria-hidden>🦘</span> 跳跳</button>
           <button onClick={askTrivia}><span aria-hidden>📚</span> 小知識問答</button>
           <button onClick={cheer}><span aria-hidden>💪</span> 加油打氣</button>
           <button onClick={highFive}><span aria-hidden>🖐️</span> 擊掌</button>
@@ -482,6 +619,79 @@ export function PipiPet() {
           <button onClick={() => { setMenuOpen(false); setPanelOpen(true); }}><span aria-hidden>📋</span> 寵物面板</button>
           <button onClick={toggleSleep}><span aria-hidden>{sleeping ? "☀️" : "💤"}</span> {sleeping ? "醒來" : "睡覺"}</button>
           <button onClick={() => { setMenuOpen(false); setHidden(true); }}><span aria-hidden>🙈</span> 躲起來</button>
+        </div>
+      )}
+
+      {/* v5 任務看板（每日派任務） */}
+      {questsOpen && (
+        <div className="pipi-panel pipi-quests" role="dialog" aria-label="任務看板">
+          <div className="pipi-panel-head">
+            <div className="pipi-panel-emoji" aria-hidden>📜</div>
+            <div>
+              <strong>小寶任務看板</strong>
+              <small>每天 3 個任務 · 完成領金幣</small>
+            </div>
+            <button className="pipi-panel-close" onClick={() => setQuestsOpen(false)} aria-label="關閉">✕</button>
+          </div>
+          {todayQuests.map((q) => {
+            const p = Math.min(q.target, questState.progress[q.id] ?? 0);
+            const done = p >= q.target;
+            const claimed = questState.claimed.includes(q.id);
+            return (
+              <div key={q.id} className={`pipi-quest ${done && !claimed ? "ready" : ""} ${claimed ? "claimed" : ""}`}>
+                <div className="pipi-quest-top">
+                  <span className="pipi-quest-emoji" aria-hidden>{q.emoji}</span>
+                  <span className="pipi-quest-title">{q.title}</span>
+                  <span className="pipi-quest-reward">🪙{q.rewardCoins} 💖{q.rewardAffection}</span>
+                </div>
+                <div className="pipi-quest-desc">{q.desc}</div>
+                <div className="pipi-quest-bar"><div style={{ width: `${(p / q.target) * 100}%` }} /></div>
+                <div className="pipi-quest-foot">
+                  <span>{p}/{q.target}</span>
+                  {claimed
+                    ? <span className="pipi-quest-claimed">✓ 已領取</span>
+                    : done
+                      ? <button className="pipi-quest-claim" onClick={() => claimQuest(q.id)}>領取獎勵</button>
+                      : <span className="pipi-quest-doing">進行中…</span>}
+                </div>
+              </div>
+            );
+          })}
+          <div className="pipi-panel-hint">答題、玩遊戲、地圖探索都會推進任務喵！</div>
+        </div>
+      )}
+
+      {/* v5 飾品衣櫥（疊層穿搭） */}
+      {wardrobeOpen && (
+        <div className="pipi-panel pipi-wardrobe" role="dialog" aria-label="飾品衣櫥">
+          <div className="pipi-panel-head">
+            <div className="pipi-panel-emoji" aria-hidden>🎀</div>
+            <div>
+              <strong>小寶飾品衣櫥</strong>
+              <small>達成條件解鎖，可疊在套裝上</small>
+            </div>
+            <button className="pipi-panel-close" onClick={() => setWardrobeOpen(false)} aria-label="關閉">✕</button>
+          </div>
+          <div className="pipi-wardrobe-grid">
+            {PIPI_COSTUMES.map((c) => {
+              const owned = ownedIds.includes(c.id);
+              const isWorn = worn.includes(c.id);
+              return (
+                <button
+                  key={c.id}
+                  className={`pipi-costume-card ${isWorn ? "worn" : ""}`}
+                  disabled={!owned}
+                  onClick={() => toggleWear(c.id)}
+                  title={owned ? c.desc : `🔒 ${c.unlockText}`}
+                >
+                  <span className="pipi-costume-card-emoji" aria-hidden>{owned ? c.emoji : "🔒"}</span>
+                  <span className="pipi-costume-card-name">{c.name}</span>
+                  <span className="pipi-costume-card-hint">{owned ? (isWorn ? "點擊脫下" : "點擊戴上") : c.unlockText}</span>
+                </button>
+              );
+            })}
+          </div>
+          <div className="pipi-panel-hint">好感度、互動、任務都能解鎖新飾品喵！</div>
         </div>
       )}
 
@@ -502,10 +712,12 @@ export function PipiPet() {
             <div><span>💖 好感度</span><strong>{affection}</strong></div>
             <div><span>🔥 連續簽到</span><strong>{streak} 天</strong></div>
             <div><span>🤝 互動次數</span><strong>{count}</strong></div>
+            <div><span>📜 任務完成</span><strong>{questState.claimedTotal}</strong></div>
             <div><span>👗 目前套裝</span><strong>{outfitInfo.emoji} {outfitInfo.name}</strong></div>
+            <div><span>🎀 穿搭</span><strong>{wornItems.length > 0 ? wornItems.map((c) => c.emoji).join("") : "素顏"}</strong></div>
             <div><span>😊 心情</span><strong>{MOOD_NAMES[mood]}</strong></div>
           </div>
-          <div className="pipi-panel-hint">點擊互動 · 雙擊撒嬌 · 右鍵換裝選單 · 拖曳丟擲</div>
+          <div className="pipi-panel-hint">點擊互動 · 雙擊撒嬌 · 右鍵選單（任務／衣櫥） · 拖曳丟擲</div>
         </div>
       )}
 
@@ -515,6 +727,7 @@ export function PipiPet() {
         style={{
           ...(pos ? { left: pos.x, top: pos.y, right: "auto", bottom: "auto" } : {}),
           width: petPx, height: petPx,
+          fontSize: petPx,
         }}
         onClick={onClick}
         onDoubleClick={onDoubleClick}
@@ -527,16 +740,19 @@ export function PipiPet() {
         onTouchCancel={onTouchEnd}
         role="button"
         aria-label="小寶（貓耳探險家吉祥物）"
-        title="點擊互動 · 雙擊撒嬌 · 右鍵/長按換裝 · 拖曳移動"
+        title="點擊互動 · 雙擊撒嬌 · 右鍵/長按選單 · 拖曳移動"
       >
         <img src={outfitInfo.img} alt={`小寶 - ${outfitInfo.name}`} draggable={false} width={petPx} height={petPx} />
+        {!sleeping && wornItems.map((c) => (
+          <span key={c.id} className={`pipi-costume pipi-costume-${c.slot}`} aria-hidden>{c.emoji}</span>
+        ))}
         <div className="pipi-shadow" />
         {emote && <div className="pipi-emote" aria-hidden>{emote}</div>}
       </div>
       {isTouch && !hidden && (
         <button
           className="pipi-menu-btn"
-          onClick={() => setMenuOpen((v) => !v)}
+          onClick={() => { setPanelOpen(false); setQuestsOpen(false); setWardrobeOpen(false); setMenuOpen((v) => !v); }}
           aria-label="開啟小寶選單"
         >
           ☰

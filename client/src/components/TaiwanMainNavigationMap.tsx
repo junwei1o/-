@@ -11,6 +11,7 @@ import type { MapReinforcementJournalEntry, MapReinforcementReward } from "@/gam
 import { getInventory, tryDropSpecialty, type InventoryItem } from "@/game/inventoryService";
 import type { RandomAdventureRouteReward } from "@/game/randomAdventureRouteReward";
 import { loadClassroomBest, type ClassroomBestMap } from "@/lib/classroomBank";
+import { recordPipiEvent } from "@/game/pipiCompanion";
 import { BxEmptyState } from "@/components/bx/EmptyState";
 import "./TaiwanMainNavigationMap.css";
 
@@ -662,7 +663,7 @@ export function TaiwanMainNavigationMap({ islands, onOpenSubject, onStartIslandQ
               data-region={region}
               data-reinforcement-rewarded={showReinforcementReward && reinforcementRewardIslandId === island.id ? "true" : "false"}
               data-island-unlocking={recentlyUnlockedIslandIds.includes(island.id) ? "true" : "false"}
-              onClick={() => onStartIslandQuiz ? onStartIslandQuiz(island.subject) : toggleIsland(island.id)}
+              onClick={() => { recordPipiEvent("map-visit"); if (onStartIslandQuiz) { onStartIslandQuiz(island.subject); } else { toggleIsland(island.id); } }}
             >
               <span className="taiwan-map-island-icon taiwan-island-icon" aria-hidden="true"><Icon size={17} /></span>
               <span className="taiwan-map-island-region">{position.region}</span>

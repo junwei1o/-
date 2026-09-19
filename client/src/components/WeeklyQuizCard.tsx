@@ -6,6 +6,7 @@ import { trpc } from "@/lib/trpc";
 import { getCloudMode } from "@/game/cloudSync";
 import { loadUserPreferences } from "@/game/adaptiveLearning";
 import { addLearningRecord, getPlayerData, updatePlayerData } from "@/utils/storage";
+import { recordPipiEvent } from "@/game/pipiCompanion";
 import "./WeeklyQuizCard.css";
 
 type QuizQuestion = {
@@ -164,6 +165,7 @@ export function WeeklyQuizCard() {
         }
         setSubmitted(res);
         setShowCelebration(true);
+        recordPipiEvent("weekly-quiz");
         toast.success(`本週週測完成！答對 ${res.correctCount}/${res.totalQuestions}`);
         redirectTimerRef.current = window.setTimeout(() => setLocation("/learning"), REDIRECT_DELAY_MS);
         await query.refetch();
