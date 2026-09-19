@@ -1952,11 +1952,11 @@
 }
 .pet-action-btn:active { transform: scale(0.94); }
 
-/* 好感度面板 */
+/* 好感度面板：浮在燈寶左側，不遮互動列 */
 .pet-panel {
   position: absolute;
-  bottom: 158px;
-  right: 0;
+  bottom: 0;
+  right: 176px;
   width: 158px;
   background: #fffdf6;
   border: 1.5px solid var(--cr-line);
@@ -2041,5 +2041,5 @@
     transform-origin: 100% 100%;
   }
   .pet-speech { font-size: 11.5px; max-width: 140px; }
-  .pet-panel { width: 148px; bottom: 150px; }
+  .pet-panel { width: 148px; bottom: 0; right: 158px; }
 }
