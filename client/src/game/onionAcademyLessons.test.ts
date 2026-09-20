@@ -135,13 +135,31 @@ function lessonIntegrity(lesson: typeof FRACTION_LESSON) {
 }
 
 describe("registry & lookup", () => {
-  it("registers 10 lessons across 3 subjects", () => {
-    expect(ONION_LESSONS).toHaveLength(10);
+  it("registers all lessons across 4 subjects", () => {
+    expect(ONION_LESSONS.length).toBeGreaterThanOrEqual(24);
     const subjects = new Set(ONION_LESSONS.map((l) => l.subject));
-    expect(subjects.size).toBe(3); // 數學、國語、自然
+    expect(subjects.size).toBe(4); // 數學、國語、自然、英語
     expect(subjects.has("數學")).toBe(true);
     expect(subjects.has("國語")).toBe(true);
     expect(subjects.has("自然")).toBe(true);
+    expect(subjects.has("英語")).toBe(true);
+  });
+
+  it("每一堂課只屬於一個學段（國中看過的國小不會再來一遍）", () => {
+    for (const lesson of ONION_LESSONS) {
+      expect(lesson.stages).toHaveLength(1);
+      expect(["國小", "國中"]).toContain(lesson.stages[0]);
+    }
+    // 知識點可以跨學段各開一堂（如光合作用），但 id 必須不同，不能同一堂掛兩邊
+    const ids = ONION_LESSONS.map((l) => l.id);
+    expect(new Set(ids).size).toBe(ids.length);
+  });
+
+  it("每個學段都有足夠的課可選（不再只有個位數）", () => {
+    const elementary = ONION_LESSONS.filter((l) => l.stages.includes("國小"));
+    const junior = ONION_LESSONS.filter((l) => l.stages.includes("國中"));
+    expect(elementary.length).toBeGreaterThanOrEqual(10);
+    expect(junior.length).toBeGreaterThanOrEqual(8);
   });
 
   it("國中三個年級都有動畫課（八、九年級不再是空的）", () => {

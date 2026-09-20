@@ -9,7 +9,7 @@
  * 純 SVG + CSS keyframes，手機順暢、可離線、尊重 prefers-reduced-motion。
  */
 import React from "react";
-import type { OnionAction } from "@/game/onionAcademyLessons";
+import type { OnionAction, OnionProp } from "@/game/onionAcademyLessons";
 
 export type SceneProps = { frame: number; action: OnionAction };
 
@@ -1094,6 +1094,252 @@ function QuadraticScene({ frame, action }: SceneProps) {
   );
 }
 
+/* ===================== 資料驅動的通用教具舞台 =====================
+ * 每一堂課都手寫一個專屬場景，等於每加一個知識點就要寫一組 SVG 動畫，
+ * 課程量永遠上不去。這裡改成「frame.prop 直接決定舞台長什麼樣子」：
+ * 新增課程只要寫資料（prop kind + 參數），不必再碰動畫邏輯。
+ * 有專屬場景的舊課繼續走 LessonScene 的專屬分支，沒有的就落到這裡。
+ */
+function BarsView({ items, unit, active }: { items: Array<{ label: string; value: number }>; unit?: string; active?: number }) {
+  const max = Math.max(1, ...items.map((it) => it.value));
+  return (
+    <div className="gp-bars">
+      {items.map((it, i) => (
+        <div className={`gp-bar-row ${active === i ? "is-active" : ""}`} key={`${it.label}-${i}`}>
+          <span className="gp-bar-label">{it.label}</span>
+          <span className="gp-bar-track">
+            <span className="gp-bar-fill" style={{ width: `${(it.value / max) * 100}%` }} />
+            <span className="gp-bar-value">
+              {it.value}
+              {unit ? <small>{unit}</small> : null}
+            </span>
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function FlowView({ steps, active }: { steps: string[]; active?: number }) {
+  return (
+    <div className="gp-flow">
+      {steps.map((step, i) => (
+        <React.Fragment key={`${step}-${i}`}>
+          {i > 0 ? <span className="gp-flow-arrow" aria-hidden="true">→</span> : null}
+          <span className={`gp-flow-step ${active === i ? "is-active" : ""}`}>{step}</span>
+        </React.Fragment>
+      ))}
+    </div>
+  );
+}
+
+function NumberLineView({
+  from,
+  to,
+  marks,
+  cursor,
+}: {
+  from: number;
+  to: number;
+  marks?: Array<{ at: number; label?: string; tone?: "ok" | "warn" }>;
+  cursor?: number;
+}) {
+  const pos = (v: number) => ((v - from) / (to - from || 1)) * 100;
+  const ticks = Array.from({ length: to - from + 1 }, (_, i) => from + i);
+  return (
+    <div className="gp-line">
+      <div className="gp-line-axis">
+        {ticks.map((t) => (
+          <span className="gp-line-tick" style={{ left: `${pos(t)}%` }} key={t}>
+            <small>{t}</small>
+          </span>
+        ))}
+        {(marks ?? []).map((m, i) => (
+          <span
+            className={`gp-line-mark ${m.tone === "warn" ? "is-warn" : "is-ok"}`}
+            style={{ left: `${pos(m.at)}%` }}
+            key={`m-${i}`}
+          >
+            {m.label ?? m.at}
+          </span>
+        ))}
+        {typeof cursor === "number" ? (
+          <span className="gp-line-cursor" style={{ left: `${pos(cursor)}%` }} aria-hidden="true" />
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
+function BalanceView({ left, right, tip }: { left: string; right: string; tip?: string }) {
+  return (
+    <div className="gp-balance">
+      <div className="gp-balance-beam">
+        <span className="gp-balance-pan">{left}</span>
+        <span className="gp-balance-mid">＝</span>
+        <span className="gp-balance-pan">{right}</span>
+      </div>
+      {tip ? <p className="gp-balance-tip">{tip}</p> : null}
+    </div>
+  );
+}
+
+function CycleView({ nodes, active }: { nodes: string[]; active?: number }) {
+  const radius = 34;
+  return (
+    <div className="gp-cycle">
+      <svg viewBox="0 0 200 200" className="gp-cycle-svg" role="img" aria-label="循環圖">
+        <circle cx="100" cy="100" r={radius + 20} className="gp-cycle-ring" />
+        {nodes.map((node, i) => {
+          const angle = (i / nodes.length) * Math.PI * 2 - Math.PI / 2;
+          const x = 100 + Math.cos(angle) * radius;
+          const y = 100 + Math.sin(angle) * radius;
+          return (
+            <g key={node}>
+              <circle cx={x} cy={y} r="22" className={`gp-cycle-node ${active === i ? "is-active" : ""}`} />
+              <text x={x} y={y} textAnchor="middle" dominantBaseline="central" className="gp-cycle-text">
+                {node}
+              </text>
+            </g>
+          );
+        })}
+      </svg>
+    </div>
+  );
+}
+
+function PieView({ a, b, label }: { a: number; b: number; label?: string }) {
+  const frac = b ? a / b : 0;
+  const angle = frac * Math.PI * 2;
+  const x = 60 + Math.cos(angle - Math.PI / 2) * 44;
+  const y = 60 + Math.sin(angle - Math.PI / 2) * 44;
+  const large = angle > Math.PI ? 1 : 0;
+  return (
+    <div className="gp-pie">
+      <svg viewBox="0 0 120 120" className="gp-pie-svg" role="img" aria-label={`${a} / ${b} 圓餅圖`}>
+        <circle cx="60" cy="60" r="44" className="gp-pie-base" />
+        {frac > 0 ? (
+          <path d={`M60 60 L60 16 A44 44 0 ${large} 1 ${x} ${y} Z`} className="gp-pie-slice" />
+        ) : null}
+        {label ? (
+          <text x="60" y="60" textAnchor="middle" dominantBaseline="central" className="gp-pie-label">
+            {label}
+          </text>
+        ) : null}
+      </svg>
+    </div>
+  );
+}
+
+function TextView({ text, sub, tone }: { text: string; sub?: string; tone?: "ok" | "warn" }) {
+  return (
+    <div className={`gp-text ${tone === "warn" ? "is-warn" : "is-ok"}`}>
+      <p className="gp-text-main">{text}</p>
+      {sub ? <p className="gp-text-sub">{sub}</p> : null}
+    </div>
+  );
+}
+
+function ShapeView({
+  shape,
+  base,
+  height,
+  label,
+}: {
+  shape: "triangle" | "rect" | "circle";
+  base: number;
+  height: number;
+  label?: string;
+}) {
+  return (
+    <div className="gp-shape">
+      <svg viewBox="0 0 200 140" className="gp-shape-svg" role="img" aria-label="幾何圖形">
+        {shape === "triangle" ? (
+          <polygon points="30,120 170,120 100,20" className="gp-shape-fill" />
+        ) : shape === "rect" ? (
+          <rect x="40" y="30" width="120" height="80" className="gp-shape-fill" />
+        ) : (
+          <circle cx="100" cy="70" r="55" className="gp-shape-fill" />
+        )}
+        <text x="100" y="132" textAnchor="middle" className="gp-shape-note">
+          底 {base} ‧ 高 {height}
+        </text>
+      </svg>
+      {label ? <p className="gp-shape-label">{label}</p> : null}
+    </div>
+  );
+}
+
+/** 依 frame.prop 渲染舞台；新增課程只要給資料，不必寫動畫元件。 */
+export function PropScene({ prop, action, frame }: { prop: OnionProp } & SceneProps) {
+  let body: React.ReactNode = null;
+  switch (prop.kind) {
+    case "bars":
+      body = <BarsView items={prop.items} unit={prop.unit} active={prop.active} />;
+      break;
+    case "flow":
+      body = <FlowView steps={prop.steps} active={prop.active} />;
+      break;
+    case "numberLine":
+      body = <NumberLineView from={prop.from} to={prop.to} marks={prop.marks} cursor={prop.cursor} />;
+      break;
+    case "balance":
+      body = <BalanceView left={prop.left} right={prop.right} tip={prop.tip} />;
+      break;
+    case "cycle":
+      body = <CycleView nodes={prop.nodes} active={prop.active} />;
+      break;
+    case "pie":
+      body = <PieView a={prop.a} b={prop.b} label={prop.label} />;
+      break;
+    case "pies":
+      body = (
+        <div className="gp-pies">
+          <PieView a={prop.left.a} b={prop.left.b} />
+          <span className="gp-pies-op">＋</span>
+          <PieView a={prop.right.a} b={prop.right.b} />
+          {prop.result ? (
+            <>
+              <span className="gp-pies-op">＝</span>
+              <PieView a={prop.result.a} b={prop.result.b} label={`${prop.result.a}/${prop.result.b}`} />
+            </>
+          ) : null}
+        </div>
+      );
+      break;
+    case "text":
+      body = <TextView text={prop.text} sub={prop.sub} tone={prop.tone} />;
+      break;
+    case "shape":
+      body = <ShapeView shape={prop.shape} base={prop.base} height={prop.height} label={prop.label} />;
+      break;
+    default:
+      body = <div className="gp-empty" aria-hidden="true" />;
+  }
+  return (
+    <div className="ol-scene ol-scene--generic">
+      <div className="gp-body">{body}</div>
+      <div className="ol-scene-mascot ol-scene-mascot--br-sm">
+        <OnionMascot action={action} frame={frame} size={54} />
+      </div>
+    </div>
+  );
+}
+
+/**
+ * 課堂舞台統一入口：有專屬動畫場景的課走 LessonScene，
+ * 純資料驅動的新課自動落到 PropScene（看 frame.prop 畫教具）。
+ */
+export function LessonStage({
+  lessonId,
+  prop,
+  frame,
+  action,
+}: { lessonId: string; prop: OnionProp } & SceneProps) {
+  const bespoke = LessonScene({ lessonId, frame, action });
+  return bespoke ?? <PropScene prop={prop} frame={frame} action={action} />;
+}
+
 export function LessonScene({ lessonId, frame, action }: { lessonId: string } & SceneProps) {
   if (lessonId === "water-cycle") return <WaterCycleScene frame={frame} action={action} />;
   if (lessonId === "fraction-add") return <FractionScene frame={frame} action={action} />;
@@ -1104,5 +1350,6 @@ export function LessonScene({ lessonId, frame, action }: { lessonId: string } & 
   if (lessonId === "onion-cell") return <CellScene frame={frame} action={action} />;
   if (lessonId === "pythagorean") return <PythagoreanScene frame={frame} action={action} />;
   if (lessonId === "quadratic") return <QuadraticScene frame={frame} action={action} />;
-  return <DeUsageScene frame={frame} action={action} />;
+  if (lessonId === "de-usage") return <DeUsageScene frame={frame} action={action} />;
+  return null;
 }

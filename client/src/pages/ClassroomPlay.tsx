@@ -7,8 +7,7 @@ import FactorGame from "@/components/classroom/FactorGame";
 import FactorDuoGame from "@/components/classroom/FactorDuoGame";
 import MeteorGame from "@/components/classroom/MeteorGame";
 import RectGame from "@/components/classroom/RectGame";
-import OnionLesson from "@/components/classroom/OnionLesson";
-import OnionAcademyGame from "@/components/classroom/OnionAcademyGame";
+import OnionAcademyHub from "@/components/classroom/OnionAcademyHub";
 import {
   TRAP_QUESTIONS,
   buildChoiceDeck,
@@ -131,19 +130,14 @@ export default function ClassroomPlay() {
   };
 
   switch (gameId) {
+    // 「分數工坊」與「洋蔥動畫講解」已合併成同一個洋蔥學院頁面；
+    // 舊網址 /classroom/onion 繼續保留，進站直接帶到分數工坊分頁。
     case "onion":
-      return (
-        <OnionLesson
-          key="onion"
-          bestStars={record?.stars}
-          onBest={(r) => updateBest({ stars: r.stars, correct: r.correct, total: r.total })}
-          onExit={exit}
-        />
-      );
     case "onion-academy":
       return (
-        <OnionAcademyGame
-          key="onion-academy"
+        <OnionAcademyHub
+          key="onion-hub"
+          initial={gameId === "onion" ? "workshop" : "lessons"}
           bestStars={record?.stars}
           onBest={(r) => updateBest({ stars: r.stars, correct: r.correct, total: r.total })}
           onExit={exit}

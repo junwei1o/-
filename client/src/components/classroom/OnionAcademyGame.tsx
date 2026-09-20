@@ -16,7 +16,7 @@ import {
   type OnionFrame,
 } from "@/game/onionAcademyLessons";
 import "@/components/classroom/classroom.css";
-import { LessonScene, OnionMascot } from "@/components/classroom/OnionAcademyScenes";
+import { LessonStage, OnionMascot } from "@/components/classroom/OnionAcademyScenes";
 import { loadStudentGradePreference } from "@/lib/studentGradePreference";
 import { useClassroomSound } from "./useClassroomSound";
 import { shuffleQuestionOptions } from "@/lib/optionRandomizer";
@@ -336,7 +336,7 @@ export default function OnionLessonGame({ bestStars, muted = false, onBest, onEx
           </span>
         </header>
         <div className="ol-stage">
-          <LessonScene lessonId={lesson.id} frame={frameIdx} action={frame.action} />
+          <LessonStage lessonId={lesson.id} prop={frame.prop} frame={frameIdx} action={frame.action} />
           <p className="ol-caption" key={`cap-${frame.id}`}>{frame.caption}</p>
           {needAsk && frame.ask && (
             <div className="ol-ask" role="group" aria-label="動畫中途提問">

@@ -6,7 +6,6 @@ import {
   CalendarDays,
   Clapperboard,
   Compass,
-  Film,
   Layers,
   LayoutGrid,
   Link2,
@@ -20,6 +19,7 @@ import {
   Zap,
 } from "lucide-react";
 import { loadClassroomBest, type ClassroomBestMap } from "@/lib/classroomBank";
+import { ONION_LESSONS } from "@/game/onionAcademyLessons";
 import {
   FRACTION_COURSE,
   completedLayerCount,
@@ -82,15 +82,14 @@ export default function QuizRoom() {
   const onionLayers = courseProgress(loadOnionProgress(), FRACTION_COURSE.id);
   const onionDone = completedLayerCount(FRACTION_COURSE, onionLayers);
   const onionStars = courseTotalStars(FRACTION_COURSE, onionLayers);
-  const lessonState = onionDone >= FRACTION_COURSE.layers.length
-    ? `已完成 ${onionStars}★`
-    : onionDone > 0
-      ? `已剝 ${onionDone}/${FRACTION_COURSE.layers.length} 層`
-      : "新課上線";
-  // 洋蔥動畫講解（多學科）：以 best 星等顯示
+  // 洋蔥學院合併後只有一張卡：優先用動畫課星等，其次顯示分數工坊的剝層進度。
   const academyState = best["onion-academy"]?.stars
     ? `最佳 ${best["onion-academy"].stars}★`
-    : "新課上線";
+    : onionDone >= FRACTION_COURSE.layers.length
+      ? `已完成 ${onionStars}★`
+      : onionDone > 0
+        ? `已剝 ${onionDone}/${FRACTION_COURSE.layers.length} 層 · ${onionStars}★`
+        : "新課上線";
 
   const changeSkin = (next: SkinId) => {
     setSkin(next);
@@ -289,22 +288,12 @@ export default function QuizRoom() {
         <span className="mc-doodle" aria-hidden="true"><Clapperboard size={18} /></span>
         動畫微課（像洋蔥一樣分層學）
       </h2>
-      <button type="button" className="mc-lesson-card" onClick={() => setLocation("/classroom/onion")}>
+      <button type="button" className="mc-lesson-card" onClick={() => setLocation("/classroom/onion-academy")}>
         <span className="mc-lesson-icon" aria-hidden="true"><Clapperboard size={26} /></span>
         <span className="mc-lesson-body">
-          <h3>分數工坊 <span className="mc-lesson-badge">{lessonState}</span></h3>
-          <p>數學三年級：先看披薩、巧克力的小動畫，一層只講一個觀念，看完馬上答 2 題、答錯給提示，過關才解鎖下一層。</p>
-          <span className="mc-lesson-meta">🧅 4 層知識點 · 🎬 動畫講解 · 🔓 逐層解鎖 · ⭐ 星星獎勵</span>
-        </span>
-        <span className="mc-lesson-go" aria-hidden="true">→</span>
-      </button>
-
-      <button type="button" className="mc-lesson-card" onClick={() => setLocation("/classroom/onion-academy")}>
-        <span className="mc-lesson-icon" aria-hidden="true"><Film size={26} /></span>
-        <span className="mc-lesson-body">
-          <h3>洋蔥動畫講解 <span className="mc-lesson-badge">{academyState}</span></h3>
-          <p>四科各一堂：分數加減、的得地、水循環、三角形面積，洋蔥角色動畫拆解，看完立刻闖 5 題，全對三顆星。</p>
-          <span className="mc-lesson-meta">🎬 動畫講解 · 📚 數學／國語／自然 · ⭐ 星星＋金幣獎勵</span>
+          <h3>洋蔥學院 <span className="mc-lesson-badge">{academyState}</span></h3>
+          <p>同一個入口兩種學法：「動畫課」多學科一堂一知識點，看完立刻闖 5 題；「分數工坊」把分數拆成四層，逐層解鎖、答錯給提示。</p>
+          <span className="mc-lesson-meta">🎬 {ONION_LESSONS.length} 堂動畫課 · 🧅 分數 4 層 · 🔓 逐層解鎖 · ⭐ 星星＋金幣獎勵</span>
         </span>
         <span className="mc-lesson-go" aria-hidden="true">→</span>
       </button>
