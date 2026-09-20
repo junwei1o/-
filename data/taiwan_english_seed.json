@@ -11,10 +11,19 @@
       "learningContent": "認識字母 Aa–Zz 的字形與發音，能分辨常見字母的起始音。",
       "competency": "能正確指認字母並說出其發音。",
       "prompt": "下面哪一個字母的發音是「ㄟ」？",
-      "options": ["A", "B", "C", "D"],
+      "options": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
       "answer": 0,
       "explanation": "字母 A 的發音是「ㄟ」（/eɪ/）；B 是「ㄅ一」、C 是「ㄒ一」、D 是「ㄉ一」。",
-      "knowledge": ["字母辨識", "字母發音"]
+      "knowledge": [
+        "字母辨識",
+        "字母發音"
+      ],
+      "questionType": "選擇題"
     },
     {
       "id": "en002",
@@ -27,10 +36,18 @@
       "learningContent": "認識字母的大小寫對應關係。",
       "competency": "能將大寫字母與小寫字母配對。",
       "prompt": "大寫字母 G 的小寫是哪一個？",
-      "options": ["g", "j", "q", "p"],
+      "options": [
+        "g",
+        "j",
+        "q",
+        "p"
+      ],
       "answer": 0,
       "explanation": "大寫 G 的小寫是 g。j、q、p 是不同字母。",
-      "knowledge": ["大小寫對應"]
+      "knowledge": [
+        "大小寫對應"
+      ],
+      "questionType": "選擇題"
     },
     {
       "id": "en003",
@@ -43,10 +60,19 @@
       "learningContent": "學習 Hello、Good morning、Goodbye 等日常問候語。",
       "competency": "能在適當情境使用基本問候語。",
       "prompt": "早上到學校遇到老師，用英語打招呼可以說哪一句？",
-      "options": ["Good morning!", "Good night!", "Goodbye!", "Thank you!"],
+      "options": [
+        "Good morning!",
+        "Good night!",
+        "Goodbye!",
+        "Thank you!"
+      ],
       "answer": 0,
       "explanation": "早上見面用 Good morning（早安）。Good night 是晚安，Goodbye 是再見，Thank you 是謝謝。",
-      "knowledge": ["問候語", "生活用語"]
+      "knowledge": [
+        "問候語",
+        "生活用語"
+      ],
+      "questionType": "選擇題"
     },
     {
       "id": "en004",
@@ -59,10 +85,19 @@
       "learningContent": "學習 My name is... 與 I am... 的自我介紹句型。",
       "competency": "能簡單介紹自己的名字。",
       "prompt": "想用英語介紹自己的名字「Amy」，應該說哪一句？",
-      "options": ["My name is Amy.", "I am fine.", "What is this?", "How are you?"],
+      "options": [
+        "My name is Amy.",
+        "I am fine.",
+        "What is this?",
+        "How are you?"
+      ],
       "answer": 0,
       "explanation": "自我介紹用 My name is + 名字（我的名字是 Amy）。其他選項分別是「我很好」「這是什麼」「你好嗎」。",
-      "knowledge": ["自我介紹", "基本句型"]
+      "knowledge": [
+        "自我介紹",
+        "基本句型"
+      ],
+      "questionType": "選擇題"
     },
     {
       "id": "en005",
@@ -75,10 +110,19 @@
       "learningContent": "學習 one 到 ten 的英語說法與應用。",
       "competency": "能正確說出與辨識基本數字。",
       "prompt": "英文「five」代表哪一個數字？",
-      "options": ["5", "4", "6", "8"],
+      "options": [
+        "5",
+        "4",
+        "6",
+        "8"
+      ],
       "answer": 0,
       "explanation": "five 是數字 5。four 是 4，six 是 6，eight 是 8。",
-      "knowledge": ["數字", "聽讀辨識"]
+      "knowledge": [
+        "數字",
+        "聽讀辨識"
+      ],
+      "questionType": "選擇題"
     },
     {
       "id": "en006",
@@ -91,10 +135,19 @@
       "learningContent": "學習 Stand up、Sit down、Open your book 等教室指令。",
       "competency": "能依英語指令做出正確反應。",
       "prompt": "老師說「Sit down, please.」，你應該怎麼做？",
-      "options": ["坐下", "站起來", "打開課本", "舉手"],
+      "options": [
+        "坐下",
+        "站起來",
+        "打開課本",
+        "舉手"
+      ],
       "answer": 0,
       "explanation": "Sit down 是「坐下」，please 是「請」。Stand up 才是站起來。",
-      "knowledge": ["教室用語", "指令理解"]
+      "knowledge": [
+        "教室用語",
+        "指令理解"
+      ],
+      "questionType": "選擇題"
     },
     {
       "id": "en007",
@@ -107,10 +160,19 @@
       "learningContent": "學習 red、blue、yellow、green 等顏色單字。",
       "competency": "能說出物品的顏色。",
       "prompt": "天空在晴朗時通常是什麼顏色的英語？",
-      "options": ["blue", "red", "yellow", "black"],
+      "options": [
+        "blue",
+        "red",
+        "yellow",
+        "black"
+      ],
       "answer": 0,
       "explanation": "晴朗天空是 blue（藍色）。red 是紅色，yellow 是黃色，black 是黑色。",
-      "knowledge": ["顏色", "生活觀察"]
+      "knowledge": [
+        "顏色",
+        "生活觀察"
+      ],
+      "questionType": "選擇題"
     },
     {
       "id": "en008",
@@ -123,10 +185,19 @@
       "learningContent": "學習 cat、dog、bird、fish 等動物單字。",
       "competency": "能指認動物並說出其英語名稱。",
       "prompt": "下面哪一個是「貓」的英語？",
-      "options": ["cat", "dog", "bird", "fish"],
+      "options": [
+        "cat",
+        "dog",
+        "bird",
+        "fish"
+      ],
       "answer": 0,
       "explanation": "cat 是貓，dog 是狗，bird 是鳥，fish 是魚。",
-      "knowledge": ["動物", "單字辨識"]
+      "knowledge": [
+        "動物",
+        "單字辨識"
+      ],
+      "questionType": "選擇題"
     },
     {
       "id": "en009",
@@ -139,10 +210,19 @@
       "learningContent": "學習 father、mother、brother、sister 等家庭稱呼。",
       "competency": "能用英語介紹家庭成員。",
       "prompt": "「媽媽」的英語是哪一個？",
-      "options": ["mother", "father", "brother", "sister"],
+      "options": [
+        "mother",
+        "father",
+        "brother",
+        "sister"
+      ],
       "answer": 0,
       "explanation": "mother 是媽媽，father 是爸爸，brother 是兄弟，sister 是姐妹。",
-      "knowledge": ["家庭成員", "單字辨識"]
+      "knowledge": [
+        "家庭成員",
+        "單字辨識"
+      ],
+      "questionType": "選擇題"
     },
     {
       "id": "en010",
@@ -155,10 +235,19 @@
       "learningContent": "學習 What is this? 與 It is... 的問答句型。",
       "competency": "能就常見物品進行簡單問答。",
       "prompt": "朋友指著桌上的鉛筆問「What is this?」，你可以回答哪一句？",
-      "options": ["It is a pencil.", "I am a pencil.", "This is me.", "It is my turn."],
+      "options": [
+        "It is a pencil.",
+        "I am a pencil.",
+        "This is me.",
+        "It is my turn."
+      ],
       "answer": 0,
       "explanation": "What is this?（這是什麼？）用 It is a pencil.（它是一枝鉛筆）回答。",
-      "knowledge": ["問答句型", "物品單字"]
+      "knowledge": [
+        "問答句型",
+        "物品單字"
+      ],
+      "questionType": "選擇題"
     },
     {
       "id": "en011",
@@ -171,10 +260,19 @@
       "learningContent": "學習 apple、banana、rice、milk 等食物單字。",
       "competency": "能在點餐或購物情境說出食物名稱。",
       "prompt": "「香蕉」的英語是哪一個？",
-      "options": ["banana", "apple", "rice", "milk"],
+      "options": [
+        "banana",
+        "apple",
+        "rice",
+        "milk"
+      ],
       "answer": 0,
       "explanation": "banana 是香蕉，apple 是蘋果，rice 是米飯，milk 是牛奶。",
-      "knowledge": ["食物", "單字辨識"]
+      "knowledge": [
+        "食物",
+        "單字辨識"
+      ],
+      "questionType": "選擇題"
     },
     {
       "id": "en012",
@@ -187,10 +285,19 @@
       "learningContent": "學習 sunny、rainy、windy、cloudy 等天氣單字。",
       "competency": "能用英語描述今天的天氣。",
       "prompt": "下雨天用英語可以怎麼說？",
-      "options": ["It is rainy.", "It is sunny.", "It is windy.", "It is cloudy."],
+      "options": [
+        "It is rainy.",
+        "It is sunny.",
+        "It is windy.",
+        "It is cloudy."
+      ],
       "answer": 0,
       "explanation": "rainy 是下雨的，所以說 It is rainy.（天氣是下雨）。sunny 是晴朗，windy 是颳風，cloudy 是多雲。",
-      "knowledge": ["天氣", "生活用語"]
+      "knowledge": [
+        "天氣",
+        "生活用語"
+      ],
+      "questionType": "選擇題"
     },
     {
       "id": "en013",
@@ -203,10 +310,19 @@
       "learningContent": "學習 What time is it? 與 It is... o'clock 的時間表達。",
       "competency": "能就時間進行簡單問答。",
       "prompt": "想知道現在幾點，可以問哪一句？",
-      "options": ["What time is it?", "What day is it?", "What color is it?", "What is your name?"],
+      "options": [
+        "What time is it?",
+        "What day is it?",
+        "What color is it?",
+        "What is your name?"
+      ],
       "answer": 0,
       "explanation": "What time is it? 是「現在幾點？」。What day is it? 是問星期幾。",
-      "knowledge": ["時間", "問答句型"]
+      "knowledge": [
+        "時間",
+        "問答句型"
+      ],
+      "questionType": "選擇題"
     },
     {
       "id": "en014",
@@ -219,10 +335,19 @@
       "learningContent": "學習 I can... 與 I cannot... 的能力句型。",
       "competency": "能用英語說明自己的能力。",
       "prompt": "想說「我會游泳」，英文應該怎麼說？",
-      "options": ["I can swim.", "I cannot swim.", "I like swim.", "Swim is me."],
+      "options": [
+        "I can swim.",
+        "I cannot swim.",
+        "I like swim.",
+        "Swim is me."
+      ],
       "answer": 0,
       "explanation": "表達能力用 I can + 動作：I can swim.（我會游泳）。I cannot swim 是「我不會游泳」。",
-      "knowledge": ["能力句型", "動詞"]
+      "knowledge": [
+        "能力句型",
+        "動詞"
+      ],
+      "questionType": "選擇題"
     },
     {
       "id": "en015",
@@ -235,10 +360,19 @@
       "learningContent": "學習 I like... 與 I do not like... 的喜好句型。",
       "competency": "能就喜好進行簡單表達。",
       "prompt": "想說「我喜歡蘋果」，英文應該怎麼說？",
-      "options": ["I like apples.", "I do not like apples.", "Apples like me.", "I am apples."],
+      "options": [
+        "I like apples.",
+        "I do not like apples.",
+        "Apples like me.",
+        "I am apples."
+      ],
       "answer": 0,
       "explanation": "表達喜歡用 I like + 事物：I like apples.（我喜歡蘋果）。I do not like 是不喜歡。",
-      "knowledge": ["喜好句型", "食物單字"]
+      "knowledge": [
+        "喜好句型",
+        "食物單字"
+      ],
+      "questionType": "選擇題"
     },
     {
       "id": "en016",
@@ -251,10 +385,19 @@
       "learningContent": "學習 How much is it? 與數字的價格應用。",
       "competency": "能在購物情境中詢問並理解價格。",
       "prompt": "想問「這個多少錢？」，可以說哪一句？",
-      "options": ["How much is it?", "How old are you?", "How are you?", "What is it?"],
+      "options": [
+        "How much is it?",
+        "How old are you?",
+        "How are you?",
+        "What is it?"
+      ],
       "answer": 0,
       "explanation": "How much is it? 是詢問價格「這個多少錢？」。How old are you 問年齡。",
-      "knowledge": ["購物用語", "問句"]
+      "knowledge": [
+        "購物用語",
+        "問句"
+      ],
+      "questionType": "選擇題"
     },
     {
       "id": "en017",
@@ -267,10 +410,19 @@
       "learningContent": "學習 desk、chair、book、pen 等教室物品單字。",
       "competency": "能指認教室物品並說出其名稱。",
       "prompt": "「書桌」的英語是哪一個？",
-      "options": ["desk", "chair", "book", "pen"],
+      "options": [
+        "desk",
+        "chair",
+        "book",
+        "pen"
+      ],
       "answer": 0,
       "explanation": "desk 是書桌，chair 是椅子，book 是書，pen 是筆。",
-      "knowledge": ["教室物品", "單字辨識"]
+      "knowledge": [
+        "教室物品",
+        "單字辨識"
+      ],
+      "questionType": "選擇題"
     },
     {
       "id": "en018",
@@ -283,10 +435,19 @@
       "learningContent": "學習 who、what、where、when 的用法區別。",
       "competency": "能依詢問對象選擇正確疑問詞。",
       "prompt": "想問「你的書在哪裡？」，應該用哪一個疑問詞？",
-      "options": ["Where", "Who", "When", "What"],
+      "options": [
+        "Where",
+        "Who",
+        "When",
+        "What"
+      ],
       "answer": 0,
       "explanation": "問地點用 Where（哪裡）：Where is your book? who 問人，when 問時間，what 問事物。",
-      "knowledge": ["疑問詞", "句型"]
+      "knowledge": [
+        "疑問詞",
+        "句型"
+      ],
+      "questionType": "選擇題"
     },
     {
       "id": "en019",
@@ -299,10 +460,19 @@
       "learningContent": "學習 get up、eat breakfast、go to school 等日常動作片語。",
       "competency": "能用英語描述一天的作息。",
       "prompt": "「起床」的英語是哪一個？",
-      "options": ["get up", "sit down", "stand up", "go to sleep"],
+      "options": [
+        "get up",
+        "sit down",
+        "stand up",
+        "go to sleep"
+      ],
       "answer": 0,
       "explanation": "get up 是「起床」，sit down 是坐下，stand up 是站起來，go to sleep 是去睡覺。",
-      "knowledge": ["日常活動", "動詞片語"]
+      "knowledge": [
+        "日常活動",
+        "動詞片語"
+      ],
+      "questionType": "選擇題"
     },
     {
       "id": "en020",
@@ -315,10 +485,19 @@
       "learningContent": "學習 in、on、under、next to 等位置介系詞。",
       "competency": "能用介系詞描述物品位置。",
       "prompt": "書「在」桌子上面，應該用哪一個介系詞？",
-      "options": ["on", "in", "under", "next to"],
+      "options": [
+        "on",
+        "in",
+        "under",
+        "next to"
+      ],
       "answer": 0,
       "explanation": "on 表示「在……上面」：The book is on the desk. in 是在裡面，under 是在下面。",
-      "knowledge": ["介系詞", "位置描述"]
+      "knowledge": [
+        "介系詞",
+        "位置描述"
+      ],
+      "questionType": "選擇題"
     },
     {
       "id": "en021",
@@ -331,10 +510,19 @@
       "learningContent": "閱讀以已學單字組成的簡單句子。",
       "competency": "能從短句中擷取關鍵訊息。",
       "prompt": "句子「I have a red bag.」的意思是？",
-      "options": ["我有一個紅色的書包。", "我有一隻紅色的狗。", "我喜歡紅色的書。", "紅色是我最喜歡的顏色。"],
+      "options": [
+        "我有一個紅色的書包。",
+        "我有一隻紅色的狗。",
+        "我喜歡紅色的書。",
+        "紅色是我最喜歡的顏色。"
+      ],
       "answer": 0,
       "explanation": "I have 是「我有」，a red bag 是「一個紅色的書包」。",
-      "knowledge": ["閱讀理解", "句型"]
+      "knowledge": [
+        "閱讀理解",
+        "句型"
+      ],
+      "questionType": "選擇題"
     },
     {
       "id": "en022",
@@ -347,10 +535,19 @@
       "learningContent": "學習 teacher、doctor、farmer、police officer 等職業單字。",
       "competency": "能說出常見職業的英語名稱。",
       "prompt": "「老師」的英語是哪一個？",
-      "options": ["teacher", "doctor", "farmer", "driver"],
+      "options": [
+        "teacher",
+        "doctor",
+        "farmer",
+        "driver"
+      ],
       "answer": 0,
       "explanation": "teacher 是老師，doctor 是醫生，farmer 是農夫，driver 是司機。",
-      "knowledge": ["職業", "單字辨識"]
+      "knowledge": [
+        "職業",
+        "單字辨識"
+      ],
+      "questionType": "選擇題"
     },
     {
       "id": "en023",
@@ -363,10 +560,19 @@
       "learningContent": "學習 do not 與 does not 的否定用法。",
       "competency": "能正確使用否定句表達。",
       "prompt": "想說「我不喜歡數學」，英文應該怎麼說？",
-      "options": ["I do not like math.", "I like math.", "Math likes me.", "I am not math."],
+      "options": [
+        "I do not like math.",
+        "I like math.",
+        "Math likes me.",
+        "I am not math."
+      ],
       "answer": 0,
       "explanation": "否定句用 do not + 動詞：I do not like math.（我不喜歡數學）。",
-      "knowledge": ["否定句", "喜好句型"]
+      "knowledge": [
+        "否定句",
+        "喜好句型"
+      ],
+      "questionType": "選擇題"
     },
     {
       "id": "en024",
@@ -379,10 +585,19 @@
       "learningContent": "學習 head、hand、eye、ear 等身體部位單字。",
       "competency": "能指認身體部位並說出其名稱。",
       "prompt": "「眼睛」的英語是哪一個？",
-      "options": ["eye", "ear", "hand", "head"],
+      "options": [
+        "eye",
+        "ear",
+        "hand",
+        "head"
+      ],
       "answer": 0,
       "explanation": "eye 是眼睛，ear 是耳朵，hand 是手，head 是頭。",
-      "knowledge": ["身體部位", "單字辨識"]
+      "knowledge": [
+        "身體部位",
+        "單字辨識"
+      ],
+      "questionType": "選擇題"
     }
   ]
 }
