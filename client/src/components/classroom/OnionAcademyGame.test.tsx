@@ -35,14 +35,26 @@ function opt(text: string): HTMLElement {
 }
 
 describe("洋蔥動畫講解 OnionAcademyGame", () => {
-  it("選課器顯示全部 4 堂課，可回我的教室", () => {
+  it("選課器預設顯示國小課；可切換國中／全部，也可回我的教室", () => {
     const onBest = vi.fn();
     const onExit = vi.fn();
     render(<OnionAcademyGame bestStars={undefined} onBest={onBest} onExit={onExit} />);
     expect(screen.getByText("選一門動畫課")).toBeInTheDocument();
-    for (const l of ONION_LESSONS) {
-      expect(screen.getByText(l.title)).toBeInTheDocument();
-    }
+
+    // 預設為「國小」：只出現國小課
+    const elementary = ONION_LESSONS.filter((l) => l.stages.includes("國小") && !l.stages.includes("國中"));
+    const junior = ONION_LESSONS.filter((l) => l.stages.includes("國中") && !l.stages.includes("國小"));
+    for (const l of elementary) expect(screen.getByText(l.title)).toBeInTheDocument();
+    for (const l of junior) expect(screen.queryByText(l.title)).not.toBeInTheDocument();
+
+    // 切到「國中」
+    fireEvent.click(screen.getByRole("tab", { name: "國中" }));
+    for (const l of junior) expect(screen.getByText(l.title)).toBeInTheDocument();
+
+    // 切到「全部」：8 堂都在
+    fireEvent.click(screen.getByRole("tab", { name: "全部" }));
+    for (const l of ONION_LESSONS) expect(screen.getByText(l.title)).toBeInTheDocument();
+
     fireEvent.click(screen.getByRole("button", { name: /回我的教室/ }));
     expect(onExit).toHaveBeenCalledTimes(1);
   });

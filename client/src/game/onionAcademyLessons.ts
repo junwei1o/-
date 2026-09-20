@@ -72,12 +72,17 @@ export type OnionQuestion = {
 };
 
 /** 一份動畫課。 */
+/** 學段：國小／國中。跨學段的課（如「五上・七上」）會同時屬於兩邊。 */
+export type OnionStage = "國小" | "國中";
+
 export type OnionLesson = {
   id: string;
   title: string;
   subject: string;
   topic: string;
   grade: string;
+  /** 這堂課適用於哪些學段；用於選課頁分流。 */
+  stages: OnionStage[];
   desc: string;
   /** 看完動畫後的重點整理（小結頁用）。 */
   takeaways?: string[];
@@ -106,6 +111,7 @@ export const FRACTION_LESSON: OnionLesson = {
   subject: "數學",
   topic: "分數加減",
   grade: "五上",
+  stages: ["國小"],
   desc: "洋蔥帶你用一塊披薩搞懂「分母相同」的分數加法，動畫拆解＋互動演示，看完立刻闖關。",
   takeaways: ["分母是「全部切成幾份」", "同分母相加：分母不變", "分子相加就是答案"],
   frames: [
@@ -136,6 +142,7 @@ export const CHINESE_DE_LESSON: OnionLesson = {
   subject: "國語",
   topic: "的字用法",
   grade: "五上",
+  stages: ["國小"],
   desc: "三個讀音一樣的字，用法卻不同。洋蔥用字卡帶你記住：的接名詞、得接動詞後、地接動詞前。",
   takeaways: ["的 → 接名詞", "得 → 在動詞後", "地 → 在動詞前"],
   frames: [
@@ -166,6 +173,7 @@ export const WATER_CYCLE_LESSON: OnionLesson = {
   subject: "自然",
   topic: "水循環",
   grade: "四上",
+  stages: ["國小"],
   desc: "水從來不會消失，只是不停旅行。洋蔥用循環圖帶你看懂蒸發、凝結、降水三個階段。",
   takeaways: ["蒸發：水變水蒸氣上升", "凝結：遇冷聚成雲", "降水→匯流，太陽是動力"],
   frames: [
@@ -196,6 +204,7 @@ export const TRIANGLE_AREA_LESSON: OnionLesson = {
   subject: "數學",
   topic: "三角形面積",
   grade: "五上",
+  stages: ["國小"],
   desc: "三角形面積公式不是死記的！洋蔥帶你用「兩個三角形拼一拼」搞懂為什麼是底×高÷2。",
   takeaways: ["兩個全等三角形可拼成平行四邊形", "平行四邊形面積＝底×高", "三角形是一半，要再÷2"],
   frames: [
@@ -227,6 +236,7 @@ export const PHOTOSYNTHESIS_LESSON: OnionLesson = {
   subject: "自然",
   topic: "光合作用",
   grade: "五上・七上",
+  stages: ["國小", "國中"],
   desc: "植物不會吃飯，怎麼長大？洋蔥帶你走進葉子的綠色工廠，看陽光、水、二氧化碳怎麼變成養分和氧氣。",
   takeaways: ["原料＝水＋二氧化碳，能量＝陽光", "場所在葉綠體", "產物＝養分（葡萄糖）＋氧氣"],
   frames: [
@@ -260,6 +270,7 @@ export const NEGATIVE_NUMBER_LESSON: OnionLesson = {
   subject: "數學",
   topic: "負數與數線",
   grade: "七上",
+  stages: ["國中"],
   desc: "「零下 3 度」是什麼意思？洋蔥開著小船在數線上航向零下的世界，負數的大小一次搞懂。",
   takeaways: ["數線右邊較大、左邊較小", "負數離 0 越遠越小", "到 0 距離相同的是相反數"],
   frames: [
@@ -293,6 +304,7 @@ export const LINEAR_EQUATION_LESSON: OnionLesson = {
   subject: "數學",
   topic: "一元一次方程式",
   grade: "七上",
+  stages: ["國中"],
   desc: "方程式就是一座天平！洋蔥用砝碼讓你親眼看著 x＋3＝8 怎麼一步步解開，移項變號不再是死背。",
   takeaways: ["方程式像天平，兩邊要同時加減", "目標是讓 x 一個人留下來", "移項一定要變號"],
   frames: [
@@ -326,6 +338,7 @@ export const ONION_CELL_LESSON: OnionLesson = {
   subject: "自然",
   topic: "細胞構造",
   grade: "七上",
+  stages: ["國中"],
   desc: "由洋蔥親自介紹洋蔥表皮細胞！顯微鏡視野一格一格，細胞壁、細胞膜、細胞核、液泡一次認齊。",
   takeaways: ["細胞是生物體最小單位", "壁保護、膜進出、核指揮、泡儲水", "植物才有細胞壁與葉綠體"],
   frames: [

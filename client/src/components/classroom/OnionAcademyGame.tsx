@@ -10,12 +10,14 @@ import React, { useEffect, useRef, useState } from "react";
 import { RotateCcw, Sparkles, Star, ChevronRight, Play, Pause, Home, GraduationCap, ArrowLeft, BookOpen, Lightbulb, SkipForward, ListChecks } from "lucide-react";
 import {
   ONION_LESSONS,
+  type OnionStage,
   getOnionLesson,
   gradeOnionLesson,
   type OnionFrame,
 } from "@/game/onionAcademyLessons";
 import "@/components/classroom/classroom.css";
 import { LessonScene, OnionMascot } from "@/components/classroom/OnionAcademyScenes";
+import { loadStudentGradePreference } from "@/lib/studentGradePreference";
 import { useClassroomSound } from "./useClassroomSound";
 import { shuffleQuestionOptions } from "@/lib/optionRandomizer";
 
@@ -38,6 +40,14 @@ export default function OnionLessonGame({ bestStars, muted = false, onBest, onEx
   if (typeof window !== "undefined" && window.matchMedia) {
     reducedMotion.current = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   }
+
+  /** 選課頁學段分流：國中生進站不會再被國小課淹沒。 */
+  const [stage, setStage] = useState<OnionStage | "全部">(() => {
+    const grade = typeof window === "undefined" ? null : loadStudentGradePreference();
+    return grade && grade >= 7 ? "國中" : "國小";
+  });
+  const visibleLessons =
+    stage === "全部" ? ONION_LESSONS : ONION_LESSONS.filter((l) => l.stages.includes(stage));
 
   const [phase, setPhase] = useState<Phase>("start");
   const [frameIdx, setFrameIdx] = useState(0);
@@ -168,8 +178,25 @@ export default function OnionLessonGame({ bestStars, muted = false, onBest, onEx
             <h2>選一門動畫課</h2>
             <p className="ol-desc">每堂約 5 分鐘：先看動畫講解，再闖 5 題。答對即時解析，全對三顆星。</p>
           </header>
+          <div className="ol-stage-tabs" role="tablist" aria-label="依學段篩選課程">
+            {(["國小", "國中", "全部"] as const).map((item) => (
+              <button
+                key={item}
+                type="button"
+                role="tab"
+                aria-selected={stage === item}
+                className={`ol-stage-tab ${stage === item ? "is-active" : ""}`}
+                onClick={() => setStage(item)}
+              >
+                {item}
+              </button>
+            ))}
+          </div>
+          <p className="ol-stage-count" role="status">
+            {stage === "全部" ? `共 ${visibleLessons.length} 堂課` : `${stage} ${visibleLessons.length} 堂課`}
+          </p>
           <div className="ol-picker-grid">
-            {ONION_LESSONS.map((l) => {
+            {visibleLessons.map((l) => {
               const color = subjectColor(l.subject);
               return (
                 <button

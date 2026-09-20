@@ -115,6 +115,16 @@ function lessonIntegrity(lesson: typeof FRACTION_LESSON) {
     }
   });
 
+  it(`${lesson.id}: 學段標記（stages）合法且與 grade 一致`, () => {
+    expect(lesson.stages.length).toBeGreaterThan(0);
+    for (const s of lesson.stages) expect(["國小", "國中"]).toContain(s);
+    // grade 字串裡出現國中年級（七／八／九）就必須標國中，否則相反
+    const hasJunior = /[七八九]上|[七八九]下/.test(lesson.grade);
+    const hasElementary = /[三四五六]上|[三四五六]下/.test(lesson.grade);
+    if (hasJunior) expect(lesson.stages).toContain("國中");
+    if (hasElementary) expect(lesson.stages).toContain("國小");
+  });
+
   it(`${lesson.id}: 有小結重點 3 條、每題有 2 個提示`, () => {
     expect(lesson.takeaways).toHaveLength(3);
     for (const q of lesson.questions) {
@@ -132,6 +142,13 @@ describe("registry & lookup", () => {
     expect(subjects.has("數學")).toBe(true);
     expect(subjects.has("國語")).toBe(true);
     expect(subjects.has("自然")).toBe(true);
+  });
+
+  it("國小與國中都各有課程，選課頁分流不會出現空清單", () => {
+    const elementary = ONION_LESSONS.filter((l) => l.stages.includes("國小"));
+    const junior = ONION_LESSONS.filter((l) => l.stages.includes("國中"));
+    expect(elementary.length).toBeGreaterThanOrEqual(4);
+    expect(junior.length).toBeGreaterThanOrEqual(4);
   });
 
   it("getOnionLesson finds by id and falls back to first", () => {

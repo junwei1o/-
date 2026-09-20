@@ -1,11 +1,13 @@
 import { useMemo } from "react";
 import { trpc } from "@/lib/trpc";
 // 正式題庫 500 題隨安裝包一起發布；後端題庫無法使用時，用它作為離線後備，讓作答功能永遠可用。
-import curriculumSeed from "../../../data/taiwan_curriculum_500.json";
+// 前端打包用「精簡題庫」（去掉課綱欄位，省約 536KB）：由 scripts/build-runtime-bank.mjs 從
+// data/taiwan_curriculum_500.json / junior_high_bank.json 產生，勿手動編輯。
+import curriculumSeed from "../../../data/runtime_bank_elementary.json";
 // 英語文題目由前端本地題庫提供（後端 question_bank subject enum 尚未收錄英語，避免改動資料庫 schema）。
 import englishSeed from "../../../data/taiwan_english_seed.json";
 // 國中七年級配套題庫：對應四堂國中動畫微課（負數與數線、一元一次方程式、細胞構造、光合作用）。
-import juniorSeed from "../../../data/junior_high_bank.json";
+import juniorSeed from "../../../data/runtime_bank_junior.json";
 import { expandQuestionBankToSix, shuffleQuestionOptions } from "./optionRandomizer";
 
 /** 與後端 question_bank 資料列一致的題目欄位（去掉僅後端使用的時間戳）。 */
@@ -17,9 +19,10 @@ export type CurriculumQuestionRow = {
   difficulty: "基礎" | "標準" | "挑戰";
   curriculumDomain: "語文領域" | "數學領域" | "自然科學領域" | "社會領域";
   learningTopic: string;
-  learningPerformance: string;
-  learningContent: string;
-  competency: string;
+  /** 課綱欄位只存在於完整題庫（後端／工具使用），前端精簡檔沒有，故為可選。 */
+  learningPerformance?: string;
+  learningContent?: string;
+  competency?: string;
   prompt: string;
   options: string[];
   answer: number;
@@ -59,7 +62,7 @@ function rowsFrom(seed: unknown): CurriculumQuestionRow[] {
   return questions.map((q) => ({ ...q, questionType: q.questionType ?? "選擇題" as const }));
 }
 
-/** 內建題庫（國小：data/taiwan_curriculum_500.json；國中：data/junior_high_bank.json）。 */
+/** 內建題庫（國小：data/runtime_bank_elementary.json；國中：data/runtime_bank_junior.json）。 */
 export const LOCAL_QUESTION_BANK: CurriculumQuestionRow[] = (() => [
   ...rowsFrom(curriculumSeed),
   ...rowsFrom(juniorSeed),

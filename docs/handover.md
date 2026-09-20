@@ -617,3 +617,11 @@ curl -s https://xue-gr3a.onrender.com/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | h
 - **P1-2 結案**：全量 `vitest run` 現在 169 檔／1109 例，約 30 秒跑完，**不再 hang**（之前必須分目錄跑）。文件裡「全量會 hang」的註記已過期，以本節為準。
 - 測試異動：TeacherParentSummary.test.tsx（6 處斷言）、studentKnowledgeIslands.test.ts、teacherParentSummary.test.ts 同步改為中階標籤；HomeContactCard.test.tsx 改斷「QR 為 data URI、不含 api.qrserver.com」。
 - 驗收：tsc 0 錯；全量 169 檔 1109 例全綠；vite build 通過（index 1.6MB／charts-vendor 384KB）；繁體檢查零命中。
+
+## 2026-09-20 P2-1 主包瘦身／P2-5 國小國中分流
+- **P2-1 主包瘦身**：查到主包 1.6MB 的元兇是整份題庫被打包進 index（1090＋40 題含課綱長欄位）。
+  - 新增 `scripts/build-runtime-bank.mjs`：從完整題庫產生 `data/runtime_bank_elementary.json`（1090 題）與 `runtime_bank_junior.json`（40 題），只留執行期欄位（去掉 learningPerformance／learningContent／competency／curriculumDomain 以外的課綱文字），原始 1190KB → 654KB（**省 536KB**）。
+  - `lib/questionBank.ts` 改載入精簡檔；`CurriculumQuestionRow` 的三個課綱欄位改為**可選**（前端沒顯示）。完整題庫仍是單一真相，後端與測試繼續讀它。
+  - 成果：index 1.6MB → **1.3MB**（gzip 475KB → 406KB）。`charts-vendor` 經查本來就只在 LearningInsights 路由懶載（在 `__vitePreload` 清單裡），不需改。
+- **P2-5 國小／國中分流**：`OnionLesson` 新增 `stages: ("國小"|"國中")[]`（五上・七上的光合作用同時屬兩邊）；選課頁新增「國小／國中／全部」頁籤，**預設依學生的年級偏好**（≥7 年級 → 國中），國中生進站不再被國小課淹沒。樣式 `.ol-stage-tabs/.ol-stage-tab`。
+- 測試：資料測試新增「stages 與 grade 一致」＋「兩學段各有 ≥4 堂」；播放器測試改為驗證分流行為（預設國小、切國中、切全部）。全量 169 檔 **1118 例**全綠；tsc 0 錯；build 通過；繁檢零命中。

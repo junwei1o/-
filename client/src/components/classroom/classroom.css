@@ -2648,3 +2648,31 @@
   justify-content: center;
 }
 .ol-summary-hint { margin: 14px 0 4px; font-size: 14px; color: #7a8d99; }
+
+/* 學段分流（國小／國中）：選課頁上方切換 */
+.ol-stage-tabs {
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px;
+  margin: 0 auto 2px;
+  background: #f1ece0;
+  border-radius: 999px;
+}
+.ol-stage-tab {
+  border: none;
+  background: none;
+  padding: 7px 18px;
+  border-radius: 999px;
+  font-size: 14.5px;
+  font-weight: 800;
+  color: #8a7a5c;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s;
+}
+.ol-stage-tab:hover { color: #5f543c; }
+.ol-stage-tab.is-active {
+  background: #fff;
+  color: #4a4234;
+  box-shadow: 0 1px 4px rgba(90, 70, 30, 0.16);
+}
+.ol-stage-count { margin: 6px 0 12px; font-size: 13px; color: #8a9aa4; }
