@@ -4,6 +4,7 @@ import { trpc } from "@/lib/trpc";
 import { useQuestionBank } from "@/lib/questionBank";
 import { getCloudMode } from "@/game/cloudSync";
 import { computePkScore, decidePkOutcome, normalizePkCode } from "@/lib/pkLogic";
+import { shuffleQuestionOptions } from "@/lib/optionRandomizer";
 import "./HubPages.css";
 
 type Stage = "menu" | "playing" | "waiting" | "result";
@@ -49,7 +50,9 @@ export default function PKArena() {
       setError("請先在設定取一個船名（雲端身分），才能發起 PK。");
       return;
     }
-    const picked = shuffle(questions).slice(0, PK_QUESTION_COUNT);
+    const picked = shuffle(questions)
+      .slice(0, PK_QUESTION_COUNT)
+      .map((q) => shuffleQuestionOptions(q));
     if (picked.length < 3) {
       setError("題庫尚未載入完成，請稍後再試。");
       return;
@@ -85,7 +88,8 @@ export default function PKArena() {
     const joined = res.challenge;
     const picked = joined.questionIds
       .map((id) => questions.find((q) => q.id === id))
-      .filter((q): q is (typeof questions)[number] => Boolean(q));
+      .filter((q): q is (typeof questions)[number] => Boolean(q))
+      .map((q) => shuffleQuestionOptions(q));
     if (picked.length !== joined.questionIds.length) {
       setError("挑戰題目載入不完整，請稍後再試。");
       return;

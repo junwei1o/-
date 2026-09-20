@@ -570,3 +570,14 @@ curl -s https://xue-gr3a.onrender.com/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | h
 - **重大發現**：1090 題中 67%（733 題）正確答案固定在選項 index 0；`shuffleQuestionOptions` 僅被 paperExam/questionBank/CommunityHub/BattleScene 使用，教室 6 玩法（QuizRunner/RushRunner/RelayMatch/OnionAcademyGame/OnionLesson）、PKArena、ReviewHub 都沒套用 → 學生可「選第一個」作弊。列為 P0-1。
 - 已修：簡體字 31 處（含題庫 4 處學生可見：不同时段/哪一级產業），新增 `scripts/check-traditional.mjs`（node 跑、命中 exit 1，可接 CI/pre-commit），目前零命中。tsc 0 錯、optionRandomizer/paperExam/questionBank 52 例綠。
 - 方案文件：`docs/site-improvement-plan-2026-09.md`（盤點表＋P0/P1/P2＋四週路線圖＋DoD）。內部調研檔 docs/game-directions-2026-09-12.md 仍有 89 處簡體（學生看不到，後續處理）。
+
+## 2026-09-20 P0-1：出題選項隨機化全面套用（防「選第一個」作弊）
+- 緣由：題庫 1090 題中 67%（733 題）正解固定在選項 index 0，未洗牌的出題點讓學生可投機。
+- 套用位置（全部走 `lib/optionRandomizer.ts` 的 `shuffleQuestionOptions`，它會同步修正 answer 與 strongDistractor 索引，並**自動跳過是非題**保留「正確／錯誤」順序）：
+  - `lib/classroomBank.ts` 的 `rowToChoice`（新增 random 參數）→ 一次涵蓋 buildChoiceDeck／pickRows／buildRelayRounds（翻牌、看圖、是非閃電、限時接力、選擇配對接力）
+  - `components/classroom/QuizRunner.tsx`、`RushRunner.tsx`：進場時 `useMemo` 建立洗牌後的 pool，`question = pool[order[qIndex]]`
+  - `components/classroom/OnionAcademyGame.tsx`、`OnionLesson.tsx`：課程題每進場洗牌（提示文案不依賴選項位置，安全）
+  - `pages/PKArena.tsx`：發起與加入兩條取題路徑都洗牌
+- 刻意**不洗牌**：`ReviewHub` 錯題回顧（保持與當初作答一致的順序，避免同題每次位置不同造成混淆）。
+- 新增測試（classroomBank.test.ts）：60 個 seed × 10 題統計正解落點，四個選項各介於 12%–38%；另測洗牌後正解文字不變、選項不重複。該檔 29→31 例。
+- 驗收：tsc 0 錯；lib 245、components 184、pages 158 全綠。

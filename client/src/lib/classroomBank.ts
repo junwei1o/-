@@ -1,6 +1,7 @@
 // 我的教室：選擇題變體題庫與玩法構造（local-first）。
 // 涵蓋翻牌問答、看圖選答、是非閃電、限時接力、選擇→配對接力、陷阱題挑戰，
 // 以及可混入平常試卷的填空選字、排序題。
+import { shuffleQuestionOptions } from "./optionRandomizer";
 import fillSeed from "../../../data/fill_bank.json";
 import orderSeed from "../../../data/order_bank.json";
 import trapSeed from "../../../data/trap_bank.json";
@@ -168,8 +169,12 @@ export function orderToPaper(q: OrderQuestion): PaperQuestion {
 
 const ALL_CHOICE_ROWS: CurriculumQuestionRow[] = [...LOCAL_QUESTION_BANK, ...LOCAL_ENGLISH_BANK];
 
-function rowToChoice(row: CurriculumQuestionRow): ClassroomChoice {
-  return {
+/**
+ * 題庫列轉成教室題目。出題時順手洗牌選項：題庫有 67% 的正解固定在第一個選項，
+ * 若不洗牌學生只要「選第一個」就能過關。是非題由 shuffleQuestionOptions 自動跳過。
+ */
+function rowToChoice(row: CurriculumQuestionRow, random: () => number = Math.random): ClassroomChoice {
+  const base: ClassroomChoice = {
     id: row.id,
     subject: row.subject,
     grade: row.grade,
@@ -180,6 +185,7 @@ function rowToChoice(row: CurriculumQuestionRow): ClassroomChoice {
     answer: row.answer,
     explanation: row.explanation,
   };
+  return shuffleQuestionOptions({ ...base, questionType: row.questionType }, random);
 }
 
 function pickRows(
@@ -189,7 +195,7 @@ function pickRows(
 ): ClassroomChoice[] {
   return shuffleArray(rows, random)
     .slice(0, Math.max(1, Math.min(count, rows.length)))
-    .map(rowToChoice);
+    .map((row) => rowToChoice(row, random));
 }
 
 /** 翻牌問答／限時接力用：四選一選擇題（可指定學科）。 */
@@ -280,7 +286,7 @@ export function buildRelayRounds(count = 3, random: () => number = Math.random):
     if (!choiceRow) break;
     rounds.push({
       id: `relay-${i + 1}-${set.id}`,
-      choice: rowToChoice(choiceRow),
+      choice: rowToChoice(choiceRow, random),
       matching: sliceMatchingSet(set, 4, 1, random),
     });
   }

@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useClassroomSound } from "./useClassroomSound";
 import { accuracyStars } from "@/lib/classroomBank";
 import { shuffleArray } from "@/lib/matchingBank";
+import { shuffleQuestionOptions } from "@/lib/optionRandomizer";
 import "./classroom.css";
 
 export type RunnerQuestion = {
@@ -57,6 +58,8 @@ export default function QuizRunner({
   onExit,
 }: Props) {
   const total = questions.length;
+  /** 每次進場重新洗牌選項（正解位置不再固定），題目池本身順序由 order 控制。 */
+  const pool = useMemo(() => questions.map((q) => shuffleQuestionOptions(q)), [questions]);
   const [phase, setPhase] = useState<Phase>("start");
   const [order, setOrder] = useState<number[]>(() => questions.map((_, i) => i));
   const [qIndex, setQIndex] = useState(0);
@@ -78,7 +81,7 @@ export default function QuizRunner({
   const advanceRef = useRef<number | null>(null);
   const play = useClassroomSound(muted);
 
-  const question = questions[order[qIndex]];
+  const question = pool[order[qIndex]];
 
   const clearAdvance = () => {
     if (advanceRef.current !== null) {

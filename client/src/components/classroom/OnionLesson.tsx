@@ -25,6 +25,7 @@ import {
   type OnionCourse,
   type OnionScene,
 } from "@/lib/onionLessons";
+import { shuffleQuestionOptions } from "@/lib/optionRandomizer";
 import "./onion.css";
 
 type Props = {
@@ -168,7 +169,9 @@ export default function OnionLesson({ course = FRACTION_COURSE, muted = false, o
 
   /* ---------- 測驗作答 ---------- */
   const quiz = layer.quiz;
-  const question = quiz[qIndex];
+  /** 每次進場洗牌選項，避免正解固定在同一個位置。 */
+  const quizPool = useMemo(() => quiz.map((q) => shuffleQuestionOptions(q)), [quiz]);
+  const question = quizPool[qIndex];
   const wrongCountThisQ = wrongSet.length;
   const hintLevel = chosen === null ? Math.min(wrongCountThisQ, 3) : 0;
 

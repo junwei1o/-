@@ -111,6 +111,33 @@ describe("教室玩法題庫構造", () => {
     }
   });
 
+  it("出題時選項會洗牌：正解不會集中在同一個位置（防「選第一個」作弊）", () => {
+    const position = new Map<number, number>();
+    let total = 0;
+    for (let seed = 1; seed <= 60; seed += 1) {
+      // 每個 seed 建一份牌組，統計正解落在第幾個選項
+      for (const question of buildChoiceDeck(10, "綜合", seeded(seed))) {
+        position.set(question.answer, (position.get(question.answer) ?? 0) + 1);
+        total += 1;
+      }
+    }
+    expect(total).toBeGreaterThan(300);
+    for (const slot of [0, 1, 2, 3]) {
+      const ratio = (position.get(slot) ?? 0) / total;
+      // 題庫原始分布是 index 0 佔 67%，洗牌後每個位置都應接近 25%
+      expect(ratio).toBeGreaterThan(0.12);
+      expect(ratio).toBeLessThan(0.38);
+    }
+  });
+
+  it("洗牌後正解文字仍與原始題庫一致（沒有把答案洗壞）", () => {
+    for (const question of buildChoiceDeck(20, "綜合", seeded(7))) {
+      expect(typeof question.options[question.answer]).toBe("string");
+      expect(question.options[question.answer].length).toBeGreaterThan(0);
+      expect(new Set(question.options).size).toBe(question.options.length);
+    }
+  });
+
   it("buildImageQuiz 每題帶圖片、4 個選項，且正解在選項中", () => {
     for (const set of IMAGE_MATCHING_SETS) {
       const quiz = buildImageQuiz(set, seeded());

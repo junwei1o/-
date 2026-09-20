@@ -1,6 +1,7 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useClassroomSound } from "./useClassroomSound";
 import { shuffleArray } from "@/lib/matchingBank";
+import { shuffleQuestionOptions } from "@/lib/optionRandomizer";
 import type { RunnerQuestion } from "./QuizRunner";
 import "./classroom.css";
 
@@ -43,6 +44,8 @@ export default function RushRunner({
   onExit,
 }: Props) {
   const total = questions.length;
+  /** 每次進場重新洗牌選項，避免正解永遠停在同一個位置。 */
+  const pool = useMemo(() => questions.map((q) => shuffleQuestionOptions(q)), [questions]);
   const [phase, setPhase] = useState<Phase>("start");
   const [order, setOrder] = useState<number[]>(() => questions.map((_, i) => i));
   const [qIndex, setQIndex] = useState(0);
@@ -67,7 +70,7 @@ export default function RushRunner({
   const advanceRef = useRef<number | null>(null);
   const play = useClassroomSound(muted);
 
-  const question = questions[order[qIndex]];
+  const question = pool[order[qIndex]];
   // mixed 模式：本題選項只有兩個＝是非題，出對錯大鍵；其餘出四選一。
   const isTfQuestion = variant === "tf" || (variant === "mixed" && question?.options.length === 2);
 

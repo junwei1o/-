@@ -16,6 +16,7 @@ import {
 } from "@/game/onionAcademyLessons";
 import "@/components/classroom/classroom.css";
 import { LessonScene, OnionMascot } from "@/components/classroom/OnionAcademyScenes";
+import { shuffleQuestionOptions } from "@/lib/optionRandomizer";
 
 type Phase = "start" | "intro" | "lesson" | "quiz" | "result";
 
@@ -43,9 +44,14 @@ export default function OnionLessonGame({ bestStars, onBest, onExit }: Props) {
   const [correctCount, setCorrectCount] = useState(0);
   const [result, setResult] = useState(gradeOnionLesson(0, lesson.questions.length));
 
+  /** 每次進場洗牌選項，避免正解固定在同一個位置。 */
+  const quizPool = React.useMemo(
+    () => lesson.questions.map((q) => shuffleQuestionOptions(q)),
+    [lesson],
+  );
   const frame: OnionFrame = lesson.frames[frameIdx];
   const isLastFrame = frameIdx >= lesson.frames.length - 1;
-  const q = lesson.questions[qIdx];
+  const q = quizPool[qIdx];
 
   // 分鏡自動推進
   useEffect(() => {
