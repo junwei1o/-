@@ -20,6 +20,20 @@ describe("內建題庫：國小＋國中", () => {
     }
   });
 
+  it("跨學科結合題：三科結合 120 題＋五科結合 80 題，且每科都有對應知識點", () => {
+    const cross = LOCAL_QUESTION_BANK.filter(
+      (q) => Array.isArray((q as { subjectCombination?: unknown }).subjectCombination),
+    ) as Array<{ subjectCombination: string[]; knowledge: string[] }>;
+    expect(cross.length).toBeGreaterThanOrEqual(200);
+    expect(cross.filter((q) => q.subjectCombination.length === 3).length).toBeGreaterThanOrEqual(120);
+    expect(cross.filter((q) => q.subjectCombination.length === 5).length).toBeGreaterThanOrEqual(80);
+    for (const q of cross) {
+      // 科目不能重複，而且每個科目都要有對應的知識點——否則就是有科目只是「湊數」
+      expect(new Set(q.subjectCombination).size).toBe(q.subjectCombination.length);
+      expect(q.knowledge.length).toBe(q.subjectCombination.length);
+    }
+  });
+
   it("每個年級都有題（國中不再被靜默丟回國小題）", () => {
     for (const grade of [3, 4, 5, 6, 7, 8, 9]) {
       const count = LOCAL_QUESTION_BANK.filter((q) => q.grade === grade).length;

@@ -63,9 +63,52 @@ for (const q of rows) {
     add("是非題選項數不對", `${q.id} → ${q.options.length}`);
   }
   if (!q.explanation || q.explanation.trim().length < 6) add("詳解過短或缺漏", `${q.id}`);
-  if (q.prompt.length > 150) add("題幹過長", `${q.id}（${q.prompt.length} 字）`);
-  if (Math.max(...q.options.map((o) => o.length)) > 60) add("選項過長", `${q.id}`);
+  /**
+   * 長度上限分兩類：
+   * 一般題要求精簡（題幹 150 字、選項 60 字），超過就是敘述太囉嗦；
+   * 跨學科結合題的情境與選項天生較長——它的選項要同時承載「數據 ＋ 各科判斷」，
+   * 硬砍反而會讓題意不清，所以放寬到題幹 200 字、選項 110 字。
+   */
+  const isCrossSubject = Array.isArray((q as { subjectCombination?: unknown }).subjectCombination);
+  const promptLimit = isCrossSubject ? 200 : 150;
+  const optionLimit = isCrossSubject ? 110 : 60;
+  if (q.prompt.length > promptLimit) add("題幹過長", `${q.id}（${q.prompt.length} 字）`);
+  if (Math.max(...q.options.map((o) => o.length)) > optionLimit) {
+    add("選項過長", `${q.id}（${Math.max(...q.options.map((o) => o.length))} 字）`);
+  }
 }
+
+// ── 1.5 跨學科結合題 ────────────────────────────────────────────────
+// 老師要的是「三科結合＋五科結合共 200 題」。這裡除了數量，也檢查
+// 科目組合與知識點是否一對一（每個科目都要有對應的知識點，不能有科目是湊數的）。
+const crossSubject = rows.filter((row) => {
+  const combo = (row as { subjectCombination?: unknown }).subjectCombination;
+  return Array.isArray(combo);
+}) as Array<{ subjectCombination: string[]; knowledge: string[]; subject: string }>;
+const three = crossSubject.filter((row) => row.subjectCombination.length === 3).length;
+const five = crossSubject.filter((row) => row.subjectCombination.length === 5).length;
+console.log("── 跨學科結合題 ──");
+console.log(`總數：${crossSubject.length}（三科結合 ${three}、五科結合 ${five}）`);
+console.log(`主科分布：${JSON.stringify(
+  crossSubject.reduce<Record<string, number>>((acc, row) => {
+    acc[row.subject] = (acc[row.subject] ?? 0) + 1;
+    return acc;
+  }, {}),
+)}`);
+for (const row of crossSubject) {
+  const combo = row.subjectCombination;
+  if (combo.length !== 3 && combo.length !== 5) {
+    add("跨科題科目數不對", `${combo.join("、")}（${row.knowledge?.[0] ?? ""}）`);
+  }
+  if (new Set(combo).size !== combo.length) {
+    add("跨科題科目重複", combo.join("、"));
+  }
+  // 每個科目都要有對應的知識點：知識點數必須與科目數相同，否則就是有科目沒真正參與。
+  if (!Array.isArray(row.knowledge) || row.knowledge.length !== combo.length) {
+    add("跨科題知識點與科目數不符", `${combo.join("、")} → ${row.knowledge?.length ?? 0} 個知識點`);
+  }
+}
+if (crossSubject.length !== 200) add("跨科題數量不足", `應為 200，實際 ${crossSubject.length}`);
 
 // ── 2. 同題幹不同答案 ────────────────────────────────────────────────
 // 這是「變體題」設計的結果（同一句題幹配不同的選項組），不算錯誤；

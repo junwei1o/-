@@ -116,6 +116,8 @@ export function makeQuestion({
   explanation,
   knowledge,
   questionType = "選擇題",
+  /** 跨學科結合題會帶這欄：這題結合了哪幾個科目（單科題不帶）。 */
+  subjectCombination,
 }) {
   const opts = options.map((o) => String(o));
   const expected = questionType === "是非題" ? 2 : 4;
@@ -138,6 +140,7 @@ export function makeQuestion({
     explanation: String(explanation),
     knowledge,
     area: null,
+    ...(subjectCombination ? { subjectCombination } : {}),
   };
 }
 

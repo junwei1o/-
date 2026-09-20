@@ -18,6 +18,8 @@ import { mulberry32, createCollector, createGradeQuota, normalize } from "./gen/
 import { generateMath, generateMathCombo, generateMathRelation } from "./gen/math.mjs";
 // 配對關係題：把配對題庫（matching_bank）的庫存轉成選擇題，兩種玩法互相印證。
 import { generateMatchingRelations } from "./gen/matchingRelation.mjs";
+// 跨學科結合題：三科結合（120 題）＋五科結合（80 題），共 200 題。
+import { generateCrossSubject } from "./gen/crossSubject.mjs";
 import { generateFromFacts, withSlots } from "./gen/facts.mjs";
 import { SCIENCE_FACTS } from "./gen/science.mjs";
 import { SCIENCE_JUNIOR_FACTS } from "./gen/scienceJunior.mjs";
@@ -90,6 +92,21 @@ const matchingQuestions = [];
 }
 const MATH_RELATION_TARGET = 40;
 
+/** 跨學科結合題：三科 120 ＋ 五科 80 ＝ 200 題。 */
+const CROSS_SUBJECT_TARGET = 200;
+const crossQuestions = [];
+{
+  const sizeBefore = collector.size;
+  const made = generateCrossSubject(rng, collector, CROSS_SUBJECT_TARGET);
+  crossQuestions.push(...collector.list().slice(sizeBefore));
+  for (const q of crossQuestions) {
+    comboPreGenerated.set(q.subject, (comboPreGenerated.get(q.subject) ?? 0) + 1);
+  }
+  console.log(
+    `跨學科結合題：${made.total} 題（三科結合 ${made.three}、五科結合 ${made.five}）`,
+  );
+}
+
 /** 各科事實表：國小＋國中（國中事實表是後來補的，之前國中年級幾乎沒有題目）。 */
 const plan = [
   {
@@ -147,7 +164,7 @@ function computeLimits(subject, already, need) {
   return limits;
 }
 
-const all = [...matchingQuestions];
+const all = [...matchingQuestions, ...crossQuestions];
 for (const { subject, generate } of plan) {
   const have = bySubject.get(subject) ?? 0;
   let need = Math.max(0, TARGET_PER_SUBJECT - have);

@@ -27,6 +27,8 @@ const KEEP = [
   "answer",
   "explanation",
   "knowledge",
+  // 跨學科結合題的科目組合（三科／五科）——前端要顯示「這題結合了哪幾科」時需要。
+  "subjectCombination",
   "area",
 ];
 
