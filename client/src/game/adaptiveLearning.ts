@@ -421,7 +421,7 @@ export function calculateLearningTrendReport(profile: AdaptiveProfile, questionI
 }
 /* ========== 用戶偏好系統 ========== */
 
-export type UserGradeLevel = 3 | 4 | 5 | 6;
+export type UserGradeLevel = 3 | 4 | 5 | 6 | 7 | 8 | 9;
 export type UserDifficultyPreference = "簡單優先" | "均衡混合" | "挑戰優先";
 
 export type UserPreferences = {
@@ -443,7 +443,7 @@ export const defaultUserPreferences: UserPreferences = {
 };
 
 function isGradeLevel(value: unknown): value is UserGradeLevel {
-  return value === 3 || value === 4 || value === 5 || value === 6;
+  return value === 3 || value === 4 || value === 5 || value === 6 || value === 7 || value === 8 || value === 9;
 }
 
 function isDifficultyPreference(value: unknown): value is UserDifficultyPreference {
@@ -490,12 +490,20 @@ export function getTargetDifficultiesFromPrefs(prefs: UserPreferences): Adaptive
   }
 }
 
-/** 根據用戶年級篩選題目（允許 ±1 年級浮動） */
+/**
+ * 根據用戶年級篩選題目（允許 ±1 年級浮動）。
+ *
+ * 年級上限原本寫死 6：設定頁開放七～九年級後，國中生會被塞國小五、六年級的題。
+ * 上限改為 9（題庫目前最遠到九年級），並以 MIN/MAX_GRADE 常數避免再度寫死。
+ */
+export const MIN_GRADE = 3;
+export const MAX_GRADE = 9;
+
 export function filterQuestionsByGrade<T extends { grade: number }>(
   questions: readonly T[],
   prefs: UserPreferences,
 ): T[] {
-  const minGrade = Math.max(3, prefs.gradeLevel - 1);
-  const maxGrade = Math.min(6, prefs.gradeLevel + 1);
+  const minGrade = Math.max(MIN_GRADE, prefs.gradeLevel - 1);
+  const maxGrade = Math.min(MAX_GRADE, prefs.gradeLevel + 1);
   return questions.filter((q) => q.grade >= minGrade && q.grade <= maxGrade);
 }

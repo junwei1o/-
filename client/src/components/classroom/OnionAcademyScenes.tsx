@@ -667,7 +667,7 @@ function NegativeLineScene({ frame, action }: SceneProps) {
         )}
         {/* 小船（含洋蔥船長） */}
         {line && (
-          <g className={`nl-boat ${frame >= 5 ? "is-p2" : frame >= 4 ? "is-p4" : "is-p0"}`} style={{ transform: `translateX(${boatX - 170}px)` }}>
+          <g className="nl-boat" style={{ transform: `translateX(${boatX - 170}px)` }}>
             <path d="M-20 8 L20 8 L14 20 L-14 20 Z" fill="#b0793c" stroke="#8a5a26" strokeWidth="1.8" />
             <path d="M0 8 L0 -12 L14 0 Z" fill="#fff" stroke="#8a5a26" strokeWidth="1.6" className="nl-sail" />
             <circle cx="-8" cy="2" r="6" fill="#b794d6" stroke="#8a5fb0" strokeWidth="1.4" />
@@ -782,6 +782,12 @@ function CellScene({ frame, action }: SceneProps) {
   const membrane = frame === 4;
   const nucleus = frame === 5;
   const vacuole = frame === 6;
+  // 構造採「累積式」標註：講過的構造要留在畫面上，學生才有完整的細胞圖可對照。
+  // wall／membrane／… 只決定「這一幀聚焦誰（發光）」，seen 決定「是否已出現」。
+  const wallSeen = frame >= 3;
+  const membraneSeen = frame >= 4;
+  const nucleusSeen = frame >= 5;
+  const vacuoleSeen = frame >= 6;
   const diff = frame === 7;
   const hierarchy = frame === 8;
   const mantra = frame === 9;
@@ -805,30 +811,31 @@ function CellScene({ frame, action }: SceneProps) {
             {cells.map(([x, y, w, h], i) => (
               <g key={i}>
                 <rect x={x} y={y} width={w} height={h} rx="8"
-                  fill={i === 1 ? "#fbf7ff" : "#f1e8fb"} stroke={wall ? "#b04fd8" : "#c9aee0"}
-                  strokeWidth={wall ? 3.4 : 2} className={wall ? "ce-wall" : ""} />
-                {membrane && i === 1 && (
-                  <rect x={x + 5} y={y + 5} width={w - 10} height={h - 10} rx="6" fill="none" stroke="#3a7bbf" strokeWidth="2.2" strokeDasharray="5 3" className="ce-membrane" />
+                  fill={i === 1 ? "#fbf7ff" : "#f1e8fb"} stroke={wallSeen ? "#b04fd8" : "#c9aee0"}
+                  strokeWidth={wall ? 3.4 : wallSeen ? 2.8 : 2}
+                  className={wallSeen ? `ce-wall${wall ? " is-focus" : ""}` : ""} />
+                {membraneSeen && i === 1 && (
+                  <rect x={x + 5} y={y + 5} width={w - 10} height={h - 10} rx="6" fill="none" stroke="#3a7bbf" strokeWidth={membrane ? 2.8 : 2.2} strokeDasharray="5 3" className={`ce-membrane${membrane ? " is-focus" : ""}`} />
                 )}
-                {nucleus && i === 1 && (
-                  <g className="ce-nucleus">
+                {nucleusSeen && i === 1 && (
+                  <g className={`ce-nucleus${nucleus ? " is-focus" : ""}`}>
                     <circle cx={x + w / 2 - 14} cy={y + h / 2} r="10" fill="#7a4a9e" />
                     <circle cx={x + w / 2 - 14} cy={y + h / 2 - 3} r="3" fill="#a97cc9" opacity="0.7" />
                   </g>
                 )}
-                {vacuole && i === 1 && (
-                  <g className="ce-vacuole">
-                    <ellipse cx={x + w / 2 + 12} cy={y + h / 2} rx="16" ry="12" fill="#dff1ff" stroke="#4a9fd8" strokeWidth="1.8" opacity="0.9" />
+                {vacuoleSeen && i === 1 && (
+                  <g className={`ce-vacuole${vacuole ? " is-focus" : ""}`}>
+                    <ellipse cx={x + w / 2 + 12} cy={y + h / 2} rx="16" ry="12" fill="#dff1ff" stroke="#4a9fd8" strokeWidth={vacuole ? 2.4 : 1.8} opacity="0.9" />
                   </g>
                 )}
               </g>
             ))}
           </g>
           {/* 標註線 */}
-          {wall && <g className="ce-callout"><line x1="238" y1="62" x2="205" y2="66" stroke="#b04fd8" strokeWidth="1.8" /><text x="242" y="66" fontSize="12.5" fontWeight="900" fill="#b04fd8">細胞壁</text></g>}
-          {membrane && <g className="ce-callout"><line x1="238" y1="102" x2="252" y2="102" stroke="#3a7bbf" strokeWidth="1.8" /><text x="256" y="106" fontSize="12.5" fontWeight="900" fill="#3a7bbf">細胞膜</text></g>}
-          {nucleus && <g className="ce-callout"><line x1="238" y1="140" x2="228" y2="128" stroke="#7a4a9e" strokeWidth="1.8" /><text x="242" y="144" fontSize="12.5" fontWeight="900" fill="#7a4a9e">細胞核</text></g>}
-          {vacuole && <g className="ce-callout"><line x1="238" y1="178" x2="226" y2="164" stroke="#2f74b8" strokeWidth="1.8" /><text x="242" y="182" fontSize="12.5" fontWeight="900" fill="#2f74b8">液泡</text></g>}
+          {wallSeen && <g className="ce-callout"><line x1="238" y1="62" x2="205" y2="66" stroke="#b04fd8" strokeWidth="1.8" /><text x="242" y="66" fontSize="12.5" fontWeight="900" fill="#b04fd8">細胞壁</text></g>}
+          {membraneSeen && <g className="ce-callout"><line x1="238" y1="102" x2="252" y2="102" stroke="#3a7bbf" strokeWidth="1.8" /><text x="256" y="106" fontSize="12.5" fontWeight="900" fill="#3a7bbf">細胞膜</text></g>}
+          {nucleusSeen && <g className="ce-callout"><line x1="238" y1="140" x2="228" y2="128" stroke="#7a4a9e" strokeWidth="1.8" /><text x="242" y="144" fontSize="12.5" fontWeight="900" fill="#7a4a9e">細胞核</text></g>}
+          {vacuoleSeen && <g className="ce-callout"><line x1="238" y1="178" x2="226" y2="164" stroke="#2f74b8" strokeWidth="1.8" /><text x="242" y="182" fontSize="12.5" fontWeight="900" fill="#2f74b8">液泡</text></g>}
         </g>
         {/* 動植物細胞比較 */}
         {diff && (

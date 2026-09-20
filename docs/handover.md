@@ -665,3 +665,12 @@ curl -s https://xue-gr3a.onrender.com/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | h
 - 四次 rebase 整合：push 前遠端再增「聯絡老師 LINE QR 改本機 qrcode-generator 產生 SVG（離線、不外送個資）、topicTag 全站收尾（知識島嶼/時間軸/弱點一致）、全量測試恢復（169 檔 1109 例不再 hang）」（86a6ccc），與本提交改動檔案不相交，僅 handover 衝突（兩邊保留）。
 - 四次 rebase 後最終驗證：tsc 0 錯；build 乾淨，bundle **`index-CAHRDOSm.js`**（1,631.84 kB／gzip 481.69 kB）；OnionAcademyGame 5、ClassroomComponents 23 測試綠（onionAcademyLessons 67 於前一輪已綠、86a6ccc 未動該檔）；preview 最新 build 洋蔥完整流程 Playwright 煙霧通過（summary 回教室出口、三顆星實心 fill、0 pageerror）。
 - 本機環境備註：沙箱代理對 npmmirror 回 407、官方 registry 逾時，無法下載新依賴 `qrcode-generator@2.0.4`；本機在 `node_modules/.pnpm/qrcode-generator@2.0.4` 放了**僅供離線建置驗證的最小 shim（不進 git）**，線上 Render 依 `pnpm-lock.yaml` 全新安裝會使用真套件，QR 功能以 86a6ccc 自帶的 qrSvg.test 5 例為準。
+
+## 2026-09-20 第三輪：國中題庫補齊到九年級＋三個真 bug
+- **國中題庫補齊**：原本只有七年級 40 題（且只有數學、自然）。新增八年級、九年級各 40 題（數學／自然／社會／國語各 10 題），國中共 **120 題**，七年級對應四堂動畫微課、八九年級對應 108 課綱核心概念（畢氏定理／因式分解／串並聯／比熱／清治日治；二次函數／牛頓定律／電磁感應／工業革命／議論文）。正解位置刻意平均（每個選項各 10 題）。
+- **Bug 1：派卷會靜默把國中生丟回國小題**。`paperExam.buildAssignmentDeck` 補題時直接回退「整個科目」，八年級會拿到三年級的題。改為 `takeNearest()`：依 |年級差| 由近到遠遞補（新增 3 例測試）。
+- **Bug 2（更嚴重）：`UserGradeLevel` 型別只到 6**。設定頁早就開放七～九年級選項，但 `isGradeLevel` 會拒絕 7/8/9 → **老師選完年級、重新載入後被打回四年級**；且 `filterQuestionsByGrade` 上限寫死 `Math.min(6, …)` → 國中生永遠只拿五、六年級題。已放寬型別到 3–9、驗證函式同步、上限改為 `MAX_GRADE = 9`（新增 4 例測試）。
+- **Bug 3：`nl-boat` 上的 `is-p0/is-p4/is-p2` 是死碼**（CSS 完全沒有這三條規則，位置全靠 inline transform）→ 移除。
+- 其他修正：字幕長的幀停留時間不足（改為 `max(frame.duration, 1800 + 字數×110ms)`，上限 7 秒）；細胞課構造標註改**累積式**（講過的構造留在畫面上，只有當前聚焦的那個持續發光，新增 `.is-focus`）；選課頁新增**科目篩選 chips** 與**已學過標記**（新增 `hdmx_onion_lesson_best_v1` 記錄每課最佳星數，原本只有整個玩法一個成績）。
+- 驗收：tsc 0 錯；全量 170 檔 **1136 例**全綠；build 通過（index 1.3M/426KB gzip）；繁檢（含 docs）零命中。
+- 未做（評估後 ROI 低）：`index.css` 540KB（gzip 99KB）拆頁——Tailwind 全站共用，拆分需大改結構。

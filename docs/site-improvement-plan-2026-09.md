@@ -110,3 +110,25 @@
 - 不做真人教師影片、不做外部平台跳轉（維持 local-first 離線可用）
 - 不引入付費／版權內容（洋蔥學園課程僅作為方法論參考，題目與動畫全部自製）
 - 不為了覆蓋率而一次重寫整包題庫；採「配套題先行、小步驗證」
+
+## 8. 執行進度（2026-09-20 收尾）
+
+| 項目 | 狀態 | 落地 commit |
+|---|---|---|
+| P0-1 選項隨機化全面套用 | ✅ | `f3f4e6b` 前後（見 handover） |
+| P0-2 國中題庫 40 題＋年級打通 3–9 | ✅ | 見 handover |
+| P0-3 微課流程改造（中途提問／小結／逐級提示／音效） | ✅ | 見 handover |
+| P0-4 LINE 推播 | ⏳ 待老師在 Render 後台設定 env | — |
+| P1-1 繁體用字檢查腳本 | ✅ | 見 handover（`scripts/check-traditional.mjs`） |
+| P1-2 全量 vitest hang | ✅ 已修（169→170 檔、約 30 秒跑完） | — |
+| P1-3 休眠程式清除 | ✅ 刪 `TaiwanLandmarkMap.tsx/css`；其餘三個經查仍使用中 | 見 handover |
+| P1-4 SVG／img 無障礙 | ✅ 經查為誤報（全部已覆蓋） | — |
+| P1-5 知識標籤中階化 | ✅ `lib/topicTag.ts`，1049 組 → 約 30 桶 | 見 handover |
+| P1-6 聯絡老師 QR 改本機產生 | ✅ `lib/qrSvg.ts` | 見 handover |
+| P2-1 主包瘦身 | ✅ 1.6MB → 1.3MB（精簡題庫） | 見 handover |
+| P2-2 首頁內容 | ✅ 本週建議＋推薦動畫微課卡 | 見 handover |
+| P2-3 錯題回顧 | ✅ 顯示原選項＋答對也給解析（「記錄當初選項」需改 schema，緩） | 見 handover |
+| P2-4 文件整理 | ✅ docs 170 處簡體轉繁體；`--docs` 零命中 | 見 handover |
+| P2-5 國小／國中分流 | ✅ `OnionLesson.stages`＋選課頁頁籤 | 見 handover |
+
+後續可做（未排入）：① 國中題庫擴到八、九年級並補社會／國語科；② 「記錄當初作答選項」的 schema 擴充；③ `index.css` 540KB 按頁拆分。

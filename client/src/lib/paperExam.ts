@@ -268,6 +268,28 @@ export function buildAssignmentDeck(
   const take = (pool: readonly PaperQuestion[], exclude: Set<string>, count: number) =>
     shuffled(pool.filter((question) => !exclude.has(question.id))).slice(0, count);
 
+  /**
+   * 補題時優先取「年級最接近」的題目：
+   * 年級開放 3–9 之後，八年級若剛好沒有同知識點的題，直接回退整個科目
+   * 會讓國中生拿到國小三年級的題。改為依 |年級差| 由近到遠遞補。
+   */
+  const takeNearest = (pool: readonly PaperQuestion[], exclude: Set<string>, count: number) => {
+    const byDistance = new Map<number, PaperQuestion[]>();
+    for (const question of pool) {
+      if (exclude.has(question.id)) continue;
+      const distance = Math.abs(question.grade - grade);
+      const bucket = byDistance.get(distance);
+      if (bucket) bucket.push(question);
+      else byDistance.set(distance, [question]);
+    }
+    const picked: PaperQuestion[] = [];
+    for (const distance of Array.from(byDistance.keys()).sort((a, b) => a - b)) {
+      if (picked.length >= count) break;
+      picked.push(...shuffled(byDistance.get(distance) ?? []).slice(0, count - picked.length));
+    }
+    return picked;
+  };
+
   const deck: PaperQuestion[] = [];
   if (topic) {
     const inTopic = inSubject.filter((question) => question.learningTopic === topic);
@@ -275,7 +297,7 @@ export function buildAssignmentDeck(
     // 但對孩子來說，先練他這個年級的說法與難度最剛好。
     deck.push(...take(inTopic.filter((question) => question.grade === grade), new Set(), size));
     if (deck.length < size) {
-      deck.push(...take(inTopic, new Set(deck.map((question) => question.id)), size - deck.length));
+      deck.push(...takeNearest(inTopic, new Set(deck.map((question) => question.id)), size - deck.length));
     }
   }
   // 指定知識點題目不夠／沒指定知識點：先用同年級，再用同科目補滿。
@@ -283,7 +305,7 @@ export function buildAssignmentDeck(
     deck.push(...take(inSubject.filter((q) => q.grade === grade), new Set(deck.map((q) => q.id)), size - deck.length));
   }
   if (deck.length < size) {
-    deck.push(...take(inSubject, new Set(deck.map((q) => q.id)), size - deck.length));
+    deck.push(...takeNearest(inSubject, new Set(deck.map((q) => q.id)), size - deck.length));
   }
   return deck;
 }

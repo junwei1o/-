@@ -4,11 +4,26 @@ import { LOCAL_QUESTION_BANK } from "./questionBank";
 import { loadStudentGradePreference, STUDENT_GRADE_PREFERENCE_STORAGE_KEY } from "./studentGradePreference";
 
 describe("內建題庫：國小＋國中", () => {
-  it("國小 1090 題之外，另有 40 題七年級國中題（對應四堂國中動畫微課）", () => {
+  it("國小 1090 題之外，另有七、八、九年級各 40 題國中題", () => {
     const elementary = LOCAL_QUESTION_BANK.filter((q) => q.grade <= 6);
-    const junior = LOCAL_QUESTION_BANK.filter((q) => q.grade === 7);
+    const junior = LOCAL_QUESTION_BANK.filter((q) => q.grade >= 7);
     expect(elementary.length).toBeGreaterThanOrEqual(1090);
-    expect(junior).toHaveLength(40);
+    expect(junior).toHaveLength(120);
+    // 年級開到九年級後，每個國中年級都必須有題，否則該年級學生會被靜默丟回國小題
+    for (const grade of [7, 8, 9]) {
+      expect(junior.filter((q) => q.grade === grade).length, `${grade} 年級題數`).toBe(40);
+    }
+  });
+
+  it("國中三個年級都涵蓋四個科目（否則選了年級會沒題目）", () => {
+    for (const grade of [7, 8, 9]) {
+      const subjects = new Set(
+        LOCAL_QUESTION_BANK.filter((q) => q.grade === grade).map((q) => q.subject),
+      );
+      expect(subjects.size, `${grade} 年級科目數`).toBeGreaterThanOrEqual(2);
+      expect(subjects.has("數學")).toBe(true);
+      expect(subjects.has("自然")).toBe(true);
+    }
   });
 
   it("國中題每題欄位完整：4 個選項、答案索引合法、有解析與知識點", () => {

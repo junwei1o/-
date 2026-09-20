@@ -31,6 +31,33 @@ type Props = {
   onExit: () => void;
 };
 
+/** 每一堂課的最佳紀錄（原本只有整個玩法一個最好成績，無法標記「這堂學過沒」）。 */
+const LESSON_BEST_KEY = "hdmx_onion_lesson_best_v1";
+type LessonBest = { stars: number; correct: number; total: number; at: number };
+
+function loadLessonBest(): Record<string, LessonBest> {
+  if (typeof window === "undefined") return {};
+  try {
+    const parsed = JSON.parse(window.localStorage.getItem(LESSON_BEST_KEY) ?? "{}") as Record<string, LessonBest>;
+    return parsed && typeof parsed === "object" ? parsed : {};
+  } catch {
+    return {};
+  }
+}
+
+function saveLessonBest(lessonId: string, best: LessonBest) {
+  if (typeof window === "undefined") return;
+  try {
+    const all = loadLessonBest();
+    const previous = all[lessonId];
+    if (previous && previous.stars >= best.stars) return; // 只往上寫
+    all[lessonId] = best;
+    window.localStorage.setItem(LESSON_BEST_KEY, JSON.stringify(all));
+  } catch {
+    /* localStorage 不可用就不標記，不影響上課 */
+  }
+}
+
 /* ===================== 主元件 ===================== */
 export default function OnionLessonGame({ bestStars, muted = false, onBest, onExit }: Props) {
   const play = useClassroomSound(muted);
@@ -41,13 +68,20 @@ export default function OnionLessonGame({ bestStars, muted = false, onBest, onEx
     reducedMotion.current = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   }
 
+  /** 每一堂課的最佳紀錄（選課頁標記已學過與星數）。 */
+  const [lessonBest, setLessonBest] = useState<Record<string, LessonBest>>(() => loadLessonBest());
+  /** 選課頁科目篩選。 */
+  const [subjectFilter, setSubjectFilter] = useState<string>("全部");
   /** 選課頁學段分流：國中生進站不會再被國小課淹沒。 */
   const [stage, setStage] = useState<OnionStage | "全部">(() => {
     const grade = typeof window === "undefined" ? null : loadStudentGradePreference();
     return grade && grade >= 7 ? "國中" : "國小";
   });
-  const visibleLessons =
-    stage === "全部" ? ONION_LESSONS : ONION_LESSONS.filter((l) => l.stages.includes(stage));
+  const visibleLessons = ONION_LESSONS.filter(
+    (l) =>
+      (stage === "全部" || l.stages.includes(stage)) &&
+      (subjectFilter === "全部" || l.subject === subjectFilter),
+  );
 
   const [phase, setPhase] = useState<Phase>("start");
   const [frameIdx, setFrameIdx] = useState(0);
@@ -77,7 +111,12 @@ export default function OnionLessonGame({ bestStars, muted = false, onBest, onEx
   // 分鏡自動推進
   useEffect(() => {
     if (phase !== "lesson" || !playing || needAsk) return;
-    const dur = reducedMotion.current ? Math.min(frame.duration, 900) : frame.duration;
+    // 字幕長的幀要停久一點：孩子讀中文約 5–6 字／秒，
+    // 固定 2.6 秒的幀配上 30 字字幕會來不及讀完就跳走。
+    const needRead = Math.min(1800 + frame.caption.length * 110, 7000);
+    const dur = reducedMotion.current
+      ? Math.min(Math.max(frame.duration, needRead), 900)
+      : Math.max(frame.duration, needRead);
     const t = setTimeout(() => {
       if (isLastFrame) {
         setPlaying(false);
@@ -86,7 +125,7 @@ export default function OnionLessonGame({ bestStars, muted = false, onBest, onEx
       }
     }, dur);
     return () => clearTimeout(t);
-  }, [phase, playing, frameIdx, frame.duration, isLastFrame, needAsk]);
+  }, [phase, playing, frameIdx, frame.duration, frame.caption, isLastFrame, needAsk]);
 
   const pickLesson = (id: string) => {
     setLessonId(id);
@@ -160,6 +199,9 @@ export default function OnionLessonGame({ bestStars, muted = false, onBest, onEx
       const r = gradeOnionLesson(correctCount, lesson.questions.length);
       setResult(r);
       onBest({ stars: r.stars, correct: r.correct, total: r.total });
+      const record = { stars: r.stars, correct: r.correct, total: r.total, at: Date.now() };
+      saveLessonBest(lesson.id, record);
+      setLessonBest((prev) => ({ ...prev, [lesson.id]: record }));
       setPhase("result");
       return;
     }
@@ -195,8 +237,23 @@ export default function OnionLessonGame({ bestStars, muted = false, onBest, onEx
               </button>
             ))}
           </div>
-          <p className="ol-stage-count" role="status">
-            {stage === "全部" ? `共 ${visibleLessons.length} 堂課` : `${stage} ${visibleLessons.length} 堂課`}
+          <div className="ol-subject-chips" role="group" aria-label="依科目篩選課程">
+            {["全部", "數學", "國語", "自然"].map((item) => (
+              <button
+                key={item}
+                type="button"
+                className={`ol-subject-chip ${subjectFilter === item ? "is-active" : ""}`}
+                aria-pressed={subjectFilter === item}
+                onClick={() => setSubjectFilter(item)}
+              >
+                {item}
+              </button>
+            ))}
+          </div>
+          <p className="ol-stage-count">
+            {visibleLessons.length
+              ? `共 ${visibleLessons.length} 堂課${lessonBest && Object.keys(lessonBest).length ? ` · 已學過 ${visibleLessons.filter((l) => lessonBest[l.id]).length} 堂` : ""}`
+              : "這個組合目前沒有課程"}
           </p>
           <div className="ol-picker-grid">
             {visibleLessons.map((l) => {
@@ -209,7 +266,14 @@ export default function OnionLessonGame({ bestStars, muted = false, onBest, onEx
                   style={{ ["--lc" as string]: color }}
                   onClick={() => pickLesson(l.id)}
                 >
-                  <span className="ol-lc-subject" style={{ background: color }}>{l.subject}</span>
+                  <span className="ol-lc-top">
+                    <span className="ol-lc-subject" style={{ background: color }}>{l.subject}</span>
+                    {lessonBest[l.id] ? (
+                      <span className="ol-lc-learned" aria-label={`已學過，最佳 ${lessonBest[l.id].stars} 顆星`}>
+                        <Star size={12} aria-hidden="true" /> {lessonBest[l.id].stars}★
+                      </span>
+                    ) : null}
+                  </span>
                   <span className="ol-lc-title">{l.title}</span>
                   <span className="ol-lc-meta">{l.grade} · {l.topic}</span>
                   <span className="ol-lc-desc">{l.desc}</span>

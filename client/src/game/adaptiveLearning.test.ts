@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { calculateAdaptiveReport, calculateKnowledgeHeatmap, calculateLearningTrendReport, defaultAdaptiveProfile, getAdaptiveBand, getDueReviewQuestionIds, getMemoryAlarmCount, getSpacedReviewSummary, loadAdaptiveProfile, recordAdaptiveAttempt, selectAdaptiveQuestions, selectSpacedReviewQuestion, SPACED_REVIEW_INTERVALS_MS } from "./adaptiveLearning";
+import { calculateAdaptiveReport, calculateKnowledgeHeatmap, filterQuestionsByGrade, loadUserPreferences, saveUserPreferences, calculateLearningTrendReport, defaultAdaptiveProfile, getAdaptiveBand, getDueReviewQuestionIds, getMemoryAlarmCount, getSpacedReviewSummary, loadAdaptiveProfile, recordAdaptiveAttempt, selectAdaptiveQuestions, selectSpacedReviewQuestion, SPACED_REVIEW_INTERVALS_MS } from "./adaptiveLearning";
 
 type StorageMock = Storage;
 function storageWith(value: string | null): StorageMock {
@@ -138,6 +138,43 @@ describe("adaptive learning model", () => {
   });
 });
 
+
+describe("年級篩選（國中 7–9 年級）", () => {
+  const pool = [3, 4, 5, 6, 7, 8, 9].flatMap((grade) =>
+    [1, 2].map((n) => ({ id: `g${grade}-${n}`, grade })),
+  );
+  const prefs = (gradeLevel: number) =>
+    ({ version: 1, gradeLevel, difficultyPreference: "均衡混合", updatedAt: 1 }) as any;
+
+  it("八年級會拿到 7–9 年級的題，不是被塞國小題", () => {
+    const picked = filterQuestionsByGrade(pool, prefs(8));
+    expect(picked.every((q) => q.grade >= 7)).toBe(true);
+    expect(new Set(picked.map((q) => q.grade))).toEqual(new Set([7, 8, 9]));
+  });
+
+  it("九年級上限不會超過題庫最遠的九年級", () => {
+    const picked = filterQuestionsByGrade(pool, prefs(9));
+    expect(Math.max(...picked.map((q) => q.grade))).toBe(9);
+  });
+
+  it("國小端行為不變（三年級只拿 3–4 年級）", () => {
+    const picked = filterQuestionsByGrade(pool, prefs(3));
+    expect(new Set(picked.map((q) => q.grade))).toEqual(new Set([3, 4]));
+  });
+});
+
+describe("使用者偏好可儲存國中年級", () => {
+  it("七、八、九年級都能通過驗證（否則重載會被打回預設值）", () => {
+    for (const grade of [7, 8, 9]) {
+      const storage = makeStorage();
+      saveUserPreferences(
+        { version: 1, gradeLevel: grade as any, difficultyPreference: "均衡混合", updatedAt: Date.now() },
+        storage,
+      );
+      expect(loadUserPreferences(storage).gradeLevel).toBe(grade);
+    }
+  });
+});
 
 describe("calculateLearningTrendReport", () => {
   const attempt = (overrides: Partial<AdaptiveAttempt>): AdaptiveAttempt => ({

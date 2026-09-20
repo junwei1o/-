@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { buildPaperDeck, buildSubjectWrongReviewDeck, getPaperNextGroupStrategyHint, getPaperStrategyRecap, getReviewSelfCheckAdaptation, isMatchingQuestion, mixPaperMatching, mixPaperVariants, questionIndexToAltitude, scorePaper, type PaperQuestion } from "./paperExam";
+import { buildAssignmentDeck, buildPaperDeck, buildSubjectWrongReviewDeck, getPaperNextGroupStrategyHint, getPaperStrategyRecap, getReviewSelfCheckAdaptation, isMatchingQuestion, mixPaperMatching, mixPaperVariants, questionIndexToAltitude, scorePaper, type PaperQuestion } from "./paperExam";
 
 const questions: PaperQuestion[] = [
   { id: "l", grade: 4, subject: "國語", difficulty: "基礎", learningTopic: "詞義", prompt: "題目", options: ["A", "B"], answer: 0, explanation: "解析" },
@@ -85,6 +85,39 @@ describe("paper exam deck", () => {
 
   it("沒有錯題時安全回退到基礎二選一", () => {
     expect(getReviewSelfCheckAdaptation([])).toMatchObject({ difficulty: "基礎", optionCount: 2, focusTopics: [] });
+  });
+});
+
+describe("buildAssignmentDeck 年級就近遞補", () => {
+  const q = (id: string, subject: string, grade: number, topic: string): PaperQuestion => ({
+    id, subject, grade, topic, prompt: id, options: ["A", "B", "C", "D"], answer: 0,
+  } as unknown as PaperQuestion);
+  const pool = [
+    q("g3-1", "數學", 3, "面積"), q("g3-2", "數學", 3, "面積"),
+    q("g7-1", "數學", 7, "面積"), q("g7-2", "數學", 7, "面積"),
+    q("g8-1", "數學", 8, "面積"), q("g8-2", "數學", 8, "面積"),
+    q("g9-1", "數學", 9, "面積"), q("g9-2", "數學", 9, "面積"),
+  ];
+
+  it("有同年級題時優先同年級", () => {
+    const deck = buildAssignmentDeck(pool, { subject: "數學", grade: 8, topic: "面積", size: 2 });
+    expect(deck.every((item) => item.grade === 8)).toBe(true);
+  });
+
+  it("同年級題不夠時，先補年級最接近的，不會跳去很遠的年級", () => {
+    const deck = buildAssignmentDeck(pool, { subject: "數學", grade: 8, topic: "面積", size: 4 });
+    const grades = deck.map((item) => item.grade);
+    // 先拿完 8 年級，再補 7 或 9（差 1），不會先補到 3 年級（差 5）
+    expect(grades).not.toContain(3);
+    expect(grades.every((g) => g >= 7)).toBe(true);
+  });
+
+  it("完全沒有該年級題也不會開天窗，且優先取最接近的年級", () => {
+    const onlySmall = pool.filter((item) => item.grade <= 7);
+    const deck = buildAssignmentDeck(onlySmall, { subject: "數學", grade: 9, topic: "面積", size: 3 });
+    expect(deck).toHaveLength(3);
+    // 最近的可用年級是 7（差 2），不該先給 3 年級（差 6）
+    expect(deck.filter((item) => item.grade === 7).length).toBeGreaterThanOrEqual(2);
   });
 });
 

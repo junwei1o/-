@@ -59,6 +59,29 @@ describe("洋蔥動畫講解 OnionAcademyGame", () => {
     expect(onExit).toHaveBeenCalledTimes(1);
   });
 
+  it("可依科目篩選課程，並在闖關後於選課卡標記已學過", () => {
+    render(<OnionAcademyGame bestStars={undefined} onBest={vi.fn()} onExit={vi.fn()} />);
+    // 先篩「自然」：只出現自然課
+    fireEvent.click(screen.getByRole("button", { name: "自然" }));
+    // 預設學段是「國小」，所以只檢查國小看得到的自然課
+    const nature = ONION_LESSONS.filter((l) => l.subject === "自然" && l.stages.includes("國小"));
+    const others = ONION_LESSONS.filter((l) => l.subject !== "自然" && l.stages.includes("國小"));
+    for (const l of nature) expect(screen.getByText(l.title)).toBeInTheDocument();
+    for (const l of others) expect(screen.queryByText(l.title)).not.toBeInTheDocument();
+
+    // 走完一堂自然課
+    const lesson = nature[0];
+    fireEvent.click(lessonCard(lesson.title));
+    fireEvent.click(olBtn("跳過動畫，直接闖關"));
+    for (let j = 0; j < lesson.questions.length; j += 1) {
+      fireEvent.click(opt(lesson.questions[j].options[lesson.questions[j].answer]));
+      fireEvent.click(olBtn(j < lesson.questions.length - 1 ? "下一題" : "查看結果"));
+    }
+    fireEvent.click(olBtn("換一堂課"));
+    fireEvent.click(screen.getByRole("button", { name: "自然" }));
+    expect(screen.getByLabelText(/已學過，最佳 3 顆星/)).toBeInTheDocument();
+  });
+
   it("跳過動畫直接闖關：全對五題三顆星並回報最佳紀錄", () => {
     const onBest = vi.fn();
     const onExit = vi.fn();
