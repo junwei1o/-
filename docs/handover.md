@@ -558,3 +558,9 @@ curl -s https://xue-gr3a.onrender.com/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | h
 - 驗收：tsc 0 錯誤；onionAcademyLessons 51＋OnionAcademyGame 3 全綠；vite build 通過。
 - 環境備註（新機器）：無 pnpm，用 corepack（package.json 已鎖 pnpm@10.4.1）；sandbox 會擋 ~/Library/pnpm store，需 `--store-dir .pnpm-store`（已進 .gitignore？**沒有**，記得別 commit）；pnpm 10 會忽略 esbuild/@tailwindcss/oxide build scripts（本機 esbuild 經由 @esbuild/* 可用 binary，build/vitest 正常）；全量 vitest 仍會 hang，分檔跑。
 - 已知小限制：同第一季——新四場景尚無專屬元件測試（由 tsc＋流程測試＋資料測試覆蓋）。
+
+## 2026-09-20 洋蔥動畫講解：熱門選題設計書＋現有動畫體檢（僅文件，未動程式）
+- 新增設計書 `docs/onion-academy-hot-lessons-design.md`：熱度選題榜（負負得正／畢氏定理／雞兔同籠→二元一次／浮力／串並聯電路／分數乘除，附 108 課綱年級與動畫鉤子）、負負得正與畢氏定理兩課完整 10 幀分鏡腳本。
+- 體檢結論（P0）：① 一課僅 10 幀≈35 秒，遠短於洋蔥 5–8 分鐘 → 建議拉到 12–16 幀；② 缺「拋問題→停下來思考」互動幀；③ 缺知識小結頁（SUM-UP）；④ 闖關無三級提示（OnionLesson.tsx 已有機制未共用）；⑤ 未接 useClassroomSound 音效。
+- 體檢結論（P1）：細胞課構造標註只在單幀出現（建議改累積式）、nl-boat 的 is-p0/is-p4/is-p2 class 被 inline transform 蓋掉（死碼）、.nl-layer 無人使用、prop 欄位在第二季四課全為 none、長字幕幀停留時間不足、選課頁無分科篩選與已學標記、播放器無倍速。
+- 落地順序建議：先改 P0 互動/小結/提示 → 再做熱度榜 P0 三課 → 最後清 P1 死碼與節奏。
