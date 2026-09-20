@@ -633,3 +633,35 @@ curl -s https://xue-gr3a.onrender.com/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | h
 - **P2-3 錯題回顧**：`ReviewHub` 本來就刻意不洗牌（保持原順序），本次進一步讓答錯時明確顯示「你選了 X，正解是 Y」，且**答對也顯示解析**（原本只在答錯時給）。「記錄當初的選項」需要改 `AdaptiveAttempt` schema 並動 4 個作答寫入點，效益有限，暫緩。
 - **P2-4 文件整理**：`docs/game-directions-2026-09-12.md` 170 處簡體字全數轉繁體（內部調研檔，學生看不到）；`check-traditional.mjs` 新增 `--fix`（直接改寫命中處，僅建議用於文件）。現在 `node scripts/check-traditional.mjs --docs` **零命中**。根目錄 `todo.md`/`ideas.md`/`PLAN.md` 等近期都還在動，未封存。
 - 驗收：tsc 0 錯；全量 170 檔 **1127 例**全綠；build 通過；繁檢（含 docs）零命中。
+## 2026-09-20 洋蔥學園 UI 對齊全站設計語言＋全站真實瀏覽器驗收（Playwright/Chromium）
+- 動機：洋蔥動畫講解已上線但視覺語言與其他玩法頁不一致，要求全面檢查全站、洋蔥 UI 對齊、真實瀏覽器點閱洋蔥與整個「我的教室」。
+- UI 對齊（`classroom.css`＋`OnionAcademyGame.tsx`，保留紫色品牌、純 CSS/少量 TSX、不動課程資料與動畫）：
+  - 返回出口統一為全站膠囊按鈕：`.ol-exit` 由純文字連結改為 44px 高、2px 淡紫邊、白底、厚陰影的 pill（對齊 `.cr-back`）；新增 `.ol-top` 頂部返回列；選課頁（start）與課程簡介頁（intro）頂部各加一顆「回我的教室」膠囊（start 移除底部舊連結），**補上 intro 原本沒有直接回教室出口的缺口**；lesson/quiz 頂部列「離開」自動變膠囊（`.ol-exit--bar` 40px）。
+  - 三大面板 `.ol-start/.ol-quiz/.ol-result` 由 2px 淺木細邊改為 2.5px `--onion-d` 深紫厚邊＋加深厚陰影，複述全站漫畫厚邊語言。
+  - 測驗選項 `.ol-opt` 立體化：淡紫邊、米白卡面、min-height 52px、0 3px 紫厚陰影、hover 上浮/active 壓下；答對綠/答錯紅各加同方向厚陰影。
+  - 逐幀控制 `.ol-seek-btn` 由 32px 方角改為 42px 膠囊（觸控可達）；`.ol-seek-now` white-space:nowrap。
+  - `.ol-page` padding-bottom 90→108px 對齊 `.cr-page`(110)，避開手機固定底導覽列；窄屏（≤520px）隱藏 `.ol-bar-title` 前綴 icon 避免被擠到標題上方。
+  - 選課卡 `.ol-lesson-card`（左學科色條）評估後維持原樣（已與 `.mc-play-card` 同類、視覺良好）；洋蔥頁不帶 data-skin（與所有 cr-page 玩法頁行為一致，判定正確）。
+- 真實瀏覽器驗收（自寫 Playwright Python＋真實 Chromium，390×844 手機視口，全程關隱私彈窗與 bx-tour 導覽 mask、收集 pageerror/console/4xx）：
+  - 洋蔥四課完整閉環 ALL PASS：選課→（首課實走動畫播放器：開始/暫停/進入闖關，其餘走跳過動畫）→照答案答滿 5 題→結算皆 **3★**、金幣正確→「回我的教室」回 /quiz-room；零 pageerror。四課答案索引：fraction `[1,1,0,0,0]`、de `[1,0,2,2,1]`、water `[1,1,2,2,2]`、triangle `[1,1,2,1,1]`。
+  - 我的教室全內容：三皮膚（concise/memphis/classic）實際點擊切換 data-skin 正確、`.mc-skin-btn.is-active`/aria-pressed 正確、**reload 後持久化**（localStorage `xue-classroom-skin-v1` 存裸字串）；2 微課卡＋6 自由玩法（flipdex/flashrush/relay/trap/meteor/duo）皆可進入、可開始、遊戲元素正常渲染（meteor 隕石/能量/答案鍵、duo 目標數＋因數選項＋確認鈕）、皆有回教室出口；7 經典模式（/practice、/battle、/review-hub、/gallery、/community?mode=timed、/weekly-quiz、/expedition）皆渲染實質內容；6 舊相容路由（flip/image/bolt/rush/factor/rect）全部保留、無「找不到這個玩法」。
+  - 全站 35 條路由（含動態抓取的 principles detail）逐頁體檢：全 HTTP 200、有實質內容、無白屏、無 NotFound、**0 pageerror**。
+- 順手修復一個真實缺陷：`client/index.html` 的 umami 分析腳本用 `%VITE_ANALYTICS_ENDPOINT%`／`%VITE_ANALYTICS_WEBSITE_ID%` 佔位，未設 env 時 build 未替換，瀏覽器對 `/%VITE_ANALYTICS_ENDPOINT%/umami` 發出 **19 次 404**（線上也會發生）。改為移除靜態 script，由 `main.tsx` 新增 `initAnalytics()` 在 env 為完整 http(s) 網址且有 website id 時才動態注入，未配置的本機/local-first 環境零請求；重測代表頁面 4xx/5xx 歸零。
+- 字型說明（非 bug）：headless 沙箱僅裝泛 Noto Sans CJK、無獨立 `Noto Sans TC` family，截圖裡「輪/換/課」等繁體字會以簡體 glyph 輸出，但 DOM/原始碼/bundle 字碼均為繁體（Playwright innerText 實測「再玩一輪／換一堂課／回我的教室」）；真機走 `PingFang TC / Microsoft JhengHei / Noto Sans TC` 會正確顯示繁體。
+- 本地 tRPC（league/aiTutor/questionBank）在純靜態 `vite preview` 無後端時收到 index.html 而 console 報 TRPCClientError，屬本機預期降級（頁面仍正常渲染、local-first 不依賴）；線上是否有後端待部署後以 `/api/trpc/*` 複驗。
+- 驗收：tsc 0 錯誤；受影響測試 40 全綠（ClassroomComponents 23/OnionLesson 5/OnionAcademyGame 3/onionAcademyLessons 29）；`npm run build` 乾淨（rebase 整合第二季後重跑，詳下）。測試腳本與截圖在 `.testlogs/`（pw_academy_full.py、pw_classroom_all.py、pw_skins.py、pw_sitewide.py、pw_404_recheck.py，未入 git）。
+- rebase 整合：本提交 push 前發現遠端已多「第二季四課」（6f5def2、585fadc，共同祖先 81c1392），classroom.css 自動合併、handover 手動解衝突（兩段都保留）。整合後選課頁自動變 8 張卡，第二季新課沿用同一 `.ol-*` class，自動繼本輪膠囊返回／厚邊面板／立體選項等 UI 對齊。
+- 整合後重跑驗證（全部通過）：tsc 0 錯誤；build 乾淨（bundle index-szt2tKzb.js，無 CSS 警告）；測試 onionAcademyLessons **51**、OnionAcademyGame 3、ClassroomComponents 23、OnionLesson 5 全綠（順手把 OnionAcademyGame 過時測試名「顯示全部 4 堂課」改為 8 堂，斷言邏輯本就遍歷整個 ONION_LESSONS）。
+- 第二季四課 Playwright 真實瀏覽器閉環 ALL PASS（`.testlogs/pw_season2.py`）：選課頁實際 8 張卡；photosynthesis/negative-number/linear-equation/onion-cell 皆 intro→進動畫（`.ol-stage` SVG 圖形成功渲染 48/36/36/25 個）→逐幀實際前進 9 次到第 10/10 幀→進入闖關→照答案答滿 5 題→結算 **3★、答對 5/5、70 金幣**→「回我的教室」回 /quiz-room；**0 pageerror**。四題答案索引：photosynthesis `[1,2,0,2,3]`、negative-number `[0,1,2,2,0]`、linear-equation `[1,1,1,2,1]`、onion-cell `[2,1,1,0,1]`。截圖 `.testlogs/ui-audit/s2_*_lesson.png`、`s2_*_result.png`。
+- Playwright 操作備註（供後續复测）：洋蔥按鈕實際文字為「開始動畫講解」「進入闖關」（非「開始上課」「跳過動畫」）；intro 根容器與 start 同名 `.ol-start`，判斷 intro 要用 `.ol-rules`；星等 class 為 `.ol-star.is-on`。選課卡第 5 張起在視口外，且 `.app-route-shell` 為 overflow:auto，Playwright 內建捲動不可靠，需先 `window.scrollBy` 定位再點擊；JS `el.click()` 對本元件無效，須用真實滑鼠點擊。
+- 二次 rebase 整合（最新 3 提交）：push 前遠端再增「繁體檢查／選項隨機化（含 OnionAcademyGame 課程題進場洗牌）／洋蔥流程改造（中途提問 ask、重點整理 summary 頁、答錯重試＋逐級提示、音效）」。OnionAcademyGame.tsx、classroom.css、OnionAcademyGame.test 皆自動合併成功，僅 handover 衝突（兩邊保留）。
+- 整合後重跑：tsc 0 錯；build 乾淨；測試 onionAcademyLessons **67**、OnionAcademyGame **5**、ClassroomComponents **23**、OnionLesson **5** 全綠。
+- 洋蔥全 8 課新流程 Playwright 真實瀏覽器閉環 **ALL PASS、0 pageerror**（`.testlogs/pw_onion8.py`，答案以 esbuild 載入題庫取「正解文字」定位，見 `.testlogs/onion_answers.json`，不再依賴固定索引）：每課 intro→開始動畫講解（`.ol-stage` SVG 15–56 個圖形成功渲染）→逐幀到末幀、**2 個中途提問 `.ol-ask` 皆成功彈出並略過**→末幀「看重點整理」進 `.ol-summary`（**3 條 takeaways**）→「開始闖關」→5 題（選項已隨機化，按正解文字首次就點對）→結算 **3★、答對 5/5、70 金幣**→「回我的教室」回 /quiz-room。
+- 二次 rebase 後以截圖抓到並修復兩個 auto-merge 遺漏的真實視覺缺陷：
+  1. **滿分結算三顆星只空心描邊、未填色**：`.ol-star.is-on` 只設 `color`（lucide Star 預設 `fill="none"`，color 只改描邊），auto-merge 把填色規則弄丟；補 `fill: var(--cr-gold)`，複驗三顆星 computed fill 皆 `rgb(232,184,75)` 實心金。
+  2. **新增的重點整理頁（summary phase）沒有「回我的教室」出口**（此 phase 在本輪 UI 對齊之後才由遠端加入，漏網）；於 `.ol-summary` 頂部補 `.ol-top` 回教室膠囊，與 start/intro 一致。修後 tsc 0、OnionAcademyGame 5 測試綠、瀏覽器複驗通過。
+- 三次 rebase 整合：push 前遠端再增「國中七年級題庫 40 題／年級打通 3–9／topicTag 中階主題標籤修復弱點聚合／清除休眠 TaiwanLandmarkMap」（4174dc0、9d81c95），與本提交改動檔案完全不相交，僅 handover 衝突（兩邊保留）。
+- 三次 rebase 後最終驗證：tsc 0 錯；build 乾淨，bundle **`index-B1u9e-oy.js`**（1,631 kB／gzip 481 kB，含 UI 對齊＋umami 修復＋第二季四課＋選項隨機化＋ask/summary/提示/音效＋星等填色與 summary 出口修復，以及遠端國中題庫/topicTag）；洋蔥測試 onionAcademyLessons 67＋OnionAcademyGame 5＝**72 全綠**，ClassroomComponents 23、OnionLesson 5 亦綠。測試腳本/答案 JSON/截圖在 `.testlogs/`（gitignore，未入 git）。
+- 四次 rebase 整合：push 前遠端再增「聯絡老師 LINE QR 改本機 qrcode-generator 產生 SVG（離線、不外送個資）、topicTag 全站收尾（知識島嶼/時間軸/弱點一致）、全量測試恢復（169 檔 1109 例不再 hang）」（86a6ccc），與本提交改動檔案不相交，僅 handover 衝突（兩邊保留）。
+- 四次 rebase 後最終驗證：tsc 0 錯；build 乾淨，bundle **`index-CAHRDOSm.js`**（1,631.84 kB／gzip 481.69 kB）；OnionAcademyGame 5、ClassroomComponents 23 測試綠（onionAcademyLessons 67 於前一輪已綠、86a6ccc 未動該檔）；preview 最新 build 洋蔥完整流程 Playwright 煙霧通過（summary 回教室出口、三顆星實心 fill、0 pageerror）。
+- 本機環境備註：沙箱代理對 npmmirror 回 407、官方 registry 逾時，無法下載新依賴 `qrcode-generator@2.0.4`；本機在 `node_modules/.pnpm/qrcode-generator@2.0.4` 放了**僅供離線建置驗證的最小 shim（不進 git）**，線上 Render 依 `pnpm-lock.yaml` 全新安裝會使用真套件，QR 功能以 86a6ccc 自帶的 qrSvg.test 5 例為準。

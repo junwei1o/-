@@ -172,6 +172,9 @@ export default function OnionLessonGame({ bestStars, muted = false, onBest, onEx
   if (phase === "start") {
     return (
       <div className="ol-page">
+        <div className="ol-top">
+          <button type="button" className="ol-exit" onClick={onExit}><Home size={15} /> 回我的教室</button>
+        </div>
         <div className="ol-picker">
           <header className="ol-picker-head">
             <span className="ol-tag"><BookOpen size={14} /> 洋蔥動畫講解</span>
@@ -215,7 +218,6 @@ export default function OnionLessonGame({ bestStars, muted = false, onBest, onEx
               );
             })}
           </div>
-          <button type="button" className="ol-exit" onClick={onExit}><Home size={14} /> 回我的教室</button>
         </div>
       </div>
     );
@@ -225,6 +227,9 @@ export default function OnionLessonGame({ bestStars, muted = false, onBest, onEx
   if (phase === "intro") {
     return (
       <div className="ol-page">
+        <div className="ol-top">
+          <button type="button" className="ol-exit" onClick={onExit}><Home size={15} /> 回我的教室</button>
+        </div>
         <div className="ol-start">
           <div className="ol-start-mascot" aria-hidden="true">
             <OnionMascot action="wave" frame={0} />
@@ -321,6 +326,9 @@ export default function OnionLessonGame({ bestStars, muted = false, onBest, onEx
     const takeaways = lesson.takeaways ?? [];
     return (
       <div className="ol-page">
+        <div className="ol-top">
+          <button type="button" className="ol-exit" onClick={onExit}><Home size={15} /> 回我的教室</button>
+        </div>
         <div className="ol-summary">
           <div className="ol-summary-mascot" aria-hidden="true">
             <OnionMascot action="cheer" frame={99} size={78} />

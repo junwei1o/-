@@ -90,10 +90,7 @@
     </script>
 
     <script type="module" src="/src/main.tsx"></script>
-    <script
-      defer
-      src="%VITE_ANALYTICS_ENDPOINT%/umami"
-      data-website-id="%VITE_ANALYTICS_WEBSITE_ID%"></script>
+    <!-- 網站分析（umami）改由 main.tsx 在實際配置 VITE_ANALYTICS_ENDPOINT 時動態注入，未配置不發請求、不產生 404。 -->
   </body>
 
 </html>

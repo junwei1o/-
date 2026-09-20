@@ -13,6 +13,29 @@ import "./index.css";
 // 注意：只切換 <html> 的 data-reading-scale 屬性，不動 root font-size。
 initReadingScale();
 
+// 僅在正式配置 umami 網站分析端點（VITE_ANALYTICS_ENDPOINT 為完整 http(s) 網址、
+// 並提供 VITE_ANALYTICS_WEBSITE_ID）時才動態載入分析腳本；未配置的本機／local-first
+// 環境完全不發請求，避免對未替換的佔位網址產生 404。
+function initAnalytics(): void {
+  try {
+    const env = import.meta.env as unknown as Record<string, string | undefined>;
+    const endpoint = env.VITE_ANALYTICS_ENDPOINT?.trim();
+    const websiteId = env.VITE_ANALYTICS_WEBSITE_ID?.trim();
+    if (!endpoint || !websiteId) return;
+    if (!/^https?:\/\//i.test(endpoint)) return;
+    if (endpoint.includes("%") || websiteId.includes("%")) return;
+    if (document.querySelector('script[data-website-id]')) return;
+    const script = document.createElement("script");
+    script.defer = true;
+    script.src = `${endpoint.replace(/\/$/, "")}/umami`;
+    script.setAttribute("data-website-id", websiteId);
+    document.head.appendChild(script);
+  } catch {
+    /* 分析腳本載入與否都不應影響主程式 */
+  }
+}
+initAnalytics();
+
 const queryClient = new QueryClient();
 
 const redirectToLoginIfUnauthorized = (error: unknown) => {
