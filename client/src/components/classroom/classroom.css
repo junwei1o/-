@@ -3006,3 +3006,87 @@
 @media (prefers-reduced-motion: reduce) {
   .ob-chip { transition: none; }
 }
+
+/* 步驟標籤：洋蔥學園的影片會把解題拆成清楚步驟，這裡同步顯示「第幾步／做什麼」。 */
+.ol-step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0 0;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.85);
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #33305a;
+}
+
+.ol-step-no {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #ffd79a;
+  color: #7a4a08;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+/* 步驟章節選單：像影片的章節，讓「步驟分類」真的看得見、跳得到。 */
+.ol-chapters {
+  margin: 10px 0 0;
+  padding: 10px 12px 12px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: 0 4px 12px rgba(60, 40, 90, 0.1);
+}
+
+.ol-chapters-head {
+  margin: 0 0 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #55517a;
+}
+
+.ol-chapters-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ol-chapter {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  min-height: 44px; /* 觸控目標 44px */
+  padding: 6px 8px;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  background: #f3f6fc;
+  font-size: 12px;
+  font-weight: 600;
+  color: #3d3a52;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ol-chapter.is-done { background: #e6f2e2; color: #2c6b1f; }
+.ol-chapter.is-on { border-color: #f2a13c; background: #fff5e4; color: #7a4a08; }
+.ol-chapter:focus-visible { outline: 3px solid #0b6e8e; outline-offset: 2px; }
+
+.ol-chapter-no {
+  flex: 0 0 20px;
+  height: 20px;
+  border-radius: 999px;
+  background: #dfe7f3;
+  color: #33305a;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 20px;
+  text-align: center;
+}
+
+.ol-chapter.is-on .ol-chapter-no { background: #ffd79a; color: #7a4a08; }
+.ol-chapter-text { flex: 1; line-height: 1.35; }

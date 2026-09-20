@@ -37,7 +37,7 @@ import PrefsPanel from "@/components/bx/PrefsPanel";
 import { cloudApi, getCloudMode, getLastSyncAt } from "@/game/cloudSync";
 import { isDebugUnlocked, lockDebug, tryUnlockDebug } from "@/game/debugGate";
 import { bxStore } from "@/game/bxStore";
-import { loadUserPreferences, saveUserPreferences, type UserDifficultyPreference, type UserGradeLevel } from "@/game/adaptiveLearning";
+import { loadUserPreferences, saveUserPreferences, MIN_GRADE, MAX_GRADE, type UserDifficultyPreference, type UserGradeLevel } from "@/game/adaptiveLearning";
 import { trpc } from "@/lib/trpc";
 import {
   DEFAULT_COMPANION_MODEL,
@@ -56,7 +56,7 @@ function LearningSettingsSection() {
     const next = { ...prefs, gradeLevel: grade };
     setPrefs(next);
     saveUserPreferences(next);
-    toast.success(`已切換為${grade}年級，試卷將優先出這個程度的題目。`);
+    toast.success(`已將內容等級設為${grade}年級，題目與動畫會以這個程度為主。`);
   }
 
   function handleDifficultyChange(pref: UserDifficultyPreference) {
@@ -76,24 +76,23 @@ function LearningSettingsSection() {
         </div>
       </div>
       <p className="settings-log-description">
-        調整目前年級與難度偏好，讓試卷優先出這個程度的題目。設定會保存在這台裝置，下次回來還會記得。
+        調整內容等級與難度偏好，讓題目與動畫課以這個程度為主。設定會保存在這台裝置，下次回來還會記得。
+      </p>
+      <p className="settings-log-description">
+        內容等級決定題目與動畫的內容範圍，上限為六年級；它和玩家等級（Lv.）不同，請依學生目前就讀年級選擇。
       </p>
       <div className="settings-learning-grid">
         <label className="settings-learning-item" htmlFor="settings-grade-select">
-          <span>目前年級</span>
+          <span>內容等級</span>
           <select
             id="settings-grade-select"
             value={prefs.gradeLevel}
             onChange={(event) => handleGradeChange(Number(event.target.value) as UserGradeLevel)}
             className="home-setting-select"
           >
-            <option value={3}>三年級</option>
-            <option value={4}>四年級</option>
-            <option value={5}>五年級</option>
-            <option value={6}>六年級</option>
-            <option value={7}>七年級（國中）</option>
-            <option value={8}>八年級（國中）</option>
-            <option value={9}>九年級（國中）</option>
+            {Array.from({ length: MAX_GRADE - MIN_GRADE + 1 }, (_, index) => MIN_GRADE + index).map((grade) => (
+              <option key={grade} value={grade}>{grade} 年級</option>
+            ))}
           </select>
         </label>
         <label className="settings-learning-item" htmlFor="settings-difficulty-select">

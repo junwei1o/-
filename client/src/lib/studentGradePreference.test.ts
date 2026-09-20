@@ -19,8 +19,9 @@ describe("學生年級偏好", () => {
     expect(loadStudentGradePreference()).toBeNull();
   });
 
-  it("設定頁存國中年級後讀得到（兩份偏好已打通，否則國中生會被當國小生）", () => {
-    // 設定頁（Settings）寫的是 UserPreferences.gradeLevel，與 filters key 是不同一份
+  it("設定頁存舊國中年級（7–9）會被夾成六年級，而不是讀不到", () => {
+    // 本站服務國小，內容等級上限六年級；舊國中資料載入時夾成 6，保留「已設定」狀態。
+    // 設定頁（Settings）寫的是 UserPreferences.gradeLevel，與 filters key 是不同一份。
     for (const grade of [7, 8, 9] as const) {
       localStorage.clear();
       saveUserPreferences({
@@ -29,8 +30,19 @@ describe("學生年級偏好", () => {
         difficultyPreference: "均衡混合",
         updatedAt: Date.now(),
       });
-      expect(loadStudentGradePreference()).toBe(grade);
+      expect(loadStudentGradePreference()).toBe(6);
     }
+  });
+
+  it("設定頁存六年級時仍讀得到六年級", () => {
+    localStorage.clear();
+    saveUserPreferences({
+      version: 1,
+      gradeLevel: 6,
+      difficultyPreference: "均衡混合",
+      updatedAt: Date.now(),
+    });
+    expect(loadStudentGradePreference()).toBe(6);
   });
 
   it("從沒設定過就維持 null（不會被預設值四年級吃掉）", () => {

@@ -51,30 +51,57 @@ vi.mock("@/lib/trpc", () => ({
     },
   },
 }));
-describe("首頁年級設定引導", () => {
+describe("首頁設定流程（內容等級 + 難度偏好）", () => {
   afterEach(() => {
     cleanup();
     storage.clear();
   });
 
-  it("沒設過年級時顯示引導卡；點選後寫入偏好並改顯示目前設定", () => {
+  it("沒設過時顯示兩步驟引導卡；選完內容等級與難度後點完成，寫入偏好並顯示目前內容等級", () => {
     storage.clear();
     render(<Home />);
-    expect(screen.getByText("你現在是幾年級？")).toBeInTheDocument();
+    // STEP 1：內容等級（只提供 三年級～六年級）
+    expect(screen.getByText("內容等級")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "3 年級" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "國中2 年級" })).not.toBeInTheDocument();
+    // STEP 2：難度偏好
+    expect(screen.getByRole("button", { name: "挑戰優先" })).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("button", { name: "國中2 年級" }));
+    fireEvent.click(screen.getByRole("button", { name: "3 年級" }));
+    fireEvent.click(screen.getByRole("button", { name: "挑戰優先" }));
+    fireEvent.click(screen.getByRole("button", { name: "完成設定" }));
+
     // 寫進設定頁那份偏好，之後教室取題／動畫課分流才讀得到
-    expect(loadStudentGradePreference()).toBe(8);
-    expect(screen.getByText(/目前設定：國中2 年級/)).toBeInTheDocument();
-    expect(screen.queryByText("你現在是幾年級？")).not.toBeInTheDocument();
+    expect(loadStudentGradePreference()).toBe(3);
+    expect(screen.getByText(/目前內容等級：3 年級/)).toBeInTheDocument();
+    expect(screen.queryByText("內容等級")).not.toBeInTheDocument();
+    // 流程收起，引導卡不再出現，改成「重新設定」
+    expect(screen.queryByRole("button", { name: "3 年級" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "重新設定" })).toBeInTheDocument();
   });
 
-  it("已經設過年級就不會再出現引導卡", () => {
+  it("已經設過內容等級就不會再出現引導卡，並顯示目前內容等級", () => {
     storage.clear();
     saveUserPreferences({ version: 1, gradeLevel: 5, difficultyPreference: "均衡混合", updatedAt: Date.now() });
     render(<Home />);
-    expect(screen.queryByText("你現在是幾年級？")).not.toBeInTheDocument();
-    expect(screen.getByText(/目前設定：5 年級/)).toBeInTheDocument();
+    expect(screen.queryByText("內容等級")).not.toBeInTheDocument();
+    expect(screen.getByText(/目前內容等級：5 年級/)).toBeInTheDocument();
+    expect(screen.getByText(/難度：均衡混合/)).toBeInTheDocument();
+  });
+
+  it("點「重新設定」會重新展開流程並回填目前值", () => {
+    storage.clear();
+    saveUserPreferences({ version: 1, gradeLevel: 6, difficultyPreference: "簡單優先", updatedAt: Date.now() });
+    render(<Home />);
+    expect(screen.queryByText("內容等級")).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "重新設定" }));
+    // 流程重新展開，且六年級與簡單優先被預選
+    expect(screen.getByText("內容等級")).toBeInTheDocument();
+    const grade6 = screen.getByRole("button", { name: "6 年級" });
+    expect(grade6).toHaveAttribute("aria-pressed", "true");
+    const simple = screen.getByRole("button", { name: "簡單優先" });
+    expect(simple).toHaveAttribute("aria-pressed", "true");
   });
 });
 

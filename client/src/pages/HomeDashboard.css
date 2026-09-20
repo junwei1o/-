@@ -755,6 +755,22 @@
   transition: background 0.16s, border-color 0.16s, transform 0.16s;
 }
 .home-grade-chip:hover { background: #f6ecd4; border-color: #c9a227; transform: translateY(-1px); }
+.home-grade-chip.is-selected { background: #fff3d6; border-color: #c9a227; color: #7a5b1e; box-shadow: inset 0 0 0 1.5px #c9a227; }
+.home-grade-step2 { margin-top: 12px; }
+.home-grade-step-title { margin: 4px 0 8px; font-size: 15px; font-weight: 900; color: #3f3a2e; }
+.home-grade-finish {
+  margin-top: 14px;
+  border: none;
+  border-radius: 999px;
+  padding: 10px 22px;
+  font-size: 15px;
+  font-weight: 900;
+  color: #fff;
+  background: #2f74b8;
+  cursor: pointer;
+  transition: background 0.16s, transform 0.16s;
+}
+.home-grade-finish:hover { background: #26639c; transform: translateY(-1px); }
 .home-grade-done { margin: 0 0 12px; font-size: 13px; color: #5d6d79; }
 .home-grade-change {
   border: none;

@@ -16,7 +16,7 @@ import { HomeContactCard } from "@/components/HomeContactCard";
 import { buildKnowledgeIslandSnapshots, type KnowledgeIslandSubject } from "@/lib/studentKnowledgeIslands";
 import { ONION_ACADEMY_ROUTE, pickRecommendedLesson, weakestSubjectThisWeek } from "@/lib/recommendedLesson";
 import { loadStudentGradePreference } from "@/lib/studentGradePreference";
-import { loadUserPreferences, saveUserPreferences } from "@/game/adaptiveLearning";
+import { loadUserPreferences, saveUserPreferences, MIN_GRADE, MAX_GRADE, type UserGradeLevel, type UserDifficultyPreference } from "@/game/adaptiveLearning";
 import { HOME_FEATURE_GROUPS } from "@/lib/homeFeatureDirectory";
 import type { PaperQuestion } from "@/lib/paperExam";
 import FirstLightQuest from "@/components/bx/FirstLightQuest";
@@ -95,9 +95,19 @@ export default function Home() {
   const weeklySuggestion = useMemo(() => buildWeeklySuggestion(learningRecords), [learningRecords]);
   // 年級設定引導：沒設過年級時，所有「依年級」的題目與動畫課分流都不會生效
   const [myGrade, setMyGrade] = useState(() => loadStudentGradePreference());
+  // 內容等級上限是六年級（MAX_GRADE），選項只提供 三年級～六年級。
+  const CONTENT_LEVELS: UserGradeLevel[] = Array.from(
+    { length: MAX_GRADE - MIN_GRADE + 1 },
+    (_, index) => (MIN_GRADE + index) as UserGradeLevel,
+  );
+  const DIFFICULTY_OPTIONS: UserDifficultyPreference[] = ["簡單優先", "均衡混合", "挑戰優先"];
+  // 設定流程是否展開：myGrade===null 表示尚未設定；「重新設定」會重新展開並回填當前值。
+  const [isSetupOpen, setIsSetupOpen] = useState<boolean>(myGrade === null);
+  const [draftGrade, setDraftGrade] = useState<UserGradeLevel>(myGrade ?? loadUserPreferences().gradeLevel);
+  const [draftDifficulty, setDraftDifficulty] = useState<UserDifficultyPreference>(loadUserPreferences().difficultyPreference);
   const recommended = useMemo(() => {
-    const grade = loadStudentGradePreference();
-    const stage = grade && grade >= 7 ? "國中" : "國小";
+    // 內容等級上限是六年級，推薦動畫課一律對應國小內容。
+    const stage = "國小";
     return pickRecommendedLesson({ stage, weakSubject: weakestSubjectThisWeek(learningRecords)?.subject ?? null });
   }, [learningRecords]);
 
@@ -208,6 +218,22 @@ export default function Home() {
     setShowGoldSignIn(true);
   }
 
+  function handleFinishSetup() {
+    // 一次儲存「內容等級」與「難度偏好」兩個值，避免分開寫入造成不一致。
+    const prefs = loadUserPreferences();
+    saveUserPreferences({ ...prefs, gradeLevel: draftGrade, difficultyPreference: draftDifficulty, updatedAt: Date.now() });
+    setMyGrade(draftGrade);
+    setIsSetupOpen(false);
+  }
+
+  function handleResetSetup() {
+    // 重新展開流程並回填目前儲存的值（內容等級與難度偏好）。
+    const prefs = loadUserPreferences();
+    setDraftGrade(myGrade ?? prefs.gradeLevel);
+    setDraftDifficulty(prefs.difficultyPreference);
+    setIsSetupOpen(true);
+  }
+
   return (
     <main className="home-dashboard" aria-label="寶島探險家學習儀表板">
       <div className="home-dashboard-hud">
@@ -241,39 +267,52 @@ export default function Home() {
           }
         />
 
-        {myGrade === null ? (
+        {isSetupOpen ? (
           <section className="home-grade-setup" aria-labelledby="home-grade-title">
-            <p className="home-dashboard-eyebrow">STEP 1 · 先認識你</p>
-            <h2 id="home-grade-title">你現在是幾年級？</h2>
-            <p className="home-grade-desc">告訴我們年級，題目難度、動畫課和每日推薦才會對到你的程度。</p>
-            <div className="home-grade-chips" role="group" aria-label="選擇年級">
-              {([3, 4, 5, 6, 7, 8, 9] as const).map((grade) => (
+            <p className="home-dashboard-eyebrow">STEP 1 · 內容等級</p>
+            <h2 id="home-grade-title">內容等級</h2>
+            <p className="home-grade-desc">內容等級決定你會看到的題目、動畫課與每日推薦；它和玩家的等級（Lv.）不同，請依照目前就讀的年級選擇（上限為六年級）。</p>
+            <div className="home-grade-chips" role="group" aria-label="選擇內容等級">
+              {CONTENT_LEVELS.map((grade) => (
                 <button
                   key={grade}
                   type="button"
-                  className="home-grade-chip"
-                  onClick={() => {
-                    const prefs = loadUserPreferences();
-                    saveUserPreferences({ ...prefs, gradeLevel: grade, updatedAt: Date.now() });
-                    setMyGrade(grade);
-                  }}
+                  className={`home-grade-chip${draftGrade === grade ? " is-selected" : ""}`}
+                  aria-pressed={draftGrade === grade}
+                  onClick={() => setDraftGrade(grade)}
                 >
-                  {grade >= 7 ? `國中${grade - 6}` : `${grade}`} 年級
+                  {grade} 年級
                 </button>
               ))}
             </div>
+            <p className="home-dashboard-eyebrow home-grade-step2">STEP 2 · 難度偏好</p>
+            <h3 className="home-grade-step-title">難度偏好</h3>
+            <div className="home-grade-chips" role="group" aria-label="選擇難度偏好">
+              {DIFFICULTY_OPTIONS.map((option) => (
+                <button
+                  key={option}
+                  type="button"
+                  className={`home-grade-chip${draftDifficulty === option ? " is-selected" : ""}`}
+                  aria-pressed={draftDifficulty === option}
+                  onClick={() => setDraftDifficulty(option)}
+                >
+                  {option}
+                </button>
+              ))}
+            </div>
+            <button type="button" className="home-grade-finish" onClick={handleFinishSetup}>
+              完成設定
+            </button>
           </section>
         ) : (
           <p className="home-grade-done">
-            目前設定：{myGrade >= 7 ? `國中${myGrade - 6}` : `${myGrade}`} 年級 ·{" "}
+            目前內容等級：{myGrade} 年級（難度：{loadUserPreferences().difficultyPreference}） ·{" "}
             <button
               type="button"
               className="home-grade-change"
-              onClick={() => {
-                setMyGrade(null);
-              }}
+              onClick={handleResetSetup}
             >
-              更改
+              重新設定
             </button>
           </p>
         )}

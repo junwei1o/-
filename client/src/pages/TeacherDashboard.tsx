@@ -3,6 +3,7 @@ import { useLocation } from "wouter";
 import { ClipboardList, Copy, Download, Lightbulb, School, Sparkles, Target, Trash2, UserRound, Users } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { TeacherLineSection } from "@/components/TeacherLineSection";
+import { MIN_GRADE, MAX_GRADE } from "@/game/adaptiveLearning";
 import "@/pages/TeacherDashboard.css";
 
 const TEACHER_CODE_KEY = "xue-teacher-class-code-v1";
@@ -455,8 +456,9 @@ export default function TeacherDashboard() {
                   </label>
                   <label>
                     年級
+                    {/* 內容等級上限是六年級（MAX_GRADE），老師出作業的年級選項同步限為 三年級～六年級 */}
                     <select value={grade} onChange={(event) => setGrade(Number(event.target.value))}>
-                      {[3, 4, 5, 6, 7, 8, 9].map((item) => <option key={item} value={item}>{item} 年級</option>)}
+                      {Array.from({ length: MAX_GRADE - MIN_GRADE + 1 }, (_, index) => MIN_GRADE + index).map((item) => <option key={item} value={item}>{item} 年級</option>)}
                     </select>
                   </label>
                   <label>

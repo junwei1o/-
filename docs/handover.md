@@ -810,3 +810,23 @@ curl -s https://xue-gr3a.onrender.com/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | h
 - 踩坑：配對題先進收集器卻沒併入輸出，會「整批消失還佔掉各科名額」，
   總數變 4830——已修（`matchingQuestions` 直接 push 進 `all`）。
 - 重建後維持 5000 題、五科各 1000、以上皆非 0、完全重複 0、體檢無問題。
+
+## 2026-09-21（早上）設定流程重做＋洋蔥學院擴充到 145 堂（目標 200）
+
+### 內容等級（取代舊「目前年級」）
+- `adaptiveLearning.ts`：`UserGradeLevel` 收窄為 3–6、`MAX_GRADE` 9 → **6**；新增 `normalizeContentLevel()`，舊資料的 7–9 **夾成 6**（不清空設定）。`studentGradePreference.ts` 同步。
+- 首頁設定流程改成兩步：「STEP 1 內容等級（三年級～六年級）」「STEP 2 難度偏好」＋「完成設定」，設定後顯示「目前內容等級：X 年級（難度：Y）」與「重新設定」。
+- 設定頁項目改名「內容等級」並註明「上限六年級、與玩家等級 Lv. 不同」；老師後台派卷年級也由常數產生 3–6。
+- 測試同步更新（HomeDashboard／Settings／studentGradePreference／adaptiveLearning／questionBank）。
+
+### 洋蔥學院架構：分冊課程 ＋ 自動彙總
+- 新增 `client/src/game/onion/lessons/*.ts`（一堂一檔、`export default` 陣列），`onionAcademyLessons.ts` 用 **`import.meta.glob`** 自動收集，核心課程留在原檔。
+- **踩坑**：`import.meta.glob` 必須寫成字面語法（Vite 是字串比對替換），寫成 `(import.meta as X).glob(...)` 會失效（vitest 裡只剩核心 40 堂）；另外 Node（tsx）沒有 glob，用 `typeof import.meta.env !== "undefined"` 判斷降級。
+- 學段型別加入 **「高中」**，選課頁多一個「高中」分頁。
+- `scripts/qc-onion-lessons.mts`（`npm run qc:onion`）：逐堂逐幀驗證步驟標籤格式、教具與字幕的數字/分數一致性、提問與題目結構、規模門檻。規則刻意只報「真的矛盾」（例如字幕有數字時長條圖必須對得上），避免誤報。
+
+### 課程規模：34 → 145 堂
+- 國小 **70**（達標）、國中 **65**（達標）、高中 **10**（目標 65，產出中）；題目 725 題、步驟標籤 1033 處。
+- 內容驗證 0 問題；`tsc` 0 錯誤；測試 lib 290／game 391／components 191／pages 161／server 105 全過。
+- 高中 65 堂的完整課表見 `docs/onion-200-plan.md`（數學／物理／化學／生物／地科／歷史／地理／公民／國文／英文）。
+- **注意**：並行產課的寫手因平台額度限制（429）中斷，高中剩下批次改由主線逐步產出。

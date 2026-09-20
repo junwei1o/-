@@ -421,7 +421,14 @@ export function calculateLearningTrendReport(profile: AdaptiveProfile, questionI
 }
 /* ========== 用戶偏好系統 ========== */
 
-export type UserGradeLevel = 3 | 4 | 5 | 6 | 7 | 8 | 9;
+/**
+ * 內容等級（學生看到的題目與動畫內容範圍）。
+ *
+ * 本站服務國小，內容等級上限就是六年級：不再提供七～九年級。
+ * 舊資料若存過 7-9，載入時會夾成六年級（見 normalizeContentLevel），
+ * 而不是把整份設定清掉——學生不必重新設定一次。
+ */
+export type UserGradeLevel = 3 | 4 | 5 | 6;
 export type UserDifficultyPreference = "簡單優先" | "均衡混合" | "挑戰優先";
 
 export type UserPreferences = {
@@ -443,7 +450,20 @@ export const defaultUserPreferences: UserPreferences = {
 };
 
 function isGradeLevel(value: unknown): value is UserGradeLevel {
-  return value === 3 || value === 4 || value === 5 || value === 6 || value === 7 || value === 8 || value === 9;
+  return value === 3 || value === 4 || value === 5 || value === 6;
+}
+
+/**
+ * 把任何來源的內容等級正規化。
+ * - 合法（3-6）→ 原樣
+ * - 舊版的 7-9（國中）→ 夾成六年級，保留「已設定」狀態
+ * - 其他亂值 → null（呼叫端視為未設定）
+ */
+export function normalizeContentLevel(value: unknown): UserGradeLevel | null {
+  if (typeof value !== "number" || !Number.isFinite(value)) return null;
+  if (isGradeLevel(value)) return value;
+  if (value >= 7 && value <= 9) return 6;
+  return null;
 }
 
 function isDifficultyPreference(value: unknown): value is UserDifficultyPreference {
@@ -455,12 +475,14 @@ export function loadUserPreferences(storage: Pick<Storage, "getItem" | "removeIt
     const raw = storage.getItem(USER_PREFERENCES_STORAGE_KEY);
     if (!raw) return structuredClone(defaultUserPreferences);
     const parsed = JSON.parse(raw) as Partial<UserPreferences>;
-    if (parsed.version !== 1 || !isGradeLevel(parsed.gradeLevel) || !isDifficultyPreference(parsed.difficultyPreference)) {
+    // 內容等級上限改成六年級之後，舊資料的 7-9 要夾成 6 而不是整份清掉。
+    const gradeLevel = normalizeContentLevel(parsed.gradeLevel);
+    if (parsed.version !== 1 || gradeLevel === null || !isDifficultyPreference(parsed.difficultyPreference)) {
       throw new Error("invalid user preferences");
     }
     return {
       version: 1,
-      gradeLevel: parsed.gradeLevel,
+      gradeLevel,
       difficultyPreference: parsed.difficultyPreference,
       // 🔥 修正：若無 updatedAt 則保留 0（未設定），避免誤判為已設定
       updatedAt: parsed.updatedAt !== undefined && Number.isFinite(parsed.updatedAt) ? Number(parsed.updatedAt) : 0,
@@ -491,13 +513,15 @@ export function getTargetDifficultiesFromPrefs(prefs: UserPreferences): Adaptive
 }
 
 /**
- * 根據用戶年級篩選題目（允許 ±1 年級浮動）。
+ * 根據內容等級篩選題目（允許 ±1 年級浮動）。
  *
- * 年級上限原本寫死 6：設定頁開放七～九年級後，國中生會被塞國小五、六年級的題。
- * 上限改為 9（題庫目前最遠到九年級），並以 MIN/MAX_GRADE 常數避免再度寫死。
+ * 歷史上這段來回改過兩次：最早寫死 6，後來開放七～九年級時改成 9。
+ * 現在產品定位確定為國小，內容等級上限回到六年級，並用常數集中管理，
+ * 之後要再調整只改這兩個常數。
  */
 export const MIN_GRADE = 3;
-export const MAX_GRADE = 9;
+/** 內容等級上限：六年級。 */
+export const MAX_GRADE = 6;
 
 export function filterQuestionsByGrade<T extends { grade: number }>(
   questions: readonly T[],

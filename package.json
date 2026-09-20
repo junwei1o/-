@@ -10,7 +10,10 @@
     "check": "tsc --noEmit",
     "format": "prettier --write .",
     "test": "vitest run",
-    "db:push": "drizzle-kit generate && drizzle-kit migrate"
+    "db:push": "drizzle-kit generate && drizzle-kit migrate",
+    "qc:onion": "tsx scripts/qc-onion-lessons.mts",
+    "qc:bank": "tsx scripts/qc-question-bank.mts",
+    "bank:rebuild": "node scripts/expand-question-bank.mjs && node scripts/build-runtime-bank.mjs"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.693.0",

@@ -1,11 +1,12 @@
 export const STUDENT_GRADE_PREFERENCE_STORAGE_KEY = "xue-adventure-filters-v1";
 
-export type StudentGradePreference = 3 | 4 | 5 | 6 | 7 | 8 | 9 | null;
+export type StudentGradePreference = 3 | 4 | 5 | 6 | null;
 
-import { USER_PREFERENCES_STORAGE_KEY, loadUserPreferences } from "@/game/adaptiveLearning";
+import { USER_PREFERENCES_STORAGE_KEY, loadUserPreferences, normalizeContentLevel } from "@/game/adaptiveLearning";
 import { readStoredJson } from "@/utils/storage";
 
-const VALID_STUDENT_GRADES = new Set([3, 4, 5, 6, 7, 8, 9]);
+/** 內容等級上限＝六年級（本站服務國小，不再提供國中）。 */
+const VALID_STUDENT_GRADES = new Set([3, 4, 5, 6]);
 
 /**
  * 學生的年級。
@@ -24,10 +25,8 @@ export function loadStudentGradePreference(): StudentGradePreference {
 
   const parsed = readStoredJson<unknown>(STUDENT_GRADE_PREFERENCE_STORAGE_KEY, null);
   if (parsed && typeof parsed === "object" && "grade" in parsed) {
-    const grade = (parsed as { grade?: unknown }).grade;
-    if (typeof grade === "number" && VALID_STUDENT_GRADES.has(grade)) {
-      return grade as Exclude<StudentGradePreference, null>;
-    }
+    const grade = normalizeContentLevel((parsed as { grade?: unknown }).grade);
+    if (grade !== null) return grade;
   }
 
   // fallback：設定頁實際寫入的那份。
@@ -35,11 +34,8 @@ export function loadStudentGradePreference(): StudentGradePreference {
   // 直接呼叫會讓「從沒設定過的學生」一律被當成四年級，反而限縮了題目範圍。
   try {
     if (!window.localStorage.getItem(USER_PREFERENCES_STORAGE_KEY)) return null;
-    const prefs = loadUserPreferences();
-    const grade = prefs.gradeLevel;
-    if (typeof grade === "number" && VALID_STUDENT_GRADES.has(grade)) {
-      return grade as Exclude<StudentGradePreference, null>;
-    }
+    const grade = normalizeContentLevel(loadUserPreferences().gradeLevel);
+    if (grade !== null) return grade;
   } catch {
     /* 讀不到就當沒設定 */
   }

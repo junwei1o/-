@@ -139,40 +139,50 @@ describe("adaptive learning model", () => {
 });
 
 
-describe("年級篩選（國中 7–9 年級）", () => {
-  const pool = [3, 4, 5, 6, 7, 8, 9].flatMap((grade) =>
+describe("年級篩選（內容等級上限六年級）", () => {
+  const pool = [3, 4, 5, 6].flatMap((grade) =>
     [1, 2].map((n) => ({ id: `g${grade}-${n}`, grade })),
   );
   const prefs = (gradeLevel: number) =>
     ({ version: 1, gradeLevel, difficultyPreference: "均衡混合", updatedAt: 1 }) as any;
 
-  it("八年級會拿到 7–9 年級的題，不是被塞國小題", () => {
-    const picked = filterQuestionsByGrade(pool, prefs(8));
-    expect(picked.every((q) => q.grade >= 7)).toBe(true);
-    expect(new Set(picked.map((q) => q.grade))).toEqual(new Set([7, 8, 9]));
+  it("六年級會拿到 5–6 年級的題（±1 浮動，上限六年級）", () => {
+    const picked = filterQuestionsByGrade(pool, prefs(6));
+    expect(new Set(picked.map((q) => q.grade))).toEqual(new Set([5, 6]));
+    expect(picked.every((q) => q.grade <= 6)).toBe(true);
   });
 
-  it("九年級上限不會超過題庫最遠的九年級", () => {
-    const picked = filterQuestionsByGrade(pool, prefs(9));
-    expect(Math.max(...picked.map((q) => q.grade))).toBe(9);
-  });
-
-  it("國小端行為不變（三年級只拿 3–4 年級）", () => {
+  it("三年級下限不會低於三年級（只拿 3–4 年級）", () => {
     const picked = filterQuestionsByGrade(pool, prefs(3));
     expect(new Set(picked.map((q) => q.grade))).toEqual(new Set([3, 4]));
   });
+
+  it("四年級浮動範圍為 3–5 年級", () => {
+    const picked = filterQuestionsByGrade(pool, prefs(4));
+    expect(new Set(picked.map((q) => q.grade))).toEqual(new Set([3, 4, 5]));
+  });
 });
 
-describe("使用者偏好可儲存國中年級", () => {
-  it("七、八、九年級都能通過驗證（否則重載會被打回預設值）", () => {
+describe("使用者偏好：舊國中年級會夾成六年級", () => {
+  it("七、八、九年級在載入時夾成六年級，不會被打回預設值 4", () => {
     for (const grade of [7, 8, 9]) {
       const storage = makeStorage();
       saveUserPreferences(
         { version: 1, gradeLevel: grade as any, difficultyPreference: "均衡混合", updatedAt: Date.now() },
         storage,
       );
-      expect(loadUserPreferences(storage).gradeLevel).toBe(grade);
+      expect(loadUserPreferences(storage).gradeLevel).toBe(6);
     }
+  });
+
+  it("儲存八年級偏好後載入得到六年級而非預設四年級", () => {
+    const storage = makeStorage();
+    saveUserPreferences(
+      { version: 1, gradeLevel: 8 as any, difficultyPreference: "均衡混合", updatedAt: Date.now() },
+      storage,
+    );
+    expect(loadUserPreferences(storage).gradeLevel).toBe(6);
+    expect(loadUserPreferences(storage).gradeLevel).not.toBe(4);
   });
 });
 

@@ -167,4 +167,27 @@ describe("洋蔥動畫講解 OnionAcademyGame", () => {
     fireEvent.click(olBtn("開始闖關"));
     expect(screen.getByText(lesson.questions[0].prompt)).toBeInTheDocument();
   });
+
+  it("動畫播放時每一步都有步驟標籤，並可打開步驟章節直接跳步", () => {
+    render(<OnionAcademyGame bestStars={undefined} onBest={vi.fn()} onExit={vi.fn()} />);
+    const lesson = ONION_LESSONS[0];
+    fireEvent.click(lessonCard(lesson.title));
+    fireEvent.click(olBtn("開始動畫講解"));
+
+    // 目前這一幀要顯示步驟標籤（洋蔥學園式的步驟分類）
+    const step = lesson.frames[0].step;
+    expect(step).toBeTruthy();
+    expect(screen.getByText(step!.replace(/^步驟\s*\d+\s*：/, ""), { exact: false })).toBeInTheDocument();
+
+    // 打開步驟章節：每幀一個步驟按鈕，且標示目前所在步驟
+    fireEvent.click(olBtn("步驟"));
+    const chapters = screen.getAllByRole("button").filter((b) => b.className.includes("ol-chapter"));
+    expect(chapters).toHaveLength(lesson.frames.length);
+    expect(chapters[0]).toHaveAttribute("aria-current", "step");
+
+    // 點第 4 步 → 直接跳到那一幀
+    fireEvent.click(chapters[3]);
+    expect(chapters[3]).toHaveAttribute("aria-current", "step");
+    expect(screen.getByText(`第 4 / ${lesson.frames.length} 幀`)).toBeInTheDocument();
+  });
 });

@@ -86,6 +86,8 @@ export default function OnionLessonGame({ bestStars, muted = false, onBest, onEx
   const [phase, setPhase] = useState<Phase>("start");
   const [frameIdx, setFrameIdx] = useState(0);
   const [playing, setPlaying] = useState(false);
+  /** 步驟清單（像影片的章節選單）：讓孩子知道這堂課被拆成哪幾步，也能直接跳步。 */
+  const [showChapters, setShowChapters] = useState(false);
   const [qIdx, setQIdx] = useState(0);
   const [selected, setSelected] = useState<number | null>(null);
   const [answered, setAnswered] = useState(false);
@@ -224,7 +226,7 @@ export default function OnionLessonGame({ bestStars, muted = false, onBest, onEx
             <p className="ol-desc">每堂約 5 分鐘：先看動畫講解，再闖 5 題。答對即時解析，全對三顆星。</p>
           </header>
           <div className="ol-stage-tabs" role="tablist" aria-label="依學段篩選課程">
-            {(["國小", "國中", "全部"] as const).map((item) => (
+            {(["國小", "國中", "高中", "全部"] as const).map((item) => (
               <button
                 key={item}
                 type="button"
@@ -337,6 +339,12 @@ export default function OnionLessonGame({ bestStars, muted = false, onBest, onEx
         </header>
         <div className="ol-stage">
           <LessonStage lessonId={lesson.id} prop={frame.prop} frame={frameIdx} action={frame.action} />
+          {frame.step && (
+            <p className="ol-step" aria-live="polite">
+              <span className="ol-step-no">{frameIdx + 1}/{lesson.frames.length}</span>
+              {frame.step}
+            </p>
+          )}
           <p className="ol-caption" key={`cap-${frame.id}`} aria-live="polite">{frame.caption}</p>
           {needAsk && frame.ask && (
             <div className="ol-ask" role="group" aria-label="動畫中途提問">
@@ -372,6 +380,14 @@ export default function OnionLessonGame({ bestStars, muted = false, onBest, onEx
             <span className="ol-seek-now">第 {frameIdx + 1} / {lesson.frames.length} 幀</span>
             <button type="button" className="ol-seek-btn" disabled={isLastFrame} onClick={() => setFrameIdx((i) => Math.min(lesson.frames.length - 1, i + 1))}>下一幀 ＞</button>
           </div>
+          <button
+            type="button"
+            className="ol-btn ol-btn--ghost"
+            aria-expanded={showChapters}
+            onClick={() => setShowChapters((v) => !v)}
+          >
+            <ListChecks size={15} /> 步驟
+          </button>
           {isLastFrame && (
             <button type="button" className="ol-btn ol-btn--primary" onClick={goSummary}>
               <ListChecks size={15} /> 看重點整理
@@ -381,6 +397,31 @@ export default function OnionLessonGame({ bestStars, muted = false, onBest, onEx
             進入闖關 <ChevronRight size={15} />
           </button>
         </div>
+        {showChapters && (
+          <nav className="ol-chapters" aria-label="這堂課的步驟">
+            <p className="ol-chapters-head">這堂課分成這幾步（點一下可以直接跳到那一步）</p>
+            <ol className="ol-chapters-list">
+              {lesson.frames.map((f, i) => (
+                <li key={f.id}>
+                  <button
+                    type="button"
+                    className={`ol-chapter ${i === frameIdx ? "is-on" : ""} ${i < frameIdx ? "is-done" : ""}`}
+                    aria-current={i === frameIdx ? "step" : undefined}
+                    onClick={() => {
+                      setFrameIdx(i);
+                      setPlaying(false);
+                    }}
+                  >
+                    <span className="ol-chapter-no">{i + 1}</span>
+                    <span className="ol-chapter-text">
+                      {f.step ? f.step.replace(/^步驟\s*\d+\s*：/, "") : f.caption.slice(0, 18)}
+                    </span>
+                  </button>
+                </li>
+              ))}
+            </ol>
+          </nav>
+        )}
       </div>
     );
   }

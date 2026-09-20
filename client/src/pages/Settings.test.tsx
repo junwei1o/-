@@ -300,10 +300,14 @@ describe("Settings 學習設定", () => {
     );
     render(<Settings />);
 
-    const gradeSelect = screen.getByLabelText("目前年級") as HTMLSelectElement;
+    const gradeSelect = screen.getByLabelText("內容等級") as HTMLSelectElement;
     const difficultySelect = screen.getByLabelText("難度偏好") as HTMLSelectElement;
 
+    // 內容等級上限為六年級：只提供 三年級～六年級，不再提供國中選項
     expect(gradeSelect.value).toBe("4");
+    const offeredGrades = Array.from(gradeSelect.options).map((option) => option.value);
+    expect(offeredGrades).toEqual(["3", "4", "5", "6"]);
+    expect(screen.queryByRole("option", { name: "九年級（國中）" })).not.toBeInTheDocument();
     expect(difficultySelect.value).toBe("均衡混合");
 
     fireEvent.change(gradeSelect, { target: { value: "6" } });
