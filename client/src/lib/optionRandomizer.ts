@@ -1,14 +1,14 @@
 /**
  * 選項隨機化引擎：
  * 1. expandQuestionBankToSix — 把 4 選題擴充成 6 選題（額外產生 2 個確定錯誤的干擾選項）。
- * 2. shuffleQuestionOptions — 每次出題時隨機打乱選項順序，並同步修正 answer（與 strongDistractor）索引，
+ * 2. shuffleQuestionOptions — 每次出題時隨機打亂選項順序，並同步修正 answer（與 strongDistractor）索引，
  *    讓正確答案不會固定在同一個位置（例如這次在 A、下次跳到 C）。
  *
  * 擴充只會「附加」在原選項後面，不會更動前 4 個選項的索引，因此 answer 欄位不需要修正；
- * 打乱時才會重新計算索引。整個模組為純函式，不依賴任何外部狀態。
+ * 打亂時才會重新計算索引。整個模組為純函式，不依賴任何外部狀態。
  */
 
-/** 可被打乱順序的題目形狀（试卷題、課綱題、遠征題都符合）。 */
+/** 可被打亂順序的題目形狀（試卷題、課綱題、遠征題都符合）。 */
 export type ShuffleableQuestion = {
   options: string[];
   answer: number;
@@ -62,7 +62,7 @@ export function shuffledIndexes(count: number, random: () => number = Math.rando
 }
 
 /**
- * 打乱單題選項順序。`random` 可傳入 seededRandom(seed) 以在同一個出題session內維持穩定，
+ * 打亂單題選項順序。`random` 可傳入 seededRandom(seed) 以在同一個出題session內維持穩定，
  * 或省略改用 Math.random 讓每次出題都不同。answer 與 strongDistractor.optionIndex 會同步對應新位置。
  */
 export function shuffleQuestionOptions<T extends ShuffleableQuestion>(question: T, random: () => number = Math.random): T {

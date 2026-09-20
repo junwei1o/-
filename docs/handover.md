@@ -564,3 +564,9 @@ curl -s https://xue-gr3a.onrender.com/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | h
 - 體檢結論（P0）：① 一課僅 10 幀≈35 秒，遠短於洋蔥 5–8 分鐘 → 建議拉到 12–16 幀；② 缺「拋問題→停下來思考」互動幀；③ 缺知識小結頁（SUM-UP）；④ 闖關無三級提示（OnionLesson.tsx 已有機制未共用）；⑤ 未接 useClassroomSound 音效。
 - 體檢結論（P1）：細胞課構造標註只在單幀出現（建議改累積式）、nl-boat 的 is-p0/is-p4/is-p2 class 被 inline transform 蓋掉（死碼）、.nl-layer 無人使用、prop 欄位在第二季四課全為 none、長字幕幀停留時間不足、選課頁無分科篩選與已學標記、播放器無倍速。
 - 落地順序建議：先改 P0 互動/小結/提示 → 再做熱度榜 P0 三課 → 最後清 P1 死碼與節奏。
+
+## 2026-09-20 全站內容改善：繁體用字修正＋檢查腳本＋改善方案（commit 隨後）
+- 實測盤點：42 頁／125 元件／34 路由；題庫 1090 題（無重複、無缺解析）、年級僅 3–6（**無國中題庫**）；知識點 1045 組／1090 題（過細，弱點無法聚合）；SVG 23 個僅 13 個有 aria-label；首包 index 1.5MB。
+- **重大發現**：1090 題中 67%（733 題）正確答案固定在選項 index 0；`shuffleQuestionOptions` 僅被 paperExam/questionBank/CommunityHub/BattleScene 使用，教室 6 玩法（QuizRunner/RushRunner/RelayMatch/OnionAcademyGame/OnionLesson）、PKArena、ReviewHub 都沒套用 → 學生可「選第一個」作弊。列為 P0-1。
+- 已修：簡體字 31 處（含題庫 4 處學生可見：不同时段/哪一级產業），新增 `scripts/check-traditional.mjs`（node 跑、命中 exit 1，可接 CI/pre-commit），目前零命中。tsc 0 錯、optionRandomizer/paperExam/questionBank 52 例綠。
+- 方案文件：`docs/site-improvement-plan-2026-09.md`（盤點表＋P0/P1/P2＋四週路線圖＋DoD）。內部調研檔 docs/game-directions-2026-09-12.md 仍有 89 處簡體（學生看不到，後續處理）。

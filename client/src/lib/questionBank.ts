@@ -78,7 +78,7 @@ export type QuestionBankSource = "server" | "local";
  * 取得正式題庫。後端有資料時使用後端資料；後端無法連線、查詢失敗或回傳空資料時，
  * 自動改用內建的 500 題題庫，因此回傳的 isLoading 永遠不會卡住操作、error 永遠為 null。
  *
- * 回傳前會把每題擴充成 6 個選項並隨機打乱順序（answer 索引同步修正），
+ * 回傳前會把每題擴充成 6 個選項並隨機打亂順序（answer 索引同步修正），
  * 讓正確答案每次載入都出現在不同位置。
  */
 export function useQuestionBank() {

@@ -297,7 +297,7 @@ function shuffled<T>(items: readonly T[]) {
   return result;
 }
 
-/** 每次建卷都重新打乱選項順序，讓正確答案位置每次不同。 */
+/** 每次建卷都重新打亂選項順序，讓正確答案位置每次不同。 */
 function shuffleDeckOptions(deck: readonly PaperQuestion[]): PaperQuestion[] {
   return deck.map((question) => shuffleQuestionOptions(question));
 }

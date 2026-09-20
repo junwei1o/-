@@ -103,21 +103,21 @@ describe("expandQuestionBankToSix", () => {
 });
 
 describe("shuffleQuestionOptions", () => {
-  it("打乱後正解文字不變，answer 指向同一個文字", () => {
+  it("打亂後正解文字不變，answer 指向同一個文字", () => {
     for (let seed = 1; seed <= 50; seed += 1) {
       const shuffled = shuffleQuestionOptions(BANK[0], seededRandom(seed));
       expect(shuffled.options[shuffled.answer]).toBe("40");
     }
   });
 
-  it("打乱是原本選項的重新排列", () => {
+  it("打亂是原本選項的重新排列", () => {
     for (let seed = 1; seed <= 50; seed += 1) {
       const shuffled = shuffleQuestionOptions(BANK[2], seededRandom(seed));
       expect([...shuffled.options].sort()).toEqual([...BANK[2].options].sort());
     }
   });
 
-  it("strongDistractor.optionIndex 會對應打乱後的位置", () => {
+  it("strongDistractor.optionIndex 會對應打亂後的位置", () => {
     for (let seed = 1; seed <= 50; seed += 1) {
       const shuffled = shuffleQuestionOptions(BANK[2], seededRandom(seed));
       expect(shuffled.options[shuffled.strongDistractor!.optionIndex]).toBe("小明騎車");

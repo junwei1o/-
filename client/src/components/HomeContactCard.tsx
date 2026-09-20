@@ -100,7 +100,7 @@ export function HomeContactCard() {
     if (editing) setDraft(contact);
   }, [editing, contact]);
 
-  // 監聽 localStorage 變化（其他 tab 改班级碼時同步）
+  // 監聽 localStorage 變化（其他 tab 改班級碼時同步）
   useEffect(() => {
     function onStorage(e: StorageEvent) {
       if (e.key === STORAGE_CLASS_CODE) {
