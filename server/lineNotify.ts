@@ -16,6 +16,38 @@ import { getCloudSave } from "./db";
 
 export const LINE_RECIPIENT_KEY = "__line_recipient";
 const LINE_PUSH_URL = "https://api.line.me/v2/bot/message/push";
+const LINE_BOT_INFO_URL = "https://api.line.me/v2/bot/info";
+
+/** LINE 的「Your user ID」長得像這樣：U + 32 個十六進位字元。 */
+const LINE_USER_ID_RE = /^U[0-9a-f]{32}$/;
+
+/**
+ * 用這把 token 去問 LINE「我是誰」，確認它真的是頻道 access token。
+ *
+ * 最常見的設定錯誤是把 LINE 後台 Basic settings 的「Your user ID」貼成
+ * Channel access token——envReady 只看「有沒有填」，兩個都填了就說就緒，
+ * 結果要等老師按測試鈕收到 401 才會發現。這個檢查能在綁定之前就擋下來。
+ */
+export async function inspectLineToken(
+  token: string,
+): Promise<{ valid: boolean; looksLikeUserId: boolean; botUserId?: string; error?: string }> {
+  const trimmed = token.trim();
+  const looksLikeUserId = LINE_USER_ID_RE.test(trimmed);
+  if (!trimmed) return { valid: false, looksLikeUserId, error: "token 是空的" };
+  try {
+    const response = await fetch(LINE_BOT_INFO_URL, {
+      headers: { Authorization: `Bearer ${trimmed}` },
+    });
+    if (!response.ok) {
+      const body = await response.text();
+      return { valid: false, looksLikeUserId, error: `LINE API ${response.status}: ${body.slice(0, 160)}` };
+    }
+    const info = (await response.json()) as { userId?: string; basicId?: string };
+    return { valid: true, looksLikeUserId, botUserId: info.userId ?? "" };
+  } catch (error) {
+    return { valid: false, looksLikeUserId, error: error instanceof Error ? error.message : String(error) };
+  }
+}
 /** 督學台深連結（Render 正式部署位址；訊息裡給老師一鍵跳轉）。 */
 const TEACHER_DASHBOARD_URL = "https://xue-gr3a.onrender.com/teacher";
 

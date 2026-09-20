@@ -9,6 +9,7 @@ import {
 } from "./weeklyQuiz";
 import {
   getLineRecipient,
+  inspectLineToken,
   LINE_RECIPIENT_KEY,
   notifyExamCompletion,
   sendLinePush,
@@ -1038,10 +1039,19 @@ export const appRouter = router({
         if (envReady) {
           binding = await getLineRecipient();
         }
+        const tokenCheck = tokenSet
+          ? await inspectLineToken(ENV.lineChannelAccessToken)
+          : { valid: false as const, looksLikeUserId: false as const, error: "token 未設定" as const };
         return {
           envReady,
           secretSet,
           tokenSet,
+          /** token 是否真的是有效的頻道 access token（不是 user ID 也不是空值）。 */
+          tokenValid: tokenCheck.valid,
+          /** 貼成 LINE 後台的「Your user ID」（U + 32 碼）時為 true。 */
+          tokenLooksLikeUserId: tokenCheck.looksLikeUserId ?? false,
+          /** LINE API 回的錯誤，只在無效時才帶；不回傳 token 本身。 */
+          tokenError: tokenCheck.valid ? "" : (tokenCheck.error ?? ""),
           binding,
           serviceId: process.env.RENDER_SERVICE_ID ?? "",
           serviceName: process.env.RENDER_SERVICE_NAME ?? "",

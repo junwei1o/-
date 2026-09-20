@@ -101,6 +101,7 @@ curl -o /dev/null -w "%{http_code}\n" -X POST \
 | 現象 | 原因 / 處理 |
 |---|---|
 | **env 存完卻還是「待設定」** | **正常，要等重新部署完成才生效**。Render 存 env 後會觸發重新部署，免費方案約 5–10 分鐘。實測：19:06 存好 → 19:17 才生效，中間查了 12 次都是 `envReady:false`，不是設定失敗 |
+| **顯示「金鑰有誤」（紅色）** | `LINE_CHANNEL_ACCESS_TOKEN` 填錯。最常見是貼成 LINE 後台 Basic settings 的 **Your user ID**（`U` + 32 碼）— 那是「收訊息的人」，不是憑證。要到 **Messaging API** 頁籤最下方按 **Issue** 取得 Channel access token |
 | 站內一直顯示「待設定」 | Render 的 env 沒存到或還沒部署完 → 回 Environment 確認、手動 Deploy 一次 |
 | 顯示「已啟用」但沒有綁定對象 | 還沒加好友／沒在群組發言 → 做步驟 4 |
 | Webhook Verify 失敗 | env 尚未生效（Render 還在部署）或 URL 打錯 → 確認是 `/api/line/webhook` |

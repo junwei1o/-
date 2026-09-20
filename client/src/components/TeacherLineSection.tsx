@@ -20,6 +20,11 @@ export function TeacherLineSection() {
 
   const envReady = query.data?.envReady ?? false;
   const binding = (query.data?.binding ?? null) as Binding | null;
+  /** envReady 只代表「兩格都有填」，不代表填對；tokenValid 才是真的能用。 */
+  const tokenValid = query.data?.tokenValid ?? false;
+  const tokenLooksLikeUserId = query.data?.tokenLooksLikeUserId ?? false;
+  const tokenError = query.data?.tokenError ?? "";
+  const tokenBroken = envReady && !tokenValid;
 
   const handleTest = async () => {
     setSending(true);
@@ -53,6 +58,30 @@ export function TeacherLineSection() {
 
   return (
     <section className="teacher-card line-notify-card" aria-labelledby="line-notify-title">
+      {tokenBroken ? (
+        <div className="line-notify-warn" role="alert">
+          <strong>
+            {tokenLooksLikeUserId
+              ? "你填的 LINE_CHANNEL_ACCESS_TOKEN 是「Your user ID」，不是 Channel access token。"
+              : "LINE_CHANNEL_ACCESS_TOKEN 無法使用。"}
+          </strong>
+          <p>
+            {tokenLooksLikeUserId ? (
+              <>
+                請到 LINE Developers → 你的頻道 → <strong>Messaging API</strong> 頁籤，滑到最下面
+                「Channel access token」區塊按 <strong>Issue</strong>，複製那串 token 回 Render 覆蓋。
+                貼到「Basic settings」的 Your user ID 是收訊息的人，不是憑證。
+              </>
+            ) : (
+              <>
+                請確認 Render 的 <code>LINE_CHANNEL_ACCESS_TOKEN</code> 是從 Messaging API 頁籤
+                按 Issue 取得的那串（前後不要有空格、不要加 Bearer），改完 Save 後會重新部署。
+              </>
+            )}
+          </p>
+          {tokenError ? <p className="line-notify-warn-detail">LINE 回應：{tokenError}</p> : null}
+        </div>
+      ) : null}
       <header className="line-notify-head">
         <span className="line-notify-icon" aria-hidden="true">
           <MessageSquareText size={18} />
@@ -63,9 +92,13 @@ export function TeacherLineSection() {
             學生每次完成試卷（自由練習／錯題／限時／週測／複習中心）自動推播一條給你。
           </p>
         </div>
-        {envReady ? (
+        {envReady && tokenValid ? (
           <span className="line-notify-status is-ready">
             <CheckCircle2 size={13} aria-hidden="true" /> 已啟用
+          </span>
+        ) : envReady ? (
+          <span className="line-notify-status is-broken">
+            <Wrench size={13} aria-hidden="true" /> 金鑰有誤
           </span>
         ) : (
           <span className="line-notify-status is-pending">
