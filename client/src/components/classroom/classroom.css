@@ -1832,3 +1832,414 @@
     animation: none;
   }
 }
+   洋蔥動畫講解玩法（onion）
+   紫色洋蔥主題，舞臺 ＋ 分鏡播放器 ＋ 闖關 ＋ 結算
+   ============================================================ */
+
+.ol-page {
+  --onion: #8a5fb0;
+  --onion-l: #b794d6;
+  --onion-xl: #f3ecf8;
+  --onion-d: #6a4390;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 18px 16px 90px;
+  min-height: 80vh;
+}
+
+/* ---------- 通用按鈕 ---------- */
+.ol-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: 2px solid var(--onion);
+  border-radius: 999px;
+  padding: 9px 20px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
+}
+.ol-btn--primary { background: var(--onion); color: #fff; box-shadow: 0 4px 0 var(--onion-d); }
+.ol-btn--primary:hover { transform: translateY(-2px); box-shadow: 0 6px 0 var(--onion-d); }
+.ol-btn--primary:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--onion-d); }
+.ol-btn--ghost { background: transparent; color: var(--onion); }
+.ol-btn--ghost:hover { background: var(--onion-xl); }
+.ol-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.ol-exit {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: none;
+  border: none;
+  color: var(--cr-muted);
+  font-size: 13px;
+  cursor: pointer;
+  padding: 6px 4px;
+}
+.ol-exit:hover { color: var(--onion); }
+.ol-exit--bar { font-size: 13px; }
+
+/* ---------- 開始畫面 ---------- */
+.ol-start {
+  background: var(--cr-card);
+  border-radius: 22px;
+  border: 2px solid var(--cr-line);
+  padding: 30px 26px 26px;
+  text-align: center;
+  box-shadow: 0 6px 0 rgba(138, 95, 176, 0.12);
+}
+.ol-start-mascot { display: flex; justify-content: center; margin-bottom: 4px; }
+.ol-tag {
+  display: inline-block;
+  background: var(--onion-xl);
+  color: var(--onion-d);
+  font-size: 12px;
+  font-weight: 800;
+  padding: 4px 14px;
+  border-radius: 999px;
+  letter-spacing: 0.04em;
+}
+.ol-start h2 { margin: 10px 0 4px; font-size: 23px; color: var(--cr-ink); }
+.ol-subject-line { margin: 0 0 12px; font-size: 13px; color: var(--cr-muted); font-weight: 600; }
+.ol-desc { margin: 0 auto 16px; max-width: 460px; font-size: 14.5px; line-height: 1.7; color: var(--cr-ink); }
+.ol-rules {
+  list-style: none;
+  padding: 0;
+  margin: 0 auto 16px;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.ol-rules li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13.5px;
+  color: var(--cr-muted);
+  background: var(--onion-xl);
+  border-radius: 10px;
+  padding: 8px 14px;
+}
+.ol-rules svg { color: var(--onion); flex-shrink: 0; }
+.ol-best { font-size: 13px; color: var(--cr-orange-d); font-weight: 700; margin: 0 0 14px; }
+.ol-best--new { color: var(--cr-muted); }
+.ol-start-btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 14px; }
+
+/* ---------- 頂部列 ---------- */
+.ol-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 14px;
+  padding: 0 2px;
+}
+.ol-bar-title { display: inline-flex; align-items: center; gap: 6px; font-size: 15px; font-weight: 800; color: var(--onion-d); }
+.ol-quiz-progress { font-size: 13px; color: var(--cr-muted); font-weight: 600; }
+.ol-progress-dots { display: inline-flex; gap: 5px; }
+.ol-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--cr-line);
+  transition: background 0.2s, transform 0.2s;
+}
+.ol-dot.is-done { background: var(--onion-l); }
+.ol-dot.is-on { background: var(--onion); transform: scale(1.35); }
+
+/* ---------- 動畫舞臺 ---------- */
+.ol-stage {
+  background: linear-gradient(180deg, #faf6ff 0%, #f0e6fa 100%);
+  border-radius: 22px;
+  border: 2px solid var(--onion-l);
+  padding: 18px 16px 14px;
+  min-height: 280px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+.ol-stage::before {
+  content: "";
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 64px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(138, 95, 176, 0.18);
+  filter: blur(3px);
+}
+.ol-stage-scene {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 14px;
+  flex: 1;
+  width: 100%;
+  min-height: 200px;
+  padding-top: 10px;
+}
+.ol-stage-floor {
+  position: absolute;
+  bottom: 56px;
+  left: 8%;
+  right: 8%;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--onion-l), transparent);
+  border-radius: 2px;
+  opacity: 0.5;
+}
+.ol-mascot-slot { display: flex; align-items: flex-end; }
+.ol-caption {
+  margin: 12px auto 0;
+  max-width: 480px;
+  text-align: center;
+  font-size: 15.5px;
+  line-height: 1.65;
+  color: var(--cr-ink);
+  font-weight: 600;
+  min-height: 50px;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 12px;
+  padding: 8px 16px;
+}
+.ol-caption { animation: ol-cap-in 0.4s ease both; }
+@keyframes ol-cap-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------- 洋蔥角色動畫 ---------- */
+.ol-onion { animation: ol-pop 0.4s ease both; }
+@keyframes ol-pop { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
+.ol-onion--bob { animation: ol-pop 0.4s ease both, ol-bob 1.6s ease-in-out infinite 0.4s; }
+@keyframes ol-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+.ol-onion--hop { animation: ol-pop 0.4s ease both, ol-hop 0.8s ease-in-out infinite 0.4s; }
+@keyframes ol-hop { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-14px); } }
+
+.ol-arm { transform-origin: 88px 86px; transition: transform 0.3s ease; }
+.ol-arm-l { transform-origin: 32px 86px; }
+.ol-arm--wave { animation: ol-wave 0.5s ease-in-out infinite alternate; }
+@keyframes ol-wave { from { transform: rotate(-12deg); } to { transform: rotate(18deg); } }
+.ol-arm--point { transform: rotate(38deg) translateY(-4px); }
+.ol-arm--cheer { animation: ol-cheer 0.6s ease-in-out infinite alternate; }
+@keyframes ol-cheer { from { transform: rotate(-30deg); } to { transform: rotate(-60deg); } }
+.ol-arm--think { transform: rotate(20deg) translateY(-6px); }
+
+.ol-think { animation: ol-fade 0.5s ease both; }
+@keyframes ol-fade { from { opacity: 0; } to { opacity: 1; } }
+
+/* ---------- 圓餅教具 ---------- */
+.ol-prop-empty { width: 120px; height: 120px; }
+.ol-pie { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.ol-pie-svg { filter: drop-shadow(0 3px 6px rgba(138, 95, 176, 0.2)); }
+.ol-pie-slice { animation: ol-slice-in 0.35s ease both; }
+@keyframes ol-slice-in { from { opacity: 0; transform: scale(0.6); transform-origin: 50px 50px; } to { opacity: 1; transform: scale(1); } }
+.ol-pie-label {
+  background: var(--onion);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 800;
+  padding: 2px 12px;
+  border-radius: 999px;
+}
+.ol-pies { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: center; }
+.ol-op { font-size: 26px; font-weight: 900; color: var(--onion-d); }
+
+/* ---------- 控制列 ---------- */
+.ol-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+.ol-seek { display: flex; align-items: center; gap: 10px; }
+.ol-seek-btn {
+  background: var(--onion-xl);
+  border: 1.5px solid var(--onion-l);
+  color: var(--onion-d);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.ol-seek-btn:hover:not(:disabled) { background: var(--onion-l); color: #fff; }
+.ol-seek-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+.ol-seek-now { font-size: 12.5px; color: var(--cr-muted); font-weight: 600; }
+
+/* ---------- 闖關 ---------- */
+.ol-quiz {
+  background: var(--cr-card);
+  border-radius: 22px;
+  border: 2px solid var(--cr-line);
+  padding: 24px 22px;
+}
+.ol-q-prompt { font-size: 19px; font-weight: 700; color: var(--cr-ink); margin: 0 0 18px; text-align: center; }
+.ol-q-options { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+@media (max-width: 520px) { .ol-q-options { grid-template-columns: 1fr; } }
+.ol-opt {
+  border: 2px solid var(--cr-line);
+  background: #fff;
+  border-radius: 14px;
+  padding: 14px 16px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--cr-ink);
+  cursor: pointer;
+  transition: transform 0.12s, border-color 0.12s, background 0.12s;
+}
+.ol-opt:hover:not(:disabled) { transform: translateY(-2px); border-color: var(--onion-l); background: var(--onion-xl); }
+.ol-opt--right { border-color: var(--cr-green); background: #eef6e9; color: #3d6b2c; }
+.ol-opt--wrong { border-color: var(--cr-red); background: #fbe9e4; color: #963c2c; }
+.ol-opt:disabled { cursor: default; }
+
+.ol-feedback { margin-top: 18px; padding: 16px 18px; border-radius: 14px; animation: ol-cap-in 0.3s ease both; }
+.ol-feedback.is-right { background: #eef6e9; border: 1.5px solid #bcd9a8; }
+.ol-feedback.is-wrong { background: #fbe9e4; border: 1.5px solid #e6b3a4; }
+.ol-feedback-head { margin: 0 0 6px; font-size: 16px; font-weight: 800; }
+.ol-feedback.is-right .ol-feedback-head { color: #3d6b2c; }
+.ol-feedback.is-wrong .ol-feedback-head { color: #963c2c; }
+.ol-feedback-exp { margin: 0 0 14px; font-size: 14px; line-height: 1.65; color: var(--cr-ink); }
+
+/* ---------- 結算 ---------- */
+.ol-result {
+  background: var(--cr-card);
+  border-radius: 22px;
+  border: 2px solid var(--cr-line);
+  padding: 30px 26px;
+  text-align: center;
+}
+.ol-result-mascot { display: flex; justify-content: center; margin-bottom: 6px; }
+.ol-result h2 { margin: 8px 0 14px; font-size: 21px; color: var(--cr-ink); }
+.ol-stars { display: flex; gap: 8px; justify-content: center; margin-bottom: 12px; }
+.ol-star { color: var(--cr-line); transition: color 0.3s, transform 0.3s; }
+.ol-star.is-on { color: var(--cr-gold); animation: ol-star-pop 0.5s ease both; }
+.ol-star.is-on:nth-child(2) { animation-delay: 0.18s; }
+.ol-star.is-on:nth-child(3) { animation-delay: 0.36s; }
+@keyframes ol-star-pop { 0% { transform: scale(0); } 60% { transform: scale(1.3); } 100% { transform: scale(1); } }
+.ol-result-score { margin: 0 0 8px; font-size: 15px; color: var(--cr-ink); }
+.ol-result-best { margin: 0 0 16px; font-size: 13px; color: var(--cr-muted); }
+.ol-result-btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+/* ---------- 選課介面 ---------- */
+.ol-picker { max-width: 720px; margin: 0 auto; text-align: center; }
+.ol-picker-head { margin-bottom: 18px; }
+.ol-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin-bottom: 18px;
+}
+@media (max-width: 560px) { .ol-picker-grid { grid-template-columns: 1fr; } }
+.ol-lesson-card {
+  --lc: var(--onion);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  text-align: left;
+  background: var(--cr-card);
+  border: 2px solid var(--cr-line);
+  border-left: 5px solid var(--lc);
+  border-radius: 16px;
+  padding: 16px 16px 14px;
+  cursor: pointer;
+  transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s;
+}
+.ol-lesson-card:hover { transform: translateY(-3px); border-color: var(--lc); box-shadow: 0 8px 18px rgba(0,0,0,0.08); }
+.ol-lesson-card:active { transform: translateY(-1px); }
+.ol-lc-subject {
+  color: #fff;
+  font-size: 11.5px;
+  font-weight: 800;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: var(--lc);
+}
+.ol-lc-title { font-size: 16px; font-weight: 800; color: var(--cr-ink); line-height: 1.35; }
+.ol-lc-meta { font-size: 12px; color: var(--cr-muted); font-weight: 600; }
+.ol-lc-desc { font-size: 13px; line-height: 1.6; color: var(--cr-ink); opacity: 0.85; }
+.ol-lc-cta { font-size: 13px; font-weight: 700; color: var(--lc); display: inline-flex; align-items: center; gap: 3px; margin-top: 4px; }
+
+/* ---------- 字卡教具（國語） ---------- */
+.ol-text-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: #fff;
+  border: 2.5px solid #8a5fb0;
+  border-radius: 18px;
+  padding: 18px 26px;
+  box-shadow: 0 6px 14px rgba(138, 95, 176, 0.18);
+  animation: ol-cap-in 0.4s ease both;
+}
+.ol-text-card.is-warn { border-color: #e07a4f; box-shadow: 0 6px 14px rgba(224, 122, 79, 0.18); }
+.ol-text-main { font-size: 30px; font-weight: 900; color: #2a1d3a; letter-spacing: 1px; }
+.ol-text-sub { font-size: 12.5px; color: #8a5fb0; font-weight: 700; background: #f3ecf8; padding: 2px 10px; border-radius: 999px; }
+.ol-text-card.is-warn .ol-text-sub { color: #c0613a; background: #fce9e0; }
+
+/* ---------- 循環圖教具（自然） ---------- */
+.ol-cycle { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.ol-cycle-svg { filter: drop-shadow(0 3px 6px rgba(138, 95, 176, 0.18)); }
+.ol-cycle-ring { animation: ol-cycle-spin 16s linear infinite; transform-origin: 60px 60px; }
+@keyframes ol-cycle-spin { to { transform: rotate(360deg); } }
+.ol-cycle-node { transition: r 0.3s, fill 0.3s; animation: ol-pop 0.4s ease both; }
+.ol-cycle-node.is-on { animation: ol-cycle-pulse 1.2s ease-in-out infinite, ol-pop 0.4s ease both; }
+@keyframes ol-cycle-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.12); } }
+.ol-cycle-arrow { transition: stroke 0.3s, stroke-width 0.3s; }
+.ol-cycle-arrow.is-on { animation: ol-fade 0.4s ease both; }
+.ol-cycle-now {
+  background: #8a5fb0;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 800;
+  padding: 3px 14px;
+  border-radius: 999px;
+  animation: ol-cap-in 0.4s ease both;
+}
+
+/* ---------- 幾何形教具（數學） ---------- */
+.ol-shape { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.ol-shape-svg { filter: drop-shadow(0 3px 6px rgba(138, 95, 176, 0.18)); }
+.ol-shape-tri { animation: ol-shape-in 0.5s ease both; transform-origin: 50px 80px; }
+@keyframes ol-shape-in { from { opacity: 0; transform: scale(0.7); } to { opacity: 1; transform: scale(1); } }
+.ol-shape-label {
+  background: #8a5fb0;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 800;
+  padding: 2px 12px;
+  border-radius: 999px;
+}
+
+/* ---------- 動畫降級 ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .ol-onion,
+  .ol-onion--bob,
+  .ol-onion--hop,
+  .ol-arm--wave,
+  .ol-arm--cheer,
+  .ol-pie-slice,
+  .ol-caption,
+  .ol-star.is-on,
+  .ol-cycle-ring,
+  .ol-cycle-node,
+  .ol-cycle-node.is-on,
+  .ol-shape-tri,
+  .ol-text-card {
+    animation: none !important;
+  }
+  .ol-btn--primary:hover { transform: none; }
+  .ol-lesson-card:hover { transform: none; }
+}
+

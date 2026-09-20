@@ -8,6 +8,7 @@ import FactorDuoGame from "@/components/classroom/FactorDuoGame";
 import MeteorGame from "@/components/classroom/MeteorGame";
 import RectGame from "@/components/classroom/RectGame";
 import OnionLesson from "@/components/classroom/OnionLesson";
+import OnionAcademyGame from "@/components/classroom/OnionAcademyGame";
 import {
   TRAP_QUESTIONS,
   buildChoiceDeck,
@@ -26,6 +27,7 @@ import { recordPipiEvent } from "@/game/pipiCompanion";
  */
 const GAME_META: Record<string, { title: string }> = {
   onion: { title: "分數工坊" },
+  "onion-academy": { title: "洋蔥動畫講解" },
   flip: { title: "翻牌問答" },
   image: { title: "看圖選答" },
   bolt: { title: "是非閃電" },
@@ -133,6 +135,15 @@ export default function ClassroomPlay() {
       return (
         <OnionLesson
           key="onion"
+          bestStars={record?.stars}
+          onBest={(r) => updateBest({ stars: r.stars, correct: r.correct, total: r.total })}
+          onExit={exit}
+        />
+      );
+    case "onion-academy":
+      return (
+        <OnionAcademyGame
+          key="onion-academy"
           bestStars={record?.stars}
           onBest={(r) => updateBest({ stars: r.stars, correct: r.correct, total: r.total })}
           onExit={exit}
