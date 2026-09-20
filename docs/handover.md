@@ -712,3 +712,14 @@ curl -s https://xue-gr3a.onrender.com/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | h
   - 督學台：`envReady && !tokenValid` 時狀態改顯示紅色「**金鑰有誤**」，並出現紅框警示，直接用繁中說明要到 Messaging API 頁籤按 Issue 取得 token，同時顯示 LINE 的實際回應。
   - 測試：`TeacherLineSection.test.tsx` 4 項通過；`tsc --noEmit` 乾淨。
 - **待老師操作**：到 LINE Developers → 頻道 → Messaging API 頁籤最下方按 Issue → 複製 token → 回 Render 覆蓋 `LINE_CHANNEL_ACCESS_TOKEN` → Save（等 5–10 分鐘重新部署）。之後才是步驟 3（Webhook URL）與步驟 4（加好友綁定）。
+
+## 2026-09-20（晚上）洋蔥學院改版：合併頁面、修正學段重複、課程擴充到 24 堂
+- **合併頁面**：分數工坊（`/classroom/onion`）與洋蔥動畫講解（`/classroom/onion-academy`）原本是兩個獨立頁面、教室裡兩張卡片。新增 `client/src/components/classroom/OnionAcademyHub.tsx`，同一頁用 Tab 切換「動畫課／分數工坊」；`ClassroomPlay` 兩個 case 合併，舊網址 `/classroom/onion` 仍可用並自動帶到分數工坊分頁；`QuizRoom` 兩張卡合成一張「洋蔥學院」。
+- **修正內容分類重複（老師實際反應的問題）**：`PHOTOSYNTHESIS_LESSON` 原本 `stages:["國小","國中"]`、`grade:"五上・七上"`，同一堂課在兩個學段都出現，國中看完國小又來一遍。拆成國小版（五上，葉子綠色工廠的整廠概念）＋ 國中版 `photosynthesis-junior`（七上，葉綠餅／基質、光反應與暗反應、總反應式、與呼吸作用對照）。**並加測試鎖住約定**：每堂課 `stages` 長度必須為 1、id 不可重複。
+- **新增資料驅動場景 `PropScene`**（`OnionAcademyScenes.tsx`）：過去每堂課都要手寫一整個專屬 SVG 場景，課程量上不去。改成 `LessonStage` 先找專屬場景，找不到就依 `frame.prop` 畫教具；新增 prop kinds：`bars`（長條圖）、`flow`（流程）、`numberLine`（數線）、`balance`（天平），並把 `shape` 擴充為 triangle/rect/circle。樣式在 `classroom.css` 的 `.gp-*`。**之後新增一堂課只要寫資料，不必碰動畫邏輯**。
+- **新增 14 堂課**（`client/src/game/onionAcademyLessons.ts`，9 → 24 堂，3 → 4 科目）：
+  - 國小 8 堂：長度單位換算（三下）、因數與倍數（五上）、分數乘以整數（六上）、標點符號（三上）、食物鏈（五下）、統計圖表（五下）、圓周率與圓面積（六下）、把字句與被字句（四下）
+  - 國中 6 堂：光合作用國中版（七上）、物理 vs 化學變化（七上）、細胞分裂（七下）、速度與速率（八上）、板塊運動與地震（九上）、英語現在式 vs 現在進行式（七上）
+  - 每堂 7 幀分鏡（含 2 次中途提問）＋ 5 題闖關（含逐級提示與詳解）＋ 重點整理
+- **測試**：`tsc --noEmit` 乾淨；`client/src/components/classroom` 與 `client/src/lib` 共 45 檔 321 項全數通過。`QuizRoom.test.tsx` 與 `onionAcademyLessons.test.ts` 已同步更新（入口改名、堂數改為 >=24 並斷言四科目）。
+- **待辦（老師說後面再優化深度）**：課程深度可再加；`OnionAcademyScenes` 測試仍缺失（記憶中既有待辦）。
