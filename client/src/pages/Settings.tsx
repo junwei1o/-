@@ -91,6 +91,9 @@ function LearningSettingsSection() {
             <option value={4}>四年級</option>
             <option value={5}>五年級</option>
             <option value={6}>六年級</option>
+            <option value={7}>七年級（國中）</option>
+            <option value={8}>八年級（國中）</option>
+            <option value={9}>九年級（國中）</option>
           </select>
         </label>
         <label className="settings-learning-item" htmlFor="settings-difficulty-select">

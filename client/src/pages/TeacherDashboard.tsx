@@ -456,7 +456,7 @@ export default function TeacherDashboard() {
                   <label>
                     年級
                     <select value={grade} onChange={(event) => setGrade(Number(event.target.value))}>
-                      {[3, 4, 5, 6].map((item) => <option key={item} value={item}>{item} 年級</option>)}
+                      {[3, 4, 5, 6, 7, 8, 9].map((item) => <option key={item} value={item}>{item} 年級</option>)}
                     </select>
                   </label>
                   <label>

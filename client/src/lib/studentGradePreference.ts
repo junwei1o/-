@@ -1,10 +1,10 @@
 export const STUDENT_GRADE_PREFERENCE_STORAGE_KEY = "xue-adventure-filters-v1";
 
-export type StudentGradePreference = 3 | 4 | 5 | 6 | null;
+export type StudentGradePreference = 3 | 4 | 5 | 6 | 7 | 8 | 9 | null;
 
 import { readStoredJson } from "@/utils/storage";
 
-const VALID_STUDENT_GRADES = new Set([3, 4, 5, 6]);
+const VALID_STUDENT_GRADES = new Set([3, 4, 5, 6, 7, 8, 9]);
 
 export function loadStudentGradePreference(): StudentGradePreference {
   if (typeof window === "undefined") return null;

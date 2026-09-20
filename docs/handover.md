@@ -592,3 +592,11 @@ curl -s https://xue-gr3a.onrender.com/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | h
 - 樣式：classroom.css 新增 `.ol-ask`（提問卡）、`.ol-hint`（提示條）、`.ol-summary*`（小結頁）。
 - 測試：OnionAcademyGame.test 3→5 例（含「中途提問→略過繼續」「看完→重點整理→闖關」）；資料測試新增 ask/takeaways/hints 完整性，該檔 51→67 例。
 - 驗收：tsc 0 錯；lib＋components＋game 共 122 檔 802 例全綠；vite build 通過。
+
+## 2026-09-20 P0-2：國中配套題庫 40 題＋年級打通到九年級
+- 新增 `data/junior_high_bank.json`：七年級 40 題，對應四堂國中動畫微課（負數與數線 10、一元一次方程式 10、細胞構造 10、光合作用 10），數學 20／自然 20，**正解位置刻意平均分布（每個選項各 10 題）**。
+- `lib/questionBank.ts`：抽出 `rowsFrom(seed)`，內建題庫改為「國小 500 檔 ＋ 國中檔」合併；兩份都走同一個 `isValidQuestion`（id 必填、選項數、答案索引、knowledge 非空）。
+- 年級打通：`lib/studentGradePreference.ts` 的 VALID_STUDENT_GRADES 3–6 → **3–9**（型別同步）；`Settings.tsx` 年級下拉新增七／八／九年級（國中）；`TeacherDashboard.tsx` 派卷年級下拉改 3–9。
+- 注意：`principleGuideTipCopy` 仍以「≤4／其他」分兩級文案，國中會走 upper 級（可接受，未改動）。
+- 新增 `client/src/lib/questionBank.test.ts`（6 例）：國小題數≥1090、國中 40 題、欄位完整、id 不重複、正解分布平均、四主題齊備；年級偏好接受 7/8/9、拒絕 10。
+- 驗收：tsc 0 錯；前端 149 檔 960 例全綠；vite build 通過；繁體檢查零命中。

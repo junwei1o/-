@@ -1,0 +1,1005 @@
+{
+  "note": "國中七年級配套題庫：對應四堂國中動畫微課（負數與數線、一元一次方程式、細胞構造、光合作用），每課 10 題。",
+  "questions": [
+    {
+      "id": "jh-001",
+      "grade": 7,
+      "subject": "數學",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "數學領域",
+      "learningTopic": "負數與數線",
+      "learningPerformance": "能在數線上標記正負數，並比較大小、進行簡單加減。",
+      "learningContent": "負數的表示、數線三要素（原點、正方向、單位長度）與正負數加減。",
+      "competency": "能以數線解釋生活情境中的負數量（溫度、海拔、盈虧）。",
+      "prompt": "氣象報告說今天凌晨是「零下 8 度」，用負數怎麼表示？",
+      "options": [
+        "8°C",
+        "−8°C",
+        "0.8°C",
+        "+8°C"
+      ],
+      "answer": 1,
+      "explanation": "比 0 度低 8 度，以負號記為 −8°C。",
+      "knowledge": [
+        "負數",
+        "數線"
+      ]
+    },
+    {
+      "id": "jh-002",
+      "grade": 7,
+      "subject": "數學",
+      "questionType": "選擇題",
+      "difficulty": "挑戰",
+      "curriculumDomain": "數學領域",
+      "learningTopic": "負數與數線",
+      "learningPerformance": "能在數線上標記正負數，並比較大小、進行簡單加減。",
+      "learningContent": "負數的表示、數線三要素（原點、正方向、單位長度）與正負數加減。",
+      "competency": "能以數線解釋生活情境中的負數量（溫度、海拔、盈虧）。",
+      "prompt": "在數線上，−3 會在 −7 的哪一邊？",
+      "options": [
+        "左邊",
+        "同一點",
+        "右邊",
+        "無法判斷"
+      ],
+      "answer": 2,
+      "explanation": "數線越往右越大：−3 ＞ −7，所以 −3 在 −7 的右邊。",
+      "knowledge": [
+        "負數",
+        "數線"
+      ]
+    },
+    {
+      "id": "jh-003",
+      "grade": 7,
+      "subject": "數學",
+      "questionType": "選擇題",
+      "difficulty": "基礎",
+      "curriculumDomain": "數學領域",
+      "learningTopic": "負數與數線",
+      "learningPerformance": "能在數線上標記正負數，並比較大小、進行簡單加減。",
+      "learningContent": "負數的表示、數線三要素（原點、正方向、單位長度）與正負數加減。",
+      "competency": "能以數線解釋生活情境中的負數量（溫度、海拔、盈虧）。",
+      "prompt": "計算 −5 ＋ 8 ＝ ？",
+      "options": [
+        "−3",
+        "13",
+        "−13",
+        "3"
+      ],
+      "answer": 3,
+      "explanation": "從 −5 往右（正方向）走 8 格，會停在 3。",
+      "knowledge": [
+        "負數",
+        "數線"
+      ]
+    },
+    {
+      "id": "jh-004",
+      "grade": 7,
+      "subject": "數學",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "數學領域",
+      "learningTopic": "負數與數線",
+      "learningPerformance": "能在數線上標記正負數，並比較大小、進行簡單加減。",
+      "learningContent": "負數的表示、數線三要素（原點、正方向、單位長度）與正負數加減。",
+      "competency": "能以數線解釋生活情境中的負數量（溫度、海拔、盈虧）。",
+      "prompt": "計算 2 − 9 ＝ ？",
+      "options": [
+        "−7",
+        "7",
+        "11",
+        "−11"
+      ],
+      "answer": 0,
+      "explanation": "減 9 等於往左走 9 格，從 2 走到 −7。",
+      "knowledge": [
+        "負數",
+        "數線"
+      ]
+    },
+    {
+      "id": "jh-005",
+      "grade": 7,
+      "subject": "數學",
+      "questionType": "選擇題",
+      "difficulty": "挑戰",
+      "curriculumDomain": "數學領域",
+      "learningTopic": "負數與數線",
+      "learningPerformance": "能在數線上標記正負數，並比較大小、進行簡單加減。",
+      "learningContent": "負數的表示、數線三要素（原點、正方向、單位長度）與正負數加減。",
+      "competency": "能以數線解釋生活情境中的負數量（溫度、海拔、盈虧）。",
+      "prompt": "計算 (−4) × (−3) ＝ ？",
+      "options": [
+        "−12",
+        "12",
+        "7",
+        "−7"
+      ],
+      "answer": 1,
+      "explanation": "負號代表「反方向」，反兩次回到正方向，所以負負得正：4×3＝12。",
+      "knowledge": [
+        "負數",
+        "數線"
+      ]
+    },
+    {
+      "id": "jh-006",
+      "grade": 7,
+      "subject": "數學",
+      "questionType": "選擇題",
+      "difficulty": "基礎",
+      "curriculumDomain": "數學領域",
+      "learningTopic": "負數與數線",
+      "learningPerformance": "能在數線上標記正負數，並比較大小、進行簡單加減。",
+      "learningContent": "負數的表示、數線三要素（原點、正方向、單位長度）與正負數加減。",
+      "competency": "能以數線解釋生活情境中的負數量（溫度、海拔、盈虧）。",
+      "prompt": "下列哪一個數最小？",
+      "options": [
+        "−2",
+        "0",
+        "−9",
+        "5"
+      ],
+      "answer": 2,
+      "explanation": "負數離 0 越遠越小；−9 離 0 最遠，所以最小。",
+      "knowledge": [
+        "負數",
+        "數線"
+      ]
+    },
+    {
+      "id": "jh-007",
+      "grade": 7,
+      "subject": "數學",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "數學領域",
+      "learningTopic": "負數與數線",
+      "learningPerformance": "能在數線上標記正負數，並比較大小、進行簡單加減。",
+      "learningContent": "負數的表示、數線三要素（原點、正方向、單位長度）與正負數加減。",
+      "competency": "能以數線解釋生活情境中的負數量（溫度、海拔、盈虧）。",
+      "prompt": "−6 的相反數是多少？",
+      "options": [
+        "−6",
+        "0",
+        "1/6",
+        "6"
+      ],
+      "answer": 3,
+      "explanation": "到 0 距離相同、方向相反的兩個數互為相反數，−6 的相反數是 6。",
+      "knowledge": [
+        "負數",
+        "數線"
+      ]
+    },
+    {
+      "id": "jh-008",
+      "grade": 7,
+      "subject": "數學",
+      "questionType": "選擇題",
+      "difficulty": "挑戰",
+      "curriculumDomain": "數學領域",
+      "learningTopic": "負數與數線",
+      "learningPerformance": "能在數線上標記正負數，並比較大小、進行簡單加減。",
+      "learningContent": "負數的表示、數線三要素（原點、正方向、單位長度）與正負數加減。",
+      "competency": "能以數線解釋生活情境中的負數量（溫度、海拔、盈虧）。",
+      "prompt": "從數線上的 −2 往左走 5 格，會到哪一個數？",
+      "options": [
+        "−7",
+        "3",
+        "−3",
+        "7"
+      ],
+      "answer": 0,
+      "explanation": "往左是負方向：−2 − 5 ＝ −7。",
+      "knowledge": [
+        "負數",
+        "數線"
+      ]
+    },
+    {
+      "id": "jh-009",
+      "grade": 7,
+      "subject": "數學",
+      "questionType": "選擇題",
+      "difficulty": "基礎",
+      "curriculumDomain": "數學領域",
+      "learningTopic": "負數與數線",
+      "learningPerformance": "能在數線上標記正負數，並比較大小、進行簡單加減。",
+      "learningContent": "負數的表示、數線三要素（原點、正方向、單位長度）與正負數加減。",
+      "competency": "能以數線解釋生活情境中的負數量（溫度、海拔、盈虧）。",
+      "prompt": "溫度原本是 3°C，下降 10°C 後是幾度？",
+      "options": [
+        "7°C",
+        "−7°C",
+        "13°C",
+        "−13°C"
+      ],
+      "answer": 1,
+      "explanation": "3 − 10 ＝ −7，降到 0 度以下要用負數表示。",
+      "knowledge": [
+        "負數",
+        "數線"
+      ]
+    },
+    {
+      "id": "jh-010",
+      "grade": 7,
+      "subject": "數學",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "數學領域",
+      "learningTopic": "負數與數線",
+      "learningPerformance": "能在數線上標記正負數，並比較大小、進行簡單加減。",
+      "learningContent": "負數的表示、數線三要素（原點、正方向、單位長度）與正負數加減。",
+      "competency": "能以數線解釋生活情境中的負數量（溫度、海拔、盈虧）。",
+      "prompt": "下列哪一個大小關係是正確的？",
+      "options": [
+        "−1 ＜ −4",
+        "−4 ＞ 0",
+        "−4 ＜ −1",
+        "0 ＜ −1"
+      ],
+      "answer": 2,
+      "explanation": "數線右邊較大：−1 在 −4 右邊，所以 −4 ＜ −1，兩者也都小於 0。",
+      "knowledge": [
+        "負數",
+        "數線"
+      ]
+    },
+    {
+      "id": "jh-011",
+      "grade": 7,
+      "subject": "數學",
+      "questionType": "選擇題",
+      "difficulty": "挑戰",
+      "curriculumDomain": "數學領域",
+      "learningTopic": "一元一次方程式",
+      "learningPerformance": "能列出並求解一元一次方程式，理解等式兩邊同加減乘除的性質。",
+      "learningContent": "一元一次方程式的列式與求解、移項法則。",
+      "competency": "能把生活情境轉成方程式並檢驗答案。",
+      "prompt": "解方程式 x ＋ 3 ＝ 8，x ＝ ？",
+      "options": [
+        "3",
+        "11",
+        "8",
+        "5"
+      ],
+      "answer": 3,
+      "explanation": "兩邊同時減 3（或把 ＋3 移到右邊變 −3）：x ＝ 8 − 3 ＝ 5。",
+      "knowledge": [
+        "方程式",
+        "移項"
+      ]
+    },
+    {
+      "id": "jh-012",
+      "grade": 7,
+      "subject": "數學",
+      "questionType": "選擇題",
+      "difficulty": "基礎",
+      "curriculumDomain": "數學領域",
+      "learningTopic": "一元一次方程式",
+      "learningPerformance": "能列出並求解一元一次方程式，理解等式兩邊同加減乘除的性質。",
+      "learningContent": "一元一次方程式的列式與求解、移項法則。",
+      "competency": "能把生活情境轉成方程式並檢驗答案。",
+      "prompt": "解方程式 x − 2 ＝ 6，x ＝ ？",
+      "options": [
+        "8",
+        "4",
+        "12",
+        "3"
+      ],
+      "answer": 0,
+      "explanation": "−2 移到右邊變 ＋2：x ＝ 6 ＋ 2 ＝ 8。",
+      "knowledge": [
+        "方程式",
+        "移項"
+      ]
+    },
+    {
+      "id": "jh-013",
+      "grade": 7,
+      "subject": "數學",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "數學領域",
+      "learningTopic": "一元一次方程式",
+      "learningPerformance": "能列出並求解一元一次方程式，理解等式兩邊同加減乘除的性質。",
+      "learningContent": "一元一次方程式的列式與求解、移項法則。",
+      "competency": "能把生活情境轉成方程式並檢驗答案。",
+      "prompt": "解方程式 3x ＝ 12，x ＝ ？",
+      "options": [
+        "36",
+        "4",
+        "9",
+        "15"
+      ],
+      "answer": 1,
+      "explanation": "兩邊同除以 3：x ＝ 12 ÷ 3 ＝ 4。",
+      "knowledge": [
+        "方程式",
+        "移項"
+      ]
+    },
+    {
+      "id": "jh-014",
+      "grade": 7,
+      "subject": "數學",
+      "questionType": "選擇題",
+      "difficulty": "挑戰",
+      "curriculumDomain": "數學領域",
+      "learningTopic": "一元一次方程式",
+      "learningPerformance": "能列出並求解一元一次方程式，理解等式兩邊同加減乘除的性質。",
+      "learningContent": "一元一次方程式的列式與求解、移項法則。",
+      "competency": "能把生活情境轉成方程式並檢驗答案。",
+      "prompt": "解方程式 2x ＋ 1 ＝ 9，x ＝ ？",
+      "options": [
+        "5",
+        "3",
+        "4",
+        "8"
+      ],
+      "answer": 2,
+      "explanation": "先移項：2x ＝ 9 − 1 ＝ 8，再除以 2 得 x ＝ 4。",
+      "knowledge": [
+        "方程式",
+        "移項"
+      ]
+    },
+    {
+      "id": "jh-015",
+      "grade": 7,
+      "subject": "數學",
+      "questionType": "選擇題",
+      "difficulty": "基礎",
+      "curriculumDomain": "數學領域",
+      "learningTopic": "一元一次方程式",
+      "learningPerformance": "能列出並求解一元一次方程式，理解等式兩邊同加減乘除的性質。",
+      "learningContent": "一元一次方程式的列式與求解、移項法則。",
+      "competency": "能把生活情境轉成方程式並檢驗答案。",
+      "prompt": "解方程式 5x − 4 ＝ 11，x ＝ ？",
+      "options": [
+        "5",
+        "7",
+        "15",
+        "3"
+      ],
+      "answer": 3,
+      "explanation": "5x ＝ 11 ＋ 4 ＝ 15，x ＝ 15 ÷ 5 ＝ 3。",
+      "knowledge": [
+        "方程式",
+        "移項"
+      ]
+    },
+    {
+      "id": "jh-016",
+      "grade": 7,
+      "subject": "數學",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "數學領域",
+      "learningTopic": "一元一次方程式",
+      "learningPerformance": "能列出並求解一元一次方程式，理解等式兩邊同加減乘除的性質。",
+      "learningContent": "一元一次方程式的列式與求解、移項法則。",
+      "competency": "能把生活情境轉成方程式並檢驗答案。",
+      "prompt": "x ＝ 2 是哪一個方程式的解？",
+      "options": [
+        "3x ＋ 1 ＝ 7",
+        "x ＋ 1 ＝ 2",
+        "2x ＝ 6",
+        "x − 2 ＝ 2"
+      ],
+      "answer": 0,
+      "explanation": "代入檢驗：3×2＋1 ＝ 7 成立；其餘代入都不相等。",
+      "knowledge": [
+        "方程式",
+        "移項"
+      ]
+    },
+    {
+      "id": "jh-017",
+      "grade": 7,
+      "subject": "數學",
+      "questionType": "選擇題",
+      "difficulty": "挑戰",
+      "curriculumDomain": "數學領域",
+      "learningTopic": "一元一次方程式",
+      "learningPerformance": "能列出並求解一元一次方程式，理解等式兩邊同加減乘除的性質。",
+      "learningContent": "一元一次方程式的列式與求解、移項法則。",
+      "competency": "能把生活情境轉成方程式並檢驗答案。",
+      "prompt": "把「＋5」從等號左邊移到右邊，會變成什麼？",
+      "options": [
+        "＋5",
+        "−5",
+        "×5",
+        "÷5"
+      ],
+      "answer": 1,
+      "explanation": "移項要變號：加變減，所以 ＋5 過去變成 −5。",
+      "knowledge": [
+        "方程式",
+        "移項"
+      ]
+    },
+    {
+      "id": "jh-018",
+      "grade": 7,
+      "subject": "數學",
+      "questionType": "選擇題",
+      "difficulty": "基礎",
+      "curriculumDomain": "數學領域",
+      "learningTopic": "一元一次方程式",
+      "learningPerformance": "能列出並求解一元一次方程式，理解等式兩邊同加減乘除的性質。",
+      "learningContent": "一元一次方程式的列式與求解、移項法則。",
+      "competency": "能把生活情境轉成方程式並檢驗答案。",
+      "prompt": "小華有一些貼紙，用掉 7 張後還剩 13 張。設原有 x 張，正確的方程式是？",
+      "options": [
+        "x ＋ 7 ＝ 13",
+        "7 − x ＝ 13",
+        "x − 7 ＝ 13",
+        "x ＝ 7 ＋ 13"
+      ],
+      "answer": 2,
+      "explanation": "原有 x 張，用掉 7 張剩 x − 7，等於 13 張，所以 x − 7 ＝ 13。",
+      "knowledge": [
+        "方程式",
+        "移項"
+      ]
+    },
+    {
+      "id": "jh-019",
+      "grade": 7,
+      "subject": "數學",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "數學領域",
+      "learningTopic": "一元一次方程式",
+      "learningPerformance": "能列出並求解一元一次方程式，理解等式兩邊同加減乘除的性質。",
+      "learningContent": "一元一次方程式的列式與求解、移項法則。",
+      "competency": "能把生活情境轉成方程式並檢驗答案。",
+      "prompt": "解方程式 4x ＝ x ＋ 9，x ＝ ？",
+      "options": [
+        "9",
+        "4",
+        "1",
+        "3"
+      ],
+      "answer": 3,
+      "explanation": "先把 x 移到左邊：4x − x ＝ 9 → 3x ＝ 9，x ＝ 3。",
+      "knowledge": [
+        "方程式",
+        "移項"
+      ]
+    },
+    {
+      "id": "jh-020",
+      "grade": 7,
+      "subject": "數學",
+      "questionType": "選擇題",
+      "difficulty": "挑戰",
+      "curriculumDomain": "數學領域",
+      "learningTopic": "一元一次方程式",
+      "learningPerformance": "能列出並求解一元一次方程式，理解等式兩邊同加減乘除的性質。",
+      "learningContent": "一元一次方程式的列式與求解、移項法則。",
+      "competency": "能把生活情境轉成方程式並檢驗答案。",
+      "prompt": "解方程式 (x ÷ 2) ＋ 3 ＝ 7，x ＝ ？",
+      "options": [
+        "8",
+        "5",
+        "4",
+        "14"
+      ],
+      "answer": 0,
+      "explanation": "先移項：x ÷ 2 ＝ 7 − 3 ＝ 4，再乘以 2 得 x ＝ 8。",
+      "knowledge": [
+        "方程式",
+        "移項"
+      ]
+    },
+    {
+      "id": "jh-021",
+      "grade": 7,
+      "subject": "自然",
+      "questionType": "選擇題",
+      "difficulty": "基礎",
+      "curriculumDomain": "自然科學領域",
+      "learningTopic": "細胞的構造",
+      "learningPerformance": "能說出細胞的基本構造與功能，並比較動植物細胞的差異。",
+      "learningContent": "細胞壁、細胞膜、細胞核、液泡的功能；細胞是生物體的基本單位。",
+      "competency": "能以構造與功能對應的方式說明細胞如何維持生命活動。",
+      "prompt": "生物體結構與功能的最小基本單位是什麼？",
+      "options": [
+        "組織",
+        "細胞",
+        "器官",
+        "系統"
+      ],
+      "answer": 1,
+      "explanation": "細胞是最小的基本單位；組織、器官、系統都由細胞組成。",
+      "knowledge": [
+        "細胞",
+        "構造與功能"
+      ]
+    },
+    {
+      "id": "jh-022",
+      "grade": 7,
+      "subject": "自然",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "自然科學領域",
+      "learningTopic": "細胞的構造",
+      "learningPerformance": "能說出細胞的基本構造與功能，並比較動植物細胞的差異。",
+      "learningContent": "細胞壁、細胞膜、細胞核、液泡的功能；細胞是生物體的基本單位。",
+      "competency": "能以構造與功能對應的方式說明細胞如何維持生命活動。",
+      "prompt": "植物細胞最外層、能維持形狀並保護細胞的構造是？",
+      "options": [
+        "細胞膜",
+        "細胞核",
+        "細胞壁",
+        "液泡"
+      ],
+      "answer": 2,
+      "explanation": "細胞壁在最外層，像牆壁一樣保護並維持植物細胞的形狀。",
+      "knowledge": [
+        "細胞",
+        "構造與功能"
+      ]
+    },
+    {
+      "id": "jh-023",
+      "grade": 7,
+      "subject": "自然",
+      "questionType": "選擇題",
+      "difficulty": "挑戰",
+      "curriculumDomain": "自然科學領域",
+      "learningTopic": "細胞的構造",
+      "learningPerformance": "能說出細胞的基本構造與功能，並比較動植物細胞的差異。",
+      "learningContent": "細胞壁、細胞膜、細胞核、液泡的功能；細胞是生物體的基本單位。",
+      "competency": "能以構造與功能對應的方式說明細胞如何維持生命活動。",
+      "prompt": "負責控制物質進出細胞的構造是？",
+      "options": [
+        "細胞壁",
+        "細胞核",
+        "液泡",
+        "細胞膜"
+      ],
+      "answer": 3,
+      "explanation": "細胞膜像大門守衛，選擇性讓物質進出細胞。",
+      "knowledge": [
+        "細胞",
+        "構造與功能"
+      ]
+    },
+    {
+      "id": "jh-024",
+      "grade": 7,
+      "subject": "自然",
+      "questionType": "選擇題",
+      "difficulty": "基礎",
+      "curriculumDomain": "自然科學領域",
+      "learningTopic": "細胞的構造",
+      "learningPerformance": "能說出細胞的基本構造與功能，並比較動植物細胞的差異。",
+      "learningContent": "細胞壁、細胞膜、細胞核、液泡的功能；細胞是生物體的基本單位。",
+      "competency": "能以構造與功能對應的方式說明細胞如何維持生命活動。",
+      "prompt": "細胞內含遺傳物質、堪稱「指揮中心」的是？",
+      "options": [
+        "細胞核",
+        "液泡",
+        "細胞質",
+        "細胞壁"
+      ],
+      "answer": 0,
+      "explanation": "細胞核內有 DNA，負責指揮細胞活動與遺傳。",
+      "knowledge": [
+        "細胞",
+        "構造與功能"
+      ]
+    },
+    {
+      "id": "jh-025",
+      "grade": 7,
+      "subject": "自然",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "自然科學領域",
+      "learningTopic": "細胞的構造",
+      "learningPerformance": "能說出細胞的基本構造與功能，並比較動植物細胞的差異。",
+      "learningContent": "細胞壁、細胞膜、細胞核、液泡的功能；細胞是生物體的基本單位。",
+      "competency": "能以構造與功能對應的方式說明細胞如何維持生命活動。",
+      "prompt": "細胞中儲存水分與養分的大泡泡是？",
+      "options": [
+        "細胞核",
+        "液泡",
+        "細胞膜",
+        "細胞壁"
+      ],
+      "answer": 1,
+      "explanation": "液泡是細胞的倉庫，儲存水分、養分與廢物。",
+      "knowledge": [
+        "細胞",
+        "構造與功能"
+      ]
+    },
+    {
+      "id": "jh-026",
+      "grade": 7,
+      "subject": "自然",
+      "questionType": "選擇題",
+      "difficulty": "挑戰",
+      "curriculumDomain": "自然科學領域",
+      "learningTopic": "細胞的構造",
+      "learningPerformance": "能說出細胞的基本構造與功能，並比較動植物細胞的差異。",
+      "learningContent": "細胞壁、細胞膜、細胞核、液泡的功能；細胞是生物體的基本單位。",
+      "competency": "能以構造與功能對應的方式說明細胞如何維持生命活動。",
+      "prompt": "下列哪一組構造是植物細胞有、動物細胞沒有的？",
+      "options": [
+        "細胞膜與細胞核",
+        "細胞質與液泡",
+        "細胞壁與葉綠體",
+        "粒線體與細胞膜"
+      ],
+      "answer": 2,
+      "explanation": "植物細胞有細胞壁與葉綠體，動物細胞兩者都沒有。",
+      "knowledge": [
+        "細胞",
+        "構造與功能"
+      ]
+    },
+    {
+      "id": "jh-027",
+      "grade": 7,
+      "subject": "自然",
+      "questionType": "選擇題",
+      "difficulty": "基礎",
+      "curriculumDomain": "自然科學領域",
+      "learningTopic": "細胞的構造",
+      "learningPerformance": "能說出細胞的基本構造與功能，並比較動植物細胞的差異。",
+      "learningContent": "細胞壁、細胞膜、細胞核、液泡的功能；細胞是生物體的基本單位。",
+      "competency": "能以構造與功能對應的方式說明細胞如何維持生命活動。",
+      "prompt": "觀察洋蔥表皮細胞時，視野中一格一格的構造是什麼？",
+      "options": [
+        "氣泡",
+        "葉綠體",
+        "細胞核",
+        "一個個細胞"
+      ],
+      "answer": 3,
+      "explanation": "洋蔥表皮在顯微鏡下呈現一格一格的排列，每一格就是一個細胞。",
+      "knowledge": [
+        "細胞",
+        "構造與功能"
+      ]
+    },
+    {
+      "id": "jh-028",
+      "grade": 7,
+      "subject": "自然",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "自然科學領域",
+      "learningTopic": "細胞的構造",
+      "learningPerformance": "能說出細胞的基本構造與功能，並比較動植物細胞的差異。",
+      "learningContent": "細胞壁、細胞膜、細胞核、液泡的功能；細胞是生物體的基本單位。",
+      "competency": "能以構造與功能對應的方式說明細胞如何維持生命活動。",
+      "prompt": "由小到大的正確層次是？",
+      "options": [
+        "細胞→組織→器官→系統→個體",
+        "個體→系統→器官→組織→細胞",
+        "器官→細胞→組織→系統",
+        "組織→細胞→器官→個體"
+      ],
+      "answer": 0,
+      "explanation": "生命組成層次由小到大：細胞、組織、器官、器官系統、個體。",
+      "knowledge": [
+        "細胞",
+        "構造與功能"
+      ]
+    },
+    {
+      "id": "jh-029",
+      "grade": 7,
+      "subject": "自然",
+      "questionType": "選擇題",
+      "difficulty": "挑戰",
+      "curriculumDomain": "自然科學領域",
+      "learningTopic": "細胞的構造",
+      "learningPerformance": "能說出細胞的基本構造與功能，並比較動植物細胞的差異。",
+      "learningContent": "細胞壁、細胞膜、細胞核、液泡的功能；細胞是生物體的基本單位。",
+      "competency": "能以構造與功能對應的方式說明細胞如何維持生命活動。",
+      "prompt": "切洋蔥時會刺激眼睛流淚，主要與細胞內哪個構造被破壞有關？",
+      "options": [
+        "細胞核",
+        "液泡",
+        "細胞壁",
+        "細胞膜"
+      ],
+      "answer": 1,
+      "explanation": "液泡內含刺激性物質，細胞被切破時液泡內容物釋出，才會催淚。",
+      "knowledge": [
+        "細胞",
+        "構造與功能"
+      ]
+    },
+    {
+      "id": "jh-030",
+      "grade": 7,
+      "subject": "自然",
+      "questionType": "選擇題",
+      "difficulty": "基礎",
+      "curriculumDomain": "自然科學領域",
+      "learningTopic": "細胞的構造",
+      "learningPerformance": "能說出細胞的基本構造與功能，並比較動植物細胞的差異。",
+      "learningContent": "細胞壁、細胞膜、細胞核、液泡的功能；細胞是生物體的基本單位。",
+      "competency": "能以構造與功能對應的方式說明細胞如何維持生命活動。",
+      "prompt": "動物細胞沒有細胞壁，因此外形通常呈現什麼樣子？",
+      "options": [
+        "一定是方形",
+        "一定成正六邊形",
+        "形狀較不規則、可改變",
+        "一定是長條形"
+      ],
+      "answer": 2,
+      "explanation": "少了堅硬的細胞壁支撐，動物細胞（如口腔表皮細胞）外形較不規則。",
+      "knowledge": [
+        "細胞",
+        "構造與功能"
+      ]
+    },
+    {
+      "id": "jh-031",
+      "grade": 7,
+      "subject": "自然",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "自然科學領域",
+      "learningTopic": "光合作用",
+      "learningPerformance": "能說明光合作用所需的原料、能量來源與產物。",
+      "learningContent": "葉綠體吸收光能，將二氧化碳與水合成葡萄糖並釋放氧氣。",
+      "competency": "能以「工廠」模型解釋植物如何自行製造養分。",
+      "prompt": "光合作用進行的主要場所是細胞內的哪個構造？",
+      "options": [
+        "細胞核",
+        "液泡",
+        "細胞膜",
+        "葉綠體"
+      ],
+      "answer": 3,
+      "explanation": "葉綠體含葉綠素，能吸收光能進行光合作用。",
+      "knowledge": [
+        "光合作用",
+        "植物"
+      ]
+    },
+    {
+      "id": "jh-032",
+      "grade": 7,
+      "subject": "自然",
+      "questionType": "選擇題",
+      "difficulty": "挑戰",
+      "curriculumDomain": "自然科學領域",
+      "learningTopic": "光合作用",
+      "learningPerformance": "能說明光合作用所需的原料、能量來源與產物。",
+      "learningContent": "葉綠體吸收光能，將二氧化碳與水合成葡萄糖並釋放氧氣。",
+      "competency": "能以「工廠」模型解釋植物如何自行製造養分。",
+      "prompt": "植物進行光合作用所需的水分，主要由哪個部位吸收？",
+      "options": [
+        "根",
+        "葉",
+        "花",
+        "果實"
+      ],
+      "answer": 0,
+      "explanation": "根吸收土壤中的水分，再由莖內的導管往上送到葉。",
+      "knowledge": [
+        "光合作用",
+        "植物"
+      ]
+    },
+    {
+      "id": "jh-033",
+      "grade": 7,
+      "subject": "自然",
+      "questionType": "選擇題",
+      "difficulty": "基礎",
+      "curriculumDomain": "自然科學領域",
+      "learningTopic": "光合作用",
+      "learningPerformance": "能說明光合作用所需的原料、能量來源與產物。",
+      "learningContent": "葉綠體吸收光能，將二氧化碳與水合成葡萄糖並釋放氧氣。",
+      "competency": "能以「工廠」模型解釋植物如何自行製造養分。",
+      "prompt": "二氧化碳是從葉片的哪個構造進入植物體？",
+      "options": [
+        "葉脈",
+        "氣孔",
+        "根毛",
+        "花瓣"
+      ],
+      "answer": 1,
+      "explanation": "葉背的氣孔是氣體進出的通道，二氧化碳由此進入、氧氣由此排出。",
+      "knowledge": [
+        "光合作用",
+        "植物"
+      ]
+    },
+    {
+      "id": "jh-034",
+      "grade": 7,
+      "subject": "自然",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "自然科學領域",
+      "learningTopic": "光合作用",
+      "learningPerformance": "能說明光合作用所需的原料、能量來源與產物。",
+      "learningContent": "葉綠體吸收光能，將二氧化碳與水合成葡萄糖並釋放氧氣。",
+      "competency": "能以「工廠」模型解釋植物如何自行製造養分。",
+      "prompt": "光合作用最主要的能量來源是什麼？",
+      "options": [
+        "土壤養分",
+        "風力",
+        "太陽光",
+        "地熱"
+      ],
+      "answer": 2,
+      "explanation": "太陽提供光能，葉綠體才能把二氧化碳與水合成養分。",
+      "knowledge": [
+        "光合作用",
+        "植物"
+      ]
+    },
+    {
+      "id": "jh-035",
+      "grade": 7,
+      "subject": "自然",
+      "questionType": "選擇題",
+      "difficulty": "挑戰",
+      "curriculumDomain": "自然科學領域",
+      "learningTopic": "光合作用",
+      "learningPerformance": "能說明光合作用所需的原料、能量來源與產物。",
+      "learningContent": "葉綠體吸收光能，將二氧化碳與水合成葡萄糖並釋放氧氣。",
+      "competency": "能以「工廠」模型解釋植物如何自行製造養分。",
+      "prompt": "光合作用的產物，除了養分（葡萄糖）之外還有什麼？",
+      "options": [
+        "二氧化碳",
+        "氮氣",
+        "水蒸氣",
+        "氧氣"
+      ],
+      "answer": 3,
+      "explanation": "光合作用會釋出氧氣，正好提供動植物呼吸使用。",
+      "knowledge": [
+        "光合作用",
+        "植物"
+      ]
+    },
+    {
+      "id": "jh-036",
+      "grade": 7,
+      "subject": "自然",
+      "questionType": "選擇題",
+      "difficulty": "基礎",
+      "curriculumDomain": "自然科學領域",
+      "learningTopic": "光合作用",
+      "learningPerformance": "能說明光合作用所需的原料、能量來源與產物。",
+      "learningContent": "葉綠體吸收光能，將二氧化碳與水合成葡萄糖並釋放氧氣。",
+      "competency": "能以「工廠」模型解釋植物如何自行製造養分。",
+      "prompt": "下列何者不是光合作用的原料？",
+      "options": [
+        "氧氣",
+        "二氧化碳",
+        "水",
+        "太陽光能"
+      ],
+      "answer": 0,
+      "explanation": "原料是二氧化碳與水（搭配光能）；氧氣是產物，不是原料。",
+      "knowledge": [
+        "光合作用",
+        "植物"
+      ]
+    },
+    {
+      "id": "jh-037",
+      "grade": 7,
+      "subject": "自然",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "自然科學領域",
+      "learningTopic": "光合作用",
+      "learningPerformance": "能說明光合作用所需的原料、能量來源與產物。",
+      "learningContent": "葉綠體吸收光能，將二氧化碳與水合成葡萄糖並釋放氧氣。",
+      "competency": "能以「工廠」模型解釋植物如何自行製造養分。",
+      "prompt": "植物在黑暗中長時間無法進行光合作用，主要是缺少什麼條件？",
+      "options": [
+        "二氧化碳",
+        "光能",
+        "水",
+        "葉綠體"
+      ],
+      "answer": 1,
+      "explanation": "沒有光，葉綠體就無法取得能量來製造養分。",
+      "knowledge": [
+        "光合作用",
+        "植物"
+      ]
+    },
+    {
+      "id": "jh-038",
+      "grade": 7,
+      "subject": "自然",
+      "questionType": "選擇題",
+      "difficulty": "挑戰",
+      "curriculumDomain": "自然科學領域",
+      "learningTopic": "光合作用",
+      "learningPerformance": "能說明光合作用所需的原料、能量來源與產物。",
+      "learningContent": "葉綠體吸收光能，將二氧化碳與水合成葡萄糖並釋放氧氣。",
+      "competency": "能以「工廠」模型解釋植物如何自行製造養分。",
+      "prompt": "光合作用的養分主要以什麼形式被運送與儲存？",
+      "options": [
+        "蛋白質",
+        "脂肪",
+        "葡萄糖（醣類）",
+        "礦物質"
+      ],
+      "answer": 2,
+      "explanation": "光合作用合成的葡萄糖可轉運與儲存，供植物生長使用。",
+      "knowledge": [
+        "光合作用",
+        "植物"
+      ]
+    },
+    {
+      "id": "jh-039",
+      "grade": 7,
+      "subject": "自然",
+      "questionType": "選擇題",
+      "difficulty": "基礎",
+      "curriculumDomain": "自然科學領域",
+      "learningTopic": "光合作用",
+      "learningPerformance": "能說明光合作用所需的原料、能量來源與產物。",
+      "learningContent": "葉綠體吸收光能，將二氧化碳與水合成葡萄糖並釋放氧氣。",
+      "competency": "能以「工廠」模型解釋植物如何自行製造養分。",
+      "prompt": "下列敘述何者正確？",
+      "options": [
+        "植物只進行光合作用",
+        "植物只進行呼吸作用",
+        "植物夜間不行呼吸作用",
+        "植物同時進行光合作用與呼吸作用"
+      ],
+      "answer": 3,
+      "explanation": "植物白天行光合作用也行呼吸作用；夜間無光，只進行呼吸作用。",
+      "knowledge": [
+        "光合作用",
+        "植物"
+      ]
+    },
+    {
+      "id": "jh-040",
+      "grade": 7,
+      "subject": "自然",
+      "questionType": "選擇題",
+      "difficulty": "標準",
+      "curriculumDomain": "自然科學領域",
+      "learningTopic": "光合作用",
+      "learningPerformance": "能說明光合作用所需的原料、能量來源與產物。",
+      "learningContent": "葉綠體吸收光能，將二氧化碳與水合成葡萄糖並釋放氧氣。",
+      "competency": "能以「工廠」模型解釋植物如何自行製造養分。",
+      "prompt": "森林能調節空氣中的二氧化碳濃度，主要是靠植物的什麼作用？",
+      "options": [
+        "光合作用",
+        "呼吸作用",
+        "蒸散作用",
+        "消化作用"
+      ],
+      "answer": 0,
+      "explanation": "光合作用吸收二氧化碳、釋出氧氣，因此能降低大氣中的二氧化碳。",
+      "knowledge": [
+        "光合作用",
+        "植物"
+      ]
+    }
+  ]
+}

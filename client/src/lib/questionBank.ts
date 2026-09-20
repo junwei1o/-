@@ -4,6 +4,8 @@ import { trpc } from "@/lib/trpc";
 import curriculumSeed from "../../../data/taiwan_curriculum_500.json";
 // 英語文題目由前端本地題庫提供（後端 question_bank subject enum 尚未收錄英語，避免改動資料庫 schema）。
 import englishSeed from "../../../data/taiwan_english_seed.json";
+// 國中七年級配套題庫：對應四堂國中動畫微課（負數與數線、一元一次方程式、細胞構造、光合作用）。
+import juniorSeed from "../../../data/junior_high_bank.json";
 import { expandQuestionBankToSix, shuffleQuestionOptions } from "./optionRandomizer";
 
 /** 與後端 question_bank 資料列一致的題目欄位（去掉僅後端使用的時間戳）。 */
@@ -51,12 +53,17 @@ function isValidQuestion(value: unknown): value is CurriculumQuestionRow {
   );
 }
 
-/** 內建題庫（與 data/taiwan_curriculum_500.json 同步）。 */
-export const LOCAL_QUESTION_BANK: CurriculumQuestionRow[] = (() => {
-  const seed = curriculumSeed as { questions?: unknown };
-  const questions = Array.isArray(seed.questions) ? seed.questions.filter(isValidQuestion) : [];
+function rowsFrom(seed: unknown): CurriculumQuestionRow[] {
+  const source = seed as { questions?: unknown };
+  const questions = Array.isArray(source?.questions) ? source.questions.filter(isValidQuestion) : [];
   return questions.map((q) => ({ ...q, questionType: q.questionType ?? "選擇題" as const }));
-})();
+}
+
+/** 內建題庫（國小：data/taiwan_curriculum_500.json；國中：data/junior_high_bank.json）。 */
+export const LOCAL_QUESTION_BANK: CurriculumQuestionRow[] = (() => [
+  ...rowsFrom(curriculumSeed),
+  ...rowsFrom(juniorSeed),
+])();
 
 /** 英語文題庫（本地 seed，與 data/taiwan_english_seed.json 同步）。 */
 export const LOCAL_ENGLISH_BANK: CurriculumQuestionRow[] = (() => {
