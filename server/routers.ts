@@ -1021,15 +1021,31 @@ export const appRouter = router({
    * 這組端點只給督學台設定頁用，學生端不接觸。
    */
   line: router({
-    /** 查詢 LINE 功能狀態：金鑰是否就緒、目前綁定到哪個聊天室。 */
+    /**
+     * 查詢 LINE 功能狀態：金鑰是否就緒、目前綁定到哪個聊天室。
+     *
+     * 除 envReady 外另外回傳 secretSet／tokenSet：只回一個布林值時，
+     * 「只設了一筆」和「兩筆都沒設」看起來一樣，沒辦法遠端判斷到底缺哪個。
+     * serviceId／serviceName 用來確認請求真的打到你以為的那個 Render 服務
+     * （env 設到別的服務上是最常見的烏龍，站點本身完全正常）。
+     */
     getBinding: publicProcedure
       .query(async () => {
-        const envReady = Boolean(ENV.lineChannelSecret.trim() && ENV.lineChannelAccessToken.trim());
+        const secretSet = Boolean(ENV.lineChannelSecret.trim());
+        const tokenSet = Boolean(ENV.lineChannelAccessToken.trim());
+        const envReady = secretSet && tokenSet;
         let binding: LineRecipientBinding | null = null;
         if (envReady) {
           binding = await getLineRecipient();
         }
-        return { envReady, binding };
+        return {
+          envReady,
+          secretSet,
+          tokenSet,
+          binding,
+          serviceId: process.env.RENDER_SERVICE_ID ?? "",
+          serviceName: process.env.RENDER_SERVICE_NAME ?? "",
+        };
       }),
 
     /** 送一封測試訊息到目前綁定的聊天室（驗證整條通道）。 */
