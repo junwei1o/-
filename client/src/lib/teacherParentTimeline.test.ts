@@ -17,7 +17,8 @@ describe("buildSupporterLearningTimeline", () => {
     const timeline = buildSupporterLearningTimeline(profile);
 
     expect(timeline.events.map((event) => event.subject)).toEqual(["數學", "自然", "國語"]);
-    expect(timeline.events.map((event) => event.knowledge)).toEqual(["分數與比例", "觀察證據", "段落主旨"]);
+    // 顯示中階主題標籤（見 lib/topicTag.ts），不再是細知識標籤
+    expect(timeline.events.map((event) => event.knowledge)).toEqual(["分數與小數", "科學探究與實驗", "修辭與寫作"]);
     expect(timeline.events.map((event) => event.questionId)).toEqual(["math-1", "science-1", "language-1"]);
     expect(timeline.events[0].correct).toBe(false);
     expect(timeline.islandsRepresented).toEqual(["數學", "自然", "國語"]);

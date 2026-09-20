@@ -71,10 +71,11 @@ describe("buildTeacherParentSummary", () => {
       spacedReviews: [],
     };
     const summary = buildTeacherParentSummary(profile, 10000);
-    expect(summary.weakTopics.map((item) => item.topic)).toEqual(["分數", "面積"]);
+    // 弱點以「中階主題標籤」呈現（見 lib/topicTag.ts）：分數→分數與小數、面積→幾何與圖形
+    expect(summary.weakTopics.map((item) => item.topic)).toEqual(["分數與小數", "幾何與圖形"]);
     expect(summary.weakTopics[0].recommendedQuestions).toBe(5);
     expect(summary.weakTopics[1].recommendedQuestions).toBe(4);
     expect(summary.recommendedWeeklyQuestions).toBe(9);
-    expect(summary.nextConversation).toContain("分數");
+    expect(summary.nextConversation).toContain("分數與小數");
   });
 });

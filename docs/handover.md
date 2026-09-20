@@ -600,3 +600,12 @@ curl -s https://xue-gr3a.onrender.com/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | h
 - 注意：`principleGuideTipCopy` 仍以「≤4／其他」分兩級文案，國中會走 upper 級（可接受，未改動）。
 - 新增 `client/src/lib/questionBank.test.ts`（6 例）：國小題數≥1090、國中 40 題、欄位完整、id 不重複、正解分布平均、四主題齊備；年級偏好接受 7/8/9、拒絕 10。
 - 驗收：tsc 0 錯；前端 149 檔 960 例全綠；vite build 通過；繁體檢查零命中。
+
+## 2026-09-20 P1：休眠程式清除＋中階主題標籤（topicTag）
+- **P1-3 休眠清除**：`components/TaiwanLandmarkMap.tsx`＋`.css`（144＋162 行）全站零引用（09-19 地圖功能下架殘留）→ 刪除。經查 `mapVictoryProgress`（rpgStorage/BattleScene 使用中）、`randomAdventureRouteReward`（PaperExam 使用中）、`academyExpansion`（BattleScene/Home 使用中）**都還活著，不刪**。
+- **P1-4 無障礙（原估 23 個 SVG 缺 aria，實為誤報）**：全部 `<svg>` 已由 `aria-label` 或直接／父層 `aria-hidden` 覆蓋（`EmptyState` 走 `{...common}` 內含 `aria-hidden`）；9 個 `<img>` 全數有 `alt`。**不需修改**。
+- **P1-5 知識標籤中階化（真正的痛點）**：題庫 1130 題卻有 1049 組 `knowledge`，`teacherParentSummary` 以「每題第一個標籤」分組 → 每組幾乎只出現一次，永遠達不到「至少作答 2 次」門檻，**弱點分析形同失效**。
+  - 新增 `lib/topicTag.ts`：各科 8～12 條關鍵字規則，把細標籤收斂成約 30 個中階主題桶（閱讀理解 143／分數與小數 84／資料與圖表判讀 79／科學探究與實驗 65…），每桶 ≥10 題。規則順序敏感，已知坑：「循環」會先命中人體與健康、吃掉「水循環」，故改為「血液循環」。
+  - `AdaptiveAttempt` 新增可選 `topicTag`；`recordAdaptiveAttempt` 自動補算；`teacherParentSummary.buildWeakTopicRecommendations` 與 `teacherParentTimeline` 改用中階標籤（舊紀錄讀取時補算，相容）。
+  - 新增 `topicTag.test.ts`（8 例）：全題庫收斂後桶數 <40、每桶 ≥10 題、同概念收斂一致、未知科目與缺標籤的降級。既有兩處斷言同步更新（分數→分數與小數、面積→幾何與圖形）。
+- 驗收：tsc 0 錯；game＋lib 91 檔 630 例全綠；繁體檢查零命中。

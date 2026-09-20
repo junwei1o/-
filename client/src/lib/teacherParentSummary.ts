@@ -1,5 +1,6 @@
 import type { AdaptiveProfile } from "@/game/adaptiveLearning";
 import { buildKnowledgeIslandSnapshots, type KnowledgeIslandSnapshot } from "@/lib/studentKnowledgeIslands";
+import { resolveTopicTagFromAttempt } from "@/lib/topicTag";
 
 export type SupporterIslandSummary = {
   island: KnowledgeIslandSnapshot;
@@ -35,13 +36,17 @@ export type TeacherParentSummary = {
 
 /**
  * 從作答紀錄聚合最弱的主題：
- * 以每題第一個知識標籤為主題，只保留至少作答 2 次、正確率低於七成且有答錯的主題，
+ * 以「中階主題標籤」（見 lib/topicTag.ts）分組——舊做法直接用每題第一個知識標籤，
+ * 但題庫有 1049 組細標籤、1130 題，等於每組只會出現一次，永遠達不到「至少作答 2 次」
+ * 的門檻，弱點分析形同失效。收斂成約 30 個中階主題後才可穩定聚合。
+ *
+ * 只保留至少作答 2 次、正確率低於七成且有答錯的主題，
  * 排序為「答錯多→正確率低」，取前 3 名。建議題數依嚴重度 3／4／5 題遞增。
  */
 export function buildWeakTopicRecommendations(profile: AdaptiveProfile, limit = 3): WeakTopicRecommendation[] {
   const buckets = new Map<string, { subject: string; attemptCount: number; wrongCount: number }>();
   for (const attempt of profile.attempts) {
-    const topic = attempt.knowledge[0]?.trim();
+    const topic = (attempt.topicTag ?? resolveTopicTagFromAttempt(attempt)).trim();
     if (!topic) continue;
     const current = buckets.get(topic) ?? { subject: attempt.curriculumDomain, attemptCount: 0, wrongCount: 0 };
     current.attemptCount += 1;

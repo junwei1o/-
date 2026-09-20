@@ -1,5 +1,6 @@
 import type { AdaptiveProfile } from "@/game/adaptiveLearning";
 import { buildKnowledgeIslandSnapshots, type KnowledgeIslandId, type KnowledgeIslandSubject } from "@/lib/studentKnowledgeIslands";
+import { resolveTopicTagFromAttempt } from "@/lib/topicTag";
 
 export type SupporterTimelineEvent = {
   id: string;
@@ -40,7 +41,7 @@ export function buildSupporterLearningTimeline(profile: AdaptiveProfile, maxEven
         islandId: island.id,
         subject: island.subject,
         islandTitle: island.title,
-        knowledge: attempt.knowledge.find(Boolean) ?? "探索練習",
+        knowledge: attempt.topicTag ?? resolveTopicTagFromAttempt(attempt) ?? "探索練習",
         activityLabel: attempt.correct ? "完成一次練習" : "留下一筆練習足跡",
         correct: attempt.correct,
       };

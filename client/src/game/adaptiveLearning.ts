@@ -1,3 +1,5 @@
+import { resolveTopicTagFromAttempt } from "@/lib/topicTag";
+
 export type AdaptiveDifficulty = "基礎" | "標準" | "挑戰";
 
 export type AdaptiveQuestion = {
@@ -13,6 +15,8 @@ export type AdaptiveAttempt = {
   questionId: string;
   curriculumDomain: string;
   knowledge: string[];
+  /** 中階主題標籤（見 lib/topicTag.ts）；舊紀錄沒有時由 topicTag.ts 於讀取時補算。 */
+  topicTag?: string;
   difficulty: AdaptiveDifficulty;
   correct: boolean;
   responseMs: number;
@@ -136,6 +140,8 @@ export function recordAdaptiveAttempt(profile: AdaptiveProfile, attempt: Omit<Ad
   const nextAttempt: AdaptiveAttempt = {
     ...attempt,
     timestamp,
+    // 中階主題標籤：沒帶就由科目與知識標籤推算，讓弱點分析能跨題聚合。
+    topicTag: attempt.topicTag?.trim() || resolveTopicTagFromAttempt(attempt),
     flagged: attempt.flagged === true,
     ...(attempt.errorType ? { errorType: attempt.errorType } : {}),
     nextReviewDate: attempt.nextReviewDate !== undefined ? attempt.nextReviewDate : nextReviewDate,
