@@ -730,3 +730,38 @@
   font-weight: 800;
   color: #b07d1e;
 }
+
+/* 首頁：年級設定引導卡（沒設過年級時才出現） */
+.home-grade-setup {
+  background: #fffdf7;
+  border: 2px solid #ece3cd;
+  border-radius: 18px;
+  padding: 14px 18px 16px;
+  margin-bottom: 12px;
+}
+.home-grade-setup h2 { margin: 4px 0 4px; font-size: 17px; font-weight: 900; color: #3f3a2e; }
+.home-grade-desc { margin: 0 0 12px; font-size: 13.5px; color: #7a8d99; line-height: 1.5; }
+.home-grade-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.home-grade-chip {
+  border: 1.5px solid #ddd3ba;
+  background: #fff;
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-size: 14.5px;
+  font-weight: 800;
+  color: #6b5d44;
+  cursor: pointer;
+  transition: background 0.16s, border-color 0.16s, transform 0.16s;
+}
+.home-grade-chip:hover { background: #f6ecd4; border-color: #c9a227; transform: translateY(-1px); }
+.home-grade-done { margin: 0 0 12px; font-size: 13px; color: #8a9aa4; }
+.home-grade-change {
+  border: none;
+  background: none;
+  padding: 0;
+  font-size: 13px;
+  font-weight: 800;
+  color: #2f74b8;
+  cursor: pointer;
+  text-decoration: underline;
+}

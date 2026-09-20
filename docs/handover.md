@@ -685,3 +685,8 @@ curl -s https://xue-gr3a.onrender.com/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | h
   2. `quadratic` 二次函數：會轉彎的拋物線（九上數學）——座標平面描點 (−2,4)…(2,4) → 連成拋物線 → 開口上下（a 正負）→ 上下／左右平移（y＝x²+3、y＝(x−2)²）。
   - 場景元件 `PythagoreanScene`／`QuadraticScene`＋`classroom.css` 的 py-／qd- keyframes（含 reduced-motion 降級）；播放器零改動，選課卡自動變 10 張。
 - 驗收：tsc 0 錯；全量 170 檔 **1145 例**全綠；build 通過；繁檢（含 docs）零命中。
+
+## 2026-09-20 第五輪：首頁年級設定引導（讓「依年級」的最佳化真的生效）
+- 前置缺口：上面幾輪做的「依年級取題／動畫課分流／推薦」都讀 `loadStudentGradePreference()`，但**首頁完全沒有設定年級的入口**（只有 `/settings`，學生不會主動去），沒設定就全部退化成不分年級。
+- 新增首頁年級引導卡 `.home-grade-setup`：未設定年級時顯示「你現在是幾年級？」＋ 三～九年級七顆 chip（七～九年級顯示為「國中一／二／三年級」），點選即寫入設定頁那份 `UserPreferences.gradeLevel`（與第四輪打通的單一真相一致），並立刻改顯示「目前設定：X 年級 · 更改」。已設定過就不再出現。
+- 驗收：tsc 0 錯；全量 170 檔 **1147 例**全綠（HomeDashboard 9→11 例）；build 通過；繁檢（含 docs）零命中。

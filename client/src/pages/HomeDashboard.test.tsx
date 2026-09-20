@@ -4,6 +4,8 @@ import "@testing-library/jest-dom/vitest";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import Home, { buildWeeklySuggestion } from "./Home";
+import { saveUserPreferences } from "@/game/adaptiveLearning";
+import { loadStudentGradePreference } from "@/lib/studentGradePreference";
 import { bxStore } from "@/game/bxStore";
 
 const setLocation = vi.fn();
@@ -49,6 +51,33 @@ vi.mock("@/lib/trpc", () => ({
     },
   },
 }));
+describe("首頁年級設定引導", () => {
+  afterEach(() => {
+    cleanup();
+    storage.clear();
+  });
+
+  it("沒設過年級時顯示引導卡；點選後寫入偏好並改顯示目前設定", () => {
+    storage.clear();
+    render(<Home />);
+    expect(screen.getByText("你現在是幾年級？")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "國中2 年級" }));
+    // 寫進設定頁那份偏好，之後教室取題／動畫課分流才讀得到
+    expect(loadStudentGradePreference()).toBe(8);
+    expect(screen.getByText(/目前設定：國中2 年級/)).toBeInTheDocument();
+    expect(screen.queryByText("你現在是幾年級？")).not.toBeInTheDocument();
+  });
+
+  it("已經設過年級就不會再出現引導卡", () => {
+    storage.clear();
+    saveUserPreferences({ version: 1, gradeLevel: 5, difficultyPreference: "均衡混合", updatedAt: Date.now() });
+    render(<Home />);
+    expect(screen.queryByText("你現在是幾年級？")).not.toBeInTheDocument();
+    expect(screen.getByText(/目前設定：5 年級/)).toBeInTheDocument();
+  });
+});
+
 describe("首頁沉浸式儀表板", () => {
   afterEach(() => {
     cleanup();

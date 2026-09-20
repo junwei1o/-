@@ -16,6 +16,7 @@ import { HomeContactCard } from "@/components/HomeContactCard";
 import { buildKnowledgeIslandSnapshots, type KnowledgeIslandSubject } from "@/lib/studentKnowledgeIslands";
 import { ONION_ACADEMY_ROUTE, pickRecommendedLesson, weakestSubjectThisWeek } from "@/lib/recommendedLesson";
 import { loadStudentGradePreference } from "@/lib/studentGradePreference";
+import { loadUserPreferences, saveUserPreferences } from "@/game/adaptiveLearning";
 import { HOME_FEATURE_GROUPS } from "@/lib/homeFeatureDirectory";
 import type { PaperQuestion } from "@/lib/paperExam";
 import FirstLightQuest from "@/components/bx/FirstLightQuest";
@@ -92,6 +93,8 @@ export default function Home() {
   const signedInToday = hasSignedInToday(dailySignIn);
   // 本週建議（原本寫好卻從未顯示在首頁）＋今日推薦動畫微課
   const weeklySuggestion = useMemo(() => buildWeeklySuggestion(learningRecords), [learningRecords]);
+  // 年級設定引導：沒設過年級時，所有「依年級」的題目與動畫課分流都不會生效
+  const [myGrade, setMyGrade] = useState(() => loadStudentGradePreference());
   const recommended = useMemo(() => {
     const grade = loadStudentGradePreference();
     const stage = grade && grade >= 7 ? "國中" : "國小";
@@ -237,6 +240,43 @@ export default function Home() {
             </section>
           }
         />
+
+        {myGrade === null ? (
+          <section className="home-grade-setup" aria-labelledby="home-grade-title">
+            <p className="home-dashboard-eyebrow">STEP 1 · 先認識你</p>
+            <h2 id="home-grade-title">你現在是幾年級？</h2>
+            <p className="home-grade-desc">告訴我們年級，題目難度、動畫課和每日推薦才會對到你的程度。</p>
+            <div className="home-grade-chips" role="group" aria-label="選擇年級">
+              {([3, 4, 5, 6, 7, 8, 9] as const).map((grade) => (
+                <button
+                  key={grade}
+                  type="button"
+                  className="home-grade-chip"
+                  onClick={() => {
+                    const prefs = loadUserPreferences();
+                    saveUserPreferences({ ...prefs, gradeLevel: grade, updatedAt: Date.now() });
+                    setMyGrade(grade);
+                  }}
+                >
+                  {grade >= 7 ? `國中${grade - 6}` : `${grade}`} 年級
+                </button>
+              ))}
+            </div>
+          </section>
+        ) : (
+          <p className="home-grade-done">
+            目前設定：{myGrade >= 7 ? `國中${myGrade - 6}` : `${myGrade}`} 年級 ·{" "}
+            <button
+              type="button"
+              className="home-grade-change"
+              onClick={() => {
+                setMyGrade(null);
+              }}
+            >
+              更改
+            </button>
+          </p>
+        )}
 
         <section className="home-focus-card" aria-labelledby="home-focus-title">
           <div className="home-focus-head">
