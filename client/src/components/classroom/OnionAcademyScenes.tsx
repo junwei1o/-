@@ -879,6 +879,221 @@ function CellScene({ frame, action }: SceneProps) {
 }
 
 /* ===================== 場景分派器 ===================== */
+/* ===================== 課程 9：畢氏定理（兩杯水倒進大杯子） ===================== */
+function PythagoreanScene({ frame, action }: SceneProps) {
+  // frame: 0 開場 1 認識股與斜邊 2 蓋上三個正方形 3 標邊長 4 面積 9/16/25 5 倒水 6 裝滿 7 換 6-8-10 8 公式 9 口訣
+  const showSides = frame >= 1;
+  const squares = frame >= 2;
+  const showAreas = frame >= 3;
+  const pouring = frame === 4;
+  const formula = frame === 7 || frame === 8;
+
+  // 直角在 A(60,110)：水平股 4（56px）、垂直股 3（42px）、斜邊 5（70px），比例 14px＝1 單位
+  const AX = 60, AY = 110, BX = 116, BY = 110, CX = 60, CY = 68;
+  // 斜邊上的正方形：以 B→C 向量 (−56,−42) 的外法向量 (42,−56) 推出
+  const big = `${BX},${BY} ${CX},${CY} ${CX + 42},${CY - 56} ${BX + 42},${BY - 56}`;
+
+  // 小正方形的「水量」：0＝空、1＝滿
+  const smallLevel = frame <= 3 ? 1 : pouring ? 0.45 : 0;
+  const bigLevel = frame <= 3 ? 0 : pouring ? 0.5 : 1;
+
+  const banner =
+    frame === 0 ? "直角對面的邊叫「斜邊」，它是最長的"
+    : frame === 1 ? "夾著直角的兩條邊叫「股」：3 和 4"
+    : frame === 2 ? "在三條邊上各蓋一個正方形，像三個杯子"
+    : frame === 3 ? "邊長 3、4、5，面積就是 3²、4²、5²"
+    : frame === 4 ? "把兩個小杯子的水倒進大杯子"
+    : frame === 5 ? "9 ＋ 16 ＝ 25，剛好裝滿！"
+    : frame === 6 ? "6² ＋ 8² ＝ 36 ＋ 64 ＝ 100，斜邊 ＝ 10"
+    : frame === 7 ? "畢氏定理：a² ＋ b² ＝ c²（c 是斜邊）"
+    : frame === 8 ? "反求一股：13² − 5² ＝ 144，另一股 ＝ 12"
+    : "口訣：斜邊平方 ＝ 兩股平方和";
+
+  return (
+    <div className={`ol-scene ol-scene--pythagorean py-f${frame}`}>
+      <svg viewBox="0 0 340 232" className="ol-scene-svg" role="img" aria-label="畢氏定理兩杯水倒入大杯子的推導動畫">
+        <rect x="0" y="0" width="340" height="232" rx="16" fill="#eef6fb" />
+        <defs>
+          <clipPath id="py-clip-big"><polygon points={big} /></clipPath>
+          <clipPath id="py-clip-a"><rect x={AX} y={AY} width="56" height="56" /></clipPath>
+          <clipPath id="py-clip-b"><rect x="18" y={CY} width="42" height="42" /></clipPath>
+        </defs>
+
+        {/* 三個正方形（杯子） */}
+        {squares && (
+          <g className="py-squares">
+            <rect x={AX} y={AY} width="56" height="56" fill="#fdf6e6" stroke="#c9a227" strokeWidth="2" />
+            <rect x="18" y={CY} width="42" height="42" fill="#fdf6e6" stroke="#c9a227" strokeWidth="2" />
+            <polygon points={big} fill="#fdf6e6" stroke="#c9a227" strokeWidth="2" />
+          </g>
+        )}
+
+        {/* 水：由 clipPath 限制在各自的杯子裡 */}
+        {squares && (
+          <g className="py-water">
+            <rect clipPath="url(#py-clip-b)" x="18" y={CY + 42 * (1 - smallLevel)} width="42" height={42 * smallLevel} fill="#7fc4e8" opacity="0.85" />
+            <rect clipPath="url(#py-clip-a)" x={AX} y={AY + 56 * (1 - smallLevel)} width="56" height={56 * smallLevel} fill="#7fc4e8" opacity="0.85" />
+            <rect clipPath="url(#py-clip-big)" x="50" y={110 - 98 * bigLevel} width="130" height={98 * bigLevel} fill="#3a9fd8" opacity="0.8" />
+          </g>
+        )}
+
+        {/* 三角形本身 */}
+        <path d={`M${AX} ${AY} L${BX} ${BY} L${CX} ${CY} Z`} fill="#bcd8f5" stroke="#2f63a0" strokeWidth="2.8" />
+        {/* 直角記號 */}
+        <path d={`M${AX} ${AY} L${AX + 12} ${AY} L${AX + 12} ${AY - 12}`} fill="none" stroke="#d8602f" strokeWidth="2" />
+
+        {/* 邊長標示 */}
+        {showSides && (
+          <g className="py-labels">
+            <text x="88" y={AY + 16} textAnchor="middle" fontSize="13" fontWeight="900" fill="#2f63a0">4</text>
+            <text x={AX - 8} y="92" textAnchor="end" fontSize="13" fontWeight="900" fill="#2f63a0">3</text>
+            <text x="150" y="50" fontSize="13" fontWeight="900" fill="#b07d1e">5</text>
+            {!squares && <text x="150" y="30" fontSize="12.5" fontWeight="800" fill="#6b5d44">斜邊</text>}
+          </g>
+        )}
+
+        {/* 面積標示 9 / 16 / 25 */}
+        {showAreas && (
+          <g className="py-areas">
+            <text x={AX + 28} y={AY + 34} textAnchor="middle" fontSize="15" fontWeight="900" fill="#1f5c8b">16</text>
+            <text x="39" y={CY + 26} textAnchor="middle" fontSize="14" fontWeight="900" fill="#1f5c8b">9</text>
+            <text x="118" y="52" textAnchor="middle" fontSize="17" fontWeight="900" fill="#b07d1e">25</text>
+          </g>
+        )}
+
+        {/* 倒水的箭頭（第 5 幀） */}
+        {pouring && (
+          <g className="py-pour">
+            <path d="M96 96 Q120 60 132 44" fill="none" stroke="#3a9fd8" strokeWidth="2.4" strokeDasharray="5 4" />
+            <path d="M40 112 Q80 70 124 52" fill="none" stroke="#3a9fd8" strokeWidth="2.4" strokeDasharray="5 4" />
+          </g>
+        )}
+
+        {/* 公式／口訣橫幅 */}
+        <g className={`py-banner ${formula ? "is-formula" : ""}`} key={banner}>
+          <rect x="10" y="184" width="278" height="34" rx="17"
+            fill={formula ? "#2f63a0" : "#ffffff"} stroke={formula ? "#2f63a0" : "#c3d6ec"} strokeWidth="1.6" />
+          <text x="149" y="206" textAnchor="middle" fontSize="13" fontWeight="900"
+            fill={formula ? "#fff" : "#3a5a8c"}>{banner}</text>
+        </g>
+      </svg>
+      <div className="ol-scene-mascot ol-scene-mascot--br-sm"><OnionMascot action={action} frame={frame} size={56} /></div>
+    </div>
+  );
+}
+
+/* ===================== 課程 10：二次函數（拋物線） ===================== */
+function QuadraticScene({ frame, action }: SceneProps) {
+  // frame: 0 一次函數直線 1 座標平面 2 描左半邊點 3 描右半邊點 4 連成曲線 5 頂點與開口 6 開口向下 7 上移 8 右移 9 口訣
+  const plane = frame >= 1;
+  const dotLeft = frame >= 2;
+  const dotRight = frame >= 3;
+  const curve = frame >= 4;
+  const vertex = frame >= 5;
+  const flipped = frame === 6;
+  const shiftUp = frame === 7;
+  const shiftRight = frame === 8;
+
+  // 座標：原點 (170,140)，1 單位＝30px（x）／20px（y）
+  const curvePath = flipped
+    ? "M80 320 Q170 -40 260 320"          // y ＝ −x²
+    : shiftUp
+      ? "M80 -100 Q170 260 260 -100"      // y ＝ x² ＋ 3（上移 3 格＝60px）
+      : shiftRight
+        ? "M140 -40 Q230 320 320 -40"     // y ＝ (x−2)²（右移 2 格＝60px）
+        : "M80 -40 Q170 320 260 -40";     // y ＝ x²
+
+  const points: Array<[number, number, number, number]> = [
+    [110, 60, -2, 4], [140, 120, -1, 1], [170, 140, 0, 0], [200, 120, 1, 1], [230, 60, 2, 4],
+  ];
+
+  const banner =
+    frame === 0 ? "y ＝ 2x 畫出來是一條直直的線"
+    : frame === 1 ? "y ＝ x²：x 自己乘自己，線會轉彎"
+    : frame === 2 ? "描點：(−2,4) (−1,1) (0,0)"
+    : frame === 3 ? "右邊對稱：(1,1) (2,4)"
+    : frame === 4 ? "連成平滑曲線，這叫「拋物線」"
+    : frame === 5 ? "最低點叫頂點，y ＝ x² 的頂點是 (0,0)"
+    : frame === 6 ? "y ＝ −x²：開口朝下，頂點變最高點"
+    : frame === 7 ? "y ＝ x² ＋ 3：整條往上平移 3 格"
+    : frame === 8 ? "y ＝ (x−2)²：往右平移 2 格"
+    : "口訣：a 正開口上、a 負開口下";
+
+  return (
+    <div className={`ol-scene ol-scene--quadratic qd-f${frame}`}>
+      <svg viewBox="0 0 340 232" className="ol-scene-svg" role="img" aria-label="二次函數拋物線與平移動畫">
+        <rect x="0" y="0" width="340" height="232" rx="16" fill="#f7f4fb" />
+
+        {/* 開場：一次函數的直線 */}
+        {frame === 0 && (
+          <g className="qd-line">
+            <line x1="80" y1="180" x2="260" y2="60" stroke="#8a9aa4" strokeWidth="3" />
+            <text x="128" y="76" fontSize="13" fontWeight="900" fill="#6b7a86">y ＝ 2x</text>
+          </g>
+        )}
+
+        {/* 座標平面 */}
+        {plane && (
+          <g className="qd-plane">
+            <line x1="20" y1="140" x2="320" y2="140" stroke="#5a6b78" strokeWidth="2" />
+            <line x1="170" y1="18" x2="170" y2="200" stroke="#5a6b78" strokeWidth="2" />
+            <path d="M320 140 L310 135 L310 145 Z" fill="#5a6b78" />
+            <path d="M170 18 L165 28 L175 28 Z" fill="#5a6b78" />
+            <text x="326" y="137" fontSize="11" fontWeight="800" fill="#5a6b78">x</text>
+            <text x="158" y="16" fontSize="11" fontWeight="800" fill="#5a6b78">y</text>
+            <text x="182" y="152" fontSize="11" fontWeight="700" fill="#8a9aa4">O</text>
+          </g>
+        )}
+
+        {/* 描點 */}
+        {plane && points.map(([x, y, ux, uy], i) => {
+          const visible = i <= 2 ? dotLeft : dotRight;
+          if (!visible) return null;
+          const shifted = shiftUp || shiftRight;
+          // 平移時連點一起移動，避免點與曲線分離
+          const px = shiftRight ? x + 60 : x;
+          const py = shiftUp ? y - 60 : y;
+          return (
+            <g key={i} className={`qd-point ${shifted ? "is-shifted" : ""}`}>
+              <circle cx={px} cy={py} r="4.5" fill="#8a5fb0" />
+              <text x={px + 7} y={py - 6} fontSize="10.5" fontWeight="800" fill="#6b4a8a">
+                {shifted ? "" : `(${ux},${uy})`}
+              </text>
+            </g>
+          );
+        })}
+
+        {/* 拋物線 */}
+        {curve && (
+          <path className="qd-curve" d={curvePath} fill="none"
+            stroke={flipped ? "#d8602f" : "#8a5fb0"} strokeWidth="3.2" strokeLinecap="round" />
+        )}
+
+        {/* 頂點 */}
+        {vertex && (
+          <g className="qd-vertex">
+            <circle cx={shiftRight ? 230 : 170} cy={shiftUp ? 80 : 140} r="6" fill="#fff" stroke="#c9a227" strokeWidth="3" />
+            <text x={shiftRight ? 240 : 180} y={shiftUp ? 74 : 134} fontSize="12" fontWeight="900" fill="#b07d1e">
+              頂點
+            </text>
+          </g>
+        )}
+
+        {/* 開口方向提示 */}
+        {frame === 5 && <text x="252" y="120" fontSize="12" fontWeight="900" fill="#8a5fb0">開口↑</text>}
+        {flipped && <text x="252" y="120" fontSize="12" fontWeight="900" fill="#d8602f">開口↓</text>}
+
+        {/* 公式／口訣橫幅 */}
+        <g className="qd-banner" key={banner}>
+          <rect x="10" y="184" width="278" height="34" rx="17" fill="#ffffff" stroke="#d9cbe8" strokeWidth="1.6" />
+          <text x="149" y="206" textAnchor="middle" fontSize="13" fontWeight="900" fill="#5a4a72">{banner}</text>
+        </g>
+      </svg>
+      <div className="ol-scene-mascot ol-scene-mascot--br-sm"><OnionMascot action={action} frame={frame} size={56} /></div>
+    </div>
+  );
+}
+
 export function LessonScene({ lessonId, frame, action }: { lessonId: string } & SceneProps) {
   if (lessonId === "water-cycle") return <WaterCycleScene frame={frame} action={action} />;
   if (lessonId === "fraction-add") return <FractionScene frame={frame} action={action} />;
@@ -887,5 +1102,7 @@ export function LessonScene({ lessonId, frame, action }: { lessonId: string } & 
   if (lessonId === "negative-number") return <NegativeLineScene frame={frame} action={action} />;
   if (lessonId === "linear-equation") return <EquationBalanceScene frame={frame} action={action} />;
   if (lessonId === "onion-cell") return <CellScene frame={frame} action={action} />;
+  if (lessonId === "pythagorean") return <PythagoreanScene frame={frame} action={action} />;
+  if (lessonId === "quadratic") return <QuadraticScene frame={frame} action={action} />;
   return <DeUsageScene frame={frame} action={action} />;
 }

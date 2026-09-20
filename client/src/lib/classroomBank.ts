@@ -2,6 +2,7 @@
 // 涵蓋翻牌問答、看圖選答、是非閃電、限時接力、選擇→配對接力、陷阱題挑戰，
 // 以及可混入平常試卷的填空選字、排序題。
 import { shuffleQuestionOptions } from "./optionRandomizer";
+import { loadStudentGradePreference } from "./studentGradePreference";
 import fillSeed from "../../../data/fill_bank.json";
 import orderSeed from "../../../data/order_bank.json";
 import trapSeed from "../../../data/trap_bank.json";
@@ -188,6 +189,36 @@ function rowToChoice(row: CurriculumQuestionRow, random: () => number = Math.ran
   return shuffleQuestionOptions({ ...base, questionType: row.questionType }, random);
 }
 
+/**
+ * 依學生年級就近取題：
+ * 教室六個玩法原本完全不看年級，從 1210 題（國小 1090 ＋ 國中 120）裡隨機抽，
+ * 三年級學生會抽到九年級的二次函數題、七年級會抽到三年級的題目。
+ * 這裡改為先取 |年級差| ≤ 1 的題，不夠再放寬到 ≤ 2，最後才退回全題庫（避免開天窗）。
+ * 沒有年級資料時等同原本行為（全題庫），因此既有測試不受影響。
+ */
+function scopeRowsByGrade<T extends { grade: number }>(
+  rows: readonly T[],
+  grade: number | null | undefined,
+  need = 1,
+): readonly T[] {
+  if (!grade) return rows;
+  const near = rows.filter((row) => Math.abs(row.grade - grade) <= 1);
+  if (near.length >= need) return near;
+  const wider = rows.filter((row) => Math.abs(row.grade - grade) <= 2);
+  if (wider.length >= need) return wider;
+  return rows;
+}
+
+/** 取年級：有傳就用傳的，沒傳就讀學生的年級偏好（沒設定 → null，等同不分年級）。 */
+function resolveGrade(grade?: number | null): number | null {
+  if (grade !== undefined) return grade ?? null;
+  try {
+    return loadStudentGradePreference();
+  } catch {
+    return null;
+  }
+}
+
 function pickRows(
   rows: readonly CurriculumQuestionRow[],
   count: number,
@@ -203,17 +234,28 @@ export function buildChoiceDeck(
   count = 10,
   subject?: PaperSubject | "綜合",
   random: () => number = Math.random,
+  grade?: number | null,
 ): ClassroomChoice[] {
-  const pool = ALL_CHOICE_ROWS.filter(
-    (row) => row.questionType === "選擇題" && (!subject || subject === "綜合" || row.subject === subject),
+  const wanted = resolveGrade(grade);
+  const base = ALL_CHOICE_ROWS.filter((row) => row.questionType === "選擇題");
+  const scoped = scopeRowsByGrade(base, wanted, count);
+  const bySubject = scoped.filter(
+    (row) => !subject || subject === "綜合" || row.subject === subject,
   );
-  const source = pool.length >= count ? pool : ALL_CHOICE_ROWS.filter((row) => row.questionType === "選擇題");
+  // 該學科在年級附近不夠題時，先放寬學科（留在同溫層年級），再退回全部選擇題
+  const source = bySubject.length >= count ? bySubject : scoped.length >= count ? scoped : base;
   return pickRows(source, count, random);
 }
 
 /** 是非閃電用：是非題（選項固定為「正確／錯誤」）；題庫不足時補充自製是非題。 */
-export function buildTrueFalseDeck(count = 10, random: () => number = Math.random): ClassroomChoice[] {
-  const tfRows = ALL_CHOICE_ROWS.filter((row) => row.questionType === "是非題");
+export function buildTrueFalseDeck(
+  count = 10,
+  random: () => number = Math.random,
+  grade?: number | null,
+): ClassroomChoice[] {
+  const wanted = resolveGrade(grade);
+  const allTf = ALL_CHOICE_ROWS.filter((row) => row.questionType === "是非題");
+  const tfRows = scopeRowsByGrade(allTf, wanted, Math.min(count, allTf.length));
   const deck = pickRows(tfRows, Math.min(count, tfRows.length), random);
   // 題庫僅 19 題，需要更多時以陷阱題庫中的「正確敘述」改寫補充（由 BONUS_TRUE_FALSE 提供）。
   const extras = shuffleArray(BONUS_TRUE_FALSE, random).slice(0, Math.max(0, count - deck.length));
@@ -271,7 +313,12 @@ export function buildImageQuiz(
  * 接力關卡：每回合先答 1 題選擇題，答對後解鎖 1 盤迷你配對（4 對＋1 干擾）。
  * 選擇題與配對盤儘量同學科；配對盤維持純文字（圖片組只在看圖選答使用）。
  */
-export function buildRelayRounds(count = 3, random: () => number = Math.random): RelayRound[] {
+export function buildRelayRounds(
+  count = 3,
+  random: () => number = Math.random,
+  grade?: number | null,
+): RelayRound[] {
+  const wanted = resolveGrade(grade);
   const textSets = MATCHING_SETS.filter((set) => !set.pairs.some((pair) => pair.img !== undefined));
   const rounds: RelayRound[] = [];
   const usedSets = new Set<string>();
@@ -279,8 +326,10 @@ export function buildRelayRounds(count = 3, random: () => number = Math.random):
     const set = shuffleArray(textSets, random).find((candidate) => !usedSets.has(candidate.id)) ?? textSets[i % textSets.length];
     if (!set) break;
     usedSets.add(set.id);
-    const choicePool = ALL_CHOICE_ROWS.filter(
-      (row) => row.questionType === "選擇題" && row.subject === set.subject,
+    const choicePool = scopeRowsByGrade(
+      ALL_CHOICE_ROWS.filter((row) => row.questionType === "選擇題" && row.subject === set.subject),
+      wanted,
+      1,
     );
     const choiceRow = shuffleArray(choicePool.length ? choicePool : ALL_CHOICE_ROWS, random)[0];
     if (!choiceRow) break;

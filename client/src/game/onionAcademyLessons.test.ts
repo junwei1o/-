@@ -135,13 +135,22 @@ function lessonIntegrity(lesson: typeof FRACTION_LESSON) {
 }
 
 describe("registry & lookup", () => {
-  it("registers 8 lessons across 3 subjects", () => {
-    expect(ONION_LESSONS).toHaveLength(8);
+  it("registers 10 lessons across 3 subjects", () => {
+    expect(ONION_LESSONS).toHaveLength(10);
     const subjects = new Set(ONION_LESSONS.map((l) => l.subject));
     expect(subjects.size).toBe(3); // 數學、國語、自然
     expect(subjects.has("數學")).toBe(true);
     expect(subjects.has("國語")).toBe(true);
     expect(subjects.has("自然")).toBe(true);
+  });
+
+  it("國中三個年級都有動畫課（八、九年級不再是空的）", () => {
+    const junior = ONION_LESSONS.filter((l) => l.stages.includes("國中"));
+    const grades = new Set(junior.map((l) => l.grade));
+    // 七上、八下、九上都要有課
+    expect(grades.has("七上")).toBe(true);
+    expect(grades.has("八下")).toBe(true);
+    expect(grades.has("九上")).toBe(true);
   });
 
   it("國小與國中都各有課程，選課頁分流不會出現空清單", () => {

@@ -674,3 +674,14 @@ curl -s https://xue-gr3a.onrender.com/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | h
 - 其他修正：字幕長的幀停留時間不足（改為 `max(frame.duration, 1800 + 字數×110ms)`，上限 7 秒）；細胞課構造標註改**累積式**（講過的構造留在畫面上，只有當前聚焦的那個持續發光，新增 `.is-focus`）；選課頁新增**科目篩選 chips** 與**已學過標記**（新增 `hdmx_onion_lesson_best_v1` 記錄每課最佳星數，原本只有整個玩法一個成績）。
 - 驗收：tsc 0 錯；全量 170 檔 **1136 例**全綠；build 通過（index 1.3M/426KB gzip）；繁檢（含 docs）零命中。
 - 未做（評估後 ROI 低）：`index.css` 540KB（gzip 99KB）拆頁——Tailwind 全站共用，拆分需大改結構。
+
+## 2026-09-20 第四輪：年級偏好兩份不同步＋教室／自主練習年級錯配＋國中微课補到九年級
+- **Bug A（最嚴重）：站內有兩份年級偏好，而且沒有同步**。設定頁（Settings）寫的是 `UserPreferences.gradeLevel`（key `xue-adventure-user-prefs-v1`），但 `loadStudentGradePreference()` 讀的是另一份 `xue-adventure-filters-v1`——而那份 key **全站沒有任何寫入點**（`saveStudentGradePreference` 零引用），結果永遠是 null。影響：老師在設定頁選七年級後，洋蔥選課頁的預設學段、原則測驗年級、教室取題**全部拿不到年級**，國中生仍被當成國小生。
+  - 修法：以設定頁那份為單一真相，`loadStudentGradePreference` 讀不到 filters 時 fallback 到 `UserPreferences.gradeLevel`。**坑**：`loadUserPreferences()` 有預設值四年級，直接呼叫會讓「從沒設定過的學生」一律被當四年級反而限縮題目，所以 fallback 前必須先確認該 key 真的存在。
+- **Bug B：教室六個玩法取題完全不看年級**（`buildChoiceDeck(24,"綜合")` 從 1210 題隨機）→ 三年級會抽到九年級的二次函數題。`classroomBank` 新增 `scopeRowsByGrade()`：先取 |年級差| ≤1，不夠放寬 ≤2，最後才退回全題庫；`buildChoiceDeck`/`buildTrueFalseDeck`/`buildRelayRounds` 都套用，並新增可選 `grade` 參數（沒傳就讀年級偏好，沒設定等同原本行為）。新增 5 例測試。
+- **Bug C：`PaperExam` 知識島自主練習也用全題庫**。新增 `exploreQuestions`（依年級就近篩選）只套用在「自主探索」——到期複習、錯題重練、隨機冒險**刻意不過濾**，否則會找不到學生自己的題目。
+- **國中動畫微课補到九年級**：原本 8 堂只到七上，八、九年級完全沒有微课。新增兩堂（各 10 幀×5 題，含 2 題中途提問、3 條小結、每題 2 個提示）：
+  1. `pythagorean` 畢氏定理：兩杯水倒進大杯子（八下數學）——三邊蓋正方形，小杯 3²=9、4²=16 的水倒進斜邊大杯 5²=25 剛好裝滿（clipPath 水位動畫），再演示 6-8-10 與反求一股。
+  2. `quadratic` 二次函數：會轉彎的拋物線（九上數學）——座標平面描點 (−2,4)…(2,4) → 連成拋物線 → 開口上下（a 正負）→ 上下／左右平移（y＝x²+3、y＝(x−2)²）。
+  - 場景元件 `PythagoreanScene`／`QuadraticScene`＋`classroom.css` 的 py-／qd- keyframes（含 reduced-motion 降級）；播放器零改動，選課卡自動變 10 張。
+- 驗收：tsc 0 錯；全量 170 檔 **1145 例**全綠；build 通過；繁檢（含 docs）零命中。

@@ -362,6 +362,68 @@ export const ONION_CELL_LESSON: OnionLesson = {
   ],
 };
 
+/* ===================== 課程 9：八年級數學 — 畢氏定理（兩杯水倒進大杯子） ===================== */
+export const PYTHAGOREAN_LESSON: OnionLesson = {
+  id: "pythagorean",
+  title: "畢氏定理：兩杯水倒進大杯子",
+  subject: "數學",
+  topic: "畢氏定理",
+  grade: "八下",
+  stages: ["國中"],
+  desc: "直角三角形三邊各蓋一個正方形，兩個小杯子的水倒進大杯子剛好滿——這就是畢氏定理。",
+  takeaways: ["斜邊是直角對面的最長邊", "兩股的平方和 ＝ 斜邊的平方", "a² ＋ b² ＝ c²，c 一定是斜邊"],
+  frames: [
+    { id: 1, caption: "嗨！看到這個直角三角形了嗎？直角對面的那一條，叫做「斜邊」，它是最長的邊。", action: "wave", prop: { kind: "none" }, duration: 3400 },
+    { id: 2, caption: "另外兩條夾著直角的邊叫「股」。這兩股分別長 3 和 4，斜邊長 5。", action: "point", prop: { kind: "none" }, duration: 3600 },
+    { id: 3, caption: "現在在三條邊上各蓋一個正方形，像三個方形的杯子。", action: "jump", prop: { kind: "none" }, duration: 3400 },
+    { id: 4, caption: "小杯子裝 3×3＝9、中杯子裝 4×4＝16，大杯子可以裝 5×5＝25。", ask: { prompt: "兩個小杯子的水加起來是多少？（3×3 ＋ 4×4）", options: ["25", "49", "7", "24"], answer: 0, hint: "9 ＋ 16 ＝ 25，剛好等於大杯子 5×5。" }, action: "point", prop: { kind: "none" }, duration: 3800 },
+    { id: 5, caption: "把兩個小杯子裡的水全部倒出來……", action: "walk", prop: { kind: "none" }, duration: 3200 },
+    { id: 6, caption: "倒進斜邊上的大杯子——剛好裝滿！不多也不少，這就是畢氏定理。", action: "cheer", prop: { kind: "none" }, duration: 3800 },
+    { id: 7, caption: "換一組試試：兩股是 6 和 8，6²＋8²＝36＋64＝100，所以斜邊是 √100＝10。", ask: { prompt: "兩股是 6 和 8 的直角三角形，斜邊是多少？", options: ["10", "14", "12", "100"], answer: 0, hint: "36 ＋ 64 ＝ 100，√100 ＝ 10。" }, action: "think", prop: { kind: "none" }, duration: 4200 },
+    { id: 8, caption: "寫成公式：a² ＋ b² ＝ c²。記住，c 永遠是斜邊，不能放錯位置。", action: "point", prop: { kind: "none" }, duration: 3600 },
+    { id: 9, caption: "已知斜邊求一股也可以：c² − a² ＝ b²。13² − 5² ＝ 169 − 25 ＝ 144，另一股就是 12。", action: "think", prop: { kind: "none" }, duration: 4200 },
+    { id: 10, caption: "口訣：斜邊平方 ＝ 兩股平方和。看到直角，就想到 a² ＋ b² ＝ c²！", action: "cheer", prop: { kind: "none" }, duration: 3600 },
+  ],
+  questions: [
+    { id: "py1", prompt: "直角三角形兩股長 3 和 4，斜邊長是多少？", options: ["5", "6", "7", "25"], answer: 0, hints: ["斜邊平方 ＝ 兩股平方和", "9 ＋ 16 ＝ 25，√25 ＝ 5"], explanation: "3²＋4²＝9＋16＝25，斜邊 ＝ √25 ＝ 5。" },
+    { id: "py2", prompt: "兩股長 6 和 8 的直角三角形，斜邊是多少？", options: ["10", "14", "48", "100"], answer: 0, hints: ["先算兩股的平方再相加", "36 ＋ 64 ＝ 100，√100 ＝ 10"], explanation: "6²＋8²＝36＋64＝100，斜邊 ＝ √100 ＝ 10。" },
+    { id: "py3", prompt: "斜邊 13、其中一股 5，另一股是多少？", options: ["12", "8", "18", "144"], answer: 0, hints: ["這次要反過來用減法", "13² − 5² ＝ 169 − 25 ＝ 144"], explanation: "13²−5²＝169−25＝144，另一股 ＝ √144 ＝ 12。" },
+    { id: "py4", prompt: "畢氏定理只能用在什麼樣的三角形？", options: ["直角三角形", "任意三角形", "等腰三角形", "銳角三角形"], answer: 0, hints: ["注意公式裡出現的是哪一條邊", "要有「斜邊」才有畢氏定理"], explanation: "畢氏定理只適用於直角三角形，因為只有直角三角形才有斜邊。" },
+    { id: "py5", prompt: "長 5 公尺的梯子斜靠在牆上，梯腳離牆 3 公尺，梯子頂端離地多高？", options: ["4 公尺", "3 公尺", "5 公尺", "8 公尺"], answer: 0, hints: ["牆、地面、梯子剛好組成一個直角三角形", "5² − 3² ＝ 25 − 9 ＝ 16"], explanation: "梯子 5 是斜邊、離牆 3 是一股：5²−3²＝16，高度 ＝ √16 ＝ 4 公尺。" },
+  ],
+};
+
+/* ===================== 課程 10：九年級數學 — 二次函數（會轉彎的拋物線） ===================== */
+export const QUADRATIC_LESSON: OnionLesson = {
+  id: "quadratic",
+  title: "二次函數：會轉彎的拋物線",
+  subject: "數學",
+  topic: "二次函數",
+  grade: "九上",
+  stages: ["國中"],
+  desc: "一次函數畫出來是直線，二次函數畫出來會轉彎——洋蔥帶你認識拋物線的開口、頂點與平移。",
+  takeaways: ["y ＝ ax² 的圖形是拋物線", "a ＞ 0 開口向上，a ＜ 0 開口向下", "加減常數上下移，括號裡加減左右移"],
+  frames: [
+    { id: 1, caption: "嗨！你學過的一次函數 y ＝ 2x，畫出來是一條直直的線。", action: "wave", prop: { kind: "none" }, duration: 3400 },
+    { id: 2, caption: "但 y ＝ x² 不一樣：x 自己乘以自己，畫出來的線會轉彎。先畫好座標平面。", action: "point", prop: { kind: "none" }, duration: 3600 },
+    { id: 3, caption: "先描點：x＝−2 時 y＝4；x＝−1 時 y＝1；x＝0 時 y＝0。", action: "point", prop: { kind: "none" }, duration: 3600 },
+    { id: 4, caption: "右邊對稱：x＝1 時 y＝1；x＝2 時 y＝4。左右兩邊一模一樣。", ask: { prompt: "y ＝ x² 的圖形，會以哪一條直線為對稱軸？", options: ["y 軸（x ＝ 0）", "x 軸（y ＝ 0）", "y ＝ x", "沒有對稱軸"], answer: 0, hint: "左右兩邊的點高度完全相同，鏡子在中間。" }, action: "point", prop: { kind: "none" }, duration: 4000 },
+    { id: 5, caption: "把點連成一條平滑的曲線，這個形狀叫做「拋物線」。", action: "jump", prop: { kind: "none" }, duration: 3400 },
+    { id: 6, caption: "曲線的最低點叫「頂點」。y ＝ x² 的頂點在 (0, 0)，開口朝上。", action: "point", prop: { kind: "none" }, duration: 3600 },
+    { id: 7, caption: "如果 x² 前面是負號，例如 y ＝ −x²，整個圖形翻過來，開口朝下，頂點變成最高點。", action: "jump", prop: { kind: "none" }, duration: 4000 },
+    { id: 8, caption: "加一個常數就上下移動：y ＝ x² ＋ 3 是整條曲線往上平移 3 格。", ask: { prompt: "y ＝ x² ＋ 3 的圖形，頂點會移到哪裡？", options: ["(0, 3)", "(3, 0)", "(0, −3)", "(−3, 0)"], answer: 0, hint: "加常數是上下移動，動的是 y 座標。" }, action: "walk", prop: { kind: "none" }, duration: 4000 },
+    { id: 9, caption: "寫在括號裡就左右移動：y ＝ (x − 2)² 是往右平移 2 格，頂點在 (2, 0)。", action: "walk", prop: { kind: "none" }, duration: 4000 },
+    { id: 10, caption: "口訣：a 正開口上、a 負開口下；加減在外面上下移，加減在括號裡左右移（方向相反）。", action: "cheer", prop: { kind: "none" }, duration: 4600 },
+  ],
+  questions: [
+    { id: "qd1", prompt: "y ＝ x² − 4 的圖形與 x 軸的交點，x 坐標是多少？", options: ["x ＝ 2 和 −2", "x ＝ 4 和 −4", "只有 x ＝ 0", "沒有交點"], answer: 0, hints: ["與 x 軸相交時 y ＝ 0", "x² − 4 ＝ 0，x ＝ ±2"], explanation: "令 y ＝ 0：x²−4＝0 → x² ＝ 4 → x ＝ ±2，所以交點是 x ＝ 2 與 −2。" },
+    { id: "qd2", prompt: "y ＝ x² 的頂點座標是什麼？", options: ["(0, 0)", "(1, 1)", "(0, 1)", "(1, 0)"], answer: 0, hints: ["頂點是曲線的最低點", "x ＝ 0 時 y 最小"], explanation: "y ＝ x² 的最小值在 x ＝ 0，此時 y ＝ 0，頂點是 (0, 0)。" },
+    { id: "qd3", prompt: "y ＝ −x² 的圖形開口朝向哪裡？", options: ["向下", "向上", "向左", "向右"], answer: 0, hints: ["看 x² 前面的係數是正還是負", "係數為負，頂點變成最高點"], explanation: "x² 的係數為負，圖形開口向下，頂點 (0, 0) 是最高點。" },
+    { id: "qd4", prompt: "y ＝ (x − 3)² 的對稱軸是哪一條直線？", options: ["x ＝ 3", "x ＝ −3", "y ＝ 3", "x ＝ 0"], answer: 0, hints: ["括號裡的加減控制左右平移", "(x − 3) 表示往右移 3"], explanation: "y ＝ (x−3)² 是 y ＝ x² 往右平移 3 格，對稱軸是 x ＝ 3。" },
+    { id: "qd5", prompt: "y ＝ x² ＋ 2 的最小值是多少？", options: ["2", "0", "−2", "沒有最小值"], answer: 0, hints: ["開口向上時頂點就是最小值", "頂點移到 (0, 2)"], explanation: "y ＝ x² ＋ 2 的頂點在 (0, 2)，開口向上，所以最小值是 2。" },
+  ],
+};
+
 /** 目前上架的動畫課清單（多學科，驗證架構通用性）。 */
 export const ONION_LESSONS: OnionLesson[] = [
   FRACTION_LESSON,
@@ -372,6 +434,8 @@ export const ONION_LESSONS: OnionLesson[] = [
   NEGATIVE_NUMBER_LESSON,
   LINEAR_EQUATION_LESSON,
   ONION_CELL_LESSON,
+  PYTHAGOREAN_LESSON,
+  QUADRATIC_LESSON,
 ];
 
 /** 依 id 取課；找不到時回傳第一課作為兜底。 */

@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { BookOpenCheck, ChevronLeft, ChevronRight, CircleAlert, ClipboardList, Flag, Lightbulb, MapPinned, Mountain, Orbit, Puzzle, RotateCcw, Timer, Volume2, VolumeX, X } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { useQuestionBank } from "@/lib/questionBank";
+import { loadStudentGradePreference } from "@/lib/studentGradePreference";
 import { getSubjectStudyTips, GENERAL_STUDY_TIPS } from "@/lib/studyTips";
 import { SpeechReadableText } from "@/components/SpeechReadableText";
 import { SpeechReadButton } from "@/components/SpeechReadButton";
@@ -89,6 +90,18 @@ export default function PaperExam() {
   const [location, setLocation] = useLocation();
   const { questions: questionBankRows, refetch: refetchQuestionBank, isFallback: questionBankFallback } = useQuestionBank();
   const questions = questionBankRows as PaperQuestion[];
+  /**
+   * 知識島「自主練習」用的題池：依學生年級就近取題。
+   * 原本直接用整份題庫（1210 題，國小 1090 ＋ 國中 120），三年級學生會抽到九年級的
+   * 二次函數題。只套用在自主探索——到期複習、錯題重練、隨機冒險都必須能找到學生
+   * 自己的題目，不能過濾。
+   */
+  const exploreQuestions = useMemo(() => {
+    const grade = loadStudentGradePreference();
+    if (!grade) return questions;
+    const near = questions.filter((question) => Math.abs(question.grade - grade) <= 1);
+    return near.length >= 8 ? near : questions;
+  }, [questions]);
   const [scope, setScope] = useState<PaperScope>("綜合課綱");
   const [deck, setDeck] = useState<PaperQuestion[]>([]);
   const [answers, setAnswers] = useState<Record<string, number>>({});
@@ -519,7 +532,7 @@ export default function PaperExam() {
   useEffect(() => {
     if (!subjectScope || reviewTopic || wrongOnly || !questions.length || subjectScopeLaunchRef.current === subjectScope) return;
     subjectScopeLaunchRef.current = subjectScope;
-    const nextDeck = mixPaperVariants(buildPaperDeck(questions, subjectScope, DEFAULT_PAPER_SIZE), subjectScope);
+    const nextDeck = mixPaperVariants(buildPaperDeck(exploreQuestions, subjectScope, DEFAULT_PAPER_SIZE), subjectScope);
     setScope(subjectScope);
     setDeck(nextDeck);
     setAnswers({});
@@ -537,7 +550,7 @@ export default function PaperExam() {
     recordedIdsRef.current = new Set();
     startedAtRef.current = Date.now();
     setNotice(nextDeck.length ? `已從${subjectScope}知識島準備 ${nextDeck.length} 題練習。選項一經點選就會立即顯示結果。` : `目前沒有${subjectScope}題目，可以先從其他試卷開始探索。`);
-  }, [questions, reviewTopic, subjectScope, wrongOnly]);
+  }, [exploreQuestions, questions, reviewTopic, subjectScope, wrongOnly]);
 
   function startWrongQuestionPractice() {
     if (relatedWrongQuestions.length === 0) {

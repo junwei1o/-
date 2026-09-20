@@ -167,6 +167,43 @@ describe("教室玩法題庫構造", () => {
   });
 });
 
+describe("教室玩法依年級取題（國中生不再被丟回國小題）", () => {
+  it("三年級學生拿到的題目都是 3–4 年級，不會出現九年級的二次函數", () => {
+    const deck = buildChoiceDeck(24, "綜合", seeded(), 3);
+    const grades = new Set(deck.map((q) => q.grade));
+    expect([...grades].every((g) => g <= 5)).toBe(true);
+    expect(grades.has(9)).toBe(false);
+    expect(grades.has(8)).toBe(false);
+  });
+
+  it("八年級學生拿到的題目都在 6–9 年級之間，不會掉到三年級", () => {
+    const deck = buildChoiceDeck(24, "綜合", seeded(), 8);
+    const grades = new Set(deck.map((q) => q.grade));
+    expect([...grades].every((g) => g >= 6)).toBe(true);
+    expect(grades.has(3)).toBe(false);
+  });
+
+  it("九年級學生也拿得到題（不會因為篩太嚴而開天窗）", () => {
+    const deck = buildChoiceDeck(10, "綜合", seeded(), 9);
+    expect(deck).toHaveLength(10);
+    const grades = new Set(deck.map((q) => q.grade));
+    expect([...grades].every((g) => g >= 7)).toBe(true);
+  });
+
+  it("沒給年級時等同原本行為（全題庫，向後相容）", () => {
+    const deck = buildChoiceDeck(24, "綜合", seeded(), null);
+    expect(deck).toHaveLength(24);
+  });
+
+  it("接力關卡的選擇題也依年級取", () => {
+    const rounds = buildRelayRounds(3, seeded(), 8);
+    expect(rounds.length).toBeGreaterThan(0);
+    for (const round of rounds) {
+      expect(round.choice.grade).toBeGreaterThanOrEqual(6);
+    }
+  });
+});
+
 describe("因數探險", () => {
   it("listFactors 正確列舉合成數、完全平方數與質數", () => {
     expect(listFactors(12)).toEqual([1, 2, 3, 4, 6, 12]);
