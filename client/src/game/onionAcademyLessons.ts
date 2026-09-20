@@ -197,12 +197,145 @@ export const TRIANGLE_AREA_LESSON: OnionLesson = {
   ],
 };
 
+/* ========================================================================
+ * 課程 5：自然 — 光合作用：葉子裡的綠色工廠
+ * 水從根上送、二氧化碳從氣孔進、葉綠體接收陽光合成養分、排出氧氣。
+ * 用「參觀工廠」的順序逐站細講，10 幀把原料→機器→產品拆到最細。
+ * ======================================================================== */
+export const PHOTOSYNTHESIS_LESSON: OnionLesson = {
+  id: "photosynthesis",
+  title: "光合作用：葉子裡的綠色工廠",
+  subject: "自然",
+  topic: "光合作用",
+  grade: "五上・七上",
+  desc: "植物不會吃飯，怎麼長大？洋蔥帶你走進葉子的綠色工廠，看陽光、水、二氧化碳怎麼變成養分和氧氣。",
+  frames: [
+    { id: 1, caption: "嗨！植物的葉子其實是一座精密的工廠，今天帶你進去參觀！", action: "wave", prop: { kind: "none" }, duration: 2800 },
+    { id: 2, caption: "這座工廠需要三樣原料：陽光、水、二氧化碳。先來看水從哪裡來。", action: "point", prop: { kind: "none" }, duration: 3200 },
+    { id: 3, caption: "水由根部吸收，沿著莖裡的細管子，一路往上送到葉子。", action: "walk", prop: { kind: "none" }, duration: 3400 },
+    { id: 4, caption: "第二樣原料——二氧化碳，從葉背的小孔「氣孔」溜進來。", action: "point", prop: { kind: "none" }, duration: 3400 },
+    { id: 5, caption: "葉肉裡有好多綠色小顆粒——葉綠體，它就是工廠的機器房，也是葉子是綠色的原因。", action: "think", prop: { kind: "none" }, duration: 3600 },
+    { id: 6, caption: "陽光照進葉綠體，機器開動！把水和二氧化碳「合成」成養分。", action: "jump", prop: { kind: "none" }, duration: 3600 },
+    { id: 7, caption: "合成出來的養分（葡萄糖）送到根、莖、全身，讓植物長高長大。", action: "point", prop: { kind: "none" }, duration: 3400 },
+    { id: 8, caption: "同時，工廠排出副產品——氧氣！從氣孔釋放出去，正好給我們呼吸。", action: "cheer", prop: { kind: "none" }, duration: 3400 },
+    { id: 9, caption: "公式記起來：二氧化碳＋水 →（陽光・葉綠體）養分＋氧氣。", action: "point", prop: { kind: "none" }, duration: 3600 },
+    { id: 10, caption: "口訣：根送水、孔進氣、葉綠體曬太陽，變養分、吐氧氣。準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 3000 },
+  ],
+  questions: [
+    { id: "p1", prompt: "光合作用主要在葉片的哪個構造進行？", options: ["氣孔", "葉綠體", "細胞壁", "葉脈"], answer: 1, explanation: "葉綠體是光合作用的機器房，能吸收陽光把原料合成養分。" },
+    { id: "p2", prompt: "植物主要靠哪個部位吸收水分，往上送給葉子？", options: ["葉", "花", "根", "果實"], answer: 2, explanation: "根部吸收水分，沿著莖往上送到葉子，是光合作用的原料之一。" },
+    { id: "p3", prompt: "空氣中的二氧化碳從葉片的哪裡進入？", options: ["氣孔", "葉尖", "樹皮", "芽"], answer: 0, explanation: "葉背的氣孔是二氧化碳進入、氧氣排出的通道。" },
+    { id: "p4", prompt: "光合作用的能量來源是什麼？", options: ["土壤", "風", "陽光", "肥料"], answer: 2, explanation: "陽光提供能量，讓葉綠體能把水和二氧化碳合成養分。" },
+    { id: "p5", prompt: "光合作用排出、剛好供人類呼吸的氣體是？", options: ["二氧化碳", "氮氣", "氫氣", "氧氣"], answer: 3, explanation: "光合作用把二氧化碳轉成養分，同時釋放氧氣，剛好是動物需要的。" },
+  ],
+};
+
+/* ========================================================================
+ * 課程 6：數學 — 負數與數線：零下的世界
+ * 從「零下 3 度」引入，數線三要素、左右移動、大小比較、相反數，10 幀細講。
+ * ======================================================================== */
+export const NEGATIVE_NUMBER_LESSON: OnionLesson = {
+  id: "negative-number",
+  title: "負數與數線：零下的世界",
+  subject: "數學",
+  topic: "負數與數線",
+  grade: "七上",
+  desc: "「零下 3 度」是什麼意思？洋蔥開著小船在數線上航向零下的世界，負數的大小一次搞懂。",
+  frames: [
+    { id: 1, caption: "嗨！天氣預報說「明天零下 3 度」，零下到底是什麼意思呢？", action: "wave", prop: { kind: "none" }, duration: 3000 },
+    { id: 2, caption: "比 0 小的數，就用「−」號表示：零下 3 度寫成 −3，念作「負三」。", action: "point", prop: { kind: "none" }, duration: 3400 },
+    { id: 3, caption: "把所有數排成一條線：中間是 0，右邊是正數，左邊是負數——這就是「數線」。", action: "walk", prop: { kind: "none" }, duration: 3600 },
+    { id: 4, caption: "數線三要素：原點（0 的位置）、正方向（通常朝右）、單位長度（每一格一樣大）。", action: "point", prop: { kind: "none" }, duration: 3800 },
+    { id: 5, caption: "小船從 0 出發，往左（負方向）開 4 格，就到 −4 的位置。", action: "walk", prop: { kind: "none" }, duration: 3600 },
+    { id: 6, caption: "再從 −4 往右開 6 格：−4 ＋ 6 ＝ 2，停在 2。左加右減，在數線上一目了然！", action: "walk", prop: { kind: "none" }, duration: 3800 },
+    { id: 7, caption: "在數線上，越右邊的數越大：−4 ＜ −1 ＜ 0 ＜ 2。", action: "point", prop: { kind: "none" }, duration: 3600 },
+    { id: 8, caption: "兩個負數怎麼比？記住：離 0 越遠的負數反而越小，所以 −5 ＜ −2。", action: "think", prop: { kind: "none" }, duration: 3800 },
+    { id: 9, caption: "−3 和 3 到 0 的距離一樣遠（都是 3 格），它們互為「相反數」。", action: "jump", prop: { kind: "none" }, duration: 3600 },
+    { id: 10, caption: "口訣：右大左小，負數離零越遠越小。準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
+  ],
+  questions: [
+    { id: "n1", prompt: "「零下 5 度」用負數怎麼表示？", options: ["−5", "5−", "+5", "0.5"], answer: 0, explanation: "比 0 小 5 度，用負號寫成 −5。" },
+    { id: "n2", prompt: "數線上 −2 和 −6 哪一個比較大？", options: ["−6", "−2", "一樣大", "無法比較"], answer: 1, explanation: "越右邊越大：−2 在 −6 的右邊，所以 −2 ＞ −6。" },
+    { id: "n3", prompt: "從 −3 往右走 5 格，會停在數線上的哪個數？", options: ["−8", "−2", "2", "8"], answer: 2, explanation: "−3 ＋ 5 ＝ 2，往右是加法，停在 2。" },
+    { id: "n4", prompt: "3 的相反數是多少？", options: ["1/3", "0", "−3", "6"], answer: 2, explanation: "到 0 距離一樣、方向相反的數互為相反數，3 的相反數是 −3。" },
+    { id: "n5", prompt: "下列哪一個數最小？", options: ["−8", "−1", "0", "1"], answer: 0, explanation: "負數離 0 越遠越小，−8 離 0 最遠，所以最小。" },
+  ],
+};
+
+/* ========================================================================
+ * 課程 7：數學 — 一元一次方程式：天平上的 x
+ * 用天平平衡講等式，兩邊同減 → x=5 → 移項變號規則，10 幀細講。
+ * ======================================================================== */
+export const LINEAR_EQUATION_LESSON: OnionLesson = {
+  id: "linear-equation",
+  title: "一元一次方程式：天平上的 x",
+  subject: "數學",
+  topic: "一元一次方程式",
+  grade: "七上",
+  desc: "方程式就是一座天平！洋蔥用砝碼讓你親眼看著 x＋3＝8 怎麼一步步解開，移項變號不再是死背。",
+  frames: [
+    { id: 1, caption: "嗨！這裡有一座天平：左邊是一個神秘箱子和 3 個砝碼，右邊是 8 個砝碼，剛好平衡。", action: "wave", prop: { kind: "none" }, duration: 3800 },
+    { id: 2, caption: "平衡就代表「左邊 ＝ 右邊」。箱子重 x，寫成式子就是：x ＋ 3 ＝ 8。", action: "point", prop: { kind: "none" }, duration: 3600 },
+    { id: 3, caption: "解方程式的目標：想辦法讓 x 一個人留在左邊，就知道它等於多少。", action: "think", prop: { kind: "none" }, duration: 3400 },
+    { id: 4, caption: "第一步：從兩邊同時拿走 3 個砝碼。天平兩邊一起減，還是平衡的！", action: "jump", prop: { kind: "none" }, duration: 3800 },
+    { id: 5, caption: "左邊只剩 x，右邊剩 5 個砝碼，所以 x ＝ 5。解開了！", action: "cheer", prop: { kind: "none" }, duration: 3400 },
+    { id: 6, caption: "檢驗一下：把 5 代回去，5 ＋ 3 ＝ 8，右邊也是 8，答對！", action: "point", prop: { kind: "none" }, duration: 3400 },
+    { id: 7, caption: "剛剛「兩邊同減 3」，寫快一點就是：把 ＋3 從左邊搬到右邊，要變號成 −3。這叫「移項」。", action: "walk", prop: { kind: "none" }, duration: 3800 },
+    { id: 8, caption: "口訣：移項要變號——加變減、減變加，乘變除、除變乘。", action: "cheer", prop: { kind: "none" }, duration: 3400 },
+    { id: 9, caption: "再試一題：x − 2 ＝ 6。把 −2 移到右邊變 ＋2，得到 x ＝ 8。", action: "point", prop: { kind: "none" }, duration: 3600 },
+    { id: 10, caption: "總整理：天平兩邊同進退，移項記得要變號。準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
+  ],
+  questions: [
+    { id: "e1", prompt: "x ＋ 3 ＝ 8，x ＝ ？", options: ["3", "5", "11", "24"], answer: 1, explanation: "兩邊同減 3（＋3 移到右邊變 −3）：x ＝ 8 − 3 ＝ 5。" },
+    { id: "e2", prompt: "x − 2 ＝ 6，x ＝ ？", options: ["4", "8", "12", "3"], answer: 1, explanation: "−2 移到右邊變 ＋2：x ＝ 6 ＋ 2 ＝ 8。" },
+    { id: "e3", prompt: "解 x ＋ 5 ＝ 12 時，把 ＋5 移項到右邊會變成？", options: ["＋5", "−5", "×5", "不變"], answer: 1, explanation: "移項要變號：＋5 過去變 −5，所以 x ＝ 12 − 5 ＝ 7。" },
+    { id: "e4", prompt: "4x ＝ 12，x ＝ ？", options: ["8", "16", "3", "48"], answer: 2, explanation: "兩邊同除以 4：x ＝ 12 ÷ 4 ＝ 3。" },
+    { id: "e5", prompt: "x ＝ 3 是下列哪一個方程式的解？", options: ["x ＋ 1 ＝ 3", "2x ＋ 1 ＝ 7", "x − 3 ＝ 1", "3x ＝ 12"], answer: 1, explanation: "把 3 代入 2x＋1＝7：2×3＋1 ＝ 7，成立！其他式子代入都不成立。" },
+  ],
+};
+
+/* ========================================================================
+ * 課程 8：自然 — 洋蔥表皮細胞：顯微鏡下的大世界
+ * 洋蔥介紹洋蔥細胞（彩蛋）：顯微鏡視野逐層標示細胞壁/膜/核/液泡，10 幀細講。
+ * ======================================================================== */
+export const ONION_CELL_LESSON: OnionLesson = {
+  id: "onion-cell",
+  title: "洋蔥表皮細胞：顯微鏡下的大世界",
+  subject: "自然",
+  topic: "細胞構造",
+  grade: "七上",
+  desc: "由洋蔥親自介紹洋蔥表皮細胞！顯微鏡視野一格一格，細胞壁、細胞膜、細胞核、液泡一次認齊。",
+  frames: [
+    { id: 1, caption: "嗨！今天由我親自介紹我的好朋友——洋蔥表皮細胞，因為我自己就是細胞組成的！", action: "wave", prop: { kind: "none" }, duration: 3400 },
+    { id: 2, caption: "細胞是生物體最小的基本單位，一隻動物、一棵植物，都是由細胞組成的。", action: "point", prop: { kind: "none" }, duration: 3400 },
+    { id: 3, caption: "把洋蔥表皮薄薄撕下一層，放到顯微鏡下——哇，一格一格像紅磚牆！每一格就是一個細胞。", action: "jump", prop: { kind: "none" }, duration: 3800 },
+    { id: 4, caption: "最外面硬硬的框是「細胞壁」，像牆壁一樣保護細胞、維持方方的外形。植物才有喔！", action: "point", prop: { kind: "none" }, duration: 3800 },
+    { id: 5, caption: "細胞壁內側還有一層薄薄的「細胞膜」，像大門的守衛，控制哪些東西可以進出。", action: "point", prop: { kind: "none" }, duration: 3600 },
+    { id: 6, caption: "裡面那顆深色圓球是「細胞核」，細胞的指揮中心，藏著遺傳物質 DNA。", action: "think", prop: { kind: "none" }, duration: 3600 },
+    { id: 7, caption: "中間大大的泡泡是「液泡」，細胞的倉庫，儲存水分和養分——切洋蔥讓你流淚的就是它！", action: "jump", prop: { kind: "none" }, duration: 3800 },
+    { id: 8, caption: "植物細胞有細胞壁和葉綠體，動物細胞沒有——這是兩者最大的差別。", action: "point", prop: { kind: "none" }, duration: 3600 },
+    { id: 9, caption: "由小到大：細胞 → 組織 → 器官 → 器官系統 → 個體，層層組合成一個生命。", action: "walk", prop: { kind: "none" }, duration: 3600 },
+    { id: 10, caption: "口訣：牆保護、門進出、核指揮、泡儲水。準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 3000 },
+  ],
+  questions: [
+    { id: "c1", prompt: "生物體結構與功能的最小基本單位是什麼？", options: ["組織", "器官", "細胞", "系統"], answer: 2, explanation: "所有生物都由細胞組成，細胞是最小的基本單位。" },
+    { id: "c2", prompt: "保護細胞、維持植物細胞方形外觀的構造是？", options: ["細胞膜", "細胞壁", "液泡", "細胞核"], answer: 1, explanation: "細胞壁在最外層，像牆壁一樣保護並撐起植物細胞的形狀。" },
+    { id: "c3", prompt: "控制物質進出細胞的「守衛」是哪一個構造？", options: ["細胞壁", "細胞膜", "液泡", "葉綠體"], answer: 1, explanation: "細胞膜像大門守衛，允許需要的物質進、不需要的擋住。" },
+    { id: "c4", prompt: "含有遺傳物質、堪稱細胞指揮中心的是？", options: ["細胞核", "液泡", "細胞質", "細胞壁"], answer: 0, explanation: "細胞核內有 DNA，負責指揮細胞的活動與遺傳。" },
+    { id: "c5", prompt: "動物細胞沒有、植物細胞才有的構造是？", options: ["細胞核和細胞膜", "細胞壁和葉綠體", "細胞質和液泡", "細胞膜和細胞質"], answer: 1, explanation: "細胞壁與葉綠體是植物細胞特有的構造，動物細胞沒有。" },
+  ],
+};
+
 /** 目前上架的動畫課清單（多學科，驗證架構通用性）。 */
 export const ONION_LESSONS: OnionLesson[] = [
   FRACTION_LESSON,
   CHINESE_DE_LESSON,
   WATER_CYCLE_LESSON,
   TRIANGLE_AREA_LESSON,
+  PHOTOSYNTHESIS_LESSON,
+  NEGATIVE_NUMBER_LESSON,
+  LINEAR_EQUATION_LESSON,
+  ONION_CELL_LESSON,
 ];
 
 /** 依 id 取課；找不到時回傳第一課作為兜底。 */

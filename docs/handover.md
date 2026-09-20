@@ -545,3 +545,16 @@ curl -s https://xue-gr3a.onrender.com/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | h
 - 頂部列：`.ol-bar` 改 flex，`.ol-exit--bar` 加 flex-shrink:0/white-space:nowrap（修窄屏「離開」被壓成直排），`.ol-bar-title` flex:1 min-width:0 置中可換行，進度點 flex-shrink:0。
 - 驗收：tsc 0 錯誤；classroom 31 測試（ClassroomComponents 23/OnionLesson 5/OnionAcademyGame 3）＋onionAcademyLessons 29 全綠；vite build 乾淨無 CSS 警告；本地 preview 390 視口四課 28 幀逐幀截圖目視通過；**線上** https://xue-gr3a.onrender.com/ Playwright 四課關鍵幀 DOM 斷言 ALL PASS、無 pageerror（部署後 bundle index-BIbB8OGh.js）。
 - 已知小限制：OnionAcademyScenes 尚無專屬元件測試（由 tsc＋OnionAcademyGame 流程測試＋視覺/線上斷言覆蓋）；全量 `npx vitest run`（不帶檔案）仍會被某計時器測試 hang，需依目錄分批跑。
+
+## 2026-09-20 洋蔥動畫講解第二季：新增四課細講動畫微課（國小＋國中）
+- 需求：像洋蔥學園一樣的全套動畫微課，「視頻」以純 SVG＋CSS 動畫實作（local-first、可離線、手機順暢），步驟比第一季更細。沿用既架構：資料驅動（onionAcademyLessons.ts）＋渲染層分派（OnionAcademyScenes.tsx 的 LessonScene 依 lessonId 分派），零改動播放器 OnionAcademyGame（選課卡自動變 8 張）。
+- 新增四課（各 **10 幀**×5 題，比第一季 7 幀更細）：
+  1. `photosynthesis` 光合作用：葉子裡的綠色工廠（自然・五上/七上）——參觀工廠順序：三原料→根送水 H₂O 上升→CO₂ 從氣孔進→葉綠體亮→陽光開機（光線虛線流動）→養分（葡萄糖六角形）輸出全身→O₂ 冒出→公式→口訣。
+  2. `negative-number` 負數與數線：零下的世界（數學・七上）——溫度計水銀 scaleY 降到 −3°C→數線展開→三要素（原點/正方向/單位長度）→小船 0→−4→再 ＋6 到 2（transform transition 平滑移動）→大小排序→負比負→相反數弧線→口訣。
+  3. `linear-equation` 一元一次方程式：天平上的 x（數學・七上）——天平 x＋3＝8（x 紫箱＋3 砝碼 vs 8 砝碼，樑微傾）→兩邊同減（**只飛走 3 個**，右盤留 5 個：eq-remove/eq-keep 分流）→x=5 慶祝→檢驗勾勾→移項晶片＋3 飛越變 −3（雙 text 交叉淡入）→口訣→再試 x−2=6→總整理。
+  4. `onion-cell` 洋蔥表皮細胞：顯微鏡下的大世界（自然・七上，洋蔥介紹洋蔥彩蛋）——顯微鏡圓視野磚牆細胞→逐構造聚光燈：細胞壁（邊框發光）→細胞膜（虛線行軍）→細胞核→液泡（切洋蔥流淚梗）→動植物細胞差別→細胞→個體五階層→口訣。
+- CSS：classroom.css 尾端新增「洋蔥連續場景第二季」段（ph-/nl-/eq-/ce- 前綴 keyframes＋ ol-pop 共用彈出），含獨立 prefers-reduced-motion 降級區（循環動畫停用、圖層保證可見、飛走砝碼直接隱藏、移項晶片定格 ＋3）。
+- 測試：onionAcademyLessons.test.ts 完整性幀數上限 5→10；registry 斷言 8 課三學科；新增四課 describe（幀數 10 斷言＋關鍵詞覆蓋＋方程式題答案整數檢查，注意選項含 U+2212「−」與第 5 題式子答案的例外）。該檔 29→51 例全綠。
+- 驗收：tsc 0 錯誤；onionAcademyLessons 51＋OnionAcademyGame 3 全綠；vite build 通過。
+- 環境備註（新機器）：無 pnpm，用 corepack（package.json 已鎖 pnpm@10.4.1）；sandbox 會擋 ~/Library/pnpm store，需 `--store-dir .pnpm-store`（已進 .gitignore？**沒有**，記得別 commit）；pnpm 10 會忽略 esbuild/@tailwindcss/oxide build scripts（本機 esbuild 經由 @esbuild/* 可用 binary，build/vitest 正常）；全量 vitest 仍會 hang，分檔跑。
+- 已知小限制：同第一季——新四場景尚無專屬元件測試（由 tsc＋流程測試＋資料測試覆蓋）。

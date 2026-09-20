@@ -2,7 +2,11 @@ import { describe, expect, it } from "vitest";
 import {
   CHINESE_DE_LESSON,
   FRACTION_LESSON,
+  LINEAR_EQUATION_LESSON,
+  NEGATIVE_NUMBER_LESSON,
+  ONION_CELL_LESSON,
   ONION_LESSONS,
+  PHOTOSYNTHESIS_LESSON,
   TRIANGLE_AREA_LESSON,
   WATER_CYCLE_LESSON,
   getOnionLesson,
@@ -44,9 +48,9 @@ describe("onion lesson grading", () => {
 function lessonIntegrity(lesson: typeof FRACTION_LESSON) {
   const validActions: OnionAction[] = ["wave", "walk", "point", "jump", "think", "cheer"];
 
-  it(`${lesson.id}: 有 5-8 幀分鏡與 5 題闖關`, () => {
+  it(`${lesson.id}: 有 5-10 幀分鏡與 5 題闖關`, () => {
     expect(lesson.frames.length).toBeGreaterThanOrEqual(5);
-    expect(lesson.frames.length).toBeLessThanOrEqual(8);
+    expect(lesson.frames.length).toBeLessThanOrEqual(10);
     expect(lesson.questions).toHaveLength(5);
   });
 
@@ -100,8 +104,8 @@ function lessonIntegrity(lesson: typeof FRACTION_LESSON) {
 }
 
 describe("registry & lookup", () => {
-  it("registers 4 lessons across 3 subjects", () => {
-    expect(ONION_LESSONS).toHaveLength(4);
+  it("registers 8 lessons across 3 subjects", () => {
+    expect(ONION_LESSONS).toHaveLength(8);
     const subjects = new Set(ONION_LESSONS.map((l) => l.subject));
     expect(subjects.size).toBe(3); // 數學、國語、自然
     expect(subjects.has("數學")).toBe(true);
@@ -166,5 +170,63 @@ describe("triangle area lesson data integrity", () => {
     for (const q of calcQs) {
       expect(q.options[q.answer]).toMatch(/^\d+$/);
     }
+  });
+});
+
+describe("photosynthesis lesson data integrity", () => {
+  lessonIntegrity(PHOTOSYNTHESIS_LESSON);
+
+  it("uses 10 frames for the fine-grained factory tour", () => {
+    expect(PHOTOSYNTHESIS_LESSON.frames).toHaveLength(10);
+  });
+
+  it("covers raw materials, chloroplast, glucose and oxygen in captions", () => {
+    const all = PHOTOSYNTHESIS_LESSON.frames.map((f) => f.caption).join("");
+    expect(all).toContain("水");
+    expect(all).toContain("二氧化碳");
+    expect(all).toContain("葉綠體");
+    expect(all).toContain("氧氣");
+  });
+});
+
+describe("negative number lesson data integrity", () => {
+  lessonIntegrity(NEGATIVE_NUMBER_LESSON);
+
+  it("uses 10 frames and teaches number line, ordering and opposites", () => {
+    expect(NEGATIVE_NUMBER_LESSON.frames).toHaveLength(10);
+    const all = NEGATIVE_NUMBER_LESSON.frames.map((f) => f.caption).join("");
+    expect(all).toContain("數線");
+    expect(all).toContain("相反數");
+  });
+});
+
+describe("linear equation lesson data integrity", () => {
+  lessonIntegrity(LINEAR_EQUATION_LESSON);
+
+  it("uses 10 frames and teaches balance, solving and 移項", () => {
+    expect(LINEAR_EQUATION_LESSON.frames).toHaveLength(10);
+    const all = LINEAR_EQUATION_LESSON.frames.map((f) => f.caption).join("");
+    expect(all).toContain("天平");
+    expect(all).toContain("移項");
+  });
+
+  it("solution of every equation question is a small integer", () => {
+    // 第 5 題是「哪個方程式的解」題型，答案是式子；前 4 題答案應為整數
+    for (const q of LINEAR_EQUATION_LESSON.questions.slice(0, 4)) {
+      expect(q.options[q.answer]).toMatch(/^[−-]?\d+$/);
+    }
+  });
+});
+
+describe("onion cell lesson data integrity", () => {
+  lessonIntegrity(ONION_CELL_LESSON);
+
+  it("uses 10 frames and covers wall, membrane, nucleus, vacuole", () => {
+    expect(ONION_CELL_LESSON.frames).toHaveLength(10);
+    const all = ONION_CELL_LESSON.frames.map((f) => f.caption).join("");
+    expect(all).toContain("細胞壁");
+    expect(all).toContain("細胞膜");
+    expect(all).toContain("細胞核");
+    expect(all).toContain("液泡");
   });
 });

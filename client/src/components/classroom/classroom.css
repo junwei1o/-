@@ -2484,3 +2484,91 @@
   .wc-layer { opacity: 1 !important; }
   .wc-drop--rise, .wc-drop--rain, .wc-flow-dot, .wc-mote { opacity: 0.55 !important; }
 }
+
+/* ======================================================================
+ * 洋蔥連續場景第二季：光合作用(ph-)・負數數線(nl-)・天平方程式(eq-)・洋蔥細胞(ce-)
+ * 同樣吃 {frame, action}，CSS keyframes 連續運動、可離線。
+ * ====================================================================== */
+
+/* ---------- 共用：分層淡入 ---------- */
+.ph-layer, .nl-layer { opacity: 0; transition: opacity 0.5s ease; }
+.ph-layer.is-active { opacity: 1; }
+
+/* ---------- 光合作用 ph- ---------- */
+.ph-leaf { animation: ph-leaf-sway 6s ease-in-out infinite alternate; transform-origin: 130px 140px; }
+@keyframes ph-leaf-sway { from { transform: rotate(-0.6deg); } to { transform: rotate(0.8deg); } }
+.ph-leaf.is-power { filter: brightness(1.06); }
+.ph-chloro { opacity: 0.5; transition: opacity 0.6s; }
+.ph-f4 .ph-chloro, .ph-f5 .ph-chloro, .ph-f6 .ph-chloro, .ph-f7 .ph-chloro, .ph-f8 .ph-chloro, .ph-f9 .ph-chloro { opacity: 1; animation: ph-chloro-glow 1.8s ease-in-out infinite; }
+@keyframes ph-chloro-glow { 0%, 100% { filter: brightness(1); } 50% { filter: brightness(1.5); } }
+.ph-ray { stroke-dasharray: 6 6; animation: ph-ray-dash 0.9s linear infinite; opacity: 0.85; }
+@keyframes ph-ray-dash { to { stroke-dashoffset: -12; } }
+.ph-drop { animation: ph-drop-rise 2.4s linear infinite; }
+@keyframes ph-drop-rise { 0% { transform: translateY(0); opacity: 0; } 15% { opacity: 1; } 80% { opacity: 1; } 100% { transform: translateY(-52px); opacity: 0; } }
+.ph-co2 { animation: ph-co2-in 3.2s linear infinite; }
+@keyframes ph-co2-in { 0% { transform: translate(0, 0); opacity: 0; } 20% { opacity: 1; } 85% { opacity: 1; } 100% { transform: translate(-128px, 14px); opacity: 0; } }
+.ph-sugar { animation: ph-sugar-go 2.8s ease-in-out infinite; }
+@keyframes ph-sugar-go { 0% { transform: translateY(-84px); opacity: 0; } 30% { opacity: 1; } 100% { transform: translateY(0); opacity: 0.95; } }
+.ph-o2 { animation: ph-o2-up 2.6s ease-out infinite; }
+@keyframes ph-o2-up { 0% { transform: translateY(30px); opacity: 0; } 30% { opacity: 1; } 100% { transform: translateY(-34px); opacity: 0; } }
+.ph-banner, .nl-banner, .eq-banner, .ce-banner { animation: ol-pop 0.55s cubic-bezier(0.34, 1.56, 0.64, 1); transform-box: fill-box; transform-origin: center; }
+
+/* ---------- 負數數線 nl- ---------- */
+.nl-mercury { transform-origin: 44px 150px; transform: scaleY(1); transition: transform 0.9s ease-in-out; }
+.nl-thermo.is-neg .nl-mercury { transform: scaleY(0.24); }
+.nl-line { opacity: 0; transition: opacity 0.6s ease; }
+.nl-line.is-show { opacity: 1; }
+.nl-boat { transition: transform 0.9s cubic-bezier(0.45, 0, 0.2, 1); }
+.nl-sail { animation: nl-sail-wave 2.4s ease-in-out infinite; transform-origin: 0 8px; }
+@keyframes nl-sail-wave { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(-7deg); } }
+.nl-elements, .nl-order, .nl-far, .nl-opposite, .nl-jump, .eq-check, .eq-example, .ce-diff, .ce-hierarchy, .ce-callout { animation: ol-pop 0.55s cubic-bezier(0.34, 1.56, 0.64, 1); transform-box: fill-box; transform-origin: center; }
+.nl-jump path { stroke-dasharray: 6 5; animation: ph-ray-dash 1.1s linear infinite; }
+
+/* ---------- 天平方程式 eq- ---------- */
+.eq-beam { transition: transform 0.7s ease; transform-origin: 170px 74px; }
+.eq-f0 .eq-beam, .eq-f1 .eq-beam, .eq-f2 .eq-beam { transform: rotate(-1.4deg); }
+.eq-beam.is-solved { animation: eq-cheer 1s ease-in-out infinite; }
+@keyframes eq-cheer { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-3px) rotate(0.6deg); } }
+/* f3 之後：被拿走的砝碼飛走並消失，留下的（eq-keep）原地不動 */
+.ol-scene--equation:not(.eq-f0):not(.eq-f1):not(.eq-f2) .eq-remove { animation: eq-fly-off 0.9s cubic-bezier(0.5, -0.3, 0.7, 0.4) forwards; }
+@keyframes eq-fly-off { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-90px) translateX(14px) rotate(24deg); opacity: 0; } }
+.eq-movechip { transform: translate(64px, 42px); animation: eq-move 2.8s ease-in-out infinite; }
+@keyframes eq-move { 0% { transform: translate(64px, 42px); opacity: 0; } 12% { opacity: 1; } 50% { transform: translate(150px, 18px); opacity: 1; } 88% { opacity: 1; } 100% { transform: translate(252px, 42px); opacity: 0.95; } }
+.eq-movechip-plus { animation: eq-plus-fade 2.8s ease-in-out infinite; }
+.eq-movechip-minus { animation: eq-minus-fade 2.8s ease-in-out infinite; }
+@keyframes eq-plus-fade { 0%, 44% { opacity: 1; } 56%, 100% { opacity: 0; } }
+@keyframes eq-minus-fade { 0%, 44% { opacity: 0; } 56%, 100% { opacity: 1; } }
+
+/* ---------- 洋蔥細胞 ce- ---------- */
+.ce-scope { opacity: 0; transform: scale(0.9); transform-origin: 150px 116px; transition: opacity 0.7s ease, transform 0.7s ease; }
+.ce-scope.is-show { opacity: 1; transform: scale(1); }
+.ce-wall { animation: ce-wall-glow 1.6s ease-in-out infinite; }
+@keyframes ce-wall-glow { 0%, 100% { stroke: #b04fd8; } 50% { stroke: #e07ae0; } }
+.ce-membrane { animation: ce-membrane-march 1.2s linear infinite; }
+@keyframes ce-membrane-march { to { stroke-dashoffset: -16; } }
+.ce-nucleus, .ce-vacuole { transform-box: fill-box; transform-origin: center; animation: ol-pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.ce-step { opacity: 0; animation: ce-step-in 0.5s ease forwards; }
+@keyframes ce-step-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.ce-step { transform-box: fill-box; }
+
+/* ---------- 第二季 reduced-motion 降級 ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .ph-leaf, .ph-chloro, .ph-ray, .ph-drop, .ph-co2, .ph-sugar, .ph-o2,
+  .nl-sail, .nl-boat, .nl-mercury, .nl-jump path,
+  .eq-beam, .eq-remove, .eq-movechip, .eq-movechip-plus, .eq-movechip-minus,
+  .ce-wall, .ce-membrane, .ce-nucleus, .ce-vacuole, .ce-step,
+  .ph-banner, .nl-banner, .eq-banner, .ce-banner,
+  .nl-elements, .nl-order, .nl-far, .nl-opposite, .nl-jump,
+  .eq-check, .eq-example, .ce-diff, .ce-hierarchy, .ce-callout {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  .ph-layer { opacity: 1 !important; }
+  .ph-drop, .ph-co2, .ph-sugar, .ph-o2 { opacity: 0.6 !important; }
+  .ph-co2 { transform: none !important; }
+  .eq-remove { opacity: 0 !important; }
+  .eq-movechip-plus { opacity: 1 !important; }
+  .eq-movechip-minus { opacity: 0 !important; }
+  .ce-step { opacity: 1 !important; }
+}

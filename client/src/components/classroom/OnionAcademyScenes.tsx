@@ -484,10 +484,401 @@ function DeUsageScene({ frame, action }: SceneProps) {
   );
 }
 
+/* ===================== 課程 5：自然 — 光合作用綠色工廠 ===================== */
+function PhotosynthesisScene({ frame, action }: SceneProps) {
+  // frame: 0 開場 1 三原料 2 水上升 3 CO2進氣孔 4 葉綠體亮 5 陽光開機 6 養分送出 7 放氧 8 公式 9 口訣
+  const water = frame >= 2;
+  const co2 = frame >= 3;
+  const chloro = frame >= 4;
+  const power = frame >= 5;
+  const glucose = frame >= 6;
+  const oxygen = frame >= 7;
+  const formula = frame === 8;
+  const mantra = frame === 9;
+  const banner = formula ? "CO₂ ＋ H₂O →（陽光・葉綠體）養分 ＋ O₂"
+    : mantra ? "口訣：根送水、孔進氣，變養分、吐氧氣"
+    : "";
+
+  return (
+    <div className={`ol-scene ol-scene--photo ph-f${frame}`}>
+      <svg viewBox="0 0 340 232" className="ol-scene-svg" role="img" aria-label="光合作用工廠動畫">
+        <defs>
+          <linearGradient id="phSky" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#fff3d6" />
+            <stop offset="100%" stopColor="#e8f7e4" />
+          </linearGradient>
+        </defs>
+        <rect x="0" y="0" width="340" height="232" rx="16" fill="url(#phSky)" />
+        {/* 土壤與植物主體 */}
+        <rect x="0" y="200" width="340" height="32" rx="10" fill="#c9a06b" />
+        <path d="M118 200 C 116 176 118 158 122 138" stroke="#4c8c46" strokeWidth="9" fill="none" strokeLinecap="round" />
+        <path d="M100 200 C 102 186 106 174 116 164 M136 200 C 134 188 130 178 124 168" stroke="#3f7a3c" strokeWidth="4" fill="none" strokeLinecap="round" opacity="0.7" />
+        {/* 葉片（工廠主體） */}
+        <g className={`ph-leaf ${power ? "is-power" : ""}`}>
+          <path d="M122 138 C 96 108 104 62 158 52 C 226 40 264 78 258 108 C 252 138 208 156 168 152 C 148 150 132 146 122 138 Z"
+            fill="#7cc66a" stroke="#3f7a3c" strokeWidth="2.6" />
+          <path d="M126 136 C 160 120 210 100 252 92" stroke="#3f7a3c" strokeWidth="2.2" fill="none" />
+          {[[160, 92], [186, 82], [212, 76], [172, 116], [198, 106], [224, 96]].map(([x, y], i) => (
+            <circle key={i} className="ph-chloro" cx={x} cy={y} r="6" fill="#4c9e3c"
+              style={{ animationDelay: `${i * 0.4}s` }} />
+          ))}
+        </g>
+        {/* 太陽 */}
+        <g className={`ph-sun ${power ? "is-power" : ""}`}>
+          {Array.from({ length: 8 }).map((_, i) => (
+            <rect key={i} x="40" y="9" width="4" height="10" rx="2" fill="#ffc531" transform={`rotate(${i * 45} 42 40)`} />
+          ))}
+          <circle cx="42" cy="40" r="18" fill="#ffd45e" stroke="#f5b301" strokeWidth="2" />
+          {power && <path d="M60 56 L110 84 M66 74 L104 92" stroke="#ffca28" strokeWidth="3" strokeLinecap="round" className="ph-ray" />}
+        </g>
+        {/* 水滴沿莖上升 */}
+        <g className={`ph-layer ${water ? "is-active" : ""}`}>
+          {[196, 176, 156].map((y, i) => (
+            <circle key={i} className="ph-drop" cx="119" cy={y} r="3.6" fill="#57b0e8" style={{ animationDelay: `${i * 0.8}s` }} />
+          ))}
+          <text x="86" y="182" fontSize="12" fontWeight="900" fill="#2f74b8">H₂O↑</text>
+        </g>
+        {/* CO₂ 從右側氣孔進入 */}
+        <g className={`ph-layer ${co2 ? "is-active" : ""}`}>
+          {[0, 1, 2].map((i) => (
+            <g key={i} className="ph-co2" style={{ animationDelay: `${i * 1.1}s` }}>
+              <circle cx={306} cy={86 + i * 16} r="7" fill="#ffffff" stroke="#8a9bb0" strokeWidth="1.6" />
+              <text x={306} y={90 + i * 16} textAnchor="middle" fontSize="7.5" fontWeight="900" fill="#5b6b80">CO₂</text>
+            </g>
+          ))}
+          <text x="290" y="132" fontSize="11" fontWeight="900" fill="#5b6b80">氣孔</text>
+        </g>
+        {/* 葡萄糖養分輸出 */}
+        <g className={`ph-layer ${glucose ? "is-active" : ""}`}>
+          {[0, 1, 2].map((i) => (
+            <g key={i} className="ph-sugar" style={{ animationDelay: `${i * 0.9}s` }}>
+              <polygon points="0,-8 7,-4 7,4 0,8 -7,4 -7,-4" fill="#f2b53c" stroke="#c98a1e" strokeWidth="1.6"
+                transform={`translate(${120 - i * 26} ${192 + (i % 2) * 10})`} />
+            </g>
+          ))}
+          <text x="150" y="196" fontSize="11" fontWeight="900" fill="#a06a12">養分→全身</text>
+        </g>
+        {/* 氧氣冒出 */}
+        <g className={`ph-layer ${oxygen ? "is-active" : ""}`}>
+          {[0, 1, 2].map((i) => (
+            <g key={i} className="ph-o2" style={{ animationDelay: `${i * 0.9}s` }}>
+              <circle cx={230 + i * 14} cy={40 - i * 6} r="8" fill="#dff1ff" stroke="#4a9fd8" strokeWidth="1.8" />
+              <text x={230 + i * 14} y={44 - i * 6} textAnchor="middle" fontSize="8" fontWeight="900" fill="#2f74b8">O₂</text>
+            </g>
+          ))}
+        </g>
+        {/* 公式／口訣橫幅 */}
+        {banner && (
+          <g className="ph-banner">
+            <rect x="12" y="8" width="316" height="30" rx="15" fill={mantra ? "#2f9e6e" : "#ffffff"} stroke={mantra ? "#2f9e6e" : "#3f7a3c"} strokeWidth="1.6" />
+            <text x="170" y="28" textAnchor="middle" fontSize="14" fontWeight="900" fill={mantra ? "#fff" : "#2f6b2c"}>{banner}</text>
+          </g>
+        )}
+      </svg>
+      <div className="ol-scene-mascot"><OnionMascot action={action} frame={frame} size={70} /></div>
+    </div>
+  );
+}
+
+/* ===================== 課程 6：數學 — 負數與數線（溫度計＋小船） ===================== */
+function NegativeLineScene({ frame, action }: SceneProps) {
+  // frame: 0 零下情境 1 負號 2 數線展開 3 三要素 4 船到-4 5 再到2 6 大小排序 7 負比負 8 相反數 9 口訣
+  const neg = frame >= 1;
+  const line = frame >= 2;
+  const elements = frame === 3;
+  const boatPos = frame >= 5 ? 2 : frame >= 4 ? -4 : 0;
+  const order = frame === 6;
+  const far = frame === 7;
+  const opposite = frame === 8;
+  const mantra = frame === 9;
+  const banner = frame <= 1 ? "零下 3 度 ＝ −3°C"
+    : frame === 2 ? "數線：右邊正、左邊負，中間是 0"
+    : frame === 3 ? "數線三要素：原點・正方向・單位長度"
+    : frame === 4 ? "往左 4 格 → −4"
+    : frame === 5 ? "−4 ＋ 6 ＝ 2"
+    : frame === 6 ? "越右邊越大：−4 ＜ −1 ＜ 0 ＜ 2"
+    : frame === 7 ? "離 0 越遠的負數越小：−5 ＜ −2"
+    : frame === 8 ? "−3 與 3 互為相反數"
+    : "口訣：右大左小，負數離零越遠越小";
+  const ticks = Array.from({ length: 13 }, (_, i) => i - 6);
+  const boatX = 170 + boatPos * 26;
+
+  return (
+    <div className={`ol-scene ol-scene--negline nl-f${frame}`}>
+      <svg viewBox="0 0 340 232" className="ol-scene-svg" role="img" aria-label="負數與數線動畫">
+        <rect x="0" y="0" width="340" height="232" rx="16" fill="#eef6fd" />
+        {/* 溫度計 */}
+        <g className={`nl-thermo ${neg ? "is-neg" : ""}`}>
+          <rect x="34" y="34" width="20" height="118" rx="10" fill="#fff" stroke="#c3d6ec" strokeWidth="2" />
+          <circle cx="44" cy="164" r="16" fill="#fff" stroke="#c3d6ec" strokeWidth="2" />
+          <rect className="nl-mercury" x="39" y="52" width="10" height="98" rx="5" fill="#e8624f" />
+          <circle cx="44" cy="164" r="11" fill="#e8624f" />
+          {[0, -1, -2, -3].map((v) => (
+            <text key={v} x="62" y={92 - v * 12} fontSize="8.5" fontWeight="800" fill="#7d92a8">{v}</text>
+          ))}
+          {neg && <text x="16" y="26" fontSize="13" fontWeight="900" fill="#d0483a">−3°C</text>}
+        </g>
+        {/* 數線 */}
+        <g className={`nl-line ${line ? "is-show" : ""}`}>
+          <line x1="90" y1="150" x2="326" y2="150" stroke="#3a7bbf" strokeWidth="2.6" />
+          <path d="M326 150 l-9 -5 l0 10 Z" fill="#3a7bbf" />
+          <text x="308" y="140" fontSize="11" fontWeight="900" fill="#3a7bbf">正方向</text>
+          {ticks.map((v) => (
+            <g key={v}>
+              <line x1={170 + v * 26} y1="144" x2={170 + v * 26} y2="156" stroke={v === 0 ? "#e07a2f" : "#3a7bbf"} strokeWidth={v === 0 ? 3 : 1.8} />
+              <text x={170 + v * 26} y="172" textAnchor="middle" fontSize="10.5" fontWeight="800" fill={v === 0 ? "#e07a2f" : "#3a5a8c"}>{v}</text>
+            </g>
+          ))}
+          {elements && (
+            <g className="nl-elements">
+              <text x="170" y="132" textAnchor="middle" fontSize="11" fontWeight="900" fill="#e07a2f">原點</text>
+              <line x1="248" y1="118" x2="272" y2="118" stroke="#3a7bbf" strokeWidth="1.6" strokeDasharray="4 3" />
+              <text x="260" y="112" textAnchor="middle" fontSize="10" fontWeight="800" fill="#3a7bbf">單位長度</text>
+            </g>
+          )}
+        </g>
+        {/* 加法箭頭（-4 → 2） */}
+        {frame >= 5 && (
+          <g className="nl-jump">
+            <path d="M66 118 L212 118" stroke="#2f9e6e" strokeWidth="2.4" fill="none" strokeDasharray="5 4" />
+            <path d="M212 118 l-8 -4 l0 8 Z" fill="#2f9e6e" />
+            <text x="139" y="110" textAnchor="middle" fontSize="12" fontWeight="900" fill="#2f9e6e">＋6</text>
+          </g>
+        )}
+        {/* 大小排序 / 負比負 / 相反數 */}
+        {order && (
+          <g className="nl-order">
+            <text x="170" y="196" textAnchor="middle" fontSize="13" fontWeight="900" fill="#3a5a8c">−4 ＜ −1 ＜ 0 ＜ 2</text>
+          </g>
+        )}
+        {far && (
+          <g className="nl-far">
+            <path d="M92 190 Q 106 176 120 190" fill="none" stroke="#d0483a" strokeWidth="2" />
+            <path d="M144 190 Q 158 176 172 190" fill="none" stroke="#3a7bbf" strokeWidth="2" />
+            <text x="132" y="206" textAnchor="middle" fontSize="12.5" fontWeight="900" fill="#d0483a">−5 ＜ −2</text>
+          </g>
+        )}
+        {opposite && (
+          <g className="nl-opposite">
+            <path d="M92 190 Q 131 164 170 190" fill="none" stroke="#8a5fb0" strokeWidth="2.2" strokeDasharray="5 4" />
+            <text x="131" y="182" textAnchor="middle" fontSize="11" fontWeight="900" fill="#8a5fb0">距離 3</text>
+            <text x="131" y="206" textAnchor="middle" fontSize="12.5" fontWeight="900" fill="#8a5fb0">−3 ↔ 3</text>
+          </g>
+        )}
+        {/* 小船（含洋蔥船長） */}
+        {line && (
+          <g className={`nl-boat ${frame >= 5 ? "is-p2" : frame >= 4 ? "is-p4" : "is-p0"}`} style={{ transform: `translateX(${boatX - 170}px)` }}>
+            <path d="M-20 8 L20 8 L14 20 L-14 20 Z" fill="#b0793c" stroke="#8a5a26" strokeWidth="1.8" />
+            <path d="M0 8 L0 -12 L14 0 Z" fill="#fff" stroke="#8a5a26" strokeWidth="1.6" className="nl-sail" />
+            <circle cx="-8" cy="2" r="6" fill="#b794d6" stroke="#8a5fb0" strokeWidth="1.4" />
+            <text x="0" y="34" textAnchor="middle" fontSize="11" fontWeight="900" fill="#8a5a26">{boatPos}</text>
+          </g>
+        )}
+        {/* 橫幅 */}
+        <g className={`nl-banner ${mantra ? "is-mantra" : ""}`}>
+          <rect x="104" y="8" width="228" height="28" rx="14" fill={mantra ? "#3a7bbf" : "#ffffff"} stroke={mantra ? "#3a7bbf" : "#c3d6ec"} strokeWidth="1.6" />
+          <text x="218" y="26" textAnchor="middle" fontSize="12.5" fontWeight="900" fill={mantra ? "#fff" : "#3a5a8c"}>{banner}</text>
+        </g>
+      </svg>
+      <div className="ol-scene-mascot ol-scene-mascot--br-sm"><OnionMascot action={action} frame={frame} size={54} /></div>
+    </div>
+  );
+}
+
+/* ===================== 課程 7：數學 — 一元一次方程式（天平） ===================== */
+function EquationBalanceScene({ frame, action }: SceneProps) {
+  // frame: 0 天平平衡 1 寫式子 2 目標 3 兩邊同減 4 x=5 5 檢驗 6 移項 7 口訣 8 再試一題 9 總整理
+  const removed = frame >= 3;
+  const solved = frame >= 4;
+  const checked = frame === 5;
+  const moving = frame === 6;
+  const mantra = frame === 7;
+  const example = frame === 8;
+  const finale = frame === 9;
+  const banner = frame <= 1 ? "天平平衡 → x ＋ 3 ＝ 8"
+    : frame === 2 ? "目標：讓 x 一個人留在左邊"
+    : frame === 3 ? "兩邊同時拿走 3 個砝碼，仍平衡"
+    : frame === 4 ? "x ＝ 5，解開了！"
+    : frame === 5 ? "檢驗：5 ＋ 3 ＝ 8 ✓"
+    : frame === 6 ? "＋3 搬到右邊變 −3（移項變號）"
+    : frame === 7 ? "口訣：移項要變號，加變減、減變加"
+    : frame === 8 ? "x − 2 ＝ 6 → x ＝ 6 ＋ 2 ＝ 8"
+    : "天平兩邊同進退，移項要變號";
+
+  return (
+    <div className={`ol-scene ol-scene--equation eq-f${frame}`}>
+      <svg viewBox="0 0 340 232" className="ol-scene-svg" role="img" aria-label="天平方程式動畫">
+        <rect x="0" y="0" width="340" height="232" rx="16" fill="#fdf6ee" />
+        {/* 支架 */}
+        <path d="M170 78 L170 196 M140 196 L200 196" stroke="#8a6a4a" strokeWidth="7" strokeLinecap="round" />
+        <path d="M170 78 L158 96 L182 96 Z" fill="#8a6a4a" />
+        {/* 橫樑（解開時輕微上翹慶祝） */}
+        <g className={`eq-beam ${solved ? "is-solved" : ""} ${removed ? "is-steady" : ""}`}>
+          <line x1="70" y1="72" x2="270" y2="72" stroke="#a07850" strokeWidth="6" strokeLinecap="round" />
+          {/* 吊繩與左盤 */}
+          <line x1="80" y1="72" x2="80" y2="98" stroke="#a07850" strokeWidth="2.4" />
+          <line x1="260" y1="72" x2="260" y2="98" stroke="#a07850" strokeWidth="2.4" />
+          <path d="M46 98 L114 98 L104 122 L56 122 Z" fill="#e8d9c2" stroke="#b99a6c" strokeWidth="2" />
+          <path d="M226 98 L294 98 L284 122 L236 122 Z" fill="#e8d9c2" stroke="#b99a6c" strokeWidth="2" />
+          {/* 左盤：x 箱 + 3 砝碼（同減時 3 砝碼飛走） */}
+          <g className="eq-box">
+            <rect x="52" y="72" width="28" height="24" rx="5" fill="#b794d6" stroke="#8a5fb0" strokeWidth="2" />
+            <text x="66" y="89" textAnchor="middle" fontSize="15" fontWeight="900" fill="#fff">x</text>
+          </g>
+          {[88, 100, 112].map((x, i) => (
+            <g key={x} className="eq-block eq-remove" style={{ animationDelay: `${i * 0.25}s` }}>
+              <rect x={x - 5} y="76" width="10" height="20" rx="3" fill="#d99a3c" stroke="#b0793c" strokeWidth="1.5" />
+            </g>
+          ))}
+          {/* 右盤：8 砝碼兩排（同減時只飛走 3 個，留 5 個） */}
+          {[228, 242, 256, 270].map((x, i) => (
+            <g key={x} className={`eq-block ${i < 3 ? "eq-remove" : "eq-keep"}`} style={{ animationDelay: `${(i + 3) * 0.2}s` }}>
+              <rect x={x} y="80" width="10" height="18" rx="3" fill="#7fa8c9" stroke="#5b87ab" strokeWidth="1.5" />
+            </g>
+          ))}
+          {[228, 242, 256, 270].map((x) => (
+            <g key={`u${x}`} className="eq-block eq-keep">
+              <rect x={x} y="60" width="10" height="18" rx="3" fill="#7fa8c9" stroke="#5b87ab" strokeWidth="1.5" />
+            </g>
+          ))}
+        </g>
+        {/* 移項：＋3 晶片飛越變 −3 */}
+        {moving && (
+          <g className="eq-movechip">
+            <rect x="0" y="-12" width="44" height="24" rx="12" fill="#ffe1c2" stroke="#ef8a3c" strokeWidth="1.8" />
+            <text className="eq-movechip-plus" x="22" y="5" textAnchor="middle" fontSize="14" fontWeight="900" fill="#b35a12">＋3</text>
+            <text className="eq-movechip-minus" x="22" y="5" textAnchor="middle" fontSize="14" fontWeight="900" fill="#2f63a0">−3</text>
+          </g>
+        )}
+        {/* 檢驗勾勾 */}
+        {checked && (
+          <g className="eq-check">
+            <circle cx="170" cy="42" r="16" fill="#2f9e6e" />
+            <path d="M162 42 L168 48 L179 36" stroke="#fff" strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+          </g>
+        )}
+        {/* 第二例題 */}
+        {example && (
+          <g className="eq-example">
+            <text x="170" y="50" textAnchor="middle" fontSize="17" fontWeight="900" fill="#3a5a8c">x − 2 ＝ 6　→　x ＝ 6 ＋ 2 ＝ 8</text>
+          </g>
+        )}
+        {/* 橫幅 */}
+        <g className={`eq-banner ${finale || mantra ? "is-solid" : ""}`}>
+          <rect x="14" y="180" width="312" height="34" rx="17" fill={finale || mantra ? "#8a5fb0" : "#ffffff"} stroke={finale || mantra ? "#8a5fb0" : "#d8c9ae"} strokeWidth="1.8" />
+          <text x="170" y="202" textAnchor="middle" fontSize="14.5" fontWeight="900" fill={finale || mantra ? "#fff" : "#6b4a2a"}>{banner}</text>
+        </g>
+      </svg>
+      <div className="ol-scene-mascot ol-scene-mascot--br-sm"><OnionMascot action={action} frame={frame} size={54} /></div>
+    </div>
+  );
+}
+
+/* ===================== 課程 8：自然 — 洋蔥表皮細胞（顯微鏡視野） ===================== */
+function CellScene({ frame, action }: SceneProps) {
+  // frame: 0 彩蛋開場 1 細胞是基本單位 2 顯微鏡視野 3 細胞壁 4 細胞膜 5 細胞核 6 液泡 7 動植物差別 8 階層 9 口訣
+  const scope = frame >= 2;
+  const wall = frame === 3;
+  const membrane = frame === 4;
+  const nucleus = frame === 5;
+  const vacuole = frame === 6;
+  const diff = frame === 7;
+  const hierarchy = frame === 8;
+  const mantra = frame === 9;
+  // 顯微鏡視野裡的磚牆細胞格
+  const cells = [
+    [92, 46, 78, 44], [174, 46, 82, 44], [84, 94, 86, 46], [174, 94, 82, 46], [92, 144, 78, 42], [174, 144, 82, 42],
+  ];
+
+  return (
+    <div className={`ol-scene ol-scene--cell ce-f${frame}`}>
+      <svg viewBox="0 0 340 232" className="ol-scene-svg" role="img" aria-label="洋蔥表皮細胞動畫">
+        <rect x="0" y="0" width="340" height="232" rx="16" fill="#f3eefa" />
+        <defs>
+          <clipPath id="ceScope"><circle cx="150" cy="116" r="94" /></clipPath>
+        </defs>
+        {/* 顯微鏡圓形視野 */}
+        <g className={`ce-scope ${scope ? "is-show" : ""}`}>
+          <circle cx="150" cy="116" r="98" fill="#ffffff" stroke="#8a5fb0" strokeWidth="5" />
+          <circle cx="150" cy="116" r="94" fill="#f7f2ff" />
+          <g clipPath="url(#ceScope)">
+            {cells.map(([x, y, w, h], i) => (
+              <g key={i}>
+                <rect x={x} y={y} width={w} height={h} rx="8"
+                  fill={i === 1 ? "#fbf7ff" : "#f1e8fb"} stroke={wall ? "#b04fd8" : "#c9aee0"}
+                  strokeWidth={wall ? 3.4 : 2} className={wall ? "ce-wall" : ""} />
+                {membrane && i === 1 && (
+                  <rect x={x + 5} y={y + 5} width={w - 10} height={h - 10} rx="6" fill="none" stroke="#3a7bbf" strokeWidth="2.2" strokeDasharray="5 3" className="ce-membrane" />
+                )}
+                {nucleus && i === 1 && (
+                  <g className="ce-nucleus">
+                    <circle cx={x + w / 2 - 14} cy={y + h / 2} r="10" fill="#7a4a9e" />
+                    <circle cx={x + w / 2 - 14} cy={y + h / 2 - 3} r="3" fill="#a97cc9" opacity="0.7" />
+                  </g>
+                )}
+                {vacuole && i === 1 && (
+                  <g className="ce-vacuole">
+                    <ellipse cx={x + w / 2 + 12} cy={y + h / 2} rx="16" ry="12" fill="#dff1ff" stroke="#4a9fd8" strokeWidth="1.8" opacity="0.9" />
+                  </g>
+                )}
+              </g>
+            ))}
+          </g>
+          {/* 標註線 */}
+          {wall && <g className="ce-callout"><line x1="238" y1="62" x2="205" y2="66" stroke="#b04fd8" strokeWidth="1.8" /><text x="242" y="66" fontSize="12.5" fontWeight="900" fill="#b04fd8">細胞壁</text></g>}
+          {membrane && <g className="ce-callout"><line x1="238" y1="102" x2="252" y2="102" stroke="#3a7bbf" strokeWidth="1.8" /><text x="256" y="106" fontSize="12.5" fontWeight="900" fill="#3a7bbf">細胞膜</text></g>}
+          {nucleus && <g className="ce-callout"><line x1="238" y1="140" x2="228" y2="128" stroke="#7a4a9e" strokeWidth="1.8" /><text x="242" y="144" fontSize="12.5" fontWeight="900" fill="#7a4a9e">細胞核</text></g>}
+          {vacuole && <g className="ce-callout"><line x1="238" y1="178" x2="226" y2="164" stroke="#2f74b8" strokeWidth="1.8" /><text x="242" y="182" fontSize="12.5" fontWeight="900" fill="#2f74b8">液泡</text></g>}
+        </g>
+        {/* 動植物細胞比較 */}
+        {diff && (
+          <g className="ce-diff">
+            <g>
+              <rect x="26" y="52" width="86" height="62" rx="8" fill="#f1e8fb" stroke="#b04fd8" strokeWidth="2.6" />
+              <text x="34" y="46" fontSize="11.5" fontWeight="900" fill="#b04fd8">植物細胞</text>
+              <circle cx="56" cy="96" r="6" fill="#4c9e3c" />
+              <text x="66" y="100" fontSize="9.5" fontWeight="800" fill="#2f6b2c">葉綠體</text>
+            </g>
+            <g>
+              <ellipse cx="260" cy="86" rx="44" ry="30" fill="#fdeef0" stroke="#d86a8a" strokeWidth="2.4" />
+              <text x="260" y="44" textAnchor="middle" fontSize="11.5" fontWeight="900" fill="#d86a8a">動物細胞</text>
+              <text x="260" y="130" textAnchor="middle" fontSize="9.5" fontWeight="800" fill="#a84a66">沒有細胞壁・葉綠體</text>
+            </g>
+          </g>
+        )}
+        {/* 階層圖 */}
+        {hierarchy && (
+          <g className="ce-hierarchy">
+            {["細胞", "組織", "器官", "系統", "個體"].map((t, i) => (
+              <g key={t} className="ce-step" style={{ animationDelay: `${i * 0.35}s` }}>
+                <rect x={16 + i * 62} y="104" width="52" height="28" rx="14" fill={i === 4 ? "#8a5fb0" : "#ffffff"} stroke="#8a5fb0" strokeWidth="1.8" />
+                <text x={42 + i * 62} y="123" textAnchor="middle" fontSize="12" fontWeight="900" fill={i === 4 ? "#fff" : "#7a4a9e"}>{t}</text>
+                {i < 4 && <path d={`M${70 + i * 62} 118 l10 0 m-4 -4 l4 4 l-4 4`} stroke="#8a5fb0" strokeWidth="2" fill="none" strokeLinecap="round" />}
+              </g>
+            ))}
+          </g>
+        )}
+        {/* 口訣橫幅 */}
+        {mantra && (
+          <g className="ce-banner">
+            <rect x="24" y="100" width="292" height="34" rx="17" fill="#8a5fb0" />
+            <text x="170" y="122" textAnchor="middle" fontSize="15" fontWeight="900" fill="#fff">口訣：牆保護、門進出、核指揮、泡儲水</text>
+          </g>
+        )}
+      </svg>
+      <div className="ol-scene-mascot"><OnionMascot action={action} frame={frame} size={66} /></div>
+    </div>
+  );
+}
+
 /* ===================== 場景分派器 ===================== */
 export function LessonScene({ lessonId, frame, action }: { lessonId: string } & SceneProps) {
   if (lessonId === "water-cycle") return <WaterCycleScene frame={frame} action={action} />;
   if (lessonId === "fraction-add") return <FractionScene frame={frame} action={action} />;
   if (lessonId === "triangle-area") return <TriangleScene frame={frame} action={action} />;
+  if (lessonId === "photosynthesis") return <PhotosynthesisScene frame={frame} action={action} />;
+  if (lessonId === "negative-number") return <NegativeLineScene frame={frame} action={action} />;
+  if (lessonId === "linear-equation") return <EquationBalanceScene frame={frame} action={action} />;
+  if (lessonId === "onion-cell") return <CellScene frame={frame} action={action} />;
   return <DeUsageScene frame={frame} action={action} />;
 }
