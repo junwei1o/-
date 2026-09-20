@@ -690,3 +690,9 @@ curl -s https://xue-gr3a.onrender.com/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | h
 - 前置缺口：上面幾輪做的「依年級取題／動畫課分流／推薦」都讀 `loadStudentGradePreference()`，但**首頁完全沒有設定年級的入口**（只有 `/settings`，學生不會主動去），沒設定就全部退化成不分年級。
 - 新增首頁年級引導卡 `.home-grade-setup`：未設定年級時顯示「你現在是幾年級？」＋ 三～九年級七顆 chip（七～九年級顯示為「國中一／二／三年級」），點選即寫入設定頁那份 `UserPreferences.gradeLevel`（與第四輪打通的單一真相一致），並立刻改顯示「目前設定：X 年級 · 更改」。已設定過就不再出現。
 - 驗收：tsc 0 錯；全量 170 檔 **1147 例**全綠（HomeDashboard 9→11 例）；build 通過；繁檢（含 docs）零命中。
+
+## 2026-09-20 LINE 推播：補上設定說明文件（僅文件，未動程式）
+- 新增 `docs/line-setup.md`：從 LINE Developers 建立 Messaging API 頻道取兩把金鑰 → Render 設 `LINE_CHANNEL_SECRET`／`LINE_CHANNEL_ACCESS_TOKEN` → LINE 後台設 Webhook URL `/api/line/webhook` → 加好友／群組發言綁定 → 督學台按「傳送測試訊息」驗證；附常見狀況對照表。
+- 確認（非缺口）：`TeacherLineSection` **已掛在 `TeacherDashboard.tsx`**（督學台最上方），老師進 `/teacher` 就看得到 LINE 通知區塊；未設 env 時顯示「待設定」＋三步引導。
+- 基準實測（設定前）：`POST /api/line/webhook` → **501**；`GET /api/trpc/line.getBinding` → `{"envReady":false,"binding":null}`。設完應變為 400（簽章不符）與 `envReady:true`。
+- 提醒：本站用 LINE Messaging API（LINE Notify 已於 2025/3 停用）；Access Token 要選 long-lived 且只顯示一次。
