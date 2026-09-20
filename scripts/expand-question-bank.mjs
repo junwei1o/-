@@ -15,7 +15,9 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { mulberry32, createCollector, createGradeQuota, normalize } from "./gen/common.mjs";
-import { generateMath, generateMathCombo } from "./gen/math.mjs";
+import { generateMath, generateMathCombo, generateMathRelation } from "./gen/math.mjs";
+// 配對關係題：把配對題庫（matching_bank）的庫存轉成選擇題，兩種玩法互相印證。
+import { generateMatchingRelations } from "./gen/matchingRelation.mjs";
 import { generateFromFacts, withSlots } from "./gen/facts.mjs";
 import { SCIENCE_FACTS } from "./gen/science.mjs";
 import { SCIENCE_JUNIOR_FACTS } from "./gen/scienceJunior.mjs";
@@ -68,16 +70,38 @@ console.log(
 
 const rng = mulberry32(SEED);
 
+/**
+ * 庫存互相利用的組合題（配對關係＋數學互相印證）：
+ * 這些題先把名額吃下來，剩下的才交給一般產生器，
+ * 每科總數仍然精準落在 1000 題。
+ */
+const comboPreGenerated = new Map();
+const matchingQuestions = [];
+{
+  // 配對關係題：約 170 題，各科依配對組數自然分佈。
+  // 產生的題目要記下來（稍後直接併入輸出）——收集器裡的題目只會在
+  // 各科的 batch 之外，漏記就會整批消失、還白白佔掉各科名額。
+  const sizeBefore = collector.size;
+  generateMatchingRelations(rng, collector, 170);
+  matchingQuestions.push(...collector.list().slice(sizeBefore));
+  for (const q of matchingQuestions) {
+    comboPreGenerated.set(q.subject, (comboPreGenerated.get(q.subject) ?? 0) + 1);
+  }
+}
+const MATH_RELATION_TARGET = 40;
+
 /** 各科事實表：國小＋國中（國中事實表是後來補的，之前國中年級幾乎沒有題目）。 */
 const plan = [
   {
     subject: "數學",
     generate: (n, quota) => {
-      // 先出跨單元組合題（約一成五），其餘才是單一單元題。
-      // 組合題適量即可（約 40 題）：題幹相同，出太多學生會覺得一直在寫同一題。
+      // 依序：跨單元比較 → 同單元互相印證 → 一般計算題。
+      // 組合類題幹相似，各約 40 題就好：出太多學生會覺得一直在寫同一題。
       const comboTarget = Math.min(n, 40);
       const madeCombo = generateMathCombo(rng, collector, comboTarget, { quota });
-      return madeCombo + generateMath(rng, collector, n - madeCombo, { quota });
+      const relationTarget = Math.min(n - madeCombo, MATH_RELATION_TARGET);
+      const madeRelation = generateMathRelation(rng, collector, relationTarget, { quota });
+      return madeCombo + madeRelation + generateMath(rng, collector, n - madeCombo - madeRelation, { quota });
     },
   },
   {
@@ -123,7 +147,7 @@ function computeLimits(subject, already, need) {
   return limits;
 }
 
-const all = [];
+const all = [...matchingQuestions];
 for (const { subject, generate } of plan) {
   const have = bySubject.get(subject) ?? 0;
   let need = Math.max(0, TARGET_PER_SUBJECT - have);
@@ -134,6 +158,9 @@ for (const { subject, generate } of plan) {
   const before = collector.size;
   const already = new Map();
   let produced = 0;
+  // 配對關係題已先進收集器，這裡把它算進「已產生」，一般產生器才不會超量。
+  const preGenerated = comboPreGenerated.get(subject) ?? 0;
+  produced += preGenerated;
   // 某一輪配額發完但還沒補滿（例如該年級素材不足），就重算配額再來一輪。
   for (let round = 0; round < 4 && produced < need; round += 1) {
     const quota = createGradeQuota(computeLimits(subject, already, need - produced));

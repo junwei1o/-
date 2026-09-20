@@ -880,3 +880,85 @@ export function generateMathCombo(rng, collector, target, opts = {}) {
 export const ALL_MATH_GENERATORS = [...GENERATORS, ...JUNIOR_GENERATORS];
 
 export const MATH_GENERATOR_COUNT = ALL_MATH_GENERATORS.length;
+
+/**
+ * 數學「同單元互相印證」題：同一個單元出兩小題，問兩個答案之間的關係。
+ *
+ * 跨單元比較題（哪個答案最大）已經有了；這裡再進一步——
+ * 學生必須「兩題都算對」才能答出關係（相差多少／幾倍），
+ * 一題練兩次計算，外加一次比較。兩小題取自同一個產生器，
+ * 單位與題意一致，「相差多少」才有意義（跨單位的答案無法相減）。
+ */
+export function generateMathRelation(rng, collector, target, opts = {}) {
+  const quota = opts.quota ?? null;
+  let produced = 0;
+  let guard = 0;
+
+  while (produced < target && guard < target * 80) {
+    guard += 1;
+    const g = ALL_MATH_GENERATORS[Math.floor(rng() * ALL_MATH_GENERATORS.length)];
+
+    /**
+     * 同一單元生兩小題，答案必須是可相減的有限數字，題目也要夠短。
+     * 「下列哪一個…」這種選擇式題幹不能用：抽出來當小題後選項不見了，
+     * 學生根本無從算起（實際踩過：倍數判斷題被抽成無選項的殘題）。
+     */
+    const pickSpec = () => {
+      for (let i = 0; i < 20; i += 1) {
+        const spec = g.gen(rng);
+        if (!spec) continue;
+        const value = Number(spec.correct);
+        if (!Number.isFinite(value)) continue;
+        const text = String(spec.prompt);
+        if (text.length > 26) continue;
+        if (/下列|哪一|何者|選項/.test(text)) continue;
+        return { spec, value };
+      }
+      return null;
+    };
+    const first = pickSpec();
+    if (!first) continue;
+    let second = pickSpec();
+    if (!second) continue;
+
+    // 甲放大的那一邊，問「甲比乙多多少」永遠是正數，小學生好理解。
+    const [big, small] = first.value >= second.value ? [first, second] : [second, first];
+    if (big.value === small.value) continue; // 相等時「多多少」答案是 0，鑑別度太低
+
+    const diff = Math.round((big.value - small.value) * 100) / 100;
+    const grade = Math.max(big.spec.grade ?? g.grades[0], small.spec.grade ?? g.grades[0]);
+
+    // 干擾項：加而不是減、兩個原始答案、差的兩倍——都是學生常見的錯法。
+    const distractorPool = [
+      Math.round((big.value + small.value) * 100) / 100,
+      big.value,
+      small.value,
+      Math.round(diff * 2 * 100) / 100,
+      Math.round((diff + 10) * 100) / 100,
+    ];
+    const options = [String(diff)];
+    for (const d of distractorPool) {
+      if (options.length >= 4) break;
+      const s = String(Math.round(d * 100) / 100);
+      if (!options.includes(s)) options.push(s);
+    }
+    if (options.length < 4) continue;
+
+    const question = makeQuestion({
+      subject: "數學",
+      grade,
+      topic: `互相印證：${g.topic}`,
+      difficulty: "挑戰",
+      prompt: `下面兩題都是「${g.topic}」：甲題「${big.spec.prompt.replace(/。$/, "")}」、乙題「${small.spec.prompt.replace(/。$/, "")}」。算完之後，甲的答案比乙多多少？`,
+      options,
+      answer: 0,
+      explanation: `甲 ＝ ${big.value}、乙 ＝ ${small.value}，相減：${big.value} − ${small.value} ＝ ${diff}。`,
+      knowledge: [g.topic, "減法應用"],
+    });
+    if (!question) continue;
+    if (quota && !quota.take(question.grade)) continue;
+    if (collector.add(question)) produced += 1;
+    else if (quota) quota.release(question.grade);
+  }
+  return produced;
+}

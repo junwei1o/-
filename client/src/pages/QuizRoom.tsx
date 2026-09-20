@@ -292,8 +292,8 @@ export default function QuizRoom() {
         <span className="mc-lesson-icon" aria-hidden="true"><Clapperboard size={26} /></span>
         <span className="mc-lesson-body">
           <h3>洋蔥學院 <span className="mc-lesson-badge">{academyState}</span></h3>
-          <p>同一個入口兩種學法：「動畫課」多學科一堂一知識點，看完立刻闖 5 題；「分數工坊」把分數拆成四層，逐層解鎖、答錯給提示。</p>
-          <span className="mc-lesson-meta">🎬 {ONION_LESSONS.length} 堂動畫課 · 🧅 分數 4 層 · 🔓 逐層解鎖 · ⭐ 星星＋金幣獎勵</span>
+          <p>同一個入口三種學法：「動畫課」多學科一堂一知識點，看完立刻闖 5 題；「題庫劇場」從 5000 題庫存抽題、洋蔥演出詳解；「分數工坊」把分數拆成四層，逐層解鎖、答錯給提示。</p>
+          <span className="mc-lesson-meta">🎬 {ONION_LESSONS.length} 堂動畫課 · 🎭 題庫劇場 5000 題 · 🧅 分數 4 層 · ⭐ 星星＋金幣獎勵</span>
         </span>
         <span className="mc-lesson-go" aria-hidden="true">→</span>
       </button>
