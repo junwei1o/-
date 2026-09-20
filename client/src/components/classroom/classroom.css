@@ -1832,6 +1832,8 @@
     animation: none;
   }
 }
+
+/* ============================================================
    洋蔥動畫講解玩法（onion）
    紫色洋蔥主題，舞臺 ＋ 分鏡播放器 ＋ 闖關 ＋ 結算
    ============================================================ */
@@ -1879,7 +1881,7 @@
   padding: 6px 4px;
 }
 .ol-exit:hover { color: var(--onion); }
-.ol-exit--bar { font-size: 13px; }
+.ol-exit--bar { font-size: 13px; flex-shrink: 0; white-space: nowrap; }
 
 /* ---------- 開始畫面 ---------- */
 .ol-start {
@@ -1933,13 +1935,13 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
-  margin-bottom: 14px;
+  gap: 8px;
+  margin-bottom: 12px;
   padding: 0 2px;
 }
-.ol-bar-title { display: inline-flex; align-items: center; gap: 6px; font-size: 15px; font-weight: 800; color: var(--onion-d); }
-.ol-quiz-progress { font-size: 13px; color: var(--cr-muted); font-weight: 600; }
-.ol-progress-dots { display: inline-flex; gap: 5px; }
+.ol-bar-title { flex: 1 1 auto; min-width: 0; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 5px; font-size: 13.5px; line-height: 1.25; font-weight: 800; color: var(--onion-d); text-align: center; }
+.ol-quiz-progress { font-size: 13px; color: var(--cr-muted); font-weight: 600; flex-shrink: 0; }
+.ol-progress-dots { display: inline-flex; gap: 5px; flex-shrink: 0; }
 .ol-dot {
   width: 9px;
   height: 9px;
@@ -2243,3 +2245,242 @@
   .ol-lesson-card:hover { transform: none; }
 }
 
+
+/* ====================================================================
+ * 洋蔥連續場景動畫（四課：水循環 / 分數 / 三角形 / 的得地）
+ * 固定故事場景隨分鏡演進，元素連續運動；洋蔥固定角落解說。
+ * ==================================================================== */
+.ol-stage {
+  padding: 10px 10px 12px;
+  min-height: 0;
+  background: transparent;
+  border: none;
+  gap: 8px;
+}
+.ol-stage::before { display: none; }
+.ol-scene {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 340 / 232;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 10px 22px rgba(60, 40, 90, 0.14), inset 0 0 0 2px rgba(255, 255, 255, 0.6);
+}
+.ol-scene-svg { display: block; width: 100%; height: 100%; }
+.ol-scene-mascot {
+  position: absolute;
+  right: 8px;
+  bottom: 2px;
+  z-index: 6;
+  display: flex;
+  filter: drop-shadow(0 4px 6px rgba(40, 20, 60, 0.25));
+  pointer-events: none;
+}
+.ol-scene-mascot--br-sm { right: 6px; bottom: 0; }
+.ol-scene .ol-onion { animation: none; }
+.ol-caption {
+  margin: 8px auto 0;
+  min-height: 44px;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(138, 95, 176, 0.18);
+}
+
+/* ---------- 階段標籤 pill ---------- */
+.ol-tag-pill { transition: opacity 0.35s ease, transform 0.35s ease; transform-box: fill-box; transform-origin: center; }
+.ol-tag-pill.is-off { opacity: 0.4; }
+.ol-tag-pill.is-on { animation: ol-fade 0.4s ease both; }
+.ol-tag-pill.is-now { animation: ol-tag-pop 1.05s ease-in-out infinite; }
+@keyframes ol-tag-pop { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.14); } }
+
+/* ================= 水循環 ================= */
+.wc-sun-rays { transform-box: fill-box; transform-origin: center; animation: wc-spin 22s linear infinite; }
+.wc-sun.is-power .wc-sun-rays { animation-duration: 7s; }
+.wc-sun.is-power circle:last-child { animation: wc-sun-pulse 1.1s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+@keyframes wc-spin { to { transform: rotate(360deg); } }
+@keyframes wc-sun-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.12); } }
+.wc-wave-1 { animation: wc-wave 4.5s ease-in-out infinite; }
+.wc-wave-2 { animation: wc-wave 6s ease-in-out infinite reverse; }
+@keyframes wc-wave { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(2.5px); } }
+
+.wc-layer { opacity: 0; transition: opacity 0.5s ease; }
+.wc-layer.is-active { opacity: 1; }
+
+.wc-drop--rise { opacity: 0; }
+.wc-rise.is-active .wc-drop--rise { animation: wc-rise 2.7s ease-in infinite; }
+@keyframes wc-rise {
+  0% { transform: translate(0, 0); opacity: 0; }
+  14% { opacity: 1; }
+  78% { opacity: 1; }
+  100% { transform: translate(16px, -72px); opacity: 0; }
+}
+.wc-arrow--up { opacity: 0; }
+.wc-rise.is-active .wc-arrow--up { animation: ol-fade 0.6s ease 0.3s both, wc-arrow-nudge 2s ease-in-out 0.8s infinite; }
+@keyframes wc-arrow-nudge { 0%, 100% { transform: translateY(3px); } 50% { transform: translateY(-3px); } }
+
+.wc-cloud ellipse { fill: #ffffff; transition: fill 0.6s ease; }
+.wc-cloud { opacity: 0.5; transform: translateX(10px) scale(0.82); transform-box: fill-box; transform-origin: center bottom; transition: opacity 0.6s ease, transform 0.7s cubic-bezier(0.34, 1.35, 0.5, 1); }
+.wc-cloud.is-formed { opacity: 1; transform: translateX(0) scale(1); }
+.wc-cloud.is-rain ellipse { fill: #b9c4d2; }
+
+.wc-mote { opacity: 0; }
+.wc-condense.is-active .wc-mote { animation: wc-mote 2.2s ease-in infinite; }
+@keyframes wc-mote {
+  0% { transform: translate(0, 0) scale(0.6); opacity: 0; }
+  30% { opacity: 1; }
+  100% { transform: translate(20px, 22px) scale(1.1); opacity: 0; }
+}
+
+.wc-drop--rain { opacity: 0; }
+.wc-rainlayer.is-active .wc-drop--rain { animation: wc-rain 1.3s linear infinite; }
+@keyframes wc-rain {
+  0% { transform: translateY(-8px); opacity: 0; }
+  20% { opacity: 1; }
+  85% { opacity: 1; }
+  100% { transform: translateY(58px); opacity: 0; }
+}
+
+.wc-flow-dot { opacity: 0; }
+.wc-flow.is-active .wc-flow-dot { animation: wc-flow 2.4s linear infinite; }
+@keyframes wc-flow {
+  0% { transform: translate(0, 0); opacity: 0; }
+  20% { opacity: 1; }
+  85% { opacity: 1; }
+  100% { transform: translate(-46px, 14px); opacity: 0; }
+}
+.wc-loopring { animation: ol-fade 0.8s ease both; }
+.wc-loopring path { stroke-dashoffset: 0; animation: wc-dash 1.4s linear infinite; }
+@keyframes wc-dash { to { stroke-dashoffset: -20; } }
+
+/* ================= 分數披薩 ================= */
+.fp-slice:not(.is-cut) { stroke: transparent; }
+.fp-slice.is-cut { animation: fp-cut-in 0.4s ease both; }
+@keyframes fp-cut-in { from { opacity: 0.4; } to { opacity: 1; } }
+.fp-slice.is-gone { animation: fp-take 0.6s cubic-bezier(0.4, 0, 0.6, 1) forwards; transform-box: fill-box; }
+@keyframes fp-take {
+  0% { transform: translate(0, 0) scale(1); opacity: 1; }
+  60% { opacity: 1; }
+  100% { transform: translate(150px, -56px) scale(0.35); opacity: 0; }
+}
+.fp-plate { opacity: 0; }
+.fp-plate.is-show { animation: fp-plate-in 0.5s cubic-bezier(0.34, 1.35, 0.5, 1) both; }
+.fp-plate.is-leave { animation: fp-plate-leave 0.5s ease forwards; }
+@keyframes fp-plate-in { from { opacity: 0; transform: translateX(-30px) scale(0.7); } to { opacity: 1; transform: none; } }
+@keyframes fp-plate-leave { to { opacity: 0; transform: translate(-8px, -14px) scale(0.45); } }
+.fp-fly { animation: fp-slice-fly 0.55s ease both; transform-box: fill-box; transform-origin: center; }
+@keyframes fp-slice-fly { from { opacity: 0; transform: translateX(-16px) scale(0.5); } to { opacity: 1; transform: none; } }
+.fp-sameden { animation: ol-fade 0.45s ease both; }
+.fp-num.is-hi, .fp-den.is-hi { animation: fp-blink 1s ease-in-out infinite; }
+.fp-den.is-hi { fill: #e0492f !important; }
+.fp-num.is-hi { fill: #e0492f !important; }
+@keyframes fp-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+.fp-result { opacity: 0; }
+.fp-result.is-show { animation: ol-fade 0.4s ease both; }
+.fp-result.is-show .fp-result-slice { animation: fp-merge 0.55s cubic-bezier(0.34, 1.3, 0.5, 1) both; transform-box: fill-box; transform-origin: center; }
+@keyframes fp-merge { from { opacity: 0; transform: translateX(46px) scale(0.4); } to { opacity: 1; transform: none; } }
+.fp-result.is-show .fp-eq { animation: fp-pop-tex 0.5s ease 0.5s both; }
+.fp-result.is-show .fp-result-frac { animation: fp-pop-tex 0.5s ease 0.7s both; }
+@keyframes fp-pop-tex { from { opacity: 0; transform: scale(0.4); } to { opacity: 1; transform: scale(1); } }
+.fp-rule { animation: fp-rule-in 0.5s cubic-bezier(0.34, 1.35, 0.5, 1) both; }
+@keyframes fp-rule-in { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+.fp-static { animation: none; }
+
+/* ================= 三角形面積 ================= */
+.ta-tri-a { animation: ta-draw 0.6s ease both; transform-box: fill-box; transform-origin: center bottom; }
+@keyframes ta-draw { from { opacity: 0; transform: translateY(12px) scale(0.92); } to { opacity: 1; transform: none; } }
+.ta-height { animation: ol-fade 0.6s ease 0.25s both; }
+.ta-parallel { animation: ol-fade 0.5s ease both; }
+.ta-copy { opacity: 0; }
+.ta-copy.is-copy {
+  opacity: 0.92;
+  transform: translate(26px, -12px) rotate(8deg);
+  transform-box: view-box; transform-origin: 175px 95px;
+  animation: ta-copy-pop 0.5s ease both;
+  transition: transform 0.6s cubic-bezier(0.34, 1.3, 0.5, 1), opacity 0.4s ease;
+}
+.ta-copy.is-merge {
+  opacity: 1;
+  transform: rotate(180deg);
+  transform-box: view-box; transform-origin: 175px 95px;
+}
+@keyframes ta-copy-pop { from { opacity: 0; transform: translate(40px, -20px) scale(0.9); } to { opacity: 0.92; transform: translate(26px, -12px) rotate(8deg); } }
+.ta-tri-a.is-half { animation: ta-half 1.05s ease-in-out infinite; }
+@keyframes ta-half { 0%, 100% { fill: #bcd8f5; } 50% { fill: #7fb4e6; } }
+.ta-eq { animation: fp-pop-tex 0.5s ease both; }
+.ta-divide { animation: fp-pop-tex 0.5s ease both; }
+.ta-banner { animation: ol-fade 0.35s ease both; }
+
+/* ================= 的得地（HTML 句卡） ================= */
+.ol-scene--chinese {
+  background:
+    repeating-linear-gradient(0deg, transparent 0 28px, rgba(58, 123, 191, 0.10) 28px 29px),
+    linear-gradient(180deg, #fffdf6 0%, #fdf3e0 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.de-board { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; padding: 16px 18px 26px; }
+.de-stage { text-align: center; width: 100%; }
+.de-stage { animation: de-in 0.45s cubic-bezier(0.34, 1.25, 0.5, 1) both; }
+@keyframes de-in { from { opacity: 0; transform: translateX(28px); } to { opacity: 1; transform: none; } }
+.de-cards { display: flex; gap: 14px; justify-content: center; }
+.de-card {
+  width: 74px; height: 92px; border-radius: 18px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 48px; font-weight: 900; color: #fff;
+  box-shadow: 0 10px 18px rgba(60, 40, 20, 0.18);
+  animation: de-card-bob 2.2s ease-in-out infinite;
+}
+.de-cards .de-card:nth-child(2) { animation-delay: 0.25s; }
+.de-cards .de-card:nth-child(3) { animation-delay: 0.5s; }
+.de-c1 { background: linear-gradient(160deg, #5aa0e6, #2f63a0); }
+.de-c2 { background: linear-gradient(160deg, #46bd86, #1f8a5b); }
+.de-c3 { background: linear-gradient(160deg, #e89a55, #c0692c); }
+@keyframes de-card-bob { 0%, 100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-9px) rotate(2deg); } }
+.de-hint { margin-top: 16px; font-size: 14px; color: #8a7a58; font-weight: 700; }
+.de-sentence { font-size: 40px; font-weight: 900; color: #33302a; display: flex; gap: 4px; align-items: flex-end; justify-content: center; flex-wrap: wrap; }
+.de-word { position: relative; padding: 0 2px; }
+.de-key { border-radius: 10px; padding: 0 7px; color: #fff; animation: de-key-glow 1.3s ease-in-out infinite; }
+.de-key.sm { font-size: 28px; padding: 3px 12px; display: inline-block; min-width: 48px; text-align: center; }
+.de-key.de-c1 { background: #3a7bbf; }
+.de-key.de-c2 { background: #2f9e6e; }
+.de-key.de-c3 { background: #c0763f; }
+@keyframes de-key-glow { 0%, 100% { transform: translateY(0); filter: brightness(1); } 50% { transform: translateY(-4px) scale(1.07); filter: brightness(1.12); } }
+.de-tag { font-size: 11.5px; position: absolute; top: -19px; left: 50%; transform: translateX(-50%); padding: 1px 8px; border-radius: 999px; color: #fff; font-weight: 800; white-space: nowrap; }
+.de-tag--n { background: #e0a13a; }
+.de-tag--v { background: #2f9e6e; }
+.de-rule { margin: 20px auto 0; font-size: 16.5px; font-weight: 800; color: #6b5d44; background: #fff; border: 1.5px dashed #d8c49a; border-radius: 12px; padding: 7px 16px; display: inline-block; }
+.de-rule .de-c1, .de-rule .de-c2, .de-rule .de-c3 { color: #fff; border-radius: 6px; padding: 0 5px; }
+.de-mantra { display: flex; flex-direction: column; gap: 10px; font-size: 23px; font-weight: 800; color: #4a4234; }
+.de-mantra p { background: #fff; border-radius: 12px; padding: 9px 18px; box-shadow: 0 4px 10px rgba(80, 60, 20, 0.08); }
+.de-go { font-size: 38px; font-weight: 900; color: #8a5fb0; animation: de-go-pop 1.2s ease-in-out infinite; }
+@keyframes de-go-pop { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+
+/* 開場（f0）先隱藏階段標籤，隨劇情逐個揭曉 */
+.wc-f0 .ol-tag-pill { opacity: 0; }
+
+/* 的得地：右下角留位給洋蔥、詞性標籤穩定不亂跑 */
+.ol-scene--chinese .de-board { padding: 14px 50px 22px 16px; }
+.ol-scene--chinese .ol-scene-mascot--chinese { right: 4px; bottom: 0; }
+.de-tag { display: inline-block; }
+.de-sentence { padding-top: 22px; }
+@media (max-width: 360px) {
+  .de-sentence { font-size: 34px; }
+  .de-card { width: 64px; height: 82px; font-size: 42px; }
+}
+
+/* 連續場景的 reduced-motion：停掉所有循環與位移動畫 */
+@media (prefers-reduced-motion: reduce) {
+  .ol-scene *, .wc-sun-rays, .wc-wave-1, .wc-wave-2,
+  .wc-rise.is-active .wc-drop--rise, .wc-condense.is-active .wc-mote,
+  .wc-rainlayer.is-active .wc-drop--rain, .wc-flow.is-active .wc-flow-dot,
+  .wc-loopring path, .ol-tag-pill.is-now,
+  .fp-slice.is-gone, .fp-fly, .fp-result.is-show .fp-result-slice,
+  .fp-num.is-hi, .fp-den.is-hi, .ta-copy, .ta-tri-a.is-half,
+  .de-card, .de-key, .de-go, .de-stage {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  .wc-layer { opacity: 1 !important; }
+  .wc-drop--rise, .wc-drop--rain, .wc-flow-dot, .wc-mote { opacity: 0.55 !important; }
+}

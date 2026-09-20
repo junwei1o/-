@@ -6,18 +6,16 @@
  * 教具渲染也是可擴展的：StageProp 依 prop.kind 分派到對應元件。
  * 成績透過 onBest 回寫教室最佳紀錄（與其他玩法一致的 3★ 標準）。
  */
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { RotateCcw, Sparkles, Star, ChevronRight, Play, Pause, Home, GraduationCap, ArrowLeft, BookOpen } from "lucide-react";
 import {
   ONION_LESSONS,
   getOnionLesson,
   gradeOnionLesson,
-  type OnionAction,
   type OnionFrame,
-  type OnionLesson,
-  type OnionProp,
 } from "@/game/onionAcademyLessons";
 import "@/components/classroom/classroom.css";
+import { LessonScene, OnionMascot } from "@/components/classroom/OnionAcademyScenes";
 
 type Phase = "start" | "intro" | "lesson" | "quiz" | "result";
 
@@ -26,237 +24,6 @@ type Props = {
   onBest: (r: { stars: number; correct: number; total: number }) => void;
   onExit: () => void;
 };
-
-/* ===================== 洋蔥角色（SVG 吉祥物） ===================== */
-function OnionMascot({ action, frame }: { action: OnionAction; frame: number }) {
-  const bodyCls =
-    action === "jump" || action === "cheer" ? "ol-onion--hop" : action === "walk" ? "ol-onion--bob" : "";
-  const armCls =
-    action === "wave"
-      ? "ol-arm--wave"
-      : action === "point"
-        ? "ol-arm--point"
-        : action === "cheer"
-          ? "ol-arm--cheer"
-          : action === "think"
-            ? "ol-arm--think"
-            : "";
-  return (
-    <div className={`ol-onion ${bodyCls}`} key={frame} aria-hidden="true">
-      <svg viewBox="0 0 120 150" width="120" height="150" className="ol-onion-svg">
-        {/* 頂芽 */}
-        <path d="M60 18 C 54 6 66 -2 62 16" stroke="#5fa84f" strokeWidth="5" fill="none" strokeLinecap="round" />
-        <path d="M60 16 C 70 6 78 12 64 20" stroke="#6fc15c" strokeWidth="4" fill="none" strokeLinecap="round" />
-        {/* 身體 */}
-        <path
-          d="M60 22 C 30 22 18 52 30 96 C 36 118 48 130 60 130 C 72 130 84 118 90 96 C 102 52 90 22 60 22 Z"
-          fill="#b794d6"
-          stroke="#8a5fb0"
-          strokeWidth="2"
-        />
-        {/* 洋蔥紋路 */}
-        <path d="M40 40 C 50 44 70 44 80 40" stroke="#9a6cc0" strokeWidth="2" fill="none" opacity="0.6" />
-        <path d="M36 70 C 48 74 72 74 84 70" stroke="#9a6cc0" strokeWidth="2" fill="none" opacity="0.6" />
-        <path d="M40 98 C 50 102 70 102 80 98" stroke="#9a6cc0" strokeWidth="2" fill="none" opacity="0.5" />
-        {/* 眼睛 */}
-        <circle cx="48" cy="62" r="5.5" fill="#2a1d3a" />
-        <circle cx="72" cy="62" r="5.5" fill="#2a1d3a" />
-        <circle cx="50" cy="60" r="1.8" fill="#fff" />
-        <circle cx="74" cy="60" r="1.8" fill="#fff" />
-        {/* 嘴 */}
-        <path d="M52 80 Q 60 88 68 80" stroke="#2a1d3a" strokeWidth="3" fill="none" strokeLinecap="round" />
-        {/* 腮紅 */}
-        <ellipse cx="38" cy="78" rx="6" ry="4" fill="#f2a0c0" opacity="0.55" />
-        <ellipse cx="82" cy="78" rx="6" ry="4" fill="#f2a0c0" opacity="0.55" />
-        {/* 手臂 */}
-        <g className={`ol-arm ol-arm-l ${armCls}`}>
-          <path d="M32 86 C 18 88 12 100 18 110" stroke="#8a5fb0" strokeWidth="6" fill="none" strokeLinecap="round" />
-        </g>
-        <g className={`ol-arm ol-arm-r ${armCls}`}>
-          <path d="M88 86 C 102 88 108 100 102 110" stroke="#8a5fb0" strokeWidth="6" fill="none" strokeLinecap="round" />
-        </g>
-        {/* 思考泡泡 */}
-        {action === "think" && (
-          <g className="ol-think">
-            <circle cx="100" cy="40" r="3" fill="#fff" stroke="#8a5fb0" />
-            <circle cx="108" cy="30" r="5" fill="#fff" stroke="#8a5fb0" />
-            <text x="108" y="34" textAnchor="middle" fontSize="9" fill="#8a5fb0">?</text>
-          </g>
-        )}
-      </svg>
-    </div>
-  );
-}
-
-/* ===================== 教具元件（依 kind 分派） ===================== */
-
-/** 圓餅教具：把圓分成 b 等份，塗色 a 份。 */
-function FractionPie({ a, b, label }: { a: number; b: number; label?: string }) {
-  const cx = 50;
-  const cy = 50;
-  const r = 40;
-  const slices = useMemo(() => {
-    if (b <= 0) return [] as string[];
-    if (b === 1) return ["M50 50 m -40 0 a 40 40 0 1 0 80 0 a 40 40 0 1 0 -80 0 Z"];
-    const out: string[] = [];
-    const step = 360 / b;
-    for (let i = 0; i < b; i++) {
-      const s = ((i * step - 90) * Math.PI) / 180;
-      const e = (((i + 1) * step - 90) * Math.PI) / 180;
-      const x1 = cx + r * Math.cos(s);
-      const y1 = cy + r * Math.sin(s);
-      const x2 = cx + r * Math.cos(e);
-      const y2 = cy + r * Math.sin(e);
-      const large = step > 180 ? 1 : 0;
-      out.push(`M${cx} ${cy} L${x1.toFixed(2)} ${y1.toFixed(2)} A${r} ${r} 0 ${large} 1 ${x2.toFixed(2)} ${y2.toFixed(2)} Z`);
-    }
-    return out;
-  }, [b]);
-
-  return (
-    <div className="ol-pie">
-      <svg viewBox="0 0 100 100" width="120" height="120" className="ol-pie-svg">
-        <circle cx={cx} cy={cy} r={r} fill="#f3ecf8" stroke="#8a5fb0" strokeWidth="2" />
-        {slices.map((d, i) => (
-          <path key={i} d={d} fill={i < a ? "#8a5fb0" : "transparent"} stroke="#b794d6" strokeWidth="1.5" className="ol-pie-slice" style={{ animationDelay: `${i * 80}ms` }} />
-        ))}
-      </svg>
-      {label && <span className="ol-pie-label">{label}</span>}
-    </div>
-  );
-}
-
-/** 字卡教具：國語字詞辨識。 */
-function TextCard({ text, sub, tone }: { text: string; sub?: string; tone?: "ok" | "warn" }) {
-  return (
-    <div className={`ol-text-card ${tone === "warn" ? "is-warn" : "is-ok"}`}>
-      <span className="ol-text-main">{text}</span>
-      {sub && <span className="ol-text-sub">{sub}</span>}
-    </div>
-  );
-}
-
-/** 循環圖教具：自然科學週期系統。節點順時針排列，active 標示當前階段。 */
-function CycleDiagram({ nodes, active }: { nodes: string[]; active?: number }) {
-  const n = nodes.length;
-  const cx = 60;
-  const cy = 60;
-  const r = 38;
-  const pts = useMemo(() => {
-    return nodes.map((label, i) => {
-      const ang = (-90 + (360 / n) * i) * (Math.PI / 180);
-      return { x: cx + r * Math.cos(ang), y: cy + r * Math.sin(ang), label };
-    });
-  }, [nodes]);
-  return (
-    <div className="ol-cycle">
-      <svg viewBox="0 0 120 120" width="180" height="180" className="ol-cycle-svg">
-        {/* 循環箭頭（圓弧） */}
-        <circle cx={cx} cy={cy} r={r} fill="none" stroke="#d9c3ee" strokeWidth="2" strokeDasharray="4 5" className="ol-cycle-ring" />
-        {pts.map((p, i) => {
-          const isActive = active === i || (active === undefined && false);
-          const next = pts[(i + 1) % n];
-          return (
-            <g key={i}>
-              {/* 節點到下一節點的箭頭（除匯回起點外） */}
-              <line
-                x1={p.x} y1={p.y} x2={next.x} y2={next.y}
-                stroke={isActive ? "#8a5fb0" : "#cdb0e6"}
-                strokeWidth={isActive ? "2.5" : "1.5"}
-                markerEnd="url(#olArrow)"
-                className={isActive ? "ol-cycle-arrow is-on" : "ol-cycle-arrow"}
-              />
-              {/* 節點圓 */}
-              <circle
-                cx={p.x} cy={p.y} r="15"
-                fill={isActive ? "#8a5fb0" : "#fff"}
-                stroke={isActive ? "#5a3a7a" : "#b794d6"}
-                strokeWidth="2"
-                className={isActive ? "ol-cycle-node is-on" : "ol-cycle-node"}
-              />
-              <text
-                x={p.x} y={p.y + 3} textAnchor="middle"
-                fontSize="6.5" fontWeight="700"
-                fill={isActive ? "#fff" : "#5a3a7a"}
-              >
-                {p.label}
-              </text>
-            </g>
-          );
-        })}
-        <defs>
-          <marker id="olArrow" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
-            <path d="M0 0 L6 3 L0 6 Z" fill="#8a5fb0" />
-          </marker>
-        </defs>
-      </svg>
-      {active !== undefined && active >= 0 && (
-        <span className="ol-cycle-now">現在：{nodes[active]}</span>
-      )}
-    </div>
-  );
-}
-
-/** 三角形教具：幾何形（底×高÷2）。 */
-function TriangleShape({ base, height, label }: { base: number; height: number; label?: string }) {
-  // 底邊在下方，頂點在上方中央偏左一點
-  const bx = 10;
-  const by = 80;
-  const bw = Math.min(base * 6, 80);
-  const tx = bx + bw / 2 - 8;
-  const ty = by - Math.min(height * 6, 64);
-  const mx = bx + bw / 2;
-  return (
-    <div className="ol-shape">
-      <svg viewBox="0 0 100 100" width="160" height="160" className="ol-shape-svg">
-        {/* 三角形本體 */}
-        <path
-          d={`M${bx} ${by} L${bx + bw} ${by} L${tx} ${ty} Z`}
-          fill="#e9d8f5"
-          stroke="#8a5fb0"
-          strokeWidth="2.5"
-          className="ol-shape-tri"
-        />
-        {/* 高（虛線） */}
-        <line x1={mx} y1={by} x2={tx} y2={ty} stroke="#e07a4f" strokeWidth="1.8" strokeDasharray="4 3" />
-        {/* 底邊標示 */}
-        <line x1={bx} y1={by + 6} x2={bx + bw} y2={by + 6} stroke="#5a3a7a" strokeWidth="2" />
-        <text x={mx} y={by + 16} textAnchor="middle" fontSize="7" fontWeight="700" fill="#5a3a7a">底 {base}</text>
-        {/* 高標示 */}
-        <text x={tx + 6} y={(by + ty) / 2 + 2} fontSize="7" fontWeight="700" fill="#e07a4f">高 {height}</text>
-        {/* 直角記號 */}
-        <path d={`M${mx} ${by} L${mx - 5} ${by} L${mx - 5} ${by - 5}`} fill="none" stroke="#5a3a7a" strokeWidth="1.5" />
-      </svg>
-      {label && <span className="ol-shape-label">{label}</span>}
-    </div>
-  );
-}
-
-/** 依 prop 類型渲染舞臺教具（可擴展分派）。 */
-function StageProp({ prop }: { prop: OnionProp }) {
-  if (prop.kind === "none") return <div className="ol-prop-empty" aria-hidden="true" />;
-  if (prop.kind === "pie") return <FractionPie a={prop.a} b={prop.b} label={prop.label} />;
-  if (prop.kind === "pies") {
-    return (
-      <div className="ol-pies">
-        <FractionPie a={prop.left.a} b={prop.left.b} />
-        <span className="ol-op">＋</span>
-        <FractionPie a={prop.right.a} b={prop.right.b} />
-        {prop.result && (
-          <>
-            <span className="ol-op">＝</span>
-            <FractionPie a={prop.result.a} b={prop.result.b} label={`${prop.result.a}/${prop.result.b}`} />
-          </>
-        )}
-      </div>
-    );
-  }
-  if (prop.kind === "text") return <TextCard text={prop.text} sub={prop.sub} tone={prop.tone} />;
-  if (prop.kind === "cycle") return <CycleDiagram nodes={prop.nodes} active={prop.active} />;
-  if (prop.kind === "shape" && prop.shape === "triangle")
-    return <TriangleShape base={prop.base} height={prop.height} label={prop.label} />;
-  return null;
-}
 
 /* ===================== 主元件 ===================== */
 export default function OnionLessonGame({ bestStars, onBest, onExit }: Props) {
@@ -418,14 +185,8 @@ export default function OnionLessonGame({ bestStars, onBest, onExit }: Props) {
             ))}
           </span>
         </header>
-        <div className="ol-stage" key={frame.id}>
-          <div className="ol-stage-scene">
-            <div className="ol-stage-floor" aria-hidden="true" />
-            <StageProp prop={frame.prop} />
-            <div className="ol-mascot-slot">
-              <OnionMascot action={frame.action} frame={frame.id} />
-            </div>
-          </div>
+        <div className="ol-stage">
+          <LessonScene lessonId={lesson.id} frame={frameIdx} action={frame.action} />
           <p className="ol-caption" key={`cap-${frame.id}`}>{frame.caption}</p>
         </div>
         <div className="ol-controls">
