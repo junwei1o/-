@@ -101,6 +101,27 @@ function lessonIntegrity(lesson: typeof FRACTION_LESSON) {
     };
     for (const f of lesson.frames) checkProp(f.prop);
   });
+
+  it(`${lesson.id}: 中途提問（ask）合法：≥2 個、答案索引正確、有提示`, () => {
+    const askFrames = lesson.frames.filter((f) => f.ask);
+    expect(askFrames.length).toBeGreaterThanOrEqual(2);
+    for (const f of askFrames) {
+      const ask = f.ask!;
+      expect(ask.options.length).toBeGreaterThanOrEqual(2);
+      expect(ask.answer).toBeGreaterThanOrEqual(0);
+      expect(ask.answer).toBeLessThan(ask.options.length);
+      expect(ask.prompt.length).toBeGreaterThan(0);
+      expect(ask.hint.length).toBeGreaterThan(0);
+    }
+  });
+
+  it(`${lesson.id}: 有小結重點 3 條、每題有 2 個提示`, () => {
+    expect(lesson.takeaways).toHaveLength(3);
+    for (const q of lesson.questions) {
+      expect(q.hints).toHaveLength(2);
+      for (const h of q.hints ?? []) expect(h.length).toBeGreaterThan(0);
+    }
+  });
 }
 
 describe("registry & lookup", () => {

@@ -7,7 +7,7 @@
  * 成績透過 onBest 回寫教室最佳紀錄（與其他玩法一致的 3★ 標準）。
  */
 import React, { useEffect, useRef, useState } from "react";
-import { RotateCcw, Sparkles, Star, ChevronRight, Play, Pause, Home, GraduationCap, ArrowLeft, BookOpen } from "lucide-react";
+import { RotateCcw, Sparkles, Star, ChevronRight, Play, Pause, Home, GraduationCap, ArrowLeft, BookOpen, Lightbulb, SkipForward, ListChecks } from "lucide-react";
 import {
   ONION_LESSONS,
   getOnionLesson,
@@ -16,18 +16,22 @@ import {
 } from "@/game/onionAcademyLessons";
 import "@/components/classroom/classroom.css";
 import { LessonScene, OnionMascot } from "@/components/classroom/OnionAcademyScenes";
+import { useClassroomSound } from "./useClassroomSound";
 import { shuffleQuestionOptions } from "@/lib/optionRandomizer";
 
-type Phase = "start" | "intro" | "lesson" | "quiz" | "result";
+type Phase = "start" | "intro" | "lesson" | "summary" | "quiz" | "result";
 
 type Props = {
   bestStars?: number;
+  /** 靜音（教室有全域靜音開關時傳入）。 */
+  muted?: boolean;
   onBest: (r: { stars: number; correct: number; total: number }) => void;
   onExit: () => void;
 };
 
 /* ===================== 主元件 ===================== */
-export default function OnionLessonGame({ bestStars, onBest, onExit }: Props) {
+export default function OnionLessonGame({ bestStars, muted = false, onBest, onExit }: Props) {
+  const play = useClassroomSound(muted);
   const [lessonId, setLessonId] = useState<string>(ONION_LESSONS[0].id);
   const lesson = getOnionLesson(lessonId);
   const reducedMotion = useRef(false);
@@ -43,6 +47,11 @@ export default function OnionLessonGame({ bestStars, onBest, onExit }: Props) {
   const [answered, setAnswered] = useState(false);
   const [correctCount, setCorrectCount] = useState(0);
   const [result, setResult] = useState(gradeOnionLesson(0, lesson.questions.length));
+  /** 已問過的分鏡（避免回到同一幀又問一次）。 */
+  const [asked, setAsked] = useState<number[]>([]);
+  const [askPicked, setAskPicked] = useState<number | null>(null);
+  /** 闖關：本題已錯幾次（驅動逐級提示）。 */
+  const [quizWrong, setQuizWrong] = useState<number[]>([]);
 
   /** 每次進場洗牌選項，避免正解固定在同一個位置。 */
   const quizPool = React.useMemo(
@@ -51,11 +60,13 @@ export default function OnionLessonGame({ bestStars, onBest, onExit }: Props) {
   );
   const frame: OnionFrame = lesson.frames[frameIdx];
   const isLastFrame = frameIdx >= lesson.frames.length - 1;
+  /** 這一幀有「停下來問學生」且還沒問過 → 先暫停播放。 */
+  const needAsk = Boolean(frame.ask) && !asked.includes(frameIdx);
   const q = quizPool[qIdx];
 
   // 分鏡自動推進
   useEffect(() => {
-    if (phase !== "lesson" || !playing) return;
+    if (phase !== "lesson" || !playing || needAsk) return;
     const dur = reducedMotion.current ? Math.min(frame.duration, 900) : frame.duration;
     const t = setTimeout(() => {
       if (isLastFrame) {
@@ -65,7 +76,7 @@ export default function OnionLessonGame({ bestStars, onBest, onExit }: Props) {
       }
     }, dur);
     return () => clearTimeout(t);
-  }, [phase, playing, frameIdx, frame.duration, isLastFrame]);
+  }, [phase, playing, frameIdx, frame.duration, isLastFrame, needAsk]);
 
   const pickLesson = (id: string) => {
     setLessonId(id);
@@ -73,8 +84,35 @@ export default function OnionLessonGame({ bestStars, onBest, onExit }: Props) {
   };
   const startLesson = () => {
     setFrameIdx(0);
+    setAsked([]);
+    setAskPicked(null);
     setPlaying(true);
     setPhase("lesson");
+  };
+  /** 答對（或略過）這一幀的提問，繼續播放。 */
+  const resolveAsk = (picked: number | null) => {
+    if (frame.ask && picked !== null) {
+      if (picked === frame.ask.answer) play("ok");
+      else play("no");
+    }
+    setAskPicked(picked);
+    setAsked((prev) => (prev.includes(frameIdx) ? prev : [...prev, frameIdx]));
+    setPlaying(true);
+  };
+  /** 中途提問作答：答對才繼續，答錯給提示可再試（不扣分）。 */
+  const pickAsk = (i: number) => {
+    if (!frame.ask) return;
+    if (i === frame.ask.answer) {
+      play("ok");
+      resolveAsk(i);
+      return;
+    }
+    play("no");
+    setAskPicked(i);
+  };
+  const goSummary = () => {
+    play("flip");
+    setPhase("summary");
   };
   const togglePlay = () => {
     if (isLastFrame && !playing) {
@@ -89,15 +127,25 @@ export default function OnionLessonGame({ bestStars, onBest, onExit }: Props) {
     setSelected(null);
     setAnswered(false);
     setCorrectCount(0);
+    setQuizWrong([]);
     setPhase("quiz");
   };
   const choose = (i: number) => {
     if (answered) return;
-    setSelected(i);
-    setAnswered(true);
-    if (i === q.answer) setCorrectCount((c) => c + 1);
+    if (quizWrong.includes(i)) return; // 已排除的錯誤選項
+    if (i === q.answer) {
+      play("ok");
+      setSelected(i);
+      setAnswered(true);
+      // 只有「第一次就答對」才計入成績（與洋蔥分層微課一致）
+      if (quizWrong.length === 0) setCorrectCount((c) => c + 1);
+      return;
+    }
+    play("no");
+    setQuizWrong((prev) => (prev.includes(i) ? prev : [...prev, i]));
   };
   const nextQ = () => {
+    setQuizWrong([]);
     if (qIdx >= lesson.questions.length - 1) {
       const r = gradeOnionLesson(correctCount, lesson.questions.length);
       setResult(r);
@@ -194,6 +242,30 @@ export default function OnionLessonGame({ bestStars, onBest, onExit }: Props) {
         <div className="ol-stage">
           <LessonScene lessonId={lesson.id} frame={frameIdx} action={frame.action} />
           <p className="ol-caption" key={`cap-${frame.id}`}>{frame.caption}</p>
+          {needAsk && frame.ask && (
+            <div className="ol-ask" role="group" aria-label="動畫中途提問">
+              <p className="ol-ask-head"><Lightbulb size={14} /> 先想一想，再往下看</p>
+              <p className="ol-ask-q">{frame.ask.prompt}</p>
+              <div className="ol-ask-opts">
+                {frame.ask.options.map((o, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    className={`ol-opt ${askPicked === i && i !== frame.ask!.answer ? "ol-opt--wrong" : ""}`}
+                    onClick={() => pickAsk(i)}
+                  >
+                    {o}
+                  </button>
+                ))}
+              </div>
+              {askPicked !== null && askPicked !== frame.ask.answer && (
+                <p className="ol-ask-hint" role="status">提示：{frame.ask.hint}</p>
+              )}
+              <button type="button" className="ol-ask-skip" onClick={() => resolveAsk(null)}>
+                <SkipForward size={13} /> 略過，繼續播放
+              </button>
+            </div>
+          )}
         </div>
         <div className="ol-controls">
           <button type="button" className="ol-btn ol-btn--primary" onClick={togglePlay}>
@@ -204,9 +276,45 @@ export default function OnionLessonGame({ bestStars, onBest, onExit }: Props) {
             <span className="ol-seek-now">第 {frameIdx + 1} / {lesson.frames.length} 幀</span>
             <button type="button" className="ol-seek-btn" disabled={isLastFrame} onClick={() => setFrameIdx((i) => Math.min(lesson.frames.length - 1, i + 1))}>下一幀 ＞</button>
           </div>
+          {isLastFrame && (
+            <button type="button" className="ol-btn ol-btn--primary" onClick={goSummary}>
+              <ListChecks size={15} /> 看重點整理
+            </button>
+          )}
           <button type="button" className="ol-btn ol-btn--ghost" onClick={goQuiz}>
             進入闖關 <ChevronRight size={15} />
           </button>
+        </div>
+      </div>
+    );
+  }
+
+  /* ---------------- 重點整理（看完動畫的小結） ---------------- */
+  if (phase === "summary") {
+    const takeaways = lesson.takeaways ?? [];
+    return (
+      <div className="ol-page">
+        <div className="ol-summary">
+          <div className="ol-summary-mascot" aria-hidden="true">
+            <OnionMascot action="cheer" frame={99} size={78} />
+          </div>
+          <span className="ol-tag"><ListChecks size={14} /> 重點整理</span>
+          <h2>{lesson.title}</h2>
+          <ul className="ol-summary-list">
+            {takeaways.map((item, i) => (
+              <li key={i}><span className="ol-summary-num">{i + 1}</span> {item}</li>
+            ))}
+          </ul>
+          <p className="ol-summary-hint">記住這幾點，就可以去闖關了！</p>
+          <div className="ol-start-btns">
+            <button type="button" className="ol-btn ol-btn--primary" onClick={goQuiz}>
+              開始闖關 <ChevronRight size={15} />
+            </button>
+            <button type="button" className="ol-btn ol-btn--ghost" onClick={startLesson}>
+              <RotateCcw size={14} /> 再看一次動畫
+            </button>
+          </div>
+          <button type="button" className="ol-exit" onClick={() => setPhase("start")}><ArrowLeft size={14} /> 換一堂課</button>
         </div>
       </div>
     );
@@ -224,17 +332,28 @@ export default function OnionLessonGame({ bestStars, onBest, onExit }: Props) {
         </header>
         <div className="ol-quiz">
           <p className="ol-q-prompt">{q.prompt}</p>
+          {!answered && quizWrong.length > 0 && (
+            <div className="ol-hint" role="status">
+              <b>提示（第 {Math.min(quizWrong.length, 3)} 次）：</b>{" "}
+              {q.hints && q.hints.length
+                ? q.hints[Math.min(quizWrong.length - 1, q.hints.length - 1)]
+                : "再想一下，真的卡住可以回去重看動畫。"}
+            </div>
+          )}
           <div className="ol-q-options">
             {q.options.map((opt, i) => {
+              const isWrongPick = quizWrong.includes(i);
               const cls = answered
                 ? i === q.answer
                   ? "ol-opt ol-opt--right"
-                  : i === selected
+                  : isWrongPick
                     ? "ol-opt ol-opt--wrong"
                     : "ol-opt"
-                : "ol-opt";
+                : isWrongPick
+                  ? "ol-opt ol-opt--wrong"
+                  : "ol-opt";
               return (
-                <button key={i} type="button" className={cls} onClick={() => choose(i)} disabled={answered}>
+                <button key={i} type="button" className={cls} onClick={() => choose(i)} disabled={answered || isWrongPick}>
                   {opt}
                 </button>
               );

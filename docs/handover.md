@@ -581,3 +581,14 @@ curl -s https://xue-gr3a.onrender.com/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | h
 - 刻意**不洗牌**：`ReviewHub` 錯題回顧（保持與當初作答一致的順序，避免同題每次位置不同造成混淆）。
 - 新增測試（classroomBank.test.ts）：60 個 seed × 10 題統計正解落點，四個選項各介於 12%–38%；另測洗牌後正解文字不變、選項不重複。該檔 29→31 例。
 - 驗收：tsc 0 錯；lib 245、components 184、pages 158 全綠。
+
+## 2026-09-20 P0-3：洋蔥微課學習流程改造（中途提問＋重點整理＋逐級提示＋音效）
+- 資料層（`game/onionAcademyLessons.ts`）新增三種欄位，八堂課全部補齊：
+  - `OnionFrame.ask`：分鏡播放到該幀會**停下來問學生**（洋蔥式「先猜再學」），每課 2 題，共 16 題；答錯只給提示、可重試、不扣分、可略過。
+  - `OnionLesson.takeaways`：每課 3 條重點，供小結頁使用。
+  - `OnionQuestion.hints`：40 題各 2 個提示，驅動闖關的逐級提示。
+- 播放器（`OnionAcademyGame.tsx`）新增 phase `summary`（重點整理頁：三條重點＋開始闖關／再看一次動畫）；新增 `muted` prop 並接上 `useClassroomSound`（翻頁/答對/答錯/過關）。
+- 闖關改為「答錯可重試＋逐級提示」：錯的選項停用並顯示第 N 次提示，**只有首次答對才計分**（與 OnionLesson 分層微課一致），避免「亂猜到對」也算分。
+- 樣式：classroom.css 新增 `.ol-ask`（提問卡）、`.ol-hint`（提示條）、`.ol-summary*`（小結頁）。
+- 測試：OnionAcademyGame.test 3→5 例（含「中途提問→略過繼續」「看完→重點整理→闖關」）；資料測試新增 ask/takeaways/hints 完整性，該檔 51→67 例。
+- 驗收：tsc 0 錯；lib＋components＋game 共 122 檔 802 例全綠；vite build 通過。
