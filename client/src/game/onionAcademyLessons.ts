@@ -869,6 +869,316 @@ export const BA_BEI_LESSON: OnionLesson = {
   ],
 };
 
+/* ========================================================================
+ * 課程 25：數學（國小）— 認識時刻與時間計算
+ * 用長條圖比較「時間長度」、用流程圖講讀法與經過時間。
+ * ======================================================================== */
+export const TIME_TELLING_LESSON: OnionLesson = {
+  id: "time-telling",
+  title: "認識時刻與時間計算",
+  subject: "數學",
+  topic: "認識時刻與時間計算",
+  grade: "三下",
+  stages: ["國小"],
+  desc: "短針看時、長針看分，1 小時是 60 分。洋蔥教你讀幾點幾分，再算經過多久。",
+  takeaways: ["時針走 1 大格＝1 小時；分針繞 1 圈＝1 小時", "短針看「時」、長針看「分」，合起來是幾點幾分", "經過時間＝結束時刻 − 開始時刻"],
+  frames: [
+    { id: 1, caption: "嗨！時鐘上有兩根針：短的是時針、長的是分針，你認得嗎？", action: "wave", prop: { kind: "none" }, duration: 3000 },
+    { id: 2, caption: "時針走 1 大格是 1 小時；分針繞一整圈剛好也是 1 小時，兩根針會在 1 小時後重合。", action: "point", prop: { kind: "text", text: "時針 1 大格 = 分針 1 圈 = 1 小時", sub: "短針慢、長針快，一小時同步一次", tone: "ok" }, duration: 3800 },
+    { id: 3, caption: "1 小時有 60 分鐘，半小時就是 30 分。長度一樣長，只是單位不同。", action: "jump", prop: { kind: "bars", items: [{ label: "1 小時", value: 60 }, { label: "半小時", value: 30 }], unit: "分", active: 0 }, duration: 3600 },
+    { id: 4, caption: "讀時刻先讀時針在哪一格（時），再看分針指向幾分，合起來就是幾點幾分。", action: "think", prop: { kind: "flow", steps: ["看短針（時）", "看長針（分）", "合起來讀"], active: 1 }, duration: 3600 },
+    { id: 5, caption: "短針過 3、長針指 12 是 3 點整；長針指 6（6×5=30）就是 3 點 30 分。", ask: { prompt: "短針在 3、長針指 6，是幾點幾分？", options: ["3 點 6 分", "3 點 30 分", "6 點 3 分", "3 點 15 分"], answer: 1, hint: "長針指 6 表示 30 分（6×5=30）。" }, action: "point", prop: { kind: "text", text: "3 點 30 分", sub: "短針過 3、長針指 6", tone: "ok" }, duration: 3800 },
+    { id: 6, caption: "經過時間＝結束 − 開始：從 9:00 到 9:40，經過了 40 分鐘。", ask: { prompt: "從 9:00 到 9:40，經過幾分鐘？", options: ["30 分", "40 分", "50 分", "1 小時"], answer: 1, hint: "結束減開始：40 − 0 = 40。" }, action: "walk", prop: { kind: "bars", items: [{ label: "開始 9:00", value: 0 }, { label: "結束 9:40", value: 40 }], unit: "分", active: 1 }, duration: 3600 },
+    { id: 7, caption: "口訣：短針看時、長針看分；經過時間用減法。準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
+  ],
+  questions: [
+    { id: "tt1", prompt: "1 小時等於幾分鐘？", options: ["30 分", "60 分", "100 分", "12 分"], answer: 1, hints: ["時針走 1 大格是 1 小時", "分針繞一圈 = 60 分"], explanation: "1 小時 = 60 分鐘。" },
+    { id: "tt2", prompt: "時鐘上短針表示的是什麼？", options: ["分", "時", "秒", "天"], answer: 1, hints: ["短針走得慢", "它告訴你現在幾點"], explanation: "短針是時針，指「時」；長針才是分針。" },
+    { id: "tt3", prompt: "長針指 6，表示幾分？", options: ["6 分", "30 分", "60 分", "12 分"], answer: 1, hints: ["長針每大格 = 5 分", "6 × 5 = 30"], explanation: "長針每大格 5 分，指 6 就是 6×5 = 30 分。" },
+    { id: "tt4", prompt: "短針在 2、長針在 12，是幾點？", options: ["2 點整", "12 點 2 分", "2 點 12 分", "2 點 30 分"], answer: 0, hints: ["長針指 12 就是整點", "短針在 2 就是 2 時"], explanation: "長針指 12 是整點，短針在 2，所以是 2 點整。" },
+    { id: "tt5", prompt: "從 8:10 到 8:35，經過幾分鐘？", options: ["25 分", "15 分", "45 分", "35 分"], answer: 0, hints: ["結束 − 開始", "35 − 10 = 25"], explanation: "經過時間＝結束 − 開始：35 − 10 = 25 分鐘。" },
+  ],
+};
+
+/* ========================================================================
+ * 課程 26：數學（國小）— 角度的種類
+ * 用量角器的觀念＋長條圖比大小，區分銳角、直角、鈍角、平角。
+ * ======================================================================== */
+export const ANGLE_TYPES_LESSON: OnionLesson = {
+  id: "angle-types",
+  title: "角度的種類：銳角、直角、鈍角",
+  subject: "數學",
+  topic: "角度的種類",
+  grade: "四下",
+  stages: ["國小"],
+  desc: "角其實有名字：小於 90 度是銳角、等於 90 是直角、介於 90~180 是鈍角。洋蔥用量角器幫你分。",
+  takeaways: ["銳角：小於 90 度（尖尖的）", "直角：等於 90 度（方方的）", "鈍角：大於 90、小於 180 度；平角 = 180 度"],
+  frames: [
+    { id: 1, caption: "嗨！書本的角、三角板的角都有名字，今天我們來把角分一分類。", action: "wave", prop: { kind: "none" }, duration: 3000 },
+    { id: 2, caption: "角是由兩條線共用一個端點（頂點）形成的，用量角器能量出它的「度數」。", action: "point", prop: { kind: "text", text: "角 = 兩條射線 ＋ 1 個頂點", sub: "度數用量角器測量", tone: "ok" }, duration: 3600 },
+    { id: 3, caption: "比一比：銳角尖尖的只有 45 度，直角方方的 90 度，鈍角張開更大到 135 度。", action: "jump", prop: { kind: "bars", items: [{ label: "銳角", value: 45 }, { label: "直角", value: 90 }, { label: "鈍角", value: 135 }], unit: "度", active: 0 }, duration: 3600 },
+    { id: 4, caption: "直角剛好 90 度，像正方形、長方形、三角板的角都是直角，可以用 L 型比對。", action: "think", prop: { kind: "text", text: "直角 = 90°", sub: "正方形、長方形的角都是直角", tone: "ok" }, duration: 3400 },
+    { id: 5, caption: "鈍角比直角大、比平角小：大於 90 度、小於 180 度，像打開的扇子。", ask: { prompt: "一個角有 120 度，它是哪一種角？", options: ["銳角", "直角", "鈍角", "平角"], answer: 2, hint: "120 大於 90、小於 180，是鈍角。" }, action: "point", prop: { kind: "text", text: "鈍角：90° < 角度 < 180°", sub: "比直角大、比平角小", tone: "warn" }, duration: 3800 },
+    { id: 6, caption: "平角是直角的兩倍：兩條邊拉成一條直線，等於 180 度。", ask: { prompt: "平角是直角的幾倍？", options: ["1 倍", "2 倍", "3 倍", "4 倍"], answer: 1, hint: "180 ÷ 90 = 2。" }, action: "walk", prop: { kind: "bars", items: [{ label: "直角", value: 90 }, { label: "平角", value: 180 }], unit: "度", active: 1 }, duration: 3600 },
+    { id: 7, caption: "口訣：小於 90 銳角、等於 90 直角、90~180 鈍角。準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
+  ],
+  questions: [
+    { id: "at1", prompt: "幾度叫做直角？", options: ["45 度", "90 度", "180 度", "60 度"], answer: 1, hints: ["正方形、長方形的角都是", "量角器量剛好一半"], explanation: "直角等於 90 度。" },
+    { id: "at2", prompt: "一個角是 70 度，它屬於？", options: ["銳角", "直角", "鈍角", "平角"], answer: 0, hints: ["銳角小於 90 度", "70 比 90 小"], explanation: "小於 90 度的角是銳角，70 度 < 90 度所以是銳角。" },
+    { id: "at3", prompt: "下列哪一個角最大？", options: ["銳角 45 度", "直角 90 度", "鈍角 120 度", "它們一樣大"], answer: 2, hints: ["鈍角大於直角", "120 > 90 > 45"], explanation: "鈍角大於 90 度，120 度比直角和銳角都大。" },
+    { id: "at4", prompt: "平角是多少度？", options: ["90 度", "180 度", "360 度", "45 度"], answer: 1, hints: ["兩條邊成一直線", "是直角的兩倍"], explanation: "平角的兩邊成一直線，等於 180 度。" },
+    { id: "at5", prompt: "用量角器量角時，中心點要對準哪裡？", options: ["邊的中間", "頂點", "任意位置", "線的末端"], answer: 1, hints: ["頂點是兩條邊的交點", "對準頂點才能量準"], explanation: "量角器的中心點要對準角的頂點，才能正確讀出度數。" },
+  ],
+};
+
+/* ========================================================================
+ * 課程 27：自然（國小）— 植物的根莖葉
+ * 用流程圖分工、循環圖串起合作關係。
+ * ======================================================================== */
+export const PLANT_PARTS_LESSON: OnionLesson = {
+  id: "plant-parts",
+  title: "植物的根莖葉：各司其職",
+  subject: "自然",
+  topic: "植物的根莖葉",
+  grade: "四上",
+  stages: ["國小"],
+  desc: "根是腳、莖是水管、葉是食物工廠。洋蔥帶你看植物怎麼分工合作長大。",
+  takeaways: ["根：固定植物並從土壤吸收水分和養分", "莖：支撐植物並運輸水分", "葉：進行光合作用製造養分"],
+  frames: [
+    { id: 1, caption: "嗨！一株植物從頭到腳分成根、莖、葉，它們各有工作，今天來認識它們。", action: "wave", prop: { kind: "none" }, duration: 3000 },
+    { id: 2, caption: "根是植物的腳：把自己固定在土裡，還從土壤中吸收水分和養分。", action: "point", prop: { kind: "flow", steps: ["根（固定＋吸水）", "莖（支撐＋運輸）", "葉（光合作用）"], active: 0 }, duration: 3600 },
+    { id: 3, caption: "莖像輸送管：把根吸到的水往上送，還支撐植物站直、不會倒下來。", ask: { prompt: "植物進行光合作用的部位是哪一個？", options: ["根", "莖", "葉", "花"], answer: 2, hint: "葉子是食物的工廠。" }, action: "think", prop: { kind: "flow", steps: ["根（固定＋吸水）", "莖（支撐＋運輸）", "葉（光合作用）"], active: 1 }, duration: 3600 },
+    { id: 4, caption: "葉是食物的工廠：用陽光把水和二氧化碳做成養分，這就是光合作用。", action: "jump", prop: { kind: "flow", steps: ["根（固定＋吸水）", "莖（支撐＋運輸）", "葉（光合作用）"], active: 2 }, duration: 3600 },
+    { id: 5, caption: "三個部位合作：根供水、莖送水、葉做食物，缺一不可。", ask: { prompt: "植物靠哪個部位從土裡吸收水分？", options: ["根", "莖", "葉", "花"], answer: 0, hint: "根在土壤中，負責吸水。" }, action: "point", prop: { kind: "cycle", nodes: ["根：固定吸水", "莖：支撐運輸", "葉：光合作用"], active: 0 }, duration: 3800 },
+    { id: 6, caption: "看這個循環：根吸水 → 莖運送 → 葉製造，養分再供全身，合作無間。", action: "walk", prop: { kind: "cycle", nodes: ["根：固定吸水", "莖：支撐運輸", "葉：光合作用"], active: 2 }, duration: 3600 },
+    { id: 7, caption: "口訣：根深、莖直、葉光合，分工合作長得好。準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
+  ],
+  questions: [
+    { id: "pp1", prompt: "植物用哪個部位吸收水分？", options: ["葉", "莖", "根", "花"], answer: 2, hints: ["在土壤裡的那個部位", "負責吸水"], explanation: "根在土中吸收水分和養分。" },
+    { id: "pp2", prompt: "莖的主要功能不包括下列哪一項？", options: ["支撐植物", "運輸水分", "進行光合作用", "連接根和葉"], answer: 2, hints: ["光合作用在葉子進行", "莖是管子和支柱"], explanation: "光合作用是葉子的功能，莖負責支撐與運輸。" },
+    { id: "pp3", prompt: "葉子進行光合作用，需要什麼？", options: ["只有水", "水和陽光", "只有土壤", "只有空氣"], answer: 1, hints: ["葉是食物工廠", "陽光提供能量"], explanation: "葉子利用陽光把水和二氧化碳轉成養分，需要水和陽光。" },
+    { id: "pp4", prompt: "根除了吸收水分，還有什麼作用？", options: ["製造養分", "把植物固定在土裡", "進行呼吸", "開花結果"], answer: 1, hints: ["根是植物的腳", "固定才不會被風吹倒"], explanation: "根能把植物固定在土壤中，使其站穩。" },
+    { id: "pp5", prompt: "下列哪一種說法正確？", options: ["根莖葉各司其職、互相合作", "只有葉子重要", "莖不重要", "根會進行光合作用"], answer: 0, hints: ["三個部位缺一不可", "合作才能存活"], explanation: "根、莖、葉各有功能並互相合作，共同維持植物生長。" },
+  ],
+};
+
+/* ========================================================================
+ * 課程 28：社會（國小）— 台灣的位置與地形
+ * 用字卡、流程圖與長條圖（地形高度比較）認識家園。
+ * ======================================================================== */
+export const TAIWAN_GEO_LESSON: OnionLesson = {
+  id: "taiwan-geo",
+  title: "台灣的位置與地形",
+  subject: "社會",
+  topic: "台灣的位置與地形",
+  grade: "五上",
+  stages: ["國小"],
+  desc: "台灣在東亞島鏈、北回歸線穿過，有五大地形，而且山地多、平原少。洋蔥用地圖帶你認識。",
+  takeaways: ["台灣位於東亞島鏈，在福建東南方", "北回歸線通過中南部，是熱帶亞熱帶分界", "五大地形：平原、丘陵、台地、盆地、山地；山地最多、平原最少"],
+  frames: [
+    { id: 1, caption: "嗨！我們住的台灣在哪裡？有什麼地形？今天就用地圖來認識我們的家園。", action: "wave", prop: { kind: "none" }, duration: 3000 },
+    { id: 2, caption: "台灣位於東亞的島鏈上，在福建的東南方，四面環海，是個海島。", action: "point", prop: { kind: "text", text: "台灣：東亞島鏈、福建東南", sub: "四面環海的海島", tone: "ok" }, duration: 3600 },
+    { id: 3, caption: "北回歸線從台灣中南部穿過，把台灣分成熱帶（南）和亞熱帶（北）。", ask: { prompt: "北回歸線通過台灣的哪裡？", options: ["北部", "中南部", "東部海面", "沒有通過"], answer: 1, hint: "通過嘉義、花蓮一帶的中南部。" }, action: "think", prop: { kind: "flow", steps: ["北回歸線通過", "中南部", "熱帶／亞熱帶分界"], active: 1 }, duration: 3600 },
+    { id: 4, caption: "台灣有五大地形：平原、丘陵、台地、盆地、山地，各有不同的高度和樣子。", action: "jump", prop: { kind: "text", text: "五大地形：平原／丘陵／台地／盆地／山地", sub: "地形種類多樣", tone: "ok" }, duration: 3800 },
+    { id: 5, caption: "地形比一比：山地高高在上約 2000 公尺，丘陵約 500，平原只有幾十公尺。台灣山地佔最多。", ask: { prompt: "台灣面積最大的是哪一種地形？", options: ["平原", "丘陵", "山地", "盆地"], answer: 2, hint: "中央山脈縱貫，山地佔一半以上。" }, action: "point", prop: { kind: "bars", items: [{ label: "山地", value: 2000 }, { label: "丘陵", value: 500 }, { label: "平原", value: 50 }], unit: "公尺", active: 0 }, duration: 3800 },
+    { id: 6, caption: "因為山地多、平原少，所以大多數人住在很少的平原上，城市也多在平原。", action: "walk", prop: { kind: "flow", steps: ["山地多", "平原少", "人口集中在平原"], active: 2 }, duration: 3600 },
+    { id: 7, caption: "口訣：島鏈東南、北回歸線、五地形、山多平原少。準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
+  ],
+  questions: [
+    { id: "tg1", prompt: "台灣位於哪裡？", options: ["東亞島鏈、福建東南", "歐洲", "非洲", "南極"], answer: 0, hints: ["是個海島", "在亞洲東邊"], explanation: "台灣位於東亞島鏈，在福建（中國東南）的外海東南方。" },
+    { id: "tg2", prompt: "北回歸線通過台灣的哪裡？", options: ["北部", "中南部", "東部", "沒有通過"], answer: 1, hints: ["它把台灣分成熱帶亞熱帶", "通過嘉義、花蓮一帶"], explanation: "北回歸線通過台灣中南部，是熱帶與亞熱帶的分界。" },
+    { id: "tg3", prompt: "下列哪一項不是台灣五大地形之一？", options: ["平原", "山地", "丘陵", "高原"], answer: 3, hints: ["五大地形不含高原", "是平原丘陵台地盆地山地"], explanation: "台灣五大地形為平原、丘陵、台地、盆地、山地，沒有高原。" },
+    { id: "tg4", prompt: "台灣地形以哪一種佔最多面積？", options: ["平原", "山地", "盆地", "台地"], answer: 1, hints: ["山脈縱貫中央", "山地佔約一半以上"], explanation: "台灣中央山脈縱貫，山地佔全島面積一半以上，是最多的地形。" },
+    { id: "tg5", prompt: "為什麼台灣人口大多集中在平原？", options: ["平原風景最美", "山地多平原少，平原適合居住農耕", "平原比較冷", "法律規定"], answer: 1, hints: ["平原少但平坦", "適合耕作與居住"], explanation: "台灣山地多、平原少，而平原地勢平坦、適合農耕與居住，所以人口集中。" },
+  ],
+};
+
+/* ========================================================================
+ * 課程 29：國語（國小）— 近義詞與反義詞
+ * 用字卡與天平（兩詞對照）區分意思相近與相反。
+ * ======================================================================== */
+export const SYNONYM_ANTONYM_LESSON: OnionLesson = {
+  id: "synonym-antonym",
+  title: "近義詞與反義詞",
+  subject: "國語",
+  topic: "近義詞與反義詞",
+  grade: "四上",
+  stages: ["國小"],
+  desc: "意思相近叫近義詞（開心／高興），意思相反叫反義詞（冷／熱）。洋蔥教你從上下文判斷。",
+  takeaways: ["近義詞：意思相近，可互相替換（開心 ≈ 高興）", "反義詞：意思相反（冷 ↔ 熱）", "可從上下文判斷詞意是相近還是相反"],
+  frames: [
+    { id: 1, caption: "嗨！有些詞意思很像，有些詞意思恰恰相反，今天學近義詞和反義詞。", action: "wave", prop: { kind: "none" }, duration: 3000 },
+    { id: 2, caption: "「開心」和「高興」都表示快樂，意思相近，放在句子裡差不多，這叫近義詞。", ask: { prompt: "「開心」和「高興」意思相近，稱為？", options: ["反義詞", "近義詞", "諧音詞", "成語"], answer: 1, hint: "意思相近就是近義詞。" }, action: "point", prop: { kind: "text", text: "開心 ≈ 高興", sub: "意思相近，可互相替換", tone: "ok" }, duration: 3600 },
+    { id: 3, caption: "這兩個詞在天平兩端平衡：意思差不多，只是說法不同，可以互換。", action: "think", prop: { kind: "balance", left: "開心", right: "高興", tip: "意思相近，可以互相替換" }, duration: 3600 },
+    { id: 4, caption: "「冷」和「熱」、「大」和「小」意思完全相反，這叫反義詞。", action: "jump", prop: { kind: "text", text: "冷 ↔ 熱　大 ↔ 小", sub: "意思相反，就是反義詞", tone: "ok" }, duration: 3600 },
+    { id: 5, caption: "再看天平：冷和熱在兩端對立，意思相反，不能互換。", ask: { prompt: "下列哪一组是反義詞？", options: ["開心／高興", "冷／熱", "美麗／漂亮", "快樂／歡喜"], answer: 1, hint: "冷和熱意思相反。" }, action: "point", prop: { kind: "balance", left: "冷", right: "熱", tip: "意思相反" }, duration: 3600 },
+    { id: 6, caption: "還可以從上下文判斷：同一段話裡，意思靠近是近義、意思對立是反義。", action: "walk", prop: { kind: "text", text: "看上下文：相近 or 相反", sub: "同一句中推敲詞意關係", tone: "ok" }, duration: 3600 },
+    { id: 7, caption: "口訣：意思近是近義詞、意思反是反義詞。準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
+  ],
+  questions: [
+    { id: "sa1", prompt: "「開心」和「高興」是什麼關係？", options: ["近義詞", "反義詞", "沒關係", "同音詞"], answer: 0, hints: ["兩者都表示快樂", "意思相近"], explanation: "開心和高興意思相近，是近義詞。" },
+    { id: "sa2", prompt: "下列哪一组是反義詞？", options: ["美麗／漂亮", "冷／熱", "快樂／歡喜", "安靜／寧靜"], answer: 1, hints: ["冷和熱意思相反", "其他都是相近"], explanation: "冷和熱意思相反，是反義詞；其餘都是近義詞。" },
+    { id: "sa3", prompt: "「黑暗」的反義詞最有可能是？", options: ["明亮", "漆黑", "陰影", "夜晚"], answer: 0, hints: ["反義詞要意思相反", "黑暗對光亮"], explanation: "黑暗是沒有光，反義詞是明亮。" },
+    { id: "sa4", prompt: "「巨大」的近義詞可以是？", options: ["龐大", "微小", "細小", "短小"], answer: 0, hints: ["巨大表示很大", "找意思相近的詞"], explanation: "巨大和龐大意思相近，都表示很大，是近義詞。" },
+    { id: "sa5", prompt: "閱讀時要怎麼判斷近義或反義？", options: ["隨便猜", "看上下文的意思相近或相反", "只看第一個字", "問別人"], answer: 1, hints: ["同一段話推敲", "相近或對立來判斷"], explanation: "從上下文判斷：詞意相近為近義詞、詞意對立為反義詞。" },
+  ],
+};
+
+/* ========================================================================
+ * 課程 30：自然（國中）— 電流與電路
+ * 用流程圖看通路／斷路／短路，用天平對照串聯並聯。
+ * ======================================================================== */
+export const ELECTRIC_CIRCUIT_LESSON: OnionLesson = {
+  id: "electric-circuit",
+  title: "電流與電路：通路、斷路、短路",
+  subject: "自然",
+  topic: "電流與電路",
+  grade: "八上",
+  stages: ["國中"],
+  desc: "電燈為什麼亮？通路、斷路、短路差在哪？洋蔥用流程圖與天平帶你看串聯並聯和 V=IR。",
+  takeaways: ["通路（閉合回路）燈才亮；斷路不亮；短路危險", "串聯共用一條路（一斷全斷），並聯各走分支", "電流方向慣例由電池正極出發回到負極"],
+  frames: [
+    { id: 1, caption: "嗨！電燈為什麼會亮？秘密在電路。今天就來看通路、斷路和短路。", action: "wave", prop: { kind: "none" }, duration: 3000 },
+    { id: 2, caption: "通路：電從電池出發，經導線繞一圈回到電池，燈就亮——這叫閉合回路。", action: "point", prop: { kind: "flow", steps: ["電池", "導線", "電燈", "形成回路"], active: 3 }, duration: 3600 },
+    { id: 3, caption: "斷路：線路中有一處斷開，電走不過去，燈就不亮。", action: "think", prop: { kind: "flow", steps: ["電池", "斷開的導線", "電燈不亮"], active: 1 }, duration: 3600 },
+    { id: 4, caption: "短路：電池正負極被導線直接相連，電流繞過電燈、又大又快，會發燙甚至危險。", ask: { prompt: "短路時電流會怎麼樣？", options: ["正常經過電燈", "繞過電燈、過大危險", "完全停止", "變得很小"], answer: 1, hint: "電池兩極直接相連，電流過大。" }, action: "jump", prop: { kind: "balance", left: "短路：電池兩極直接相連", right: "電流繞過電燈", tip: "電流過大、危險！" }, duration: 3800 },
+    { id: 5, caption: "串聯是一條線串接；並聯是各走各的分支。串聯一處斷、全部停。", ask: { prompt: "兩顆電燈串聯，其中一顆壞了會怎樣？", options: ["另一顆更亮", "兩顆都不亮", "完全沒影響", "電池變大"], answer: 1, hint: "串聯是同一條路，斷一處全斷。" }, action: "point", prop: { kind: "balance", left: "串聯：元件一條線串接", right: "並聯：元件各走分支", tip: "串聯一斷全斷；並聯互不影響" }, duration: 3800 },
+    { id: 6, caption: "電流方向：慣例上從電池正極出發，經過元件，再回到負極。", action: "walk", prop: { kind: "flow", steps: ["電池（＋ → −）", "經過電燈", "回到電池"], active: 0 }, duration: 3600 },
+    { id: 7, caption: "口訣：通路上課、斷路下課、短路危險；串聯共路、並聯分家。準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
+  ],
+  questions: [
+    { id: "ec1", prompt: "電燈會亮的電路稱為？", options: ["斷路", "通路（閉合回路）", "短路", "開路"], answer: 1, hints: ["電要繞一圈回來", "形成完整回路才亮"], explanation: "電路完整接通、電流能循環，燈才亮，稱為通路（閉合回路）。" },
+    { id: "ec2", prompt: "電池正負極被導線直接相連，會發生？", options: ["正常發光", "短路", "斷路", "沒事"], answer: 1, hints: ["電流繞過用電器", "電流過大很危險"], explanation: "電池兩極直接相連、電流繞過用電器稱為短路，電流過大會發燙危險。" },
+    { id: "ec3", prompt: "兩顆電燈串聯，一顆壞了，另一顆會？", options: ["更亮", "也跟著不亮", "完全不受影響", "閃爍"], answer: 1, hints: ["串聯只有一條路", "斷一處整條斷"], explanation: "串聯元件共用同一條路徑，一處斷開整條電路就斷，兩燈都不亮。" },
+    { id: "ec4", prompt: "並聯電路的特點是？", options: ["一斷全斷", "各元件有獨立分支，互不影響", "只有一條路", "電流最小"], answer: 1, hints: ["各走各的分支", "一顆壞另一顆仍亮"], explanation: "並聯中每個用電器有獨立支路，互不影響，一顆壞了其他仍正常。" },
+    { id: "ec5", prompt: "習慣上，電流方向是從電池的哪裡出發？", options: ["負極", "正極", "中間", "兩極同時"], answer: 1, hints: ["電流慣例方向", "從 ＋ 到 −"], explanation: "慣例上電流方向從電池正極出發，經元件回到負極。" },
+  ],
+};
+
+/* ========================================================================
+ * 課程 31：自然（國中）— 力與平衡
+ * 用天平講兩力平衡條件，用流程圖講合力與平衡狀態。
+ * ======================================================================== */
+export const FORCE_BALANCE_LESSON: OnionLesson = {
+  id: "force-balance",
+  title: "力與平衡：什麼時候不動？",
+  subject: "自然",
+  topic: "力與平衡",
+  grade: "八下",
+  stages: ["國中"],
+  desc: "力會改變形狀或運動，但合力為零就平衡。洋蔥用天平講兩力平衡，用流程圖講靜止與等速。",
+  takeaways: ["力的效應：改變形狀或改變運動狀態", "合力：同向相加、反向相減的總效果", "兩力平衡＝等大、反向、同一直線；靜止與等速都是平衡"],
+  frames: [
+    { id: 1, caption: "嗨！力會讓東西變形或改變運動，但什麼時候物體會「平衡」？今天來看力與平衡。", action: "wave", prop: { kind: "none" }, duration: 3000 },
+    { id: 2, caption: "力作用在物體上，會產生兩種效應：被壓扁（改變形狀），或被推動（改變運動狀態）。", action: "point", prop: { kind: "balance", left: "力的效應", right: "改變形狀 / 改變運動狀態", tip: "推、拉、壓都算施力" }, duration: 3600 },
+    { id: 3, caption: "合力：把作用在同一物體上的力加總——方向相同相加、相反的相減，得到總效果。", ask: { prompt: "考慮方向把多個力加總，得到的是？", options: ["分力", "合力", "重力", "壓力"], answer: 1, hint: "同向相加、反向相減的總效果叫合力。" }, action: "think", prop: { kind: "flow", steps: ["同向力相加", "反向力相減", "得到合力"], active: 2 }, duration: 3600 },
+    { id: 4, caption: "兩力平衡的條件：大小相等、方向相反、作用在同一條直線上，物體就不會被推動。", action: "jump", prop: { kind: "balance", left: "F₁ = 5 N（向右）", right: "F₂ = 5 N（向左）", tip: "等大、反向、同一直線 → 平衡" }, duration: 3800 },
+    { id: 5, caption: "不管是靜止不動，還是等速直線前進，只要合力為零，就都處於平衡狀態。", ask: { prompt: "一個物體靜止不動，它受到的力？", options: ["一定沒有受力", "合力為零（平衡）", "只有重力", "越來越大"], answer: 1, hint: "靜止也是平衡，合力為零。" }, action: "point", prop: { kind: "balance", left: "靜止在桌面", right: "等速直線運動", tip: "這兩種都是平衡狀態" }, duration: 3800 },
+    { id: 6, caption: "所以：靜止或等速，速度都「不變」，合力都是零——它們都是平衡狀態。", action: "walk", prop: { kind: "flow", steps: ["靜止", "等速直線運動", "合力皆為零", "都是平衡"], active: 3 }, duration: 3600 },
+    { id: 7, caption: "口訣：等大反向同線才平衡；靜止與等速都是平衡。準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
+  ],
+  questions: [
+    { id: "fb1", prompt: "力作用在物體上，可能產生什麼效應？", options: ["只會發熱", "改變形狀或改變運動狀態", "什麼都不會", "只會變色"], answer: 1, hints: ["推拉會壓扁或推動", "力和運動有關"], explanation: "力能改變物體形狀（如壓扁）或改變其運動狀態（加速、減速）。" },
+    { id: "fb2", prompt: "兩力要達到平衡，不需要下列哪一個條件？", options: ["大小相等", "方向相反", "作用在同一條直線", "作用在不同物體"], answer: 3, hints: ["兩力要作用在同一物體", "還要大、反、同線"], explanation: "兩力平衡要作用在同一物體上，且等大、反向、同一直線；作用在不同物體就不是平衡力。" },
+    { id: "fb3", prompt: "一個物體靜止在桌面上，它所受力的是？", options: ["完全不受力", "合力為零（平衡）", "只有向上的力", "合力越來越大"], answer: 1, hints: ["靜止是平衡狀態", "支持力與重力抵消"], explanation: "靜止時受力平衡，合力為零（如下壓重力與上推支持力抵消）。" },
+    { id: "fb4", prompt: "下列何者屬於「平衡狀態」？", options: ["加速前進", "等速直線運動", "從靜止開始加速", "自由落體"], answer: 1, hints: ["平衡時合力為零", "等速代表速度不變"], explanation: "等速直線運動的速度不改變，合力為零，屬於平衡狀態。" },
+    { id: "fb5", prompt: "合力是怎麼算出來的？", options: ["所有力隨便加", "同方向相加、反方向相減", "只看最大的力", "永遠為零"], answer: 1, hints: ["方向相同的力相加", "相反的力相減"], explanation: "合力要考慮方向：同向相加、反向相減，得到總效果。" },
+  ],
+};
+
+/* ========================================================================
+ * 課程 32：社會（國中）— 台灣的氣候特色
+ * 用流程圖講季風與緯度，用長條圖比較迎風坡／背風坡雨量。
+ * ======================================================================== */
+export const TAIWAN_CLIMATE_LESSON: OnionLesson = {
+  id: "taiwan-climate",
+  title: "台灣的氣候特色",
+  subject: "社會",
+  topic: "台灣的氣候",
+  grade: "七上",
+  stages: ["國中"],
+  desc: "低緯度讓台灣偏熱，夏吹西南、冬吹東北季風，迎風坡多雨、背風坡少雨。洋蔥帶你看氣候。",
+  takeaways: ["低緯度＋近赤道，全年氣溫偏高", "夏季西南季風（暖濕）、冬季東北季風（乾冷）", "迎風坡多雨、背風坡少雨（雨蔭）"],
+  frames: [
+    { id: 1, caption: "嗨！台灣夏天熱、冬天濕冷，為什麼？因為我們受季風和緯度影響，今天來看氣候。", action: "wave", prop: { kind: "none" }, duration: 3000 },
+    { id: 2, caption: "緯度：台灣位於低緯度，離赤道近、接收的太陽熱量多，整年氣溫偏高。", action: "point", prop: { kind: "flow", steps: ["低緯度", "接收太陽熱量多", "氣溫較高"], active: 1 }, duration: 3600 },
+    { id: 3, caption: "夏季：太陽直射北半球，風從海洋吹向陸地，是西南季風，帶來大量暖濕水氣。", ask: { prompt: "台灣夏季吹西南季風，它會帶來？", options: ["乾冷空氣", "暖濕水氣", "沙塵", "下雪"], answer: 1, hint: "從海洋來、含有大量水氣。" }, action: "think", prop: { kind: "flow", steps: ["夏季", "太陽偏北", "吹西南季風", "帶來暖濕海風"], active: 3 }, duration: 3800 },
+    { id: 4, caption: "冬季反過來：風從大陸吹向海洋，是東北季風，乾冷、水氣少。", action: "jump", prop: { kind: "flow", steps: ["冬季", "太陽偏南", "吹東北季風", "乾冷陸風"], active: 3 }, duration: 3600 },
+    { id: 5, caption: "同樣吹季風，迎風坡（山面對風）雨多，背風坡（山後）雨少。東半部多雨、西部少些。", ask: { prompt: "季風吹向的山坡，雨量通常？", options: ["比較多（迎風坡）", "比較少（背風坡）", "一樣多", "完全沒雨"], answer: 0, hint: "迎風坡被迫抬升、容易下雨。" }, action: "point", prop: { kind: "bars", items: [{ label: "迎風坡", value: 3000 }, { label: "背風坡", value: 1000 }], unit: "mm", active: 0 }, duration: 3800 },
+    { id: 6, caption: "所以地形也決定雨量：迎風坡多雨、背風坡形成雨蔭，兩邊雨量差很多。", action: "walk", prop: { kind: "flow", steps: ["迎風坡：多雨", "背風坡：少雨", "地形影響雨量"], active: 2 }, duration: 3600 },
+    { id: 7, caption: "口訣：低緯度高溫、夏西南冬東北、迎風多雨背風少。準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
+  ],
+  questions: [
+    { id: "tc1", prompt: "台灣整年氣溫偏高的主因是？", options: ["高緯度", "低緯度、近赤道", "四面環海", "沒有太陽"], answer: 1, hints: ["離赤道近", "接收太陽熱量多"], explanation: "台灣位於低緯度，靠近赤道、接收太陽熱量多，所以氣溫偏高。" },
+    { id: "tc2", prompt: "台灣夏季主要吹什麼季風？", options: ["東北季風", "西南季風", "西風", "颶風"], answer: 1, hints: ["夏季風從海洋來", "帶來暖濕水氣"], explanation: "夏季吹西南季風，從海洋帶來暖濕水氣，多雨。" },
+    { id: "tc3", prompt: "台灣冬季吹的東北季風，特性是？", options: ["暖濕", "乾冷", "炎熱", "無風"], answer: 1, hints: ["冬季風從大陸來", "水氣少、較冷"], explanation: "冬季東北季風從大陸吹來，乾冷、水氣較少。" },
+    { id: "tc4", prompt: "為什麼迎風坡的雨量比背風坡多？", options: ["迎風坡比較高", "濕空氣被地形抬升成雲下雨", "背風坡會吸水", "風比較小"], answer: 1, hints: ["空氣爬坡冷卻", "容易凝結降雨"], explanation: "濕潤空氣遇山被迫抬升、冷卻凝結，在迎風坡成雲下雨，所以雨量多。" },
+    { id: "tc5", prompt: "下列哪一種說法正確？", options: ["台灣全年都吹同一方向風", "夏吹西南、冬吹東北季風", "台灣不受季風影響", "冬季比夏季雨多"], answer: 1, hints: ["季風會隨季節反轉", "夏西南、冬東北"], explanation: "台灣受季風影響，夏季西南、冬季東北，隨季節反轉。" },
+  ],
+};
+
+/* ========================================================================
+ * 課程 33：數學（國中）— 提出公因式與因式分解
+ * 用天平對照分配律反過來，用流程圖講 x²+bx+c 十字交乘。
+ * ======================================================================== */
+export const FACTORING_LESSON: OnionLesson = {
+  id: "factoring",
+  title: "提出公因式與因式分解",
+  subject: "數學",
+  topic: "因式分解",
+  grade: "八下",
+  stages: ["國中"],
+  desc: "把乘法分配律反過來用，就是因式分解。洋蔥用天平提公因式，用流程圖講十字交乘。",
+  takeaways: ["因式分解＝乘法分配律反過來用", "提公因式：找係數公因數與共同字母再提出", "x²＋bx＋c 型用十字交乘：兩數和＝b、積＝c"],
+  frames: [
+    { id: 1, caption: "嗨！學過乘法分配律 a(b＋c)＝ab＋ac，現在我們要把它反過來用，這就叫因式分解。", action: "wave", prop: { kind: "none" }, duration: 3000 },
+    { id: 2, caption: "分配律：3×4 ＋ 3×5 ＝ 3×(4＋5)。反過來，把共同的那個數「提出來」就是因式分解。", action: "point", prop: { kind: "text", text: "3×4 ＋ 3×5 = 3(4＋5)", sub: "把共同的 3 提出來", tone: "ok" }, duration: 3600 },
+    { id: 3, caption: "找公因式：6x 和 9 都能被 3 整除，把 3 提出來，得到 3(2x＋3)。", ask: { prompt: "6x＋9 的公因式是？", options: ["3", "x", "9", "6x"], answer: 0, hint: "6 和 9 都能被 3 整除。" }, action: "think", prop: { kind: "balance", left: "6x ＋ 9", right: "3(2x ＋ 3)", tip: "公因式是 3" }, duration: 3800 },
+    { id: 4, caption: "三步驟：先找係數的最大公因數，再看字母有沒有共同的部分，最後一起提出。", action: "jump", prop: { kind: "flow", steps: ["看係數公因數", "看字母共同項", "提出公因式"], active: 2 }, duration: 3600 },
+    { id: 5, caption: "再練一次：2x＋4 都含因數 2，提出來得到 2(x＋2)。", ask: { prompt: "2x＋4 因式分解後是？", options: ["2(x＋2)", "x(2＋4)", "(2x)(4)", "4(x＋1)"], answer: 0, hint: "提出 2：2x÷2=x、4÷2=2。" }, action: "point", prop: { kind: "balance", left: "2x ＋ 4", right: "2(x ＋ 2)", tip: "公因式是 2" }, duration: 3800 },
+    { id: 6, caption: "x²＋bx＋c 型：用十字交乘找兩數，它們相加等於 b、相乘等於 c。這裡 2＋3=5、2×3=6。", action: "walk", prop: { kind: "flow", steps: ["x²＋5x＋6", "找兩數：和5、積6", "2 和 3", "(x＋2)(x＋3)"], active: 3 }, duration: 3800 },
+    { id: 7, caption: "口訣：分配律反過來提公因式；x²+bx+c 用十字交乘。準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
+  ],
+  questions: [
+    { id: "fc1", prompt: "因式分解和乘法分配律的關係是？", options: ["完全無關", "把分配律反過來用", "乘法分配律更難", "因式分解不存在"], answer: 1, hints: ["a(b+c)=ab+ac 反過來", "拆開的反向是提出"], explanation: "因式分解就是把乘法分配律 ab＋ac＝a(b＋c) 反過來使用，把公因式提出。" },
+    { id: "fc2", prompt: "6x＋9 提出公因式後是？", options: ["3(2x＋3)", "x(6＋9)", "(6x)(9)", "3x(2＋3)"], answer: 0, hints: ["6 和 9 的公因數是 3", "6x÷3=2x、9÷3=3"], explanation: "6x＋9＝3·2x＋3·3＝3(2x＋3)。" },
+    { id: "fc3", prompt: "2x＋4 的公因式是？", options: ["2", "x", "4", "2x"], answer: 0, hints: ["2x 和 4 都能被 2 整除", "x 不在兩項都出現"], explanation: "2x 和 4 都含因數 2，公因式（式）是 2。" },
+    { id: "fc4", prompt: "x²＋5x＋6 用十字交乘分解，應得到？", options: ["(x＋2)(x＋3)", "(x＋1)(x＋6)", "(x−2)(x−3)", "(x＋5)(x＋6)"], answer: 0, hints: ["2+3=5、2×3=6", "找和為5、積為6的兩數"], explanation: "2 和 3 相加為 5、相乘為 6，所以 x²＋5x＋6＝(x＋2)(x＋3)。" },
+    { id: "fc5", prompt: "分解 x²＋bx＋c 型時，十字交乘要找兩數滿足？", options: ["和為 b、積為 c", "和為 c、積為 b", "只差 1", "都為正"], answer: 0, hints: ["中間項係數是兩數和", "常數項是兩數積"], explanation: "x²＋bx＋c 分解時，兩數的和等於一次項係數 b、積等於常數項 c。" },
+  ],
+};
+
+/* ========================================================================
+ * 課程 34：英語（國中）— 被動語態 be + p.p.
+ * 用字卡、天平（主動↔被動）與流程圖講 be 隨時態變。
+ * ======================================================================== */
+export const PASSIVE_VOICE_LESSON: OnionLesson = {
+  id: "passive-voice",
+  title: "英語被動語態：be + p.p.",
+  subject: "英語",
+  topic: "被動語態",
+  grade: "九",
+  stages: ["國中"],
+  desc: "英文「被……」怎麼講？公式 be + p.p.，by 引出原主詞，be 動詞還要隨時態變。洋蔥帶你練。",
+  takeaways: ["被動語態 = be 動詞 ＋ 過去分詞（p.p.）", "改被動：原受詞變主詞，原主詞用 by 引出", "be 動詞依時態變化（is/am/are、was/were、has been）"],
+  frames: [
+    { id: 1, caption: "Hi! 英文裡「被……」怎麼講？這就是被動語態，公式很簡單：be ＋ 過去分詞。", action: "wave", prop: { kind: "none" }, duration: 3000 },
+    { id: 2, caption: "主動：The cat ate the fish.（貓吃了魚。）被動：The fish was eaten by the cat.（魚被貓吃了。）", action: "point", prop: { kind: "text", text: "主動：The cat ate the fish.", sub: "被動：The fish was eaten by the cat.", tone: "ok" }, duration: 3800 },
+    { id: 3, caption: "改被動三步：①原受詞拉來當主詞；②動詞改成 be＋p.p.；③原主詞用 by 接在後面。", ask: { prompt: "主動改被動時，原來的受詞會變成？", options: ["刪掉", "新的主詞", "用 by 接", "保持受詞"], answer: 1, hint: "承受動作者當主詞。" }, action: "think", prop: { kind: "balance", left: "主動: S + V + O", right: "被動: O + be+Vp.p. + by S", tip: "原受詞變主詞，動詞變 be+p.p." }, duration: 3800 },
+    { id: 4, caption: "be 動詞要隨時態變：現在用 is/am/are、過去用 was/were、完成用 has/have been。", action: "jump", prop: { kind: "text", text: "be 動詞依時態變", sub: "現在 is/am/are；過去 was/were", tone: "ok" }, duration: 3600 },
+    { id: 5, caption: "看這句：The window was broken by Tom. 主詞是 window（被動者），was＋broken 成對，by Tom 引出原主詞。", ask: { prompt: "「The book was read by Mary.」是什麼語態？", options: ["主動語態", "被動語態", "疑問句", "否定句"], answer: 1, hint: "有 be＋p.p.，且 by 引出原主詞。" }, action: "point", prop: { kind: "balance", left: "The window was broken by Tom.", right: "主詞=window（被動）", tip: "be(was)+broken(p.p.)+by Tom" }, duration: 3800 },
+    { id: 6, caption: "常見錯誤：①忘了加 be 動詞；②p.p. 拼錯；③時態和 be 對不上。記得 be 和 p.p. 一定要成對。", action: "walk", prop: { kind: "flow", steps: ["找受詞當主詞", "動詞變 be+p.p.", "原主詞加 by", "調整時態"], active: 3 }, duration: 3800 },
+    { id: 7, caption: "口訣：被動＝be＋p.p.，by 引出原主詞，be 隨時態變。準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
+  ],
+  questions: [
+    { id: "pv1", prompt: "被動語態的基本結構是？", options: ["主詞 + 原形動詞", "be 動詞 + 過去分詞 (p.p.)", "will + p.p.", "主詞 + V-ing"], answer: 1, hints: ["一定要有 be", "動詞要變 p.p."], explanation: "被動語態公式為 be 動詞 ＋ 過去分詞（be + p.p.）。" },
+    { id: "pv2", prompt: "主動句改成被動句，原受詞會變成？", options: ["受詞不變", "新的主詞", "用 by 接", "刪掉"], answer: 1, hints: ["誰被做就當主詞", "The fish 變主詞"], explanation: "改被動時，原句子的受詞（承受動作者）要提升為新主詞。" },
+    { id: "pv3", prompt: "「The book was read by Mary.」的被動標記是？", options: ["read 原形", "was + read (p.p.)", "by Mary 在句首", "沒有被動"], answer: 1, hints: ["be 用 was（過去）", "read 的 p.p. 同形"], explanation: "was（be 動詞，過去式）＋ read（過去分詞）構成被動，by Mary 引出原主詞。" },
+    { id: "pv4", prompt: "現在式的被動，be 動詞要用？", options: ["was / were", "is / am / are", "has been", "will"], answer: 1, hints: ["現在對應 is/am/are", "過去才用 was/were"], explanation: "現在式被動用 is / am / are 作 be 動詞，再接 p.p.。" },
+    { id: "pv5", prompt: "改寫被動時，常見的錯誤是？", options: ["加太多主詞", "忘了 be 動詞或 p.p. 拼錯", "用錯顏色", "句子太短"], answer: 1, hints: ["be 和 p.p. 要成對", "時態也要對上 be"], explanation: "常見錯誤是漏掉 be 動詞、p.p. 拼錯，或 be 動詞時態與語境不合。" },
+  ],
+};
+
 /** 目前上架的動畫課清單（多學科，驗證架構通用性）。 */
 export const ONION_LESSONS: OnionLesson[] = [
   FRACTION_LESSON,
@@ -889,12 +1199,22 @@ export const ONION_LESSONS: OnionLesson[] = [
   STAT_CHART_LESSON,
   CIRCLE_AREA_LESSON,
   BA_BEI_LESSON,
+  TIME_TELLING_LESSON,
+  ANGLE_TYPES_LESSON,
+  PLANT_PARTS_LESSON,
+  TAIWAN_GEO_LESSON,
+  SYNONYM_ANTONYM_LESSON,
   PHOTOSYNTHESIS_JUNIOR_LESSON,
   CHEMICAL_CHANGE_LESSON,
   CELL_DIVISION_LESSON,
   SPEED_RATE_LESSON,
   PLATE_TECTONICS_LESSON,
   ENGLISH_TENSE_LESSON,
+  ELECTRIC_CIRCUIT_LESSON,
+  FORCE_BALANCE_LESSON,
+  TAIWAN_CLIMATE_LESSON,
+  FACTORING_LESSON,
+  PASSIVE_VOICE_LESSON,
 ];
 
 /** 依 id 取課；找不到時回傳第一課作為兜底。 */

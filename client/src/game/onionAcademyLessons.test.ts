@@ -135,14 +135,15 @@ function lessonIntegrity(lesson: typeof FRACTION_LESSON) {
 }
 
 describe("registry & lookup", () => {
-  it("registers all lessons across 4 subjects", () => {
+  it("registers all lessons across 5 subjects", () => {
     expect(ONION_LESSONS.length).toBeGreaterThanOrEqual(24);
     const subjects = new Set(ONION_LESSONS.map((l) => l.subject));
-    expect(subjects.size).toBe(4); // 數學、國語、自然、英語
+    expect(subjects.size).toBe(5); // 數學、國語、自然、英語、社會
     expect(subjects.has("數學")).toBe(true);
     expect(subjects.has("國語")).toBe(true);
     expect(subjects.has("自然")).toBe(true);
     expect(subjects.has("英語")).toBe(true);
+    expect(subjects.has("社會")).toBe(true);
   });
 
   it("每一堂課只屬於一個學段（國中看過的國小不會再來一遍）", () => {
