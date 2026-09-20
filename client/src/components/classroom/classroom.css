@@ -3090,3 +3090,10 @@
 
 .ol-chapter.is-on .ol-chapter-no { background: #ffd79a; color: #7a4a08; }
 .ol-chapter-text { flex: 1; line-height: 1.35; }
+
+/* 跨學科結合題的提示晶片：讓學生知道這題要同時用到好幾科。 */
+.ob-meta-chip--cross {
+  background: #fff2d9;
+  color: #7a4a08;
+  border: 1px solid #f2c078;
+}

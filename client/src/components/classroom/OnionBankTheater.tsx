@@ -216,6 +216,11 @@ export default function OnionBankTheater({ bestStars, onBest, onExit }: Props) {
             <span className="ob-meta-chip">{q.subject}</span>
             <span className="ob-meta-chip">{q.grade} 年級</span>
             <span className="ob-meta-chip">{q.learningTopic}</span>
+            {q.subjectCombination && (
+              <span className="ob-meta-chip ob-meta-chip--cross">
+                跨科：{q.subjectCombination.join("．")}
+              </span>
+            )}
           </div>
           <p className="ol-q-prompt" aria-live="polite">{q.prompt}</p>
           {!answered && wrongPicks.length > 0 && (

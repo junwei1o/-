@@ -32,6 +32,11 @@ export type CurriculumQuestionRow = {
   explanation: string;
   knowledge: string[];
   area?: string | null;
+  /**
+   * 跨學科結合題的科目組合（三科或五科）；一般單科題沒有這一欄。
+   * 前端用它顯示「數學．自然．社會」的提示晶片，讓學生知道這題要跨科思考。
+   */
+  subjectCombination?: string[];
 };
 
 function isValidQuestion(value: unknown): value is CurriculumQuestionRow {

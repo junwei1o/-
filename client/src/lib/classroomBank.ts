@@ -59,6 +59,8 @@ export type ClassroomChoice = {
   options: string[];
   answer: number;
   explanation: string;
+  /** 跨學科結合題的科目組合（三科／五科）；單科題為 undefined。 */
+  subjectCombination?: string[];
 };
 
 export type ImageQuizQuestion = {
@@ -198,6 +200,7 @@ function rowToChoice(row: CurriculumQuestionRow, random: () => number = Math.ran
     options: [...row.options],
     answer: row.answer,
     explanation: row.explanation,
+    ...(row.subjectCombination ? { subjectCombination: row.subjectCombination } : {}),
   };
   return shuffleQuestionOptions({ ...base, questionType: row.questionType }, random);
 }
