@@ -272,7 +272,7 @@ export default function OnionLesson({ course = FRACTION_COURSE, muted = false, o
               <p className="on-quiz-meta" style={{ textAlign: "center" }}>{course.subject} · {course.grade}</p>
               <h2>{course.title}</h2>
               <p>{course.tagline}</p>
-              <p style={{ fontSize: "13.5px", color: "#7a8d99", marginTop: 10 }}>
+              <p style={{ fontSize: "13.5px", color: "#57697a", marginTop: 10 }}>
                 把一個觀點切成好幾層，每層先看一段小動畫、馬上回答 2 題，答對才解鎖下一層。
               </p>
               <div className="on-rules">
@@ -370,7 +370,7 @@ export default function OnionLesson({ course = FRACTION_COURSE, muted = false, o
             </div>
             <div className="on-narration">
               <span className="on-mascot">🧅</span>
-              <p key={`n-${sceneIndex}-${runId}`} className="is-fading">{scene.narration}</p>
+              <p key={`n-${sceneIndex}-${runId}`} className="is-fading" aria-live="polite">{scene.narration}</p>
             </div>
             <div className="on-player-ctrl">
               <button type="button" className="on-ctrl icon" aria-label="上一個分鏡" onClick={() => gotoScene(-1)} disabled={sceneIndex === 0}>
@@ -536,7 +536,7 @@ export default function OnionLesson({ course = FRACTION_COURSE, muted = false, o
             <p>
               你已剝完 {course.layers.length} 層知識點，獲得稱號「<b>{rankTitle(course.layers.length, course.layers.length)}</b>」。
             </p>
-            <p style={{ fontSize: "14px", color: "#7a8d99" }}>
+            <p style={{ fontSize: "14px", color: "#57697a" }}>
               首次答對 {firstTryTotal} / {totalQuiz} 題。想更熟練，可以隨時回來重看任一層動畫。
             </p>
             <div className="on-actions">

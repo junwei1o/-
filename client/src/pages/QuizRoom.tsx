@@ -40,7 +40,7 @@ const SKINS: Array<{ id: SkinId; label: string; hint: string; dot: string }> = [
 ];
 
 const CHEER_TICKER = [
-  "答錯不會扣分你的自信",
+  "答錯不會扣分，也不會打擊你的自信",
   "每個玩法都會告訴你正確答案",
   "30 秒，剛好專心一次",
   "成績只留在你自己的裝置",
@@ -241,7 +241,7 @@ export default function QuizRoom() {
             </button>
             <button
               type="button"
-              className="cs-helper-bubble"
+              className="cs-helper-bubble" aria-live="polite"
               onClick={() => setTipIndex((index) => (index + 1) % HELPER_TIPS.length)}
             >
               {helperTip}

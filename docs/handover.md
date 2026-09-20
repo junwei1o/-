@@ -749,3 +749,23 @@ curl -s https://xue-gr3a.onrender.com/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | h
 ### 其他
 - 配對題：`data/matching_bank_extra.json`（+66 組），全站 33 → 99 組、594 筆配對；各科 6 組 → 18–22 組。
 - 測試：lib 289、pages 160、components 187、game 385、server 105 全過。`expeditionContent.test.ts` 改為斷言「4 或 6 個選項」且 4 選題不得含湊數選項。
+
+## 2026-09-20（深夜第二輪）全站 UI 稽查修復＋變態題兜底歸零
+
+### 題庫：湊數選項機制整個移除
+- `optionRandomizer.ts` 的 `GENERIC_WRONG_OPTIONS`（以上皆非／以上皆是）與英文版兜底**全部刪除**。
+  現在找到幾個真的干擾項就用幾個（4 → 5 或 6 個選項），一個都找不到就維持 4 選題。
+  體檢報告「以上皆非」題數：487 → **0**。
+- 原則寫進檔頭註解：寧可選項少一點，也不硬塞沒有鑑別度的湊數選項。
+- `expeditionContent.test.ts` 改為接受 4／5／6 個選項。
+
+### UI（Explore 稽查 12 項，全數修復）
+- **可及性**：MatchingPage 選單鈕補 aria-label；洋蔥學院動畫字幕、分數工坊旁白、答題室領航員悄悄話補 `aria-live="polite"`；已學過徽章補 `role="img"` 讓 aria-label 生效。
+- **鍵盤導覽**：教室三種卡片（mc-play-card／mc-lesson-card／mc-mode-card）原本 `:focus-visible` 把 outline 關掉，補回 3px 聚焦環。
+- **觸控目標**：換膚鈕 36px→44px；首頁「更改」年級鈕加 padding＋min-height 44px；首頁右緣把手 10px→20px。
+- **對比度**：首頁淺灰 `#8a9aa4`→`#5d6d79`、`#7a8d99`→`#57697a`、淺橘 `#c8752c`→`#9a5a1c`；OnionLesson 兩處內聯淺灰字同步加深。
+- **文案**：「答錯不會扣分你的自信」→「答錯不會扣分，也不會打擊你的自信」；簽到彈窗移除已下架「燈塔指航中心」的殘留文案。
+- 稽查確認無問題的檔案：ClassroomPlay、MatchingGame、onion.css、OnionAcademyHub、QuizRunner、RushRunner 等。
+
+### 測試基礎設施
+- BattleScene 補強測試因題庫變真（5000 題展開約 2-4 秒 CPU）超過預設 5 秒上限，該測試 timeout 調為 20 秒並加註解說明原因。

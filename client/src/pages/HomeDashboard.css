@@ -242,7 +242,8 @@
 /* 關閉懸浮鈕時的右緣細把手（仍保留鍵盤／螢幕閱讀器可達的開口） */
 .home-quick-edge {
   transform: translateY(-50%);
-  width: 10px;
+  /* 10px 寬的手指很難點，放寬到 20px 仍是細把手 */
+  width: 20px;
   height: 88px;
   padding: 0;
   border: 0;
@@ -452,7 +453,7 @@
 .home-adventure-journal-card p:not(.home-dashboard-eyebrow) { margin:0; max-width:48rem; color:#42636a; line-height:1.6; }
 .home-adventure-journal-stats { display:flex; flex:0 0 auto; gap:.8rem; }
 .home-adventure-journal-stats span { display:grid; min-width:3.8rem; padding:.45rem .6rem; border-radius:.85rem; text-align:center; background:rgba(255,255,255,.7); }
-.home-adventure-journal-stats strong { color:#c8752c; font-size:1.05rem; }
+.home-adventure-journal-stats strong { color:#9a5a1c; font-size:1.05rem; }
 .home-adventure-journal-stats small { color:#688087; font-size:.7rem; }
 @media (max-width:560px) {
   .home-adventure-journal-card { align-items:flex-start; flex-direction:column; }
@@ -720,7 +721,7 @@
 }
 .home-focus-lesson-body { flex: 1 1 auto; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .home-focus-lesson-body strong { font-size: 15.5px; font-weight: 900; color: #3f3a2e; }
-.home-focus-lesson-body small { font-size: 12.5px; color: #8a9aa4; }
+.home-focus-lesson-body small { font-size: 12.5px; color: #5d6d79; }
 .home-focus-lesson-cta {
   flex: 0 0 auto;
   display: inline-flex;
@@ -740,7 +741,7 @@
   margin-bottom: 12px;
 }
 .home-grade-setup h2 { margin: 4px 0 4px; font-size: 17px; font-weight: 900; color: #3f3a2e; }
-.home-grade-desc { margin: 0 0 12px; font-size: 13.5px; color: #7a8d99; line-height: 1.5; }
+.home-grade-desc { margin: 0 0 12px; font-size: 13.5px; color: #57697a; line-height: 1.5; }
 .home-grade-chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .home-grade-chip {
   border: 1.5px solid #ddd3ba;
@@ -754,11 +755,15 @@
   transition: background 0.16s, border-color 0.16s, transform 0.16s;
 }
 .home-grade-chip:hover { background: #f6ecd4; border-color: #c9a227; transform: translateY(-1px); }
-.home-grade-done { margin: 0 0 12px; font-size: 13px; color: #8a9aa4; }
+.home-grade-done { margin: 0 0 12px; font-size: 13px; color: #5d6d79; }
 .home-grade-change {
   border: none;
   background: none;
-  padding: 0;
+  /* 觸控目標加大：原本沒有 padding，手指要瞄準一條 13px 的文字 */
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 4px 8px;
   font-size: 13px;
   font-weight: 800;
   color: #2f74b8;

@@ -260,7 +260,9 @@ describe("standalone battle scene", () => {
     expect(screen.getByRole("button", { name: /雲只會出現在海面上/ })).toBeEnabled();
   });
 
-  it("offers a positive, focus-managed one-question reinforcement after defeat and records the real attempt", async () => {
+  // 題庫擴充到 5000 題後，首次 render 要真的讀題庫＋展開選項（約 2-4 秒的真實 CPU 時間），
+  // 預設 5 秒不夠；這不是測試變慢，是題庫變真了。
+  it("offers a positive, focus-managed one-question reinforcement after defeat and records the real attempt", { timeout: 20000 }, async () => {
     vi.useFakeTimers();
     try {
       storage.set(RPG_STORAGE_KEY, JSON.stringify({

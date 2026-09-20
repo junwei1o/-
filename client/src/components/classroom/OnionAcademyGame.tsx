@@ -269,7 +269,7 @@ export default function OnionLessonGame({ bestStars, muted = false, onBest, onEx
                   <span className="ol-lc-top">
                     <span className="ol-lc-subject" style={{ background: color }}>{l.subject}</span>
                     {lessonBest[l.id] ? (
-                      <span className="ol-lc-learned" aria-label={`已學過，最佳 ${lessonBest[l.id].stars} 顆星`}>
+                      <span className="ol-lc-learned" role="img" aria-label={`已學過，最佳 ${lessonBest[l.id].stars} 顆星`}>
                         <Star size={12} aria-hidden="true" /> {lessonBest[l.id].stars}★
                       </span>
                     ) : null}
@@ -337,7 +337,7 @@ export default function OnionLessonGame({ bestStars, muted = false, onBest, onEx
         </header>
         <div className="ol-stage">
           <LessonStage lessonId={lesson.id} prop={frame.prop} frame={frameIdx} action={frame.action} />
-          <p className="ol-caption" key={`cap-${frame.id}`}>{frame.caption}</p>
+          <p className="ol-caption" key={`cap-${frame.id}`} aria-live="polite">{frame.caption}</p>
           {needAsk && frame.ask && (
             <div className="ol-ask" role="group" aria-label="動畫中途提問">
               <p className="ol-ask-head"><Lightbulb size={14} /> 先想一想，再往下看</p>

@@ -1107,7 +1107,8 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  min-height: 36px;
+  /* 觸控目標至少 44px：外觀換膚切換鈕原本只有 36px，手指點不到 */
+  min-height: 44px;
   border: none;
   background: transparent;
   border-radius: 999px;
@@ -2890,3 +2891,12 @@
 
 .onion-hub-tab-label { font-size: 14px; font-weight: 700; color: #33305a; }
 .onion-hub-tab-sub { font-size: 11px; color: #6b6784; }
+
+/* 鍵盤導覽的聚焦指示：卡片 hover/focus 的合併規則移除了 outline，
+   這裡補回明確的聚焦環，讓鍵盤使用者看得到目前停在哪一張卡片。 */
+.mc-play-card:focus-visible,
+.mc-lesson-card:focus-visible,
+.mc-mode-card:focus-visible {
+  outline: 3px solid #0b6e8e;
+  outline-offset: 3px;
+}

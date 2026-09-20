@@ -6,6 +6,7 @@
  *
  * 擴充只會「附加」在原選項後面，不會更動前 4 個選項的索引，因此 answer 欄位不需要修正；
  * 打亂時才會重新計算索引。整個模組為純函式，不依賴任何外部狀態。
+ * 原則：寧可選項少一點，也不硬塞沒有鑑別度的湊數選項。
  */
 
 /** 可被打亂順序的題目形狀（試卷題、課綱題、遠征題都符合）。 */
@@ -26,19 +27,6 @@ export type ExpandableQuestion = ShuffleableQuestion & {
   topic?: string;
   learningTopic?: string;
 };
-
-/** 題目條件無法安全產生數字干擾選項時的固定兜底（正解必為其他具體選項，兩者必定錯誤）。 */
-const GENERIC_WRONG_OPTIONS = ["以上皆非", "以上皆是"] as const;
-
-/** 英語題要配英文的兜底選項：中文「以上皆非」出現在英語考卷上就是標準的變態題。 */
-const GENERIC_WRONG_OPTIONS_EN = ["None of the above", "All of the above"] as const;
-
-/** 依題目語言挑兜底選項：選項全是英文就用英文版。 */
-function genericOptionsFor(options: readonly string[], subject?: string): readonly string[] {
-  const latinOnly = options.every((option) => !/[\u4e00-\u9fff]/.test(option));
-  if (String(subject ?? "") === "英語" || (latinOnly && options.length > 0)) return GENERIC_WRONG_OPTIONS_EN;
-  return GENERIC_WRONG_OPTIONS;
-}
 
 /** FNV-1a：把題目 id 轉成穩定的隨機種子。 */
 export function hashStringToSeed(input: string): number {
@@ -722,8 +710,8 @@ export function borrowingCandidates(
  * 干擾選項依題型產生，優先序：
  * 1. 排序題：正確過程的另一種（錯誤）排列；
  * 2. 數字題：規則驗證的整數／分數／小數／單位擾動；
- * 3. 文字題：文段事件抽取 → 封閉類別概念庫 → 加嚴關聯過濾的跨題借用；
- * 4. 兜底：「以上皆非」「以上皆是」（正解為具體選項時必定錯誤）。
+ * 3. 文字題：文段事件抽取 → 封閉類別概念庫 → 加嚴關聯過濾的跨題借用。
+ * 找不到像樣干擾項時維持 4 選題，絕對不硬塞「以上皆非」湊滿六個。
  */
 export function expandQuestionBankToSix<T extends ExpandableQuestion>(questions: readonly T[]): T[] {
   const pools = buildBankPools(questions);
@@ -797,19 +785,10 @@ function expandOne<T extends ExpandableQuestion>(question: T, pools: BankPools):
   }
 
   /**
-   * 兜底只在「已經找到至少一個像樣的干擾項」時才補滿第六個選項。
-   * 一個都找不到的時候就維持原本的四選題——寧可少兩個選項，也不要硬塞
-   * 「以上皆非／以上皆是」這種沒有鑑別度的選項（那就是學生口中的變態題）。
+   * 找到幾個真的干擾項就用幾個（4 → 5 或 6 個選項），一個都找不到就維持 4 選題。
+   * 絕對不硬塞「以上皆非／以上皆是」這種沒有鑑別度的選項——
+   * 那就是學生口中的變態題。寧可選項少一點，也不要壞題目。
    */
-  if (extras.length > 0) {
-    for (const generic of genericOptionsFor(question.options, question.subject)) {
-      if (extras.length >= 2) break;
-      if (banned.has(generic)) continue;
-      extras.push(generic);
-      banned.add(generic);
-    }
-  }
-
   if (extras.length === 0) return question;
   // 只附加在後面：前 4 個選項索引不變，answer／strongDistractor 維持有效。
   return { ...question, options: [...question.options, ...extras] };

@@ -147,7 +147,7 @@ export default function MatchingPage() {
             <button type="button" className="mp-icon-btn" onClick={() => setMuted((m) => !m)} aria-label="音效開關">
               {muted ? "🔇" : "🔊"}
             </button>
-            <button type="button" className="mp-icon-btn" onClick={() => setView(view === "menu" ? "play" : "menu")}>
+            <button type="button" className="mp-icon-btn" onClick={() => setView(view === "menu" ? "play" : "menu")} aria-label={view === "menu" ? "關閉配對選單" : "開啟配對選單"}>
               {view === "menu" ? "✕" : "☰"}
             </button>
           </div>
