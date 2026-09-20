@@ -1,6 +1,8 @@
 // 配對連連看獨立題庫（local-first）。不進後端 question_bank、不進戰鬥抽題，
 // 僅由 /matching 活動頁與試卷卷末的「配對大題」使用，因此不影響主題庫的 10 個消費元件。
 import bank from "../../../data/matching_bank.json";
+// 擴充配對組：各科更多的「內容配對」（原本只有 30 組，一科 6 組太少）。
+import extraBank from "../../../data/matching_bank_extra.json";
 import imageBank from "../../../data/image_bank.json";
 import type { PaperSubject } from "./paperExam";
 
@@ -61,9 +63,11 @@ function isValidSet(value: unknown): value is MatchingSet {
 }
 
 const rawSets = (bank as { sets?: unknown }).sets;
+const rawExtraSets = (extraBank as { sets?: unknown }).sets;
 const rawImageSets = (imageBank as { sets?: unknown }).sets;
 export const MATCHING_SETS: MatchingSet[] = [
   ...(Array.isArray(rawSets) ? ((rawSets as unknown[]).filter(isValidSet) as MatchingSet[]) : []),
+  ...(Array.isArray(rawExtraSets) ? ((rawExtraSets as unknown[]).filter(isValidSet) as MatchingSet[]) : []),
   ...(Array.isArray(rawImageSets) ? ((rawImageSets as unknown[]).filter(isValidSet) as MatchingSet[]) : []),
 ];
 

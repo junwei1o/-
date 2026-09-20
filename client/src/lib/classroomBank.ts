@@ -168,7 +168,20 @@ export function orderToPaper(q: OrderQuestion): PaperQuestion {
 
 /* ============================== 選擇題池（翻牌／閃電／接力用） ============================== */
 
-const ALL_CHOICE_ROWS: CurriculumQuestionRow[] = [...LOCAL_QUESTION_BANK, ...LOCAL_ENGLISH_BANK];
+/**
+ * 題目列要「用到才算」，不能在建構模組時就快照：
+ * LOCAL_QUESTION_BANK 是動態載入的活陣列，模組載入時還是空的，
+ * 若在這裡展開就會永遠拿到空題庫（我的教室會完全沒有題目）。
+ */
+let choiceCache: CurriculumQuestionRow[] = [];
+let choiceCacheSize = -1;
+function allChoiceRows(): CurriculumQuestionRow[] {
+  if (choiceCacheSize !== LOCAL_QUESTION_BANK.length) {
+    choiceCache = [...LOCAL_QUESTION_BANK, ...LOCAL_ENGLISH_BANK];
+    choiceCacheSize = LOCAL_QUESTION_BANK.length;
+  }
+  return choiceCache;
+}
 
 /**
  * 題庫列轉成教室題目。出題時順手洗牌選項：題庫有 67% 的正解固定在第一個選項，
@@ -237,7 +250,7 @@ export function buildChoiceDeck(
   grade?: number | null,
 ): ClassroomChoice[] {
   const wanted = resolveGrade(grade);
-  const base = ALL_CHOICE_ROWS.filter((row) => row.questionType === "選擇題");
+  const base = allChoiceRows().filter((row) => row.questionType === "選擇題");
   const scoped = scopeRowsByGrade(base, wanted, count);
   const bySubject = scoped.filter(
     (row) => !subject || subject === "綜合" || row.subject === subject,
@@ -254,7 +267,7 @@ export function buildTrueFalseDeck(
   grade?: number | null,
 ): ClassroomChoice[] {
   const wanted = resolveGrade(grade);
-  const allTf = ALL_CHOICE_ROWS.filter((row) => row.questionType === "是非題");
+  const allTf = allChoiceRows().filter((row) => row.questionType === "是非題");
   const tfRows = scopeRowsByGrade(allTf, wanted, Math.min(count, allTf.length));
   const deck = pickRows(tfRows, Math.min(count, tfRows.length), random);
   // 題庫僅 19 題，需要更多時以陷阱題庫中的「正確敘述」改寫補充（由 BONUS_TRUE_FALSE 提供）。
@@ -327,11 +340,11 @@ export function buildRelayRounds(
     if (!set) break;
     usedSets.add(set.id);
     const choicePool = scopeRowsByGrade(
-      ALL_CHOICE_ROWS.filter((row) => row.questionType === "選擇題" && row.subject === set.subject),
+      allChoiceRows().filter((row) => row.questionType === "選擇題" && row.subject === set.subject),
       wanted,
       1,
     );
-    const choiceRow = shuffleArray(choicePool.length ? choicePool : ALL_CHOICE_ROWS, random)[0];
+    const choiceRow = shuffleArray(choicePool.length ? choicePool : allChoiceRows(), random)[0];
     if (!choiceRow) break;
     rounds.push({
       id: `relay-${i + 1}-${set.id}`,

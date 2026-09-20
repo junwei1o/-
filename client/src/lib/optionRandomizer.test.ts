@@ -61,10 +61,10 @@ const BANK: TestQuestion[] = [
 ];
 
 describe("expandQuestionBankToSix", () => {
-  it("把每題擴充成 6 個相異選項，且不改變正解文字", () => {
+  it("能找到像樣干擾項的題目擴充成 6 個相異選項，且不改變正解文字", () => {
     const expanded = expandQuestionBankToSix(BANK);
     expect(expanded).toHaveLength(3);
-    for (const question of expanded) {
+    for (const question of expanded.filter((q) => q.id !== "l1")) {
       expect(question.options).toHaveLength(6);
       expect(new Set(question.options).size).toBe(6);
       expect(question.options[question.answer]).toBe(BANK.find((q) => q.id === question.id)!.options[BANK.find((q) => q.id === question.id)!.answer]);
@@ -78,15 +78,40 @@ describe("expandQuestionBankToSix", () => {
     expect(extras.every((option) => /^\d+$/.test(option) && Number(option) % 5 !== 0)).toBe(true);
   });
 
-  it("文字題借用同主題其他題目的干擾選項，且不會借到任何一題的正解", () => {
+  it("找不到像樣干擾項的題目維持 4 選題，不硬塞「以上皆非」", () => {
+    // 變態題的主因就是為了湊滿 6 個選項硬塞沒有鑑別度的選項；
+    // 這題找不到可用的干擾項，寧可維持原本的 4 個選項。
     const expanded = expandQuestionBankToSix(BANK);
     const languageQuestion = expanded[2];
-    const original = new Set(BANK[2].options);
-    const extras = languageQuestion.options.slice(4);
+    expect(languageQuestion.options).toHaveLength(4);
+    expect(languageQuestion.options).not.toContain("以上皆非");
+    expect(languageQuestion.options).not.toContain("以上皆是");
+  });
+
+  it("文字題借用同主題其他題目的干擾選項，且不會借到任何一題的正解", () => {
+    // 兩題同主題、同類型的國語題：後者可以借前者的錯誤選項當干擾項。
+    const shared: TestQuestion[] = [
+      BANK[2],
+      {
+        id: "l2",
+        subject: "國語",
+        learningTopic: "記敘文",
+        prompt: "小明和小華在故事中接著做了什麼？",
+        explanation: "依時間順序判斷，接著小華放學回家。",
+        options: ["小明上學去", "小華放學回家", "小明寫功課", "小華看電視"],
+        answer: 1,
+      },
+    ];
+    const expanded = expandQuestionBankToSix(shared);
+    const extras = expanded[1].options.slice(4);
     expect(extras).toHaveLength(2);
     for (const extra of extras) {
-      expect(original.has(extra)).toBe(false);
-      expect(extra).not.toBe("小明在家吃早餐");
+      expect(extra).not.toBe("小華放學回家");
+      // 借得到像樣的干擾項時，就不該回頭塞「以上皆非」這種沒有鑑別度的選項
+      expect(extra).not.toBe("以上皆非");
+      expect(extra).not.toBe("以上皆是");
+      // 借來的必須是同主題其他題目的「錯誤選項」，不能是任何一題的正解
+      expect(["小華放風箏", "小明騎車", "小華整理書包"]).toContain(extra);
     }
   });
 

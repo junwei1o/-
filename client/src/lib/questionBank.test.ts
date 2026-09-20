@@ -1,17 +1,29 @@
 // @vitest-environment jsdom
-import { describe, expect, it } from "vitest";
-import { LOCAL_QUESTION_BANK } from "./questionBank";
+import { beforeAll, describe, expect, it } from "vitest";
+import { loadLocalBank, LOCAL_ENGLISH_BANK, LOCAL_QUESTION_BANK } from "./questionBank";
 import { loadStudentGradePreference, STUDENT_GRADE_PREFERENCE_STORAGE_KEY } from "./studentGradePreference";
 
+// 題庫 2.7MB 採動態載入，測試必須等它讀進來才能看到內容。
+beforeAll(async () => {
+  await loadLocalBank();
+});
+
 describe("內建題庫：國小＋國中", () => {
-  it("國小 1090 題之外，另有七、八、九年級各 40 題國中題", () => {
-    const elementary = LOCAL_QUESTION_BANK.filter((q) => q.grade <= 6);
-    const junior = LOCAL_QUESTION_BANK.filter((q) => q.grade >= 7);
-    expect(elementary.length).toBeGreaterThanOrEqual(1090);
-    expect(junior).toHaveLength(120);
-    // 年級開到九年級後，每個國中年級都必須有題，否則該年級學生會被靜默丟回國小題
-    for (const grade of [7, 8, 9]) {
-      expect(junior.filter((q) => q.grade === grade).length, `${grade} 年級題數`).toBe(40);
+  it("擴充後共 5000 題，五科各 1000 題", () => {
+    // 內建題庫（國小＋國中精簡檔）＋英語 seed 合計為全站 5000 題。
+    const all = [...LOCAL_QUESTION_BANK, ...LOCAL_ENGLISH_BANK];
+    expect(all.length).toBeGreaterThanOrEqual(5000);
+    const counts = new Map<string, number>();
+    for (const q of all) counts.set(q.subject, (counts.get(q.subject) ?? 0) + 1);
+    for (const subject of ["數學", "自然", "社會", "國語", "英語"]) {
+      expect(counts.get(subject) ?? 0, `${subject} 題數`).toBeGreaterThanOrEqual(1000);
+    }
+  });
+
+  it("每個年級都有題（國中不再被靜默丟回國小題）", () => {
+    for (const grade of [3, 4, 5, 6, 7, 8, 9]) {
+      const count = LOCAL_QUESTION_BANK.filter((q) => q.grade === grade).length;
+      expect(count, `${grade} 年級題數`).toBeGreaterThanOrEqual(600);
     }
   });
 
@@ -26,15 +38,16 @@ describe("內建題庫：國小＋國中", () => {
     }
   });
 
-  it("國中題每題欄位完整：4 個選項、答案索引合法、有解析與知識點", () => {
+  it("七年級每題欄位完整：選項相異、答案索引合法、有解析與知識點", () => {
+    // 擴充後七年級也有是非題（2 個選項），不再只有 4 選題。
     for (const q of LOCAL_QUESTION_BANK.filter((x) => x.grade === 7)) {
-      expect(q.options).toHaveLength(4);
-      expect(new Set(q.options).size).toBe(4);
+      expect(q.options.length).toBeGreaterThanOrEqual(2);
+      expect(new Set(q.options).size).toBe(q.options.length);
       expect(q.answer).toBeGreaterThanOrEqual(0);
-      expect(q.answer).toBeLessThan(4);
+      expect(q.answer).toBeLessThan(q.options.length);
       expect(q.explanation.length).toBeGreaterThan(5);
       expect(q.knowledge.length).toBeGreaterThan(0);
-      expect(q.questionType).toBe("選擇題");
+      expect(["選擇題", "是非題"]).toContain(q.questionType);
     }
   });
 
@@ -49,9 +62,13 @@ describe("內建題庫：國小＋國中", () => {
     for (const c of counts) expect(c).toBeGreaterThanOrEqual(5);
   });
 
-  it("國中題涵蓋四個微課主題", () => {
+  it("七年級仍涵蓋原本四個微課主題（擴充後主題更多）", () => {
     const topics = new Set(LOCAL_QUESTION_BANK.filter((q) => q.grade === 7).map((q) => q.learningTopic));
-    expect([...topics].sort()).toEqual(["光合作用", "一元一次方程式", "細胞的構造", "負數與數線"].sort());
+    for (const topic of ["光合作用", "一元一次方程式", "細胞的構造", "負數與數線"]) {
+      expect(topics.has(topic), `缺少主題 ${topic}`).toBe(true);
+    }
+    // 擴充後七年級不該只剩這四個主題
+    expect(topics.size).toBeGreaterThan(10);
   });
 });
 

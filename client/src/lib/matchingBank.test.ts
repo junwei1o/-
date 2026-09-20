@@ -23,12 +23,11 @@ function seeded(seed: number) {
 }
 
 describe("配對題庫資料", () => {
-  it("共有 33 組：五個學科各 6 組＋圖片組 3 組", () => {
-    expect(MATCHING_SETS).toHaveLength(33);
+  it("擴充後各科都有十幾組以上的內容配對（不再只有 6 組）", () => {
+    expect(MATCHING_SETS).toHaveLength(99);
     for (const subject of MATCHING_SUBJECTS) {
-      expect(MATCHING_SETS.filter((set) => set.subject === subject)).toHaveLength(
-        subject === "社會" ? 8 : subject === "自然" ? 7 : 6,
-      );
+      const count = MATCHING_SETS.filter((set) => set.subject === subject).length;
+      expect(count, `${subject} 配對組數`).toBeGreaterThanOrEqual(18);
     }
   });
 

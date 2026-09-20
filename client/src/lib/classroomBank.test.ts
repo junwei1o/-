@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
-import { afterEach, describe, expect, it } from "vitest";
+import { loadLocalBank } from "./questionBank";
+import { afterEach, beforeAll, describe, expect, it } from "vitest";
 import {
   FILL_QUESTIONS,
   ORDER_QUESTIONS,
@@ -37,6 +38,11 @@ function seeded(seed = 0.42) {
     return value / 233280;
   };
 }
+
+// 題庫採動態載入，測試前先等它讀進來，否則教室玩法會拿到空題庫。
+beforeAll(async () => {
+  await loadLocalBank();
+});
 
 describe("教室題庫載入", () => {
   it("填空 24、排序 16、陷阱 30 題全數載入", () => {

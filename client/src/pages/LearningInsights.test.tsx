@@ -4,6 +4,8 @@ import "@testing-library/jest-dom/vitest";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import LearningInsights from "./LearningInsights";
+// 題庫採動態載入，測試 render 前先讀進來。
+import { loadLocalBank } from "@/lib/questionBank";
 
 const queryState = vi.hoisted(() => ({
   data: { questions: [] as Array<{ id: string }> },
@@ -36,7 +38,8 @@ vi.mock("@/lib/trpc", () => ({
 vi.mock("wouter", () => ({ useLocation: () => ["/learning-insights", setLocation] }));
 
 describe("learning insights", () => {
-  beforeAll(() => {
+  beforeAll(async () => {
+    await loadLocalBank();
     Object.defineProperty(globalThis, "ResizeObserver", { configurable: true, value: class { observe() {} unobserve() {} disconnect() {} } });
   });
   beforeEach(() => {

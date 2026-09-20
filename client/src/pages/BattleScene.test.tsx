@@ -2,7 +2,7 @@
 import React from "react";
 import "@testing-library/jest-dom/vitest";
 import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import BattleScene from "./BattleScene";
 import { defaultRpgState, RPG_STORAGE_KEY } from "@/game/rpgStorage";
 import { loadAdaptiveProfile } from "@/game/adaptiveLearning";
@@ -11,6 +11,8 @@ import { getInventory } from "@/game/inventoryService";
 import { getJournalEntries } from "@/game/adventureJournal";
 import { BATTLE_RAGE_SKILL_TUTORIAL_STORAGE_KEY } from "@/lib/battleRageSkillTutorial";
 import { BATTLE_TUTORIAL_STORAGE_KEY } from "@/lib/battleTutorial";
+// 題庫採動態載入，測試 render 前先讀進來，戰鬥才會拿到真題。
+import { loadLocalBank } from "@/lib/questionBank";
 
 vi.mock("@/lib/trpc", () => ({ trpc: { questionBank: { list: { useQuery: () => ({ data: { questions: [{ id: "q1", subject: "自然", grade: 5, prompt: "哪一個是水循環的一部分？", options: ["凝結", "燃燒"], answer: 0, explanation: "凝結會形成雲。", learningTopic: "水循環" }] }, isLoading: false, error: null }) } } } }));
 
@@ -24,6 +26,10 @@ async function advanceBattleTimer(milliseconds: number) {
     vi.advanceTimersByTime(milliseconds);
   });
 }
+
+beforeAll(async () => {
+  await loadLocalBank();
+});
 
 describe("standalone battle scene", () => {
   beforeEach(() => {

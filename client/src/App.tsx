@@ -11,6 +11,8 @@ import CloudModePrompt from "@/components/CloudModePrompt";
 import Home from "@/pages/Home";
 import FeaturesDirectory from "@/pages/FeaturesDirectory";
 import { initGameData } from "@/utils/storage";
+// 開站就背景預載 5000 題的內建題庫：教室玩法等同步消費端進場時才不會開天窗。
+import { loadLocalBank } from "@/lib/questionBank";
 import { OfflineBanner } from "@/components/OfflineBanner";
 import MobileBottomNav from "@/components/MobileBottomNav";
 
@@ -128,6 +130,8 @@ function Router() {
 function App() {
   useEffect(() => {
     initGameData();
+    // 題庫 2.7MB，動態載入；這裡只是先起個頭，玩到哪裡都已經載好了。
+    void loadLocalBank();
   }, []);
 
   return (

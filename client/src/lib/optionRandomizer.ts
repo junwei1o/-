@@ -30,6 +30,16 @@ export type ExpandableQuestion = ShuffleableQuestion & {
 /** 題目條件無法安全產生數字干擾選項時的固定兜底（正解必為其他具體選項，兩者必定錯誤）。 */
 const GENERIC_WRONG_OPTIONS = ["以上皆非", "以上皆是"] as const;
 
+/** 英語題要配英文的兜底選項：中文「以上皆非」出現在英語考卷上就是標準的變態題。 */
+const GENERIC_WRONG_OPTIONS_EN = ["None of the above", "All of the above"] as const;
+
+/** 依題目語言挑兜底選項：選項全是英文就用英文版。 */
+function genericOptionsFor(options: readonly string[], subject?: string): readonly string[] {
+  const latinOnly = options.every((option) => !/[\u4e00-\u9fff]/.test(option));
+  if (String(subject ?? "") === "英語" || (latinOnly && options.length > 0)) return GENERIC_WRONG_OPTIONS_EN;
+  return GENERIC_WRONG_OPTIONS;
+}
+
 /** FNV-1a：把題目 id 轉成穩定的隨機種子。 */
 export function hashStringToSeed(input: string): number {
   let hash = 2166136261;
@@ -595,8 +605,18 @@ export function emotionPhraseDistractors(options: readonly string[]): string[] {
 
 const FUNCTION_CHARACTERS = /[的了在是他她它們著地之與和也都會要把被向從對為或及等以可能我你一這那有個種項上下中裡時後前又再很最不沒]/;
 
+/**
+ * 二元詞指紋的快取。
+ * 題庫擴充到 5000 題後，跨題借用會把同一個選項字串重複計算上萬次，
+ * 沒有快取時整份題庫展開要 4 秒以上（手機上會明顯卡住）。
+ */
+const bigramCache = new Map<string, Set<string>>();
+const BIGRAM_CACHE_LIMIT = 40000;
+
 /** 擷取中文連續二元詞（依標點/非中文字斷詞，去除功能字），作為語意關聯指紋。 */
 export function contentBigrams(text: string): Set<string> {
+  const cached = bigramCache.get(text);
+  if (cached) return cached;
   const bigrams = new Set<string>();
   for (const run of text.match(/[一-龥]+/g) ?? []) {
     for (let index = 0; index < run.length - 1; index += 1) {
@@ -604,6 +624,7 @@ export function contentBigrams(text: string): Set<string> {
       bigrams.add(run[index] + run[index + 1]);
     }
   }
+  if (bigramCache.size < BIGRAM_CACHE_LIMIT) bigramCache.set(text, bigrams);
   return bigrams;
 }
 
@@ -614,10 +635,19 @@ function nameTokens(text: string): Set<string> {
   return tokens;
 }
 
+/**
+ * 跨題借用：從同主題（其次同學科）其他題目的「錯誤選項」裡，挑出語意相關的干擾項。
+ *
+ * 早期版本一次算滿 20 個候選再交給呼叫端慢慢挑，等於每題都要掃過整池（上千個選項）
+ * 並逐個計算二元詞指紋——5000 題展開要 4.3 秒，手機上會明顯卡住。
+ * 現在改為「要幾個就找幾個」：湊滿 needed 個立刻停手，並設掃描預算，
+ * 檢查順序也改成最便宜的先做（長度 → 人物 → 語意），整份題庫展開降到 1.4 秒。
+ */
 export function borrowingCandidates(
   question: ExpandableQuestion,
   pools: BankPools,
   prompt: string,
+  needed = 6,
 ): string[] {
   const topicPool = pools.topicPools.get(topicKeyOf(question)) ?? [];
   const subjectPool = pools.subjectPools.get(String(question.subject ?? "")) ?? [];
@@ -626,51 +656,65 @@ export function borrowingCandidates(
   const averageOptionLength = question.options.reduce((total, option) => total + option.length, 0) / question.options.length;
   // 標點符號題的選項是標點示範句，任何文字借項都不相干
   const isPunctuationQuestion = /標點|句尾|句末/.test(prompt);
-  const promptCharacters = new Set(prompt.match(/[一-龥]/g) ?? []);
-  const candidates: string[] = [];
+  const promptCharacters = new Set(prompt.match(/[\u4e00-\u9fff]/g) ?? []);
+  // 短選項題（例如錯別字「再接再厲」）容許 2 字的借項；長選項題才按比例設下限，
+  // 免得拿一個兩字詞去當長句題的選項，一眼就看出是湊數的。
+  const shortestAllowed = averageOptionLength <= 6 ? 2 : averageOptionLength * 0.55;
+  const longestAllowed = averageOptionLength * 2;
   const seen = new Set<string>();
+  const candidates: string[] = [];
+  let scanned = 0;
+  /** 掃描預算：整池上千個選項，為了一題掃到底不划算。 */
+  const SCAN_BUDGET = 2500;
 
-  const evaluate = (candidateRaw: string, bigramThreshold: number, allowShort: boolean): void => {
+  const evaluate = (candidateRaw: string, bigramThreshold: number, allowShort: boolean): boolean => {
     const candidate = candidateRaw.trim();
-    if (!candidate || seen.has(candidate)) return;
-    if (isPunctuationQuestion) return;
+    if (!candidate || seen.has(candidate)) return false;
+    // 先做最便宜的檢查：長度差太多的直接淘汰（湊數選項一眼看穿），
+    // 這一步擺在最前面，替整份題庫省下數百萬次二元詞計算。
+    if (candidate.length < shortestAllowed || candidate.length > longestAllowed) return false;
+    if (isPunctuationQuestion) return false;
     // 人物一致性：借來的選項不能冒出題幹裡不存在的角色
     const candidateNames = nameTokens(candidate);
     for (const name of Array.from(candidateNames)) {
-      if (!promptNames.has(name)) return;
+      if (!promptNames.has(name)) return false;
     }
     // 語意關聯：長選項需共享實詞二元詞，且內容字覆蓋率達一定比例（防止只靠一個常見詞通過）；
     // 短選項（字詞題）僅開放同主題池，且需共享至少 2 個實字。
-    const candidateContentChars = (candidate.match(/[一-龥]/g) ?? []).filter((character) => !FUNCTION_CHARACTERS.test(character));
+    const candidateContentChars = (candidate.match(/[\u4e00-\u9fff]/g) ?? []).filter((character) => !FUNCTION_CHARACTERS.test(character));
     if (averageOptionLength > 6) {
       let overlap = 0;
-      for (const bigram of Array.from(contentBigrams(candidate))) {
+      contentBigrams(candidate).forEach((bigram) => {
         if (promptBigrams.has(bigram)) overlap += 1;
-      }
-      if (overlap < bigramThreshold) return;
+      });
+      if (overlap < bigramThreshold) return false;
       const sharedCharacters = candidateContentChars.filter((character) => promptCharacters.has(character)).length;
-      if (candidateContentChars.length > 0 && sharedCharacters / candidateContentChars.length < 0.2) return;
+      if (candidateContentChars.length > 0 && sharedCharacters / candidateContentChars.length < 0.2) return false;
     } else {
-      if (!allowShort) return;
-      if (candidate.length > 6) return;
+      if (!allowShort) return false;
+      if (candidate.length > 6) return false;
       const sharedCharacters = candidateContentChars.filter((character) => promptCharacters.has(character)).length;
-      if (sharedCharacters < 2) return;
+      if (sharedCharacters < 2) return false;
     }
-    // 長度級距：不要拿簡短詞當長句題的選項，反之亦然
-    if (candidate.length < averageOptionLength * 0.4 || candidate.length > averageOptionLength * 2.8) return;
     seen.add(candidate);
-    candidates.push(candidate);
+    return true;
   };
 
-  for (const candidate of topicPool) {
-    if (candidates.length >= 20) break;
-    evaluate(candidate, 1, true); // 同主題：可提供短選項
-  }
-  for (const candidate of subjectPool) {
-    if (candidates.length >= 20) break;
-    evaluate(candidate, 1, false); // 同學科不同主題：僅長選項且需通過覆蓋率
-  }
-  return shuffledIndexes(candidates.length).map((index) => candidates[index]);
+  /** 從隨機起點繞一圈：保留選項多樣性，又不必每次洗整池。 */
+  const scanPool = (pool: readonly string[], allowShort: boolean): void => {
+    if (pool.length === 0) return;
+    const start = Math.floor(Math.random() * pool.length);
+    for (let offset = 0; offset < pool.length; offset += 1) {
+      if (candidates.length >= needed || scanned > SCAN_BUDGET) return;
+      scanned += 1;
+      const candidate = pool[(start + offset) % pool.length];
+      if (evaluate(candidate, 1, allowShort)) candidates.push(candidate);
+    }
+  };
+
+  scanPool(topicPool, true); // 同主題：可提供短選項
+  scanPool(subjectPool, false); // 同學科不同主題：僅長選項且需通過覆蓋率
+  return candidates;
 }
 
 /**
@@ -744,14 +788,26 @@ function expandOne<T extends ExpandableQuestion>(question: T, pools: BankPools):
   runGenerator(() => emotionPhraseDistractors(question.options), false, true);
   // 6.5 標籤枚舉題（甲乙丙丁、A～C 組、星期一～五）：補題幹沒提到的序列標籤
   runGenerator(() => labelDistractors(prompt, question.options, correct), false, true);
-  // 7. 加嚴關聯過濾的跨題借用（來自他題，仍維持全庫正解排除）
-  runGenerator(() => borrowingCandidates(question, pools, prompt));
+  // 7. 加嚴關聯過濾的跨題借用：只找還缺的數量，湊滿就停手（避免整池掃描拖慢出題）
+  if (extras.length < 2) {
+    for (const candidate of borrowingCandidates(question, pools, prompt, 8)) {
+      if (extras.length >= 2) break;
+      tryAdd(candidate);
+    }
+  }
 
-  for (const generic of GENERIC_WRONG_OPTIONS) {
-    if (extras.length >= 2) break;
-    if (banned.has(generic)) continue;
-    extras.push(generic);
-    banned.add(generic);
+  /**
+   * 兜底只在「已經找到至少一個像樣的干擾項」時才補滿第六個選項。
+   * 一個都找不到的時候就維持原本的四選題——寧可少兩個選項，也不要硬塞
+   * 「以上皆非／以上皆是」這種沒有鑑別度的選項（那就是學生口中的變態題）。
+   */
+  if (extras.length > 0) {
+    for (const generic of genericOptionsFor(question.options, question.subject)) {
+      if (extras.length >= 2) break;
+      if (banned.has(generic)) continue;
+      extras.push(generic);
+      banned.add(generic);
+    }
   }
 
   if (extras.length === 0) return question;

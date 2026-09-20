@@ -1,6 +1,10 @@
-import { describe, expect, it } from "vitest";
-import { LOCAL_ENGLISH_BANK, LOCAL_QUESTION_BANK } from "./questionBank";
+import { beforeAll, describe, expect, it } from "vitest";
+import { loadLocalBank, LOCAL_ENGLISH_BANK, LOCAL_QUESTION_BANK } from "./questionBank";
 import { buildPaperDeck } from "./paperExam";
+
+beforeAll(async () => {
+  await loadLocalBank();
+});
 
 describe("英語港口題庫", () => {
   it("英語題 seed 有足夠題目出卷（≥ 8 題）", () => {
@@ -29,6 +33,9 @@ describe("英語港口題庫", () => {
   it("英語題不影響主題庫既有科目數量", () => {
     expect(LOCAL_QUESTION_BANK.length).toBeGreaterThan(500);
     const subjects = new Set(LOCAL_QUESTION_BANK.map((question) => question.subject));
-    expect(subjects).toEqual(new Set(["數學", "自然", "社會", "國語"]));
+    // 題庫擴充後英語也進到主題庫，所以這裡改成「至少涵蓋原本四科」。
+    for (const subject of ["數學", "自然", "社會", "國語"]) {
+      expect(subjects.has(subject)).toBe(true);
+    }
   });
 });
