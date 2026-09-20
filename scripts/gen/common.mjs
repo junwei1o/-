@@ -51,8 +51,10 @@ export function normalize(text) {
 }
 
 /**
- * 組裝四選一選項：正解 + 從干擾池取不重複者；不足時以「以上皆非」類型的
- * 通用干擾項補齊（同一題不會出現兩次相同文字）。
+ * 組裝四選一選項：正解 + 從干擾池取不重複者。
+ * 干擾池湊不滿時直接回傳不足的選項（makeQuestion 會擋下來回傳 null），
+ * 讓呼叫端換一組數字重出——絕不用「以上皆非」這類通用選項補位。
+ * 那 103 題混進題庫的「以上皆非」就是這個補位造成的（2026-09-20 移除）。
  */
 export function uniqueOptions(rng, correct, distractors, count = 4) {
   const options = [String(correct)];
@@ -63,14 +65,6 @@ export function uniqueOptions(rng, correct, distractors, count = 4) {
     if (key === "" || seen.has(key)) continue;
     seen.add(key);
     options.push(String(d));
-  }
-  const fallback = ["以上皆非", "無法判斷", "與題目無關", "條件不足"];
-  for (const d of fallback) {
-    if (options.length >= count) break;
-    const key = normalize(d);
-    if (seen.has(key)) continue;
-    seen.add(key);
-    options.push(d);
   }
   return shuffle(rng, options);
 }
