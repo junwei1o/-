@@ -702,3 +702,13 @@ curl -s https://xue-gr3a.onrender.com/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | h
 - **重要經驗**：Render 存完 env **不會馬上生效**，要等重新部署完成。老師 19:06 設好，19:17 才生效，中間連續 12 次查詢都是 `envReady:false`——**不要用「存完立刻查」判斷成敗**，會誤判成設定失敗。免費方案約 5–10 分鐘。
 - 診斷強化（`server/routers.ts` line.getBinding）：原本只回一個 `envReady`，「只設了一筆」與「兩筆都沒設」遠端無法分辨；新增 `secretSet`／`tokenSet`／`serviceId`／`serviceName`（只回布林與服務識別，不洩漏金鑰值）。已同步寫進 `docs/line-setup.md`。
 - 剩兩步（需老師本人操作，站上無法代勞）：① LINE 後台填 Webhook URL `https://xue-gr3a.onrender.com/api/line/webhook` 並 Verify；② 手機加機器人好友或在群組發一句話綁定（目前 `binding` 仍是 null）。
+
+## 2026-09-20（續）確認 access token 貼錯：填成 Your user ID
+- **實測結論**：Render 上的 `LINE_CHANNEL_ACCESS_TOKEN` 值 = LINE 後台 Basic settings 的 **Your user ID**（`U` + 32 碼），不是憑證。新診斷欄位證實：`tokenValid:false`、`tokenLooksLikeUserId:true`、LINE 回 `401 Authentication failed`。
+- **根因**：舊的 `envReady` 只看「兩格有沒有填」，貼錯也顯示「已啟用」，要等按測試鈕收 401 才會發現——老師在站上完全無從判斷。
+- **修正**（`server/lineNotify.ts` + `server/routers.ts` + `client/src/components/TeacherLineSection.tsx`）：
+  - 新增 `inspectLineToken()`：用 `GET https://api.line.me/v2/bot/info` 驗證 token，並以 `/^U[0-9a-f]{32}$/` 判斷是否為 user ID 格式。
+  - `line.getBinding` 新增 `tokenValid`／`tokenLooksLikeUserId`／`tokenError`（只回布林與 LINE 的錯誤字串，**不回傳 token 本身**）。
+  - 督學台：`envReady && !tokenValid` 時狀態改顯示紅色「**金鑰有誤**」，並出現紅框警示，直接用繁中說明要到 Messaging API 頁籤按 Issue 取得 token，同時顯示 LINE 的實際回應。
+  - 測試：`TeacherLineSection.test.tsx` 4 項通過；`tsc --noEmit` 乾淨。
+- **待老師操作**：到 LINE Developers → 頻道 → Messaging API 頁籤最下方按 Issue → 複製 token → 回 Render 覆蓋 `LINE_CHANNEL_ACCESS_TOKEN` → Save（等 5–10 分鐘重新部署）。之後才是步驟 3（Webhook URL）與步驟 4（加好友綁定）。
