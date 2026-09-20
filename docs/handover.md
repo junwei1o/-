@@ -568,7 +568,7 @@ curl -s https://xue-gr3a.onrender.com/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | h
 ## 2026-09-20 全站內容改善：繁體用字修正＋檢查腳本＋改善方案（commit 隨後）
 - 實測盤點：42 頁／125 元件／34 路由；題庫 1090 題（無重複、無缺解析）、年級僅 3–6（**無國中題庫**）；知識點 1045 組／1090 題（過細，弱點無法聚合）；SVG 23 個僅 13 個有 aria-label；首包 index 1.5MB。
 - **重大發現**：1090 題中 67%（733 題）正確答案固定在選項 index 0；`shuffleQuestionOptions` 僅被 paperExam/questionBank/CommunityHub/BattleScene 使用，教室 6 玩法（QuizRunner/RushRunner/RelayMatch/OnionAcademyGame/OnionLesson）、PKArena、ReviewHub 都沒套用 → 學生可「選第一個」作弊。列為 P0-1。
-- 已修：簡體字 31 處（含題庫 4 處學生可見：不同时段/哪一级產業），新增 `scripts/check-traditional.mjs`（node 跑、命中 exit 1，可接 CI/pre-commit），目前零命中。tsc 0 錯、optionRandomizer/paperExam/questionBank 52 例綠。
+- 已修：簡體字 31 處（含題庫 4 處學生可見，皆為誤用簡體寫法的時段／產業級別），新增 `scripts/check-traditional.mjs`（node 跑、命中 exit 1，可接 CI/pre-commit），目前零命中。tsc 0 錯、optionRandomizer/paperExam/questionBank 52 例綠。
 - 方案文件：`docs/site-improvement-plan-2026-09.md`（盤點表＋P0/P1/P2＋四週路線圖＋DoD）。內部調研檔 docs/game-directions-2026-09-12.md 仍有 89 處簡體（學生看不到，後續處理）。
 
 ## 2026-09-20 P0-1：出題選項隨機化全面套用（防「選第一個」作弊）
@@ -625,3 +625,11 @@ curl -s https://xue-gr3a.onrender.com/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | h
   - 成果：index 1.6MB → **1.3MB**（gzip 475KB → 406KB）。`charts-vendor` 經查本來就只在 LearningInsights 路由懶載（在 `__vitePreload` 清單裡），不需改。
 - **P2-5 國小／國中分流**：`OnionLesson` 新增 `stages: ("國小"|"國中")[]`（五上・七上的光合作用同時屬兩邊）；選課頁新增「國小／國中／全部」頁籤，**預設依學生的年級偏好**（≥7 年級 → 國中），國中生進站不再被國小課淹沒。樣式 `.ol-stage-tabs/.ol-stage-tab`。
 - 測試：資料測試新增「stages 與 grade 一致」＋「兩學段各有 ≥4 堂」；播放器測試改為驗證分流行為（預設國小、切國中、切全部）。全量 169 檔 **1118 例**全綠；tsc 0 錯；build 通過；繁檢零命中。
+
+## 2026-09-20 P2-2／P2-3／P2-4：首頁內容、錯題回顧、文件整理
+- **P2-2 首頁內容**：發現 `Home.tsx` 裡的 `buildWeeklySuggestion`（依本週真實錯誤率給建議）**寫好且有測試、卻從未在畫面 render**，學生只看到靜態文案。已接上；並新增「今日推薦動畫微課」卡——動畫微課原本只存在於我的教室，首頁完全沒有入口，學生幾乎不會發現。
+  - 新增 `lib/recommendedLesson.ts`：`weakestSubjectThisWeek()` 算本週最弱科目、`pickRecommendedLesson({stage, weakSubject})` 先依學段過濾再優推弱科，沒弱科就依 UTC 日期輪替（每天換一堂）。新增 9 例測試。
+  - 首頁新增 `.home-focus-card`（本週建議＋推薦課），點擊導向 `/classroom/onion-academy`。注意：建議文字不要用 `role="status"`，會和金幣卡的 status 查詢撞車（已踩過）。
+- **P2-3 錯題回顧**：`ReviewHub` 本來就刻意不洗牌（保持原順序），本次進一步讓答錯時明確顯示「你選了 X，正解是 Y」，且**答對也顯示解析**（原本只在答錯時給）。「記錄當初的選項」需要改 `AdaptiveAttempt` schema 並動 4 個作答寫入點，效益有限，暫緩。
+- **P2-4 文件整理**：`docs/game-directions-2026-09-12.md` 170 處簡體字全數轉繁體（內部調研檔，學生看不到）；`check-traditional.mjs` 新增 `--fix`（直接改寫命中處，僅建議用於文件）。現在 `node scripts/check-traditional.mjs --docs` **零命中**。根目錄 `todo.md`/`ideas.md`/`PLAN.md` 等近期都還在動，未封存。
+- 驗收：tsc 0 錯；全量 170 檔 **1127 例**全綠；build 通過；繁檢（含 docs）零命中。

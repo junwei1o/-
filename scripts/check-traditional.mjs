@@ -30,9 +30,12 @@ const EXTS = [".ts", ".tsx", ".json"];
 const SKIP_DIR = ["node_modules", "dist", ".pnpm-store"];
 const includeDocs = process.argv.includes("--docs");
 if (includeDocs) ROOTS.push("docs");
+/** --fix：直接把命中處改寫成建議的繁體字（僅建議用於內部文件，程式碼請人工確認）。 */
+const autoFix = process.argv.includes("--fix");
 
 const pattern = new RegExp(`[${Object.keys(SIMPLIFIED).join("")}]`, "g");
 let hits = 0;
+let fixedCount = 0;
 
 function walk(dir) {
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
@@ -49,9 +52,18 @@ function walk(dir) {
 
 function scan(file) {
   const lines = fs.readFileSync(file, "utf8").split("\n");
+  let changed = null;
   lines.forEach((line, i) => {
     const found = [...line.matchAll(pattern)];
     if (!found.length) return;
+    if (autoFix) {
+      const fixed = line.replace(pattern, (ch) => SIMPLIFIED[ch]);
+      if (fixed !== line) {
+        (changed ??= lines.slice())[i] = fixed;
+        fixedCount += found.length;
+      }
+      return;
+    }
     for (const m of found) {
       hits += 1;
       const s = Math.max(0, m.index - 25);
@@ -61,12 +73,20 @@ function scan(file) {
       );
     }
   });
+  if (changed) {
+    fs.writeFileSync(file, changed.join("\n"), "utf8");
+    console.log(`🔧 ${file}：已改寫 ${fixedCount} 處（累計）`);
+  }
 }
 
 for (const root of ROOTS) {
   if (fs.existsSync(root)) walk(root);
 }
 
+if (autoFix) {
+  console.log(`\n🔧 --fix 完成，共改寫 ${fixedCount} 處；建議再跑一次純檢查確認。`);
+  process.exit(0);
+}
 if (hits) {
   console.error(`\n❌ 發現 ${hits} 處簡體字，請改為繁體後再送出。`);
   process.exit(1);

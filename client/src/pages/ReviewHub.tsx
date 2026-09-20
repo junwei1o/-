@@ -263,8 +263,14 @@ export default function ReviewHub() {
                   </ul>
                   {answered ? (
                     <p className={`review-hub-feedback ${isRight ? "ok" : "err"}`}>
-                      {isRight ? "✓ 答對了，線索有接上！" : `✗ 正解是 ${String.fromCharCode(65 + item.display.answer)}`}
-                      {!isRight && item.display.explanation ? <span className="review-hub-explanation"> {item.display.explanation}</span> : null}
+                      {isRight ? (
+                        "✓ 答對了，線索有接上！"
+                      ) : (
+                        `✗ 你選了 ${String.fromCharCode(65 + (userPick ?? 0))}，正解是 ${String.fromCharCode(65 + item.display.answer)}`
+                      )}
+                      {item.display.explanation ? (
+                        <span className="review-hub-explanation"> {item.display.explanation}</span>
+                      ) : null}
                     </p>
                   ) : null}
                 </article>

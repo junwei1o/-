@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { AlarmClock, Backpack, BookOpenCheck, Bug, CalendarDays, ChevronLeft, Coins, Compass, Crosshair, Dices, RotateCcw, ShieldAlert, Sparkles, Timer, X, Zap } from "lucide-react";
+import { AlarmClock, Backpack, BookOpenCheck, Bug, CalendarDays, ChevronLeft, ChevronRight, Coins, Compass, Crosshair, Dices, RotateCcw, ShieldAlert, Sparkles, Timer, X, Zap } from "lucide-react";
 import { toast } from "sonner";
 import { useLocation } from "wouter";
 import { useQuestionBank } from "@/lib/questionBank";
@@ -14,6 +14,8 @@ import { loadSignInState, hasSignedInToday as hasGoldSignedInToday } from "@/gam
 import { DailySignInModal } from "@/components/DailySignInModal";
 import { HomeContactCard } from "@/components/HomeContactCard";
 import { buildKnowledgeIslandSnapshots, type KnowledgeIslandSubject } from "@/lib/studentKnowledgeIslands";
+import { ONION_ACADEMY_ROUTE, pickRecommendedLesson, weakestSubjectThisWeek } from "@/lib/recommendedLesson";
+import { loadStudentGradePreference } from "@/lib/studentGradePreference";
 import { HOME_FEATURE_GROUPS } from "@/lib/homeFeatureDirectory";
 import type { PaperQuestion } from "@/lib/paperExam";
 import FirstLightQuest from "@/components/bx/FirstLightQuest";
@@ -88,6 +90,13 @@ export default function Home() {
   const memoryAlarmCount = useMemo(() => getMemoryAlarmCount(profile), [profile]);
   const dailyAdventureSummary = useMemo(() => generateDailyAdventureSummary({ date: Date.now(), entries: getJournalEntries() }), [learningRecords.length, rpgState.correctAnswerCount]);
   const signedInToday = hasSignedInToday(dailySignIn);
+  // 本週建議（原本寫好卻從未顯示在首頁）＋今日推薦動畫微課
+  const weeklySuggestion = useMemo(() => buildWeeklySuggestion(learningRecords), [learningRecords]);
+  const recommended = useMemo(() => {
+    const grade = loadStudentGradePreference();
+    const stage = grade && grade >= 7 ? "國中" : "國小";
+    return pickRecommendedLesson({ stage, weakSubject: weakestSubjectThisWeek(learningRecords)?.subject ?? null });
+  }, [learningRecords]);
 
   useEffect(() => {
     // 進站延遲約 1 秒自動彈出簽到（金幣），避免干擾首屏；今天已簽到則不彈。
@@ -228,6 +237,30 @@ export default function Home() {
             </section>
           }
         />
+
+        <section className="home-focus-card" aria-labelledby="home-focus-title">
+          <div className="home-focus-head">
+            <div>
+              <p className="home-dashboard-eyebrow">THIS WEEK · MICRO LESSON</p>
+              <h2 id="home-focus-title">本週建議與推薦動畫課</h2>
+            </div>
+          </div>
+          <p className="home-focus-suggestion">{weeklySuggestion}</p>
+          {recommended ? (
+            <button
+              type="button"
+              className="home-focus-lesson"
+              onClick={() => setLocation(ONION_ACADEMY_ROUTE)}
+            >
+              <span className="home-focus-lesson-subject">{recommended.lesson.subject}</span>
+              <span className="home-focus-lesson-body">
+                <strong>{recommended.lesson.title}</strong>
+                <small>{recommended.lesson.grade} · {recommended.reason}</small>
+              </span>
+              <span className="home-focus-lesson-cta">看動畫 <ChevronRight size={14} aria-hidden="true" /></span>
+            </button>
+          ) : null}
+        </section>
 
         <section className="home-mode-hub" aria-labelledby="home-mode-hub-title">
           <div className="home-mode-hub-heading">

@@ -26,8 +26,8 @@
 
 ### 本次已即刻修正（commit 隨本文件）
 簡體字 19 處 → 繁體，含學生可見內容：
-- `data/taiwan_curriculum_500.json`：不同时段→不同時段、哪一级產業→哪一級產業
-- `data/targeted_practice.json`：不同时段→不同時段（2 處）
+- `data/taiwan_curriculum_500.json`：兩處誤用簡體寫法（時段、產業級別）已改為繁體
+- `data/targeted_practice.json`：同上誤用簡體寫法 2 處已改為繁體
 - 程式註解：`HomeContactCard.tsx`、`useComposition.ts`、`targetedPractice.ts`、`announcements.test.ts`
 - 內部調研文件 `docs/game-directions-2026-09-12.md` 仍有 89 處簡體（**僅內部文件、學生看不到**，建議後續批次轉換或標註為「簡體原件」）
 
