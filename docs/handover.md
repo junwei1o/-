@@ -723,3 +723,29 @@ curl -s https://xue-gr3a.onrender.com/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | h
   - 每堂 7 幀分鏡（含 2 次中途提問）＋ 5 題闖關（含逐級提示與詳解）＋ 重點整理
 - **測試**：`tsc --noEmit` 乾淨；`client/src/components/classroom` 與 `client/src/lib` 共 45 檔 321 項全數通過。`QuizRoom.test.tsx` 與 `onionAcademyLessons.test.ts` 已同步更新（入口改名、堂數改為 >=24 並斷言四科目）。
 - **待辦（老師說後面再優化深度）**：課程深度可再加；`OnionAcademyScenes` 測試仍缺失（記憶中既有待辦）。
+
+## 2026-09-20（深夜）題庫擴充到 5000 題：產生管線、變態題清理、效能
+
+### 產生管線（scripts/gen/，可重跑）
+- `common.mjs`：mulberry32 種子亂數、選項去重組裝（`buildChoice`/`buildTrueFalse`/`makeQuestion`）、題幹正規化去重收集器、年級配額（避免全擠在五、六年級）。
+- `math.mjs` + `mathJunior.mjs`：數學用「程式先算答案」的計算題產生器（國小＋國中，含絕對值、指數律、座標距離、一次函數、多項式、平方根估算、雞兔同籠、一元二次、相似形、圓周角、等差／等比數列、古典機率、圓柱體積、斜率、根式加減），答案不會算錯。
+- `facts.mjs`：知識事實表 × 七種題型（原題／何者正確／何者錯誤／是非／雙概念組合／**三概念組合**）產生變體題；題幹有六種說法輪替，避免整份題庫一直出現同一句。
+- `science/social/chinese/english.mjs` + 各自的 `Junior` 版：國小／國中知識事實表。
+- `expand-question-bank.mjs`：五科各 1000 題，年級 3–9 依配額平均分配；輸出 `data/generated_bank.json`。
+- `build-runtime-bank.mjs`：課綱題庫 ⊕ 擴充題庫合併去重（**題幹＋選項內容**，只比題幹會把變體題誤刪），並補齊近千題缺漏的 `questionType`（依選項數推斷是非題）。
+- `qc-question-bank.mts`：題庫體檢（結構、變態題比例、干擾項品質、重複題），目前回報「沒有發現問題」。
+- 重跑：`node scripts/expand-question-bank.mjs && node scripts/build-runtime-bank.mjs && npx tsx scripts/qc-question-bank.mts`
+
+### 變態題清理（老師反應的痛點）
+- 找不到像樣干擾項時**不再硬塞「以上皆非／以上皆是」**，寧可維持 4 選題。（遠征題庫 500 題裡原本有 268 題是靠這兩個選項湊滿六個。）
+- 英語題兜底改用 `None of the above` / `All of the above`（原本會出現中文）。
+- 借用干擾項的長度級距收緊為 0.55–2 倍，湊數選項從 14.9% 降到 9.0%。
+
+### 效能
+- 題庫 1210 → 5000 題後精簡檔 2.7MB，改用動態載入：vite build 切成兩個獨立 chunk（1.56MB / 1.30MB），主包維持 747KB；`App.tsx` 掛載時背景預載，`LOCAL_QUESTION_BANK` 是「活陣列」同步消費端才不會開天窗。
+- 展開 5000 題 4.3s → 1.3s：二元詞指紋加快取、借用改成「要幾個找幾個」＋掃描預算、檢查順序改成最便宜的先做。
+- `useQuestionBank` 的合併結果全站共用一份（兩層 WeakMap），避免每個畫面各展開一次。
+
+### 其他
+- 配對題：`data/matching_bank_extra.json`（+66 組），全站 33 → 99 組、594 筆配對；各科 6 組 → 18–22 組。
+- 測試：lib 289、pages 160、components 187、game 385、server 105 全過。`expeditionContent.test.ts` 改為斷言「4 或 6 個選項」且 4 選題不得含湊數選項。
