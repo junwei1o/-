@@ -1052,6 +1052,12 @@ export const appRouter = router({
           tokenLooksLikeUserId: tokenCheck.looksLikeUserId ?? false,
           /** LINE API 回的錯誤，只在無效時才帶；不回傳 token 本身。 */
           tokenError: tokenCheck.valid ? "" : (tokenCheck.error ?? ""),
+          /**
+           * token 的字元數，只用來分辨「貼成 Channel secret（32 碼）」還是
+           * 「真的 access token（約 180 碼）」——兩者外觀都是一串英數字，
+           * 沒有長度就只能一直猜。只回數字，不回內容。
+           */
+          tokenLength: ENV.lineChannelAccessToken.trim().length,
           binding,
           serviceId: process.env.RENDER_SERVICE_ID ?? "",
           serviceName: process.env.RENDER_SERVICE_NAME ?? "",
