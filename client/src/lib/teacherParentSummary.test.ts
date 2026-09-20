@@ -44,7 +44,8 @@ describe("buildTeacherParentSummary", () => {
     expect(math?.status).toBe("穩定航行");
     expect(math?.recentCorrectCount).toBe(3);
     expect(math?.latestActivityAt).toBe(3000);
-    expect(math?.island.observedKnowledge).toContain("數學主題");
+    // 中階主題標籤（見 lib/topicTag.ts）：未命中任何規則時落到該科預設桶
+    expect(math?.island.observedKnowledge).toContain("數與計算");
     expect(science?.status).toBe("探索中");
     expect(summary.weakTopics).toEqual([]);
     expect(summary.nextConversation).toContain("沒有明顯弱點");

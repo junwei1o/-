@@ -75,7 +75,9 @@ describe("resolveTopicTagFromAttempt", () => {
     ).toBe("比例與速率");
   });
 
-  it("完全沒資料時不會噴錯", () => {
-    expect(() => resolveTopicTagFromAttempt({})).not.toThrow();
+  it("完全沒資料時回傳空字串，不捏造主題", () => {
+    expect(resolveTopicTagFromAttempt({})).toBe("");
+    expect(resolveTopicTagFromAttempt({ subject: "數學", knowledge: [] })).toBe("");
+    expect(resolveTopicTagFromAttempt({ subject: "數學", knowledge: ["面積"] })).toBe("幾何與圖形");
   });
 });

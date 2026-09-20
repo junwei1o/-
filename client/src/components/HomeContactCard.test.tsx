@@ -108,9 +108,11 @@ describe("HomeContactCard 聯絡老師區塊", () => {
     render(<HomeContactCard />);
     fireEvent.click(screen.getByRole("button", { name: /聯絡老師/ }));
 
+    // QR 改為本機產生（SVG data URI），不再把 LINE ID 外送給第三方服務
     const img = screen.getByAltText("劉老師 的 LINE 好友 QR code") as HTMLImageElement;
-    expect(img.src).toContain("line.me");
-    expect(img.src).toContain("liu_t3");
+    expect(img.src.startsWith("data:image/svg+xml")).toBe(true);
+    expect(decodeURIComponent(img.src)).toContain("<svg");
+    expect(img.src).not.toContain("api.qrserver.com");
 
     const lineLink = screen.getByRole("link", { name: /開啟 LINE/ }) as HTMLAnchorElement;
     expect(lineLink.href).toBe("https://line.me/ti/p/~liu_t3");

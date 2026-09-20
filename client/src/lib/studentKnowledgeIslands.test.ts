@@ -16,8 +16,9 @@ describe("studentKnowledgeIslands", () => {
   it("only unlocks islands with observed attempts and carries through observed knowledge", () => {
     const islands = buildKnowledgeIslandSnapshots(profile, 3000);
 
-    expect(islands.find((island) => island.subject === "數學")).toMatchObject({ unlocked: true, attemptCount: 2, accuracy: 1, observedKnowledge: ["小數運算", "分數比較"], recentReviewTopics: ["小數運算", "分數比較"], dueReviewCount: 0 });
-    expect(islands.find((island) => island.subject === "自然")).toMatchObject({ unlocked: true, attemptCount: 1, accuracy: 0, observedKnowledge: ["植物生長"], recentReviewTopics: ["植物生長"], dueReviewCount: 1 });
+    expect(islands.find((island) => island.subject === "數學")).toMatchObject({ unlocked: true, attemptCount: 2, accuracy: 1, // 改以中階主題標籤呈現（見 lib/topicTag.ts）：小數運算／分數比較 都收斂成「分數與小數」
+      observedKnowledge: ["分數與小數"], recentReviewTopics: ["分數與小數"], dueReviewCount: 0 });
+    expect(islands.find((island) => island.subject === "自然")).toMatchObject({ unlocked: true, attemptCount: 1, accuracy: 0, observedKnowledge: ["植物與光合作用"], recentReviewTopics: ["植物與光合作用"], dueReviewCount: 1 });
     expect(islands.find((island) => island.subject === "社會")).toMatchObject({ unlocked: false, attemptCount: 0, accuracy: null, observedKnowledge: [], recentReviewTopics: [], dueReviewCount: 0 });
     expect(islands.find((island) => island.subject === "國語")).toMatchObject({ unlocked: false, attemptCount: 0, accuracy: null, observedKnowledge: [], recentReviewTopics: [], dueReviewCount: 0 });
   });

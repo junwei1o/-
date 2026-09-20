@@ -122,7 +122,10 @@ export function resolveTopicTagFromAttempt(attempt: {
   learningTopic?: string;
 }): string {
   const subject = attempt.subject ?? attempt.curriculumDomain ?? "";
-  return resolveTopicTag(subject, attempt.knowledge ?? [], attempt.learningTopic);
+  const knowledge = (attempt.knowledge ?? []).filter((tag) => tag.trim());
+  // 完全沒有知識標籤時回傳空字串：不要憑空捏造主題，交由呼叫端走「探索練習」等安全文案。
+  if (!knowledge.length && !attempt.learningTopic?.trim()) return "";
+  return resolveTopicTag(subject, knowledge, attempt.learningTopic);
 }
 
 /** 各科中階主題清單（給篩選 UI 或文件用）。 */

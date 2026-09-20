@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { ChevronDown, ChevronUp, MessageCircle, Phone, Settings, Megaphone } from "lucide-react";
 import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
+import { buildQrDataUri } from "@/lib/qrSvg";
 import "@/components/HomeContactCard.css";
 
 const STORAGE_LINE_ID = "hdmx_teacher_line_id_v1";
@@ -9,7 +10,6 @@ const STORAGE_TEACHER_NAME = "hdmx_teacher_name_v1";
 const STORAGE_NOTICE = "hdmx_class_notice_v1";
 const STORAGE_PHONE = "hdmx_teacher_phone_v1";
 const STORAGE_CLASS_CODE = "xue-teacher-class-code-v1";
-const QR_API = "https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=10&data=";
 
 type ContactInfo = {
   teacherName: string;
@@ -142,7 +142,8 @@ export function HomeContactCard() {
   const [newContent, setNewContent] = useState("");
 
   const lineUrl = contact.lineId.trim() ? `https://line.me/ti/p/~${encodeURIComponent(contact.lineId.trim())}` : "";
-  const qrSrc = lineUrl ? QR_API + encodeURIComponent(lineUrl) : "";
+  // 本機產生 QR：不再走 api.qrserver.com（離線可用，也不外洩老師的 LINE ID）
+  const qrSrc = lineUrl ? buildQrDataUri(lineUrl, { scale: 6, margin: 2 }) : "";
 
   function flash(msg: { kind: "ok" | "err"; text: string }) {
     setStatusMsg(msg);

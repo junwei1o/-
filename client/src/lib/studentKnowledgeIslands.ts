@@ -1,3 +1,4 @@
+import { resolveTopicTag, resolveTopicTagFromAttempt } from "./topicTag";
 import { calculateKnowledgeHeatmap, getSpacedReviewSummary, type AdaptiveProfile } from "@/game/adaptiveLearning";
 
 export type KnowledgeIslandId = "math" | "science" | "social" | "language" | "english";
@@ -106,7 +107,8 @@ function recentKnowledge(profile: AdaptiveProfile, subject: KnowledgeIslandSubje
     profile.attempts
       .filter((attempt) => attempt.curriculumDomain === subject)
       .slice(-20)
-      .flatMap((attempt) => attempt.knowledge.map((tag) => tag.trim()).filter(Boolean))
+      .map((attempt) => (attempt.topicTag ?? resolveTopicTagFromAttempt(attempt)).trim())
+      .filter(Boolean)
       .reverse(),
   )).slice(0, 3);
 }
@@ -117,7 +119,8 @@ function recentReviewTopics(profile: AdaptiveProfile, subject: KnowledgeIslandSu
       .filter((attempt) => attempt.curriculumDomain === subject)
       .slice()
       .sort((first, second) => second.timestamp - first.timestamp)
-      .flatMap((attempt) => attempt.knowledge.map((tag) => tag.trim()).filter(Boolean)),
+      .map((attempt) => (attempt.topicTag ?? resolveTopicTagFromAttempt(attempt)).trim())
+      .filter(Boolean),
   )).slice(0, 3);
 }
 
@@ -135,7 +138,10 @@ export function buildKnowledgeIslandSnapshots(profile: AdaptiveProfile, now = Da
     const questionIds = subjectQuestionIds(profile, definition.subject);
     const dueReviewCount = getSpacedReviewSummary(profile, questionIds, now).dueCount;
     const observedKnowledge = recentKnowledge(profile, definition.subject);
-    const heatmapTags = calculateKnowledgeHeatmap(profile, questionIds, 3).map((item) => item.tag);
+    // 知識熱圖仍用細標籤（LearningInsights 需要）；島嶼卡統一以中階主題呈現，故在此收斂。
+    const heatmapTags = calculateKnowledgeHeatmap(profile, questionIds, 3)
+      .map((item) => resolveTopicTag(definition.subject, [item.tag]))
+      .filter(Boolean);
     const recentTopics = recentReviewTopics(profile, definition.subject);
 
     return {

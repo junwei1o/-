@@ -247,12 +247,12 @@ describe("TeacherParentSummary", () => {
 
     render(<TeacherParentSummary />);
     fireEvent.change(screen.getByRole("combobox", { name: "依知識島嶼篩選" }), { target: { value: "數學" } });
-    expect(screen.getAllByText("分數與比例")).toHaveLength(2);
-    expect(screen.queryByText("觀察證據")).not.toBeInTheDocument();
+    expect(screen.getAllByText("分數與小數")).toHaveLength(2);
+    expect(screen.queryByText("科學探究與實驗")).not.toBeInTheDocument();
     fireEvent.change(screen.getByLabelText("學習紀錄開始日期"), { target: { value: "2026-06-20" } });
     expect(screen.getByRole("heading", { name: "這段航線還沒有紀錄" })).toBeInTheDocument();
     fireEvent.click(screen.getAllByRole("button", { name: "清除篩選" })[0]);
-    expect(screen.getAllByText("觀察證據")).toHaveLength(2);
+    expect(screen.getAllByText("科學探究與實驗")).toHaveLength(2);
   });
 
   it("renders five island cards (incl. English) only from real adaptive attempts", () => {
@@ -277,7 +277,7 @@ describe("TeacherParentSummary", () => {
     render(<TeacherParentSummary />);
 
     expect(screen.getByRole("heading", { name: "各島嶼學習摘要" })).toBeInTheDocument();
-    expect(screen.getAllByText("分數與比例")).toHaveLength(2);
+    expect(screen.getAllByText("分數與小數")).toHaveLength(2);
     // P1 新增英語島後，全部島嶼卡（含無作答空島）由 8 增為 9，可查看／附延伸資源的島由 4 增為 5。
     expect(screen.getAllByRole("article")).toHaveLength(9);
     expect(screen.getAllByRole("button", { name: "查看島嶼" })).toHaveLength(5);
@@ -306,7 +306,7 @@ describe("TeacherParentSummary", () => {
 
     const plan = screen.getByTestId("supporter-action-plan");
     expect(plan).toBeInTheDocument();
-    expect(plan).toHaveTextContent("分數運算");
+    expect(plan).toHaveTextContent("分數與小數");
     expect(plan).toHaveTextContent("建議這週練");
     expect(plan).toHaveTextContent("5 題");
     // 強主題不列入弱點。
@@ -314,7 +314,7 @@ describe("TeacherParentSummary", () => {
     const weakRows = screen.getAllByTestId("supporter-weak-topic");
     expect(weakRows).toHaveLength(1);
 
-    fireEvent.click(screen.getByRole("button", { name: "前往練習分數運算相關題目" }));
+    fireEvent.click(screen.getByRole("button", { name: "前往練習分數與小數相關題目" }));
     expect(setLocation).toHaveBeenCalledWith(expect.stringContaining("reviewTopic="));
     expect(setLocation).toHaveBeenCalledWith(expect.stringContaining("subject="));
   });
@@ -331,12 +331,12 @@ describe("TeacherParentSummary", () => {
 
     expect(screen.getByRole("heading", { name: "跨島學習時間軸" })).toBeInTheDocument();
     const timeline = screen.getByRole("list", { name: "跨島學習足跡時間軸" });
-    expect(timeline.textContent).toMatch(/分數與比例[\s\S]*觀察證據/);
-    expect(screen.getByRole("article", { name: /數學島，分數與比例/ })).toBeInTheDocument();
+    expect(timeline.textContent).toMatch(/分數與小數[\s\S]*科學探究與實驗/);
+    expect(screen.getByRole("article", { name: /數學島，分數與小數/ })).toBeInTheDocument();
 
     fireEvent.change(screen.getByRole("combobox", { name: "依知識島嶼篩選" }), { target: { value: "自然" } });
-    expect(screen.getByRole("list", { name: "跨島學習足跡時間軸" }).textContent).toContain("觀察證據");
-    expect(screen.queryByRole("article", { name: /數學島，分數與比例/ })).not.toBeInTheDocument();
+    expect(screen.getByRole("list", { name: "跨島學習足跡時間軸" }).textContent).toContain("科學探究與實驗");
+    expect(screen.queryByRole("article", { name: /數學島，分數與小數/ })).not.toBeInTheDocument();
   });
 
   it("opens a real question recap from a timeline node and safely explains unavailable records", () => {
@@ -353,8 +353,8 @@ describe("TeacherParentSummary", () => {
     expect(screen.getByRole("dialog", { name: "數學島的相關題目" })).toBeInTheDocument();
     expect(screen.getByText("一張地圖分成八等份，小芸走了其中三份。她走了全程的幾分之幾？")).toBeInTheDocument();
     expect(screen.getByText("學生實際選項：這份既有本機紀錄未保存選項內容，因此不推測或補寫答案。")).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "前往數學科分數與比例相關題目練習" }));
-    expect(setLocation).toHaveBeenCalledWith("/?subject=%E6%95%B8%E5%AD%B8&reviewTopic=%E5%88%86%E6%95%B8%E8%88%87%E6%AF%94%E4%BE%8B&source=supporter-summary");
+    fireEvent.click(screen.getByRole("button", { name: "前往數學科分數與小數相關題目練習" }));
+    expect(setLocation).toHaveBeenCalledWith("/?subject=%E6%95%B8%E5%AD%B8&reviewTopic=%E5%88%86%E6%95%B8%E8%88%87%E5%B0%8F%E6%95%B8&source=supporter-summary");
     fireEvent.click(screen.getByRole("button", { name: "關閉題目回顧" }));
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
 

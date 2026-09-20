@@ -609,3 +609,11 @@ curl -s https://xue-gr3a.onrender.com/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | h
   - `AdaptiveAttempt` 新增可選 `topicTag`；`recordAdaptiveAttempt` 自動補算；`teacherParentSummary.buildWeakTopicRecommendations` 與 `teacherParentTimeline` 改用中階標籤（舊紀錄讀取時補算，相容）。
   - 新增 `topicTag.test.ts`（8 例）：全題庫收斂後桶數 <40、每桶 ≥10 題、同概念收斂一致、未知科目與缺標籤的降級。既有兩處斷言同步更新（分數→分數與小數、面積→幾何與圖形）。
 - 驗收：tsc 0 錯；game＋lib 91 檔 630 例全綠；繁體檢查零命中。
+
+## 2026-09-20 P1-6：聯絡老師 QR 改本機產生；topicTag 全站收尾＋全量測試恢復
+- **QR 不再依賴第三方**：`components/HomeContactCard.tsx` 原本把老師的 LINE ID 丟給 `api.qrserver.com` 換圖（① 學校網路擋外部域名時 QR 全白 ② LINE ID 外洩）。新增 `lib/qrSvg.ts`（用 `qrcode-generator` 2.0.4，約 10KB）在本機畫成 SVG data URI，離線可用、不外送資料。新增 `qrSvg.test.ts`（5 例）。
+- **topicTag 收尾**（承接上一節）：`studentKnowledgeIslands` 的 `recentKnowledge`/`recentReviewTopics`/`observedKnowledge`（含知識熱圖標籤）也改用中階主題，畫面上島嶼卡、時間軸、弱點建議三者一致。知識熱圖本身（`calculateKnowledgeHeatmap`）**刻意保留細標籤**，LearningInsights 需要。
+  - 兩個坑：① `resolveTopicTagFromAttempt` 對「沒有知識標籤」的紀錄原本會套用預設桶 → 變成捏造主題、讓「無標籤不推測題組」的安全機制失效，改為回傳空字串（並過濾空字串標籤）；② 島嶼卡把細標籤與熱圖標籤混在一起顯示，需各自收斂後再去重。
+- **P1-2 結案**：全量 `vitest run` 現在 169 檔／1109 例，約 30 秒跑完，**不再 hang**（之前必須分目錄跑）。文件裡「全量會 hang」的註記已過期，以本節為準。
+- 測試異動：TeacherParentSummary.test.tsx（6 處斷言）、studentKnowledgeIslands.test.ts、teacherParentSummary.test.ts 同步改為中階標籤；HomeContactCard.test.tsx 改斷「QR 為 data URI、不含 api.qrserver.com」。
+- 驗收：tsc 0 錯；全量 169 檔 1109 例全綠；vite build 通過（index 1.6MB／charts-vendor 384KB）；繁體檢查零命中。
