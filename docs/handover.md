@@ -696,3 +696,9 @@ curl -s https://xue-gr3a.onrender.com/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | h
 - 確認（非缺口）：`TeacherLineSection` **已掛在 `TeacherDashboard.tsx`**（督學台最上方），老師進 `/teacher` 就看得到 LINE 通知區塊；未設 env 時顯示「待設定」＋三步引導。
 - 基準實測（設定前）：`POST /api/line/webhook` → **501**；`GET /api/trpc/line.getBinding` → `{"envReady":false,"binding":null}`。設完應變為 400（簽章不符）與 `envReady:true`。
 - 提醒：本站用 LINE Messaging API（LINE Notify 已於 2025/3 停用）；Access Token 要選 long-lived 且只顯示一次。
+
+## 2026-09-20 LINE 推播：env 設定完成並驗證生效（P0-4 只剩兩步）
+- **已生效**（實測 19:17）：`line.getBinding` 回 `envReady:true / secretSet:true / tokenSet:true`，`serviceId=srv-da4o0njm8hqs73d1ggtg`、`serviceName=xue-gr3a`（確認請求打的就是老師設 env 的那個服務）；webhook 由 501 轉為 **400**（簽章不符＝已啟用，正常）。
+- **重要經驗**：Render 存完 env **不會馬上生效**，要等重新部署完成。老師 19:06 設好，19:17 才生效，中間連續 12 次查詢都是 `envReady:false`——**不要用「存完立刻查」判斷成敗**，會誤判成設定失敗。免費方案約 5–10 分鐘。
+- 診斷強化（`server/routers.ts` line.getBinding）：原本只回一個 `envReady`，「只設了一筆」與「兩筆都沒設」遠端無法分辨；新增 `secretSet`／`tokenSet`／`serviceId`／`serviceName`（只回布林與服務識別，不洩漏金鑰值）。已同步寫進 `docs/line-setup.md`。
+- 剩兩步（需老師本人操作，站上無法代勞）：① LINE 後台填 Webhook URL `https://xue-gr3a.onrender.com/api/line/webhook` 並 Verify；② 手機加機器人好友或在群組發一句話綁定（目前 `binding` 仍是 null）。

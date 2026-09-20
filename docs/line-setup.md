@@ -83,6 +83,11 @@
 # 設定前：envReady=false、binding=null
 curl https://xue-gr3a.onrender.com/api/trpc/line.getBinding
 
+# 設定後應看到（secretSet/tokenSet 分開顯示，才知道是「只設一筆」還是「都沒設」；
+# serviceId/serviceName 用來確認請求真的打到你以為的那個 Render 服務）：
+#   envReady: true、secretSet: true、tokenSet: true
+#   serviceId: srv-da4o0njm8hqs73d1ggtg、serviceName: xue-gr3a
+```
 # 設定前：501（功能休眠）；設定後未帶正確簽章應回 400
 curl -o /dev/null -w "%{http_code}\n" -X POST \
   https://xue-gr3a.onrender.com/api/line/webhook \
@@ -95,6 +100,7 @@ curl -o /dev/null -w "%{http_code}\n" -X POST \
 
 | 現象 | 原因 / 處理 |
 |---|---|
+| **env 存完卻還是「待設定」** | **正常，要等重新部署完成才生效**。Render 存 env 後會觸發重新部署，免費方案約 5–10 分鐘。實測：19:06 存好 → 19:17 才生效，中間查了 12 次都是 `envReady:false`，不是設定失敗 |
 | 站內一直顯示「待設定」 | Render 的 env 沒存到或還沒部署完 → 回 Environment 確認、手動 Deploy 一次 |
 | 顯示「已啟用」但沒有綁定對象 | 還沒加好友／沒在群組發言 → 做步驟 4 |
 | Webhook Verify 失敗 | env 尚未生效（Render 還在部署）或 URL 打錯 → 確認是 `/api/line/webhook` |
