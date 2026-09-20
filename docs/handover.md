@@ -532,3 +532,16 @@ curl -s https://xue-gr3a.onrender.com/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | h
 - 新增檔案：`lib/onionLessons.ts`（課程/分鏡/測驗資料模型、分層解鎖與星等函數、localStorage `xue-onion-progress-v1`）、`components/classroom/FractionStage.tsx`（資料驅動 SVG 動畫舞台，5 種 scene）、`OnionLesson.tsx`（地圖→分鏡播放器→測驗→過層→結算狀態機）、`onion.css`、兩支測試（lib 9 例、元件 5 例）。
 - 整合：`ClassroomPlay.tsx` 註冊 gameId `onion`（路由 /classroom/onion）；`QuizRoom.tsx` 在自由玩法上方新增「動畫微課」全寬精選卡（含完成進度徽章），樣式 `.mc-lesson-card` 寫在 classroom.css。
 - 驗收：tsc 通過；classroom＋onion＋QuizRoom＋App 共 73 例全綠；vite build 通過；本地手機預覽逐鏡檢查 5 種 scene、地圖、測驗、過層彩紙、結算皆正確且無 pageerror。
+
+## 2026-09-20 洋蔥動畫講解（onion-academy）四課重做為連續故事場景動畫（commit b314aee，已上線）
+- 動機：線上回報「動畫講解未實現」。舊版 lesson phase 是「會自動翻幀的靜態小教具」（通用 prop.kind 輪播，水循環只有 4 名詞輪流變色、舞台大片空白）。明確**否決外部跳轉洋蔥官網**（付費/版權/簡體課綱/破壞 local-first 離線），改為純本地重做。
+- 架構：課程資料檔 `game/onionAcademyLessons.ts`（4 課×7 frames×5 題、29 資料測試）完全不動；只重做「教具渲染層」。新增 `components/classroom/OnionAcademyScenes.tsx`：export `LessonScene`（依 lessonId 分派）與 `OnionMascot`；內含四個固定場景元件，吃 `{frame, action}`，以 frameIdx 切 CSS class 驅動連續動畫。場景持續掛載（`.ol-stage` 不加 key），洋蔥絕對定位右下角當解說員（OnionMascot 根節點移除 key 避免每幀 pop 重啟）。`OnionAcademyGame.tsx` 刪除舊 OnionMascot/FractionPie/CycleDiagram/TriangleShape/TextCard/StageProp（約 230 行），lesson 舞台改掛 `<LessonScene>`。
+- 四場景（SVG viewBox 0 0 340 232，外殼 `.ol-scene` aspect-ratio 340/232、overflow hidden；的得地為 HTML 句卡）：
+  - 水循環 WaterCycleScene：太陽光芒旋轉／海面波浪／蒸發水滴 wc-rise 上升右飄進雲＋綠箭頭／凝結雲長大變白＋mote 聚集／降水雲變灰 wc-rain 落雨／匯流河面三角 wc-flow 入海／f5 全循環綠虛線弧 wc-dash＋四階段 pill 依 off/on/now 點亮（f0 全隱藏隨劇情揭曉）。
+  - 分數 FractionScene：主披薩切 4 等份→切片 fp-take 飛到「你吃的 1/4」「朋友給的 2/4」兩小盤→f4 置頂橘帶提示同分母（分母紅閃）→f5 兩盤離場、結果披薩三片 fp-merge 滑入拼成 3/4，中央白圓分數標籤→f6 置頂紫口訣帶。
+  - 三角形 TriangleScene：標底（底8）高（高5 虛線＋直角記號，**標註放最上層才不會被填色蓋住**）→f2 複製品偏移半透明→f3 繞平行四邊形中心 (175,95) rotate(180deg) 拼合（`transform-box:view-box; transform-origin:175px 95px`）→8×5→A 閃爍＋÷2=20→f6 藍底公式橫幅。橫幅文案已精簡到 ≤17 字、rect x10 w278 避開洋蔥。
+  - 的得地 DeUsageScene：筆記本橫線背景；f0 三色字牌（的藍/得綠/地橘）浮動→紅的蘋果（名詞標籤）/跑得快（動詞標籤）/慢慢地走→口訣三卡→很漂亮的衣服→換你試試看。**詞性標籤用 `<span class="de-tag">` 不可用 `<sup>`**（sup 預設樣式會讓絕對定位異常跑到場景頂端）；`.de-board` 右側留 50px 給洋蔥。
+- 關鍵 CSS：classroom.css 尾端「洋蔥連續場景動畫」段（`.ol-scene*`、`wc-*`、`fp-*`、`ta-*`、`de-*`）＋獨立 prefers-reduced-motion 降級區。另**修復一個既有 bug**：原約 1835 行一個區塊註解遺失開頭 `/*`（只剩裸文字三行＋`*/`），導致 esbuild `Unexpected "=" css-syntax-error`，已補成完整註解。
+- 頂部列：`.ol-bar` 改 flex，`.ol-exit--bar` 加 flex-shrink:0/white-space:nowrap（修窄屏「離開」被壓成直排），`.ol-bar-title` flex:1 min-width:0 置中可換行，進度點 flex-shrink:0。
+- 驗收：tsc 0 錯誤；classroom 31 測試（ClassroomComponents 23/OnionLesson 5/OnionAcademyGame 3）＋onionAcademyLessons 29 全綠；vite build 乾淨無 CSS 警告；本地 preview 390 視口四課 28 幀逐幀截圖目視通過；**線上** https://xue-gr3a.onrender.com/ Playwright 四課關鍵幀 DOM 斷言 ALL PASS、無 pageerror（部署後 bundle index-BIbB8OGh.js）。
+- 已知小限制：OnionAcademyScenes 尚無專屬元件測試（由 tsc＋OnionAcademyGame 流程測試＋視覺/線上斷言覆蓋）；全量 `npx vitest run`（不帶檔案）仍會被某計時器測試 hang，需依目錄分批跑。
