@@ -9,6 +9,8 @@ export default function RegionDetail() {
   const [, params] = useRoute("/regions/:regionKey");
   const [, setLocation] = useLocation();
   const [isLeaving, setIsLeaving] = useState(false);
+  // 後端未設定 storage 代理（獨立部署）時台灣地圖主圖會 404，改顯示本地導航海圖兜底，避免破圖。
+  const [mapFailed, setMapFailed] = useState(false);
   const navigationTimer = useRef<number | null>(null);
   const region = MAP_REGIONS.find((item) => item.key === params?.regionKey);
   useEffect(() => () => { if (navigationTimer.current) window.clearTimeout(navigationTimer.current); }, []);
@@ -45,7 +47,19 @@ export default function RegionDetail() {
           <p className="region-detail-lede">{region.longDescription}</p>
           <div className="region-detail-actions"><button className="btn primary" onClick={goToChallenge}>開始這條航線 <ArrowUpRight size={17} /></button><span><Leaf size={15} /> {region.learning}</span></div>
         </div>
-        <div className="region-detail-map"><img src={HERO} alt={`台灣地圖中的${region.name}區域`} /><div className={`region-detail-pin ${region.className}`}><span /></div><div className="region-detail-map-label">REGION / {region.romanized}</div></div>
+        <div className={`region-detail-map${mapFailed ? " is-fallback" : ""}`}>
+          {mapFailed ? (
+            <div className="region-map-fallback" role="img" aria-label={`台灣地圖中的${region.name}區域（導航示意）`}>
+              <span className="region-map-compass"><Compass size={30} aria-hidden="true" /></span>
+              <b>{region.name}</b>
+              <i>TAIWAN · {region.romanized}</i>
+            </div>
+          ) : (
+            <img src={HERO} alt={`台灣地圖中的${region.name}區域`} onError={() => setMapFailed(true)} />
+          )}
+          {!mapFailed && <div className={`region-detail-pin ${region.className}`}><span /></div>}
+          <div className="region-detail-map-label">REGION / {region.romanized}</div>
+        </div>
       </section>
       <section className="region-detail-content">
         <div className="region-detail-grid">

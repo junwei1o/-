@@ -9,8 +9,10 @@ export function registerStorageProxy(app: Express) {
       return;
     }
 
+    // 獨立部署（如 Render）未設定 Forge storage 金鑰時，這些可選素材不存在，
+    // 應回 404（讓前端 onError 走本地兜底）而非 500（誤報為伺服器故障）。
     if (!ENV.forgeApiUrl || !ENV.forgeApiKey) {
-      res.status(500).send("Storage proxy not configured");
+      res.status(404).send("Storage not configured");
       return;
     }
 
