@@ -28,7 +28,7 @@
   font-size: 14px;
   font-weight: 700;
   padding: 9px 13px;
-  border-radius: 999px;
+  border-radius:var(--radius-pill);
   min-height: 40px;
   cursor: pointer;
 }
@@ -36,10 +36,10 @@
   font-size: 12px;
   font-weight: 800;
   letter-spacing: 0.04em;
-  color: #fff;
+  color: var(--white);
   background: linear-gradient(135deg, #1b7082, #2f93a8);
   padding: 6px 12px;
-  border-radius: 999px;
+  border-radius:var(--radius-pill);
 }
 .on-rank {
   margin-left: auto;
@@ -49,12 +49,12 @@
   background: #fdeee2;
   border: 1px solid #f2c89b;
   padding: 6px 12px;
-  border-radius: 999px;
+  border-radius:var(--radius-pill);
 }
 
 /* ---------- 通用卡片／按鈕 ---------- */
 .on-card {
-  background: #fff;
+  background: var(--white);
   border-radius: 22px;
   box-shadow: 0 10px 30px rgba(27, 74, 90, 0.1);
   padding: 22px 18px;
@@ -72,7 +72,7 @@
   font-weight: 800;
   cursor: pointer;
   background: linear-gradient(135deg, #f2994a, #e8803a);
-  color: #fff;
+  color: var(--white);
   box-shadow: 0 6px 16px rgba(232, 128, 58, 0.32);
   transition: transform 0.12s ease;
 }
@@ -105,7 +105,7 @@
 .on-rule-chip {
   font-size: 13px; font-weight: 700; color: #1b7082;
   background: #e3f1f4; border: 1px solid #c4e3ea;
-  padding: 7px 12px; border-radius: 999px;
+  padding: 7px 12px; border-radius:var(--radius-pill);
 }
 .on-bestline { margin-top: 14px; font-size: 13.5px; font-weight: 700; color: #b5651d; }
 
@@ -116,8 +116,8 @@
 .on-node {
   display: flex; align-items: center; gap: 14px;
   width: 100%; text-align: left;
-  border: 2px solid #e4edf0; background: #fff;
-  border-radius: 18px; padding: 14px 14px;
+  border: 2px solid #e4edf0; background: var(--white);
+  border-radius:var(--radius-lg); padding: 14px 14px;
   cursor: pointer; min-height: 64px;
   transition: transform 0.12s ease, border-color 0.2s;
 }
@@ -128,7 +128,7 @@
 .on-node-num {
   flex: 0 0 46px; width: 46px; height: 46px; border-radius: 50%;
   display: grid; place-items: center;
-  font-size: 20px; font-weight: 900; color: #fff;
+  font-size: 20px; font-weight: 900; color: var(--white);
   background: linear-gradient(135deg, #1b7082, #2f93a8);
 }
 .on-node.is-done .on-node-num { background: linear-gradient(135deg, #4aa584, #6fbf9f); }
@@ -161,13 +161,13 @@
 .on-stage {
   position: relative;
   background: radial-gradient(circle at 50% 30%, #fdfdf8, #f6efe2);
-  border-radius: 18px;
+  border-radius:var(--radius-lg);
   overflow: hidden;
 }
 .on-stage-svg { display: block; width: 100%; height: auto; max-height: 300px; }
 .on-narration {
   display: flex; gap: 10px; align-items: flex-start;
-  background: #fff; border-radius: 16px; padding: 13px 15px; margin-top: 12px;
+  background: var(--white); border-radius: 16px; padding: 13px 15px; margin-top: 12px;
   border: 1px solid #eef2f4;
   font-size: 15.5px; line-height: 1.65; color: #334856; font-weight: 600;
   min-height: 64px;
@@ -187,7 +187,7 @@
   background: #eef4f6; color: #1b7082;
 }
 .on-ctrl.icon { flex: 0 0 46px; width: 46px; padding: 0; display: grid; place-items: center; font-size: 17px; }
-.on-ctrl.primary { background: linear-gradient(135deg, #1b7082, #2f93a8); color: #fff; }
+.on-ctrl.primary { background: linear-gradient(135deg, #1b7082, #2f93a8); color: var(--white); }
 .on-ctrl:active { transform: scale(0.96); }
 .on-ctrl-spacer { flex: 1; }
 
@@ -200,7 +200,7 @@
 .on-option {
   display: flex; align-items: center; gap: 12px;
   min-height: 52px; width: 100%; text-align: left;
-  border: 2px solid #e4edf0; background: #fff;
+  border: 2px solid #e4edf0; background: var(--white);
   border-radius: 14px; padding: 12px 14px;
   font-size: 15.5px; font-weight: 700; color: #334856;
   cursor: pointer; transition: transform 0.1s, border-color 0.15s, background 0.15s;
@@ -212,9 +212,9 @@
   background: #eef4f6; color: #1b7082;
 }
 .on-option.is-correct { border-color: #4aa584; background: #eef9f4; }
-.on-option.is-correct .on-opt-key { background: #4aa584; color: #fff; }
+.on-option.is-correct .on-opt-key { background: #4aa584; color: var(--white); }
 .on-option.is-wrong { border-color: #d65a48; background: #fdeeec; animation: on-shake 0.4s; }
-.on-option.is-wrong .on-opt-key { background: #d65a48; color: #fff; }
+.on-option.is-wrong .on-opt-key { background: #d65a48; color: var(--white); }
 .on-option[disabled] { cursor: default; }
 @keyframes on-shake {
   0%,100% { transform: translateX(0); }
@@ -253,7 +253,7 @@
 .on-done-unlock {
   margin: 14px auto 4px; display: inline-flex; align-items: center; gap: 8px;
   background: #e3f1f4; color: #1b7082; font-weight: 800; font-size: 14px;
-  padding: 9px 16px; border-radius: 999px;
+  padding: 9px 16px; border-radius:var(--radius-pill);
 }
 .on-confetti { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 60; }
 .on-confetti i {

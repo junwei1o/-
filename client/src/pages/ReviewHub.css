@@ -13,7 +13,7 @@
 }
 
 .review-hub-head-icon {
-  color: var(--tidal, #0B6E8E);
+  color: var(--tidal);
   flex-shrink: 0;
 }
 
@@ -21,21 +21,21 @@
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.14em;
-  color: var(--tidal-deep, #07516A);
+  color: var(--tidal-deep);
   margin: 0 0 2px;
 }
 
 .review-hub-head h1 {
-  font-family: "Noto Serif TC", serif;
+  font-family:var(--font-serif-tc);
   font-size: 26px;
   margin: 0;
-  color: var(--ink, #1F3031);
+  color: var(--ink);
 }
 
 .review-hub-subtitle {
   margin: 4px 0 0;
   font-size: 14px;
-  color: var(--ink, #1F3031);
+  color: var(--ink);
   opacity: 0.85;
 }
 
@@ -44,7 +44,7 @@
   display: flex;
   align-items: baseline;
   gap: 12px;
-  background: var(--white, #FFFDF8);
+  background: var(--white);
   border: 1px solid var(--line, #C9BFA8);
   border-radius: 16px;
   padding: 14px 18px;
@@ -52,19 +52,19 @@
 }
 
 .review-hub-progress-score {
-  font-family: "Noto Serif TC", serif;
+  font-family:var(--font-serif-tc);
   font-size: 24px;
-  color: var(--tidal-deep, #07516A);
+  color: var(--tidal-deep);
 }
 
 .review-hub-progress-label {
   font-size: 14px;
-  color: var(--ink, #1F3031);
+  color: var(--ink);
 }
 
 /* 複習階梯（間隔節點的可視化） */
 .review-hub-ladder {
-  background: var(--white, #FFFDF8);
+  background: var(--white);
   border: 1px solid var(--line, #C9BFA8);
   border-radius: 16px;
   padding: 14px 18px;
@@ -76,7 +76,7 @@
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.08em;
-  color: var(--tidal-deep, #07516A);
+  color: var(--tidal-deep);
 }
 
 .review-hub-ladder-nodes {
@@ -91,16 +91,16 @@
   align-items: center;
   gap: 4px;
   padding: 10px 6px;
-  border-radius: 12px;
-  background: var(--paper-deep, #EFE6D2);
+  border-radius:var(--radius-md);
+  background: var(--paper-deep);
   border: 1px solid var(--line, #C9BFA8);
   text-align: center;
 }
 
 .review-hub-ladder-node.is-due {
   background: #E4F2F5;
-  border-color: var(--tidal, #0B6E8E);
-  box-shadow: 0 0 0 1px var(--tidal, #0B6E8E) inset;
+  border-color: var(--tidal);
+  box-shadow: 0 0 0 1px var(--tidal) inset;
 }
 
 .review-hub-ladder-node.is-idle {
@@ -109,23 +109,23 @@
 
 .review-hub-ladder-label {
   font-size: 12px;
-  color: var(--ink, #1F3031);
+  color: var(--ink);
 }
 
 .review-hub-ladder-count {
-  font-family: "Noto Serif TC", serif;
+  font-family:var(--font-serif-tc);
   font-size: 20px;
   font-weight: 700;
-  color: var(--ink, #1F3031);
+  color: var(--ink);
 }
 
 .review-hub-ladder-node.is-due .review-hub-ladder-count {
-  color: var(--tidal-deep, #07516A);
+  color: var(--tidal-deep);
 }
 
 .review-hub-ladder-node small {
   font-size: 11px;
-  color: var(--tidal-deep, #07516A);
+  color: var(--tidal-deep);
   font-weight: 700;
 }
 
@@ -137,11 +137,11 @@
 }
 
 .review-hub-question {
-  background: var(--white, #FFFDF8);
+  background: var(--white);
   border: 1px solid var(--line, #C9BFA8);
-  border-radius: 18px;
+  border-radius:var(--radius-lg);
   padding: 18px 20px;
-  box-shadow: 0 6px 20px -14px rgba(11, 110, 142, 0.18);
+  box-shadow: 0 6px 20px -14px color-mix(in srgb, var(--tidal) 18%, transparent);
 }
 
 .review-hub-q-head {
@@ -155,35 +155,35 @@
 .review-hub-q-index {
   font-weight: 800;
   font-size: 13px;
-  color: var(--tidal-deep, #07516A);
+  color: var(--tidal-deep);
 }
 
 .review-hub-q-topic {
   font-size: 13px;
   font-weight: 600;
-  color: var(--ink, #1F3031);
+  color: var(--ink);
   flex: 1;
 }
 
 .review-hub-q-badge {
   padding: 3px 10px;
-  border-radius: 999px;
+  border-radius:var(--radius-pill);
   font-size: 12px;
   font-weight: 700;
-  background: var(--paper-deep, #EFE6D2);
-  color: var(--ink, #1F3031);
+  background: var(--paper-deep);
+  color: var(--ink);
 }
 
 .review-hub-q-badge.is-variant {
   background: #E4F2F5;
-  color: var(--tidal-deep, #07516A);
+  color: var(--tidal-deep);
 }
 
 .review-hub-prompt {
   margin: 0 0 12px;
   font-size: 15px;
   line-height: 1.7;
-  color: var(--ink, #1F3031);
+  color: var(--ink);
 }
 
 .review-hub-options {
@@ -202,18 +202,18 @@
   width: 100%;
   text-align: left;
   padding: 10px 14px;
-  border-radius: 12px;
+  border-radius:var(--radius-md);
   border: 1px solid var(--line, #C9BFA8);
-  background: #FFF;
+  background: var(--white);
   font-family: inherit;
   font-size: 14px;
-  color: var(--ink, #1F3031);
+  color: var(--ink);
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
 .review-hub-opt:hover:not(:disabled) {
-  border-color: var(--tidal, #0B6E8E);
+  border-color: var(--tidal);
   background: #F2FAFC;
 }
 
@@ -228,7 +228,7 @@
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background: var(--paper-deep, #EFE6D2);
+  background: var(--paper-deep);
   font-size: 12px;
   font-weight: 800;
   flex-shrink: 0;
@@ -241,7 +241,7 @@
 
 .review-hub-opt.correct .review-hub-opt-letter {
   background: #2E9E6B;
-  color: #fff;
+  color: var(--white);
 }
 
 .review-hub-opt.wrong {
@@ -251,7 +251,7 @@
 
 .review-hub-opt.wrong .review-hub-opt-letter {
   background: #C0564F;
-  color: #fff;
+  color: var(--white);
 }
 
 .review-hub-feedback {
@@ -271,16 +271,16 @@
 
 .review-hub-explanation {
   font-weight: 500;
-  color: var(--ink, #1F3031);
+  color: var(--ink);
 }
 
 /* 完成結果面板 */
 .review-hub-result {
-  background: var(--white, #FFFDF8);
+  background: var(--white);
   border: 1px solid var(--line, #C9BFA8);
-  border-radius: 18px;
+  border-radius:var(--radius-lg);
   padding: 24px;
-  box-shadow: 0 8px 24px -14px rgba(11, 110, 142, 0.22);
+  box-shadow: 0 8px 24px -14px color-mix(in srgb, var(--tidal) 22%, transparent);
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -299,14 +299,14 @@
 }
 
 .review-hub-result-score {
-  font-family: "Noto Serif TC", serif;
+  font-family:var(--font-serif-tc);
   font-size: 28px;
-  color: var(--tidal-deep, #07516A);
+  color: var(--tidal-deep);
 }
 
 .review-hub-result-label {
   font-size: 15px;
-  color: var(--ink, #1F3031);
+  color: var(--ink);
 }
 
 .review-hub-result-meta {
@@ -314,7 +314,7 @@
   gap: 16px;
   font-size: 14px;
   font-weight: 600;
-  color: var(--ink, #1F3031);
+  color: var(--ink);
 }
 
 .review-hub-result-meta span {
@@ -324,7 +324,7 @@
 }
 
 .review-hub-result-meta svg {
-  color: var(--tidal, #0B6E8E);
+  color: var(--tidal);
 }
 
 .review-hub-result-praise {
@@ -336,9 +336,9 @@
 
 /* 空狀態 */
 .review-hub-empty {
-  background: var(--white, #FFFDF8);
+  background: var(--white);
   border: 1px dashed var(--line, #C9BFA8);
-  border-radius: 18px;
+  border-radius:var(--radius-lg);
   padding: 40px 24px;
   display: flex;
   flex-direction: column;
@@ -353,7 +353,7 @@
 
 .review-hub-empty strong {
   font-size: 17px;
-  color: var(--ink, #1F3031);
+  color: var(--ink);
 }
 
 .review-hub-empty p {
@@ -361,7 +361,7 @@
   max-width: 420px;
   font-size: 14px;
   line-height: 1.7;
-  color: var(--ink, #1F3031);
+  color: var(--ink);
   opacity: 0.85;
 }
 
@@ -372,10 +372,10 @@
   justify-content: center;
   gap: 8px;
   padding: 11px 18px;
-  border-radius: 12px;
+  border-radius:var(--radius-md);
   border: none;
-  background: var(--tidal, #0B6E8E);
-  color: #fff;
+  background: var(--tidal);
+  color: var(--white);
   font-weight: 700;
   font-size: 14px;
   font-family: inherit;
@@ -384,13 +384,13 @@
 }
 
 .review-hub-cta:hover:not(:disabled) {
-  background: var(--tidal-deep, #07516A);
+  background: var(--tidal-deep);
   transform: translateY(-1px);
 }
 
 .review-hub-cta.ghost {
-  background: var(--paper-deep, #EFE6D2);
-  color: var(--ink, #1F3031);
+  background: var(--paper-deep);
+  color: var(--ink);
 }
 
 .review-hub-cta.ghost:hover {
@@ -409,7 +409,7 @@
 
 .review-hub-foot-hint {
   font-size: 13px;
-  color: var(--ink, #1F3031);
+  color: var(--ink);
   opacity: 0.8;
 }
 

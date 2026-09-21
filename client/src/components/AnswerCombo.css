@@ -9,10 +9,10 @@
   align-items: center;
   gap: 8px;
   padding: 8px 18px;
-  border-radius: 999px;
-  background: linear-gradient(120deg, rgba(232, 117, 74, 0.96), rgba(214, 158, 46, 0.96));
-  color: #fffdf8;
-  font-family: "Fraunces", "Noto Serif TC", serif;
+  border-radius:var(--radius-pill);
+  background: linear-gradient(120deg, color-mix(in srgb, var(--coral) 96%, transparent), rgba(214, 158, 46, 0.96));
+  color: var(--white);
+  font-family:var(--font-display);
   box-shadow: 0 12px 28px rgba(168, 68, 42, 0.28);
   pointer-events: none;
   animation: answer-combo-pop 1100ms ease-out both;

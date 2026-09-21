@@ -16,7 +16,7 @@
 .line-notify-head h2 {
   margin: 0;
   font-size: 17px;
-  font-family: "Noto Serif TC", serif;
+  font-family:var(--font-serif-tc);
 }
 
 .line-notify-sub {
@@ -44,7 +44,7 @@
   font-size: 11px;
   font-weight: 700;
   padding: 4px 10px;
-  border-radius: 999px;
+  border-radius:var(--radius-pill);
   white-space: nowrap;
 }
 
@@ -85,8 +85,8 @@
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: var(--tidal, #0b6e8e);
-  color: #fff;
+  background: var(--tidal);
+  color: var(--white);
   font-weight: 700;
   font-size: 12px;
   display: inline-flex;
@@ -97,11 +97,11 @@
 .line-notify-steps strong {
   display: block;
   font-size: 13px;
-  color: var(--tidal-deep, #07516a);
+  color: var(--tidal-deep);
 }
 
 .line-notify-steps code {
-  background: var(--paper-deep, #efe6d2);
+  background: var(--paper-deep);
   border-radius: 6px;
   padding: 1px 6px;
   font-size: 12px;
@@ -119,7 +119,7 @@
 }
 
 .line-notify-bound-line strong {
-  color: var(--tidal-deep, #07516a);
+  color: var(--tidal-deep);
 }
 
 .line-notify-bound-line small {
@@ -140,8 +140,8 @@
   padding: 9px 16px;
   border: none;
   border-radius: 10px;
-  background: var(--tidal, #0b6e8e);
-  color: #fff;
+  background: var(--tidal);
+  color: var(--white);
   font-weight: 700;
   font-size: 13px;
   font-family: inherit;
@@ -150,7 +150,7 @@
 }
 
 .line-notify-btn:hover:not(:disabled) {
-  background: var(--tidal-deep, #07516a);
+  background: var(--tidal-deep);
   transform: translateY(-1px);
 }
 
@@ -160,8 +160,8 @@
 }
 
 .line-notify-btn.ghost {
-  background: var(--paper-deep, #efe6d2);
-  color: var(--ink, #1f3031);
+  background: var(--paper-deep);
+  color: var(--ink);
 }
 
 .line-notify-btn.ghost:hover {
@@ -195,7 +195,7 @@
 }
 
 .line-notify-warn-detail {
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-family:var(--font-mono);
   font-size: 12px;
   color: #991b1b;
   word-break: break-all;

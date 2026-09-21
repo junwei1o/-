@@ -1,10 +1,10 @@
 .weekly-quiz-card {
   margin-top: 16px;
-  background: var(--white, #FFFDF8);
+  background: var(--white);
   border: 1px solid var(--line, #C9BFA8);
-  border-radius: 18px;
+  border-radius:var(--radius-lg);
   padding: 18px 20px;
-  box-shadow: 0 6px 20px -14px rgba(11, 110, 142, 0.18);
+  box-shadow: 0 6px 20px -14px color-mix(in srgb, var(--tidal) 18%, transparent);
 }
 
 .weekly-quiz-head {
@@ -12,7 +12,7 @@
   align-items: center;
   gap: 10px;
   margin-bottom: 10px;
-  color: var(--ink, #1F3031);
+  color: var(--ink);
 }
 
 .weekly-quiz-emoji {
@@ -21,7 +21,7 @@
 }
 
 .weekly-quiz-title {
-  font-family: "Noto Serif TC", serif;
+  font-family:var(--font-serif-tc);
   font-size: 18px;
   margin: 0;
   font-weight: 700;
@@ -31,7 +31,7 @@
   margin: 2px 0 0;
   font-size: 12px;
   font-weight: 500;
-  color: var(--tidal-deep, #07516A);
+  color: var(--tidal-deep);
 }
 
 .weekly-quiz-empty {
@@ -40,13 +40,13 @@
   gap: 6px;
   margin: 6px 0 0;
   font-size: 13px;
-  color: var(--ink, #1F3031);
+  color: var(--ink);
   line-height: 1.6;
   flex-wrap: wrap;
 }
 
 .weekly-quiz-empty strong {
-  color: var(--tidal-deep, #07516A);
+  color: var(--tidal-deep);
 }
 
 .weekly-quiz-link {
@@ -55,7 +55,7 @@
   padding: 0;
   font: inherit;
   font-weight: 700;
-  color: var(--tidal, #0B6E8E);
+  color: var(--tidal);
   text-decoration: underline;
   cursor: pointer;
 }
@@ -63,7 +63,7 @@
 .weekly-quiz-tag {
   margin-left: auto;
   padding: 3px 10px;
-  border-radius: 999px;
+  border-radius:var(--radius-pill);
   font-size: 11px;
   font-weight: 700;
   background: rgba(232, 184, 75, 0.22);
@@ -76,13 +76,13 @@
   align-items: center;
   gap: 8px;
   font-size: 14px;
-  color: var(--moss, #6C8460);
+  color: var(--moss);
   font-weight: 700;
 }
 
 .weekly-quiz-done strong {
   font-size: 18px;
-  color: var(--tidal-deep, #07516A);
+  color: var(--tidal-deep);
 }
 
 .weekly-quiz-questions {
@@ -95,8 +95,8 @@
 }
 
 .weekly-quiz-question {
-  background: var(--paper-deep, #EFE6D2);
-  border-radius: 12px;
+  background: var(--paper-deep);
+  border-radius:var(--radius-md);
   padding: 12px 14px;
 }
 
@@ -106,7 +106,7 @@
   gap: 8px;
   font-size: 12px;
   font-weight: 700;
-  color: var(--tidal-deep, #07516A);
+  color: var(--tidal-deep);
   margin-bottom: 4px;
 }
 
@@ -120,7 +120,7 @@
 .weekly-quiz-prompt {
   margin: 0 0 10px;
   font-size: 14px;
-  color: var(--ink, #1F3031);
+  color: var(--ink);
   line-height: 1.6;
 }
 
@@ -142,28 +142,28 @@
   padding: 9px 12px;
   border: 1px solid var(--line, #C9BFA8);
   border-radius: 10px;
-  background: var(--white, #FFFDF8);
+  background: var(--white);
   cursor: pointer;
   font-family: inherit;
   font-size: 14px;
-  color: var(--ink, #1F3031);
+  color: var(--ink);
   transition: all 0.12s ease;
 }
 
 .weekly-quiz-options .opt:hover:not(:disabled) {
-  border-color: var(--tidal, #0B6E8E);
-  background: rgba(11, 110, 142, 0.06);
+  border-color: var(--tidal);
+  background: color-mix(in srgb, var(--tidal) 6%, transparent);
 }
 
 .weekly-quiz-options .opt.correct {
   background: rgba(108, 132, 96, 0.18);
-  border-color: var(--moss, #6C8460);
+  border-color: var(--moss);
   color: #3c4f33;
 }
 
 .weekly-quiz-options .opt.wrong {
-  background: rgba(232, 117, 74, 0.16);
-  border-color: var(--coral, #E8754A);
+  background: color-mix(in srgb, var(--coral) 16%, transparent);
+  border-color: var(--coral);
 }
 
 .weekly-quiz-options .opt:disabled {
@@ -177,8 +177,8 @@
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: var(--paper-deep, #EFE6D2);
-  color: var(--tidal-deep, #07516A);
+  background: var(--paper-deep);
+  color: var(--tidal-deep);
   font-weight: 700;
   font-size: 12px;
   flex-shrink: 0;
@@ -191,11 +191,11 @@
 }
 
 .weekly-quiz-feedback.ok {
-  color: var(--moss, #6C8460);
+  color: var(--moss);
 }
 
 .weekly-quiz-feedback.err {
-  color: var(--coral, #E8754A);
+  color: var(--coral);
 }
 
 .weekly-quiz-saving {
@@ -204,7 +204,7 @@
   gap: 6px;
   margin: 0;
   font-size: 13px;
-  color: var(--tidal-deep, #07516A);
+  color: var(--tidal-deep);
   font-weight: 600;
 }
 
@@ -219,8 +219,8 @@
 }
 
 .weekly-quiz-result {
-  background: linear-gradient(135deg, rgba(11, 110, 142, 0.08), rgba(108, 132, 96, 0.10));
-  border: 1px solid rgba(11, 110, 142, 0.20);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--tidal) 8%, transparent), rgba(108, 132, 96, 0.10));
+  border: 1px solid color-mix(in srgb, var(--tidal) 20%, transparent);
   border-radius: 14px;
   padding: 14px 16px;
   display: flex;
@@ -237,13 +237,13 @@
 .weekly-quiz-result-score {
   font-size: 26px;
   font-weight: 800;
-  color: var(--tidal-deep, #07516A);
-  font-family: "Noto Serif TC", serif;
+  color: var(--tidal-deep);
+  font-family:var(--font-serif-tc);
 }
 
 .weekly-quiz-result-label {
   font-size: 13px;
-  color: var(--ink, #1F3031);
+  color: var(--ink);
   font-weight: 600;
 }
 
@@ -251,7 +251,7 @@
   display: flex;
   gap: 16px;
   font-size: 13px;
-  color: var(--ink, #1F3031);
+  color: var(--ink);
   font-weight: 600;
 }
 
@@ -264,7 +264,7 @@
 .weekly-quiz-result-praise {
   margin: 0;
   font-size: 13px;
-  color: var(--moss, #6C8460);
+  color: var(--moss);
   font-weight: 600;
 }
 
@@ -300,7 +300,7 @@
   position: relative;
   width: 100%;
   max-width: 400px;
-  background: var(--white, #FFFDF8);
+  background: var(--white);
   border: 1px solid var(--line, #C9BFA8);
   border-radius: 22px;
   padding: 28px 24px 20px;
@@ -347,11 +347,11 @@
 }
 
 .weekly-quiz-modal-title {
-  font-family: "Noto Serif TC", serif;
+  font-family:var(--font-serif-tc);
   font-size: 22px;
   margin: 0 0 10px;
   font-weight: 800;
-  color: var(--ink, #1F3031);
+  color: var(--ink);
 }
 
 .weekly-quiz-modal-score {
@@ -364,7 +364,7 @@
 }
 
 .weekly-quiz-modal-score strong {
-  font-family: "Noto Serif TC", serif;
+  font-family:var(--font-serif-tc);
   font-size: 32px;
   color: #0F6E86;
 }
@@ -411,7 +411,7 @@
 }
 
 .weekly-quiz-modal-badge strong {
-  font-family: "Noto Serif TC", serif;
+  font-family:var(--font-serif-tc);
   font-size: 16px;
   color: #7A4E00;
 }
@@ -430,9 +430,9 @@
 
 .weekly-quiz-modal-primary {
   background: #0F6E86;
-  color: #fff;
+  color: var(--white);
   border: 0;
-  border-radius: 12px;
+  border-radius:var(--radius-md);
   padding: 10px 18px;
   font-size: 15px;
   font-weight: 700;
@@ -447,7 +447,7 @@
   background: transparent;
   color: #0F6E86;
   border: 1.5px solid #0F6E86;
-  border-radius: 12px;
+  border-radius:var(--radius-md);
   padding: 10px 18px;
   font-size: 15px;
   font-weight: 700;

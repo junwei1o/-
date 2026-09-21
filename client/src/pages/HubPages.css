@@ -42,7 +42,7 @@
 
 .hub-tab {
   border: none;
-  border-radius: 999px;
+  border-radius:var(--radius-pill);
   min-height: 44px;
   padding: 8px 16px;
   background: var(--paper-deep);
@@ -60,7 +60,7 @@
 
 .hub-tab.on {
   background: var(--tidal);
-  color: #fff;
+  color: var(--white);
 }
 
 .hub-grid {
@@ -89,7 +89,7 @@
 .hub-card:focus-visible {
   border-color: var(--tidal);
   transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(11, 110, 142, 0.1);
+  box-shadow: 0 10px 20px color-mix(in srgb, var(--tidal) 10%, transparent);
   outline: none;
 }
 
@@ -99,8 +99,8 @@
   justify-content: center;
   width: 42px;
   height: 42px;
-  border-radius: 12px;
-  background: rgba(11, 110, 142, 0.12);
+  border-radius:var(--radius-md);
+  background: color-mix(in srgb, var(--tidal) 12%, transparent);
   color: var(--tidal);
 }
 
@@ -152,7 +152,7 @@
   align-items: center;
   gap: 6px;
   padding: 5px 12px;
-  border-radius: 999px;
+  border-radius:var(--radius-pill);
   background: rgba(232, 184, 75, 0.22);
   color: #7a5a12;
   font-size: 13px;
@@ -181,7 +181,7 @@
 .pk-panel p { margin: 0; font-size: 0.85rem; color: var(--muted-foreground); line-height: 1.55; }
 .pk-code-input { min-height: 44px; padding: 0.55rem 0.75rem; border-radius: 0.6rem; border: 1.5px solid color-mix(in srgb, var(--foreground) 22%, transparent); font-size: 1rem; letter-spacing: 0.12em; font-weight: 700; background: var(--background); color: var(--foreground); }
 .pk-code-input:focus-visible { outline: 3px solid rgba(46, 125, 161, 0.35); outline-offset: 1px; }
-.pk-primary { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; padding: 0.55rem 1rem; border-radius: 0.65rem; border: none; font-weight: 800; font-size: 0.92rem; cursor: pointer; background: linear-gradient(135deg, var(--primary, #2e7da1), color-mix(in srgb, var(--primary, #2e7da1) 78%, #1f5e7c)); color: #fff; }
+.pk-primary { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; padding: 0.55rem 1rem; border-radius: 0.65rem; border: none; font-weight: 800; font-size: 0.92rem; cursor: pointer; background: linear-gradient(135deg, var(--primary, #2e7da1), color-mix(in srgb, var(--primary, #2e7da1) 78%, #1f5e7c)); color: var(--white); }
 .pk-primary:disabled { opacity: 0.55; cursor: not-allowed; }
 .pk-ghost { min-height: 44px; padding: 0.55rem 1rem; border-radius: 0.65rem; border: 1.5px solid color-mix(in srgb, var(--foreground) 25%, transparent); background: transparent; color: var(--foreground); font-weight: 700; cursor: pointer; }
 .pk-play { display: grid; gap: 0.8rem; }
@@ -214,7 +214,7 @@
 
 /* 標題：品牌漸層文字（emoji 為彩色字形不受影響） */
 .hub-title {
-  background: linear-gradient(115deg, var(--tidal-deep, #0B4F63) 0%, #0B6E8E 52%, #E8754A 130%);
+  background: linear-gradient(115deg, var(--tidal-deep, #0B4F63) 0%, var(--tidal) 52%, var(--coral) 130%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -230,7 +230,7 @@
 .hub-card:hover,
 .hub-card:focus-visible {
   transform: translateY(-4px);
-  box-shadow: 0 16px 30px rgba(11, 110, 142, 0.15);
+  box-shadow: 0 16px 30px color-mix(in srgb, var(--tidal) 15%, transparent);
 }
 
 /* 圖標晶片：每張卡輪替品牌漸層（原本為單一淡灰藍） */
@@ -238,13 +238,13 @@
   width: 46px;
   height: 46px;
   border-radius: 14px;
-  color: #fff;
-  background: linear-gradient(135deg, #0B6E8E, #1596b8);
-  box-shadow: inset 0 -6px 12px rgba(255, 255, 255, 0.14), 0 6px 14px rgba(23, 65, 80, 0.16);
+  color: var(--white);
+  background: linear-gradient(135deg, var(--tidal), #1596b8);
+  box-shadow: inset 0 -6px 12px color-mix(in srgb, var(--white) 14%, transparent), 0 6px 14px rgba(23, 65, 80, 0.16);
 }
-.hub-card:nth-child(5n + 2) .hub-card-icon { background: linear-gradient(135deg, #E8754A, #f0975f); }
-.hub-card:nth-child(5n + 3) .hub-card-icon { background: linear-gradient(135deg, #6C8460, #8aa377); }
-.hub-card:nth-child(5n + 4) .hub-card-icon { background: linear-gradient(135deg, #E8B84B, #f2cf70); }
+.hub-card:nth-child(5n + 2) .hub-card-icon { background: linear-gradient(135deg, var(--coral), #f0975f); }
+.hub-card:nth-child(5n + 3) .hub-card-icon { background: linear-gradient(135deg, var(--moss), #8aa377); }
+.hub-card:nth-child(5n + 4) .hub-card-icon { background: linear-gradient(135deg, var(--yellow), #f2cf70); }
 .hub-card:nth-child(5n + 5) .hub-card-icon { background: linear-gradient(135deg, #7c6bb5, #9d8ed0); }
 
 .hub-card:hover .hub-card-icon {
@@ -253,5 +253,5 @@
 }
 
 /* 分頁：hover 帶品牌色而非灰褐 */
-.hub-tab:hover { background: rgba(11, 110, 142, 0.12); color: var(--tidal-deep, #0B4F63); }
-.hub-tab.on { background: linear-gradient(135deg, #0B6E8E, #1596b8); box-shadow: 0 4px 12px rgba(11, 110, 142, 0.28); }
+.hub-tab:hover { background: color-mix(in srgb, var(--tidal) 12%, transparent); color: var(--tidal-deep, #0B4F63); }
+.hub-tab.on { background: linear-gradient(135deg, var(--tidal), #1596b8); box-shadow: 0 4px 12px color-mix(in srgb, var(--tidal) 28%, transparent); }

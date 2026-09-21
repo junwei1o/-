@@ -3,15 +3,15 @@
   --mg-paper:#fbf6ea; --mg-ink:#3a2f23; --mg-ink2:#6b5d49;
   --mg-orange:#e8843a; --mg-orange-d:#c9661f; --mg-sea:#2f7d8f; --mg-sea-d:#1f5d6b;
   --mg-green:#3f8a43; --mg-green-bg:#e2f0db; --mg-red:#d0503a; --mg-red-bg:#fbe1da;
-  --mg-gold:#e0a92e; --mg-line:#e2d4b6; --mg-card:#fffdf6;
+  --mg-gold:#e0a92e; --mg-line:#e2d4b6; --mg-card:var(--white);
   position:relative; background:var(--mg-paper); color:var(--mg-ink);
-  border:2px solid var(--mg-line); border-radius:18px; padding:14px;
+  border:2px solid var(--mg-line); border-radius:var(--radius-lg); padding:14px;
 }
 .matching-game .mg-meta{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px}
 .matching-game .mg-tag{display:inline-block;background:#fde6d2;color:var(--mg-orange-d);
-  font-size:12px;font-weight:700;border-radius:999px;padding:3px 12px}
+  font-size:12px;font-weight:700;border-radius:var(--radius-pill);padding:3px 12px}
 .matching-game .mg-stats{display:flex;gap:8px;flex-wrap:wrap;font-size:12.5px;color:var(--mg-ink2);font-weight:700}
-.matching-game .mg-stats span{background:#f1e8d2;border-radius:8px;padding:3px 9px;font-variant-numeric:tabular-nums}
+.matching-game .mg-stats span{background:#f1e8d2;border-radius:var(--radius-sm);padding:3px 9px;font-variant-numeric:tabular-nums}
 .matching-game .mg-stats .mg-countdown{background:#e7f3f5;color:var(--mg-sea-d)}
 .matching-game .mg-stats .mg-countdown.is-urgent{background:var(--mg-red-bg);color:var(--mg-red);animation:mg-countdown-pulse .9s infinite}
 @keyframes mg-countdown-pulse{0%,100%{opacity:1}50%{opacity:.55}}
@@ -35,19 +35,19 @@
 .matching-game .mg-left .mg-item{border-left:5px solid var(--mg-sea)}
 .matching-game .mg-right .mg-item{border-left:5px solid var(--mg-orange)}
 .matching-game .mg-item:active{transform:scale(.97)}
-.matching-game .mg-badge{flex:none;width:24px;height:24px;border-radius:8px;background:#eef3f2;color:var(--mg-sea-d);
+.matching-game .mg-badge{flex:none;width:24px;height:24px;border-radius:var(--radius-sm);background:#eef3f2;color:var(--mg-sea-d);
   font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center}
 .matching-game .mg-right .mg-badge{background:#fdeede;color:var(--mg-orange-d)}
 .matching-game .mg-selected{background:#e7f3f5;border-color:var(--mg-sea);
   box-shadow:0 0 0 3px rgba(47,125,143,.22);transform:translateY(-1px)}
 .matching-game .mg-matched{background:var(--mg-green-bg);border-color:var(--mg-green);color:#2f6028}
-.matching-game .mg-matched .mg-badge{background:var(--mg-green);color:#fff}
+.matching-game .mg-matched .mg-badge{background:var(--mg-green);color:var(--white)}
 .matching-game .mg-mark{margin-left:auto;color:var(--mg-green);font-weight:900;font-size:15px}
 /* G 圖片配對：左欄改為圖卡（直排），badge 浮在左上、mark 浮在右上 */
 .matching-game .mg-item-imgwrap{flex-direction:column;align-items:stretch;padding:10px}
 .matching-game .mg-item-imgwrap .mg-badge{position:absolute;top:8px;left:8px;box-shadow:0 1px 3px rgba(58,47,35,.25)}
 .matching-game .mg-item-imgwrap .mg-mark{position:absolute;top:8px;right:8px;margin-left:0;
-  background:var(--mg-green);color:#fff;font-size:12px;padding:3px 8px;border-radius:9px}
+  background:var(--mg-green);color:var(--white);font-size:12px;padding:3px 8px;border-radius:9px}
 .matching-game .mg-item-img{width:100%;height:96px;object-fit:cover;border-radius:10px;display:block;
   background:var(--mg-paper);pointer-events:none}
 .matching-game .mg-shake{background:var(--mg-red-bg);border-color:var(--mg-red);animation:mg-shake .42s}
@@ -72,13 +72,13 @@
 .matching-game .mg-fail-x{opacity:0;transform-box:fill-box;transform-origin:center;
   animation:mg-xpop .24s cubic-bezier(.2,1.5,.4,1) .28s forwards}
 .matching-game .mg-fail-x circle{fill:var(--mg-red)}
-.matching-game .mg-fail-x line{stroke:#fff;stroke-width:3.4;stroke-linecap:round}
+.matching-game .mg-fail-x line{stroke:var(--white);stroke-width:3.4;stroke-linecap:round}
 @keyframes mg-xpop{0%{opacity:0;transform:scale(.1) rotate(-30deg)}
   100%{opacity:1;transform:scale(1) rotate(0)}}
 
 /* 結果卡 */
-.matching-game .mg-result-card{position:relative;margin-top:16px;background:#fff;overflow:hidden;
-  border:2px solid var(--mg-line);border-radius:18px;padding:22px 18px;text-align:center;
+.matching-game .mg-result-card{position:relative;margin-top:16px;background:var(--white);overflow:hidden;
+  border:2px solid var(--mg-line);border-radius:var(--radius-lg);padding:22px 18px;text-align:center;
   box-shadow:0 8px 26px rgba(58,47,35,.14);animation:mg-cardin .35s ease}
 @keyframes mg-cardin{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 .matching-game .mg-result-card h3{font-size:21px;margin:0 0 6px}
@@ -92,8 +92,8 @@
 .matching-game .mg-result-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:14px}
 .matching-game .mg-btn{min-height:48px;border:none;border-radius:14px;padding:0 20px;font-size:15px;font-weight:700;
   cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:7px}
-.matching-game .mg-btn-primary{background:linear-gradient(160deg,#ec9449,#d9741f);color:#fff;box-shadow:0 3px 0 var(--mg-orange-d)}
-.matching-game .mg-btn-sea{background:linear-gradient(160deg,#3f8fa1,#256b7c);color:#fff;box-shadow:0 3px 0 var(--mg-sea-d)}
+.matching-game .mg-btn-primary{background:linear-gradient(160deg,#ec9449,#d9741f);color:var(--white);box-shadow:0 3px 0 var(--mg-orange-d)}
+.matching-game .mg-btn-sea{background:linear-gradient(160deg,#3f8fa1,#256b7c);color:var(--white);box-shadow:0 3px 0 var(--mg-sea-d)}
 .matching-game .mg-btn-ghost{background:#efe7d2;color:var(--mg-ink)}
 /* 慶祝彩帶 */
 .matching-game .mg-confetti{position:absolute;inset:0;pointer-events:none;overflow:hidden}

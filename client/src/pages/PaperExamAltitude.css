@@ -21,8 +21,8 @@
   border: 1px solid rgba(46, 90, 76, 0.25);
   border-radius: 1rem;
   color: #1b4b45;
-  background: rgba(249, 243, 232, 0.82);
-  box-shadow: 0 6px 14px rgba(39, 80, 72, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.72);
+  background: color-mix(in srgb, var(--paper) 82%, transparent);
+  box-shadow: 0 6px 14px rgba(39, 80, 72, 0.1), inset 0 1px 0 color-mix(in srgb, var(--white) 72%, transparent);
 }
 
 .paper-altitude-meter {
@@ -31,7 +31,7 @@
   min-height: 5rem;
   overflow: hidden;
   border: 1px solid rgba(38, 100, 83, 0.45);
-  border-radius: 999px;
+  border-radius:var(--radius-pill);
   background: linear-gradient(180deg, #fffdf4 0%, #d7ebe2 42%, #8cc6a8 100%);
   box-shadow: inset 0 1px 2px rgba(30, 77, 68, 0.2);
 }
@@ -41,8 +41,8 @@
   z-index: 1;
   inset: 0 0 auto;
   height: 19%;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.9);
-  background: rgba(255, 255, 255, 0.64);
+  border-bottom: 1px solid color-mix(in srgb, var(--white) 90%, transparent);
+  background: color-mix(in srgb, var(--white) 64%, transparent);
 }
 
 .paper-altitude-meter-fill {
@@ -51,8 +51,8 @@
   bottom: 0;
   left: 0;
   border-radius: inherit;
-  background: linear-gradient(0deg, #4f9a72 0%, #9bd6bb 46%, rgba(255, 255, 255, 0.94) 100%);
-  box-shadow: 0 -1px 3px rgba(255, 255, 255, 0.78);
+  background: linear-gradient(0deg, #4f9a72 0%, #9bd6bb 46%, color-mix(in srgb, var(--white) 94%, transparent) 100%);
+  box-shadow: 0 -1px 3px color-mix(in srgb, var(--white) 78%, transparent);
   transition: height 240ms cubic-bezier(0.23, 1, 0.32, 1);
 }
 
@@ -94,8 +94,8 @@
   border: 1px solid rgba(46, 90, 76, 0.28);
   border-radius: 1rem;
   color: #284f44;
-  background: linear-gradient(135deg, rgba(239, 249, 243, 0.94), rgba(249, 243, 232, 0.9));
-  box-shadow: 0 8px 18px rgba(39, 80, 72, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.84);
+  background: linear-gradient(135deg, rgba(239, 249, 243, 0.94), color-mix(in srgb, var(--paper) 90%, transparent));
+  box-shadow: 0 8px 18px rgba(39, 80, 72, 0.1), inset 0 1px 0 color-mix(in srgb, var(--white) 84%, transparent);
 }
 
 .paper-next-group-tip > svg {
@@ -163,9 +163,9 @@
   min-height: 2.2rem;
   padding: 0.42rem 0.7rem;
   border: 1px solid rgba(51, 110, 90, 0.34);
-  border-radius: 999px;
+  border-radius:var(--radius-pill);
   color: #315f4e;
-  background: rgba(255, 255, 255, 0.62);
+  background: color-mix(in srgb, var(--white) 62%, transparent);
   font-size: 0.78rem;
   font-weight: 800;
   cursor: pointer;
@@ -173,7 +173,7 @@
 }
 
 .paper-next-group-tip-sound-toggle:hover {
-  background: rgba(255, 255, 255, 0.92);
+  background: color-mix(in srgb, var(--white) 92%, transparent);
   box-shadow: 0 4px 10px rgba(39, 80, 72, 0.12);
 }
 
@@ -197,7 +197,7 @@
   border-radius: 1rem;
   color: #55451f;
   background: linear-gradient(135deg, rgba(255, 253, 244, 0.94), rgba(243, 226, 167, 0.82));
-  box-shadow: 0 8px 18px rgba(117, 88, 28, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  box-shadow: 0 8px 18px rgba(117, 88, 28, 0.12), inset 0 1px 0 color-mix(in srgb, var(--white) 80%, transparent);
 }
 
 .paper-summit-encouragement > svg {
@@ -239,15 +239,15 @@
   height: 2rem;
   place-items: center;
   border: 1px solid rgba(117, 88, 28, 0.26);
-  border-radius: 999px;
+  border-radius:var(--radius-pill);
   color: #665128;
-  background: rgba(255, 255, 255, 0.52);
+  background: color-mix(in srgb, var(--white) 52%, transparent);
   cursor: pointer;
   transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1), box-shadow 160ms cubic-bezier(0.23, 1, 0.32, 1), background-color 160ms cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 .paper-summit-encouragement-close:hover {
-  background: rgba(255, 255, 255, 0.86);
+  background: color-mix(in srgb, var(--white) 86%, transparent);
   box-shadow: 0 4px 10px rgba(117, 88, 28, 0.14);
 }
 
@@ -269,7 +269,7 @@
   min-height: 2rem;
   padding: 0.35rem 0.65rem;
   border: 1px solid rgba(77, 111, 76, 0.38);
-  border-radius: 999px;
+  border-radius:var(--radius-pill);
   color: #315e48;
   background: rgba(246, 252, 245, 0.78);
   font-size: 0.78rem;
@@ -279,7 +279,7 @@
 }
 
 .paper-summit-strategy-trigger:hover {
-  background: rgba(255, 255, 255, 0.94);
+  background: color-mix(in srgb, var(--white) 94%, transparent);
   box-shadow: 0 4px 10px rgba(61, 98, 65, 0.14);
 }
 
@@ -343,9 +343,9 @@
   height: 1.85rem;
   place-items: center;
   border: 1px solid rgba(77, 111, 76, 0.24);
-  border-radius: 999px;
+  border-radius:var(--radius-pill);
   color: #426449;
-  background: rgba(255, 255, 255, 0.6);
+  background: color-mix(in srgb, var(--white) 60%, transparent);
   cursor: pointer;
 }
 
@@ -484,8 +484,8 @@
 
 .paper-error-classification { display: grid; gap: 0.45rem; margin-top: 0.75rem; padding: 0.7rem; border: 1px solid rgba(255, 107, 53, 0.22); border-radius: 0.85rem; background: rgba(255, 248, 238, 0.68); color: #6f4d35; font-size: 0.82rem; }
 .paper-error-classification-actions { display: flex; flex-wrap: wrap; gap: 0.45rem; }
-.paper-error-classification-actions button, .paper-explanation-toggle, .paper-doubt-button { display: inline-flex; align-items: center; justify-content: center; gap: 0.3rem; min-height: 2.35rem; padding: 0.45rem 0.72rem; border: 1px solid rgba(46, 90, 76, 0.28); border-radius: 999px; color: #315f4e; background: rgba(255, 255, 255, 0.72); font: inherit; font-size: 0.78rem; font-weight: 800; cursor: pointer; transition: transform 160ms var(--ease-out, ease-out), box-shadow 160ms var(--ease-out, ease-out), background-color 160ms var(--ease-out, ease-out); }
-.paper-error-classification-actions button:hover, .paper-explanation-toggle:hover, .paper-doubt-button:hover { background: #fff; box-shadow: 0 4px 10px rgba(39, 80, 72, 0.12); }
+.paper-error-classification-actions button, .paper-explanation-toggle, .paper-doubt-button { display: inline-flex; align-items: center; justify-content: center; gap: 0.3rem; min-height: 2.35rem; padding: 0.45rem 0.72rem; border: 1px solid rgba(46, 90, 76, 0.28); border-radius:var(--radius-pill); color: #315f4e; background: color-mix(in srgb, var(--white) 72%, transparent); font: inherit; font-size: 0.78rem; font-weight: 800; cursor: pointer; transition: transform 160ms var(--ease-out, ease-out), box-shadow 160ms var(--ease-out, ease-out), background-color 160ms var(--ease-out, ease-out); }
+.paper-error-classification-actions button:hover, .paper-explanation-toggle:hover, .paper-doubt-button:hover { background: var(--white); box-shadow: 0 4px 10px rgba(39, 80, 72, 0.12); }
 .paper-error-classification-actions button:active, .paper-explanation-toggle:active, .paper-doubt-button:active { transform: scale(0.97); }
 .paper-error-classification-actions button.is-selected { border-color: #ff8a5c; color: #8a4a2a; background: #fff0e5; }
 .paper-error-classification small { color: #7c674f; font-weight: 700; }
@@ -528,8 +528,8 @@
   border: 2px solid rgba(46, 90, 76, 0.18);
   border-radius: 1rem;
   color: #2d5a4e;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(249, 243, 232, 0.88));
-  box-shadow: 0 4px 12px rgba(39, 80, 72, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--white) 92%, transparent), color-mix(in srgb, var(--paper) 88%, transparent));
+  box-shadow: 0 4px 12px rgba(39, 80, 72, 0.08), inset 0 1px 0 color-mix(in srgb, var(--white) 80%, transparent);
   font: inherit;
   cursor: pointer;
   transition: transform 180ms cubic-bezier(0.23, 1, 0.32, 1), box-shadow 180ms cubic-bezier(0.23, 1, 0.32, 1), border-color 180ms ease, background-color 180ms ease;
@@ -537,7 +537,7 @@
 
 .paper-scope-button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(39, 80, 72, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  box-shadow: 0 8px 20px rgba(39, 80, 72, 0.14), inset 0 1px 0 color-mix(in srgb, var(--white) 90%, transparent);
 }
 
 .paper-scope-button:active {
@@ -547,7 +547,7 @@
 .paper-scope-button.is-selected {
   border-color: #10b981;
   background: linear-gradient(135deg, rgba(225, 244, 232, 0.95), rgba(209, 250, 229, 0.9));
-  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.2), inset 0 1px 0 color-mix(in srgb, var(--white) 90%, transparent);
 }
 
 .paper-scope-button strong {
@@ -606,15 +606,15 @@
   border: 2px solid rgba(46, 90, 76, 0.16);
   border-radius: 1rem;
   color: #2d5a4e;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.94), rgba(249, 243, 232, 0.9));
-  box-shadow: 0 3px 10px rgba(39, 80, 72, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--white) 94%, transparent), color-mix(in srgb, var(--paper) 90%, transparent));
+  box-shadow: 0 3px 10px rgba(39, 80, 72, 0.06), inset 0 1px 0 color-mix(in srgb, var(--white) 80%, transparent);
   cursor: pointer;
   transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1), box-shadow 160ms cubic-bezier(0.23, 1, 0.32, 1), border-color 160ms ease, background-color 160ms ease;
 }
 
 .paper-option:hover {
   transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(39, 80, 72, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  box-shadow: 0 6px 16px rgba(39, 80, 72, 0.12), inset 0 1px 0 color-mix(in srgb, var(--white) 90%, transparent);
 }
 
 .paper-option:active {
@@ -633,8 +633,8 @@
   justify-content: center;
   width: 2rem;
   height: 2rem;
-  border-radius: 999px;
-  color: #fff;
+  border-radius:var(--radius-pill);
+  color: var(--white);
   background: #39735a;
   font-size: 0.85rem;
   font-weight: 800;
@@ -651,7 +651,7 @@
 .paper-option.is-selected {
   border-color: #10b981;
   background: linear-gradient(135deg, rgba(225, 244, 232, 0.95), rgba(209, 250, 229, 0.9));
-  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.18), inset 0 1px 0 color-mix(in srgb, var(--white) 90%, transparent);
 }
 
 .paper-option.is-selected > span:first-of-type {
@@ -733,8 +733,8 @@
   border: 2px solid rgba(46, 90, 76, 0.18);
   border-radius: 1rem;
   color: #2d5a4e;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.94), rgba(249, 243, 232, 0.9));
-  box-shadow: 0 4px 12px rgba(39, 80, 72, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--white) 94%, transparent), color-mix(in srgb, var(--paper) 90%, transparent));
+  box-shadow: 0 4px 12px rgba(39, 80, 72, 0.08), inset 0 1px 0 color-mix(in srgb, var(--white) 80%, transparent);
   font: inherit;
   text-align: left;
   cursor: pointer;
@@ -744,7 +744,7 @@
 .paper-home-primary {
   border-color: #10b981;
   background: linear-gradient(135deg, rgba(225, 244, 232, 0.95), rgba(209, 250, 229, 0.9));
-  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.18), inset 0 1px 0 color-mix(in srgb, var(--white) 90%, transparent);
 }
 
 .paper-home-primary strong,
@@ -767,7 +767,7 @@
 .paper-home-primary:hover,
 .paper-home-secondary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(39, 80, 72, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  box-shadow: 0 8px 20px rgba(39, 80, 72, 0.14), inset 0 1px 0 color-mix(in srgb, var(--white) 90%, transparent);
 }
 
 .paper-home-primary:active,
@@ -795,9 +795,9 @@
 }
 
 .paper-primary-button {
-  color: #fff;
+  color: var(--white);
   background: linear-gradient(135deg, #10b981, #059669);
-  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.28), inset 0 1px 0 color-mix(in srgb, var(--white) 20%, transparent);
 }
 
 .paper-primary-button:hover {
@@ -811,9 +811,9 @@
 
 .paper-secondary-button {
   color: #2d5a4e;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(249, 243, 232, 0.9));
+  background: linear-gradient(135deg, color-mix(in srgb, var(--white) 95%, transparent), color-mix(in srgb, var(--paper) 90%, transparent));
   border-color: rgba(46, 90, 76, 0.2);
-  box-shadow: 0 3px 10px rgba(39, 80, 72, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  box-shadow: 0 3px 10px rgba(39, 80, 72, 0.08), inset 0 1px 0 color-mix(in srgb, var(--white) 80%, transparent);
 }
 
 .paper-secondary-button:hover {
@@ -827,9 +827,9 @@
 }
 
 .paper-retry-unmastered-button {
-  color: #fff;
+  color: var(--white);
   background: linear-gradient(135deg, #f59e0b, #d97706);
-  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.28), inset 0 1px 0 color-mix(in srgb, var(--white) 20%, transparent);
 }
 
 .paper-retry-unmastered-button:hover {
@@ -857,8 +857,8 @@
   padding: 1rem;
   border: 2px solid rgba(46, 90, 76, 0.15);
   border-radius: 1rem;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.94), rgba(249, 243, 232, 0.9));
-  box-shadow: 0 4px 12px rgba(39, 80, 72, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--white) 94%, transparent), color-mix(in srgb, var(--paper) 90%, transparent));
+  box-shadow: 0 4px 12px rgba(39, 80, 72, 0.08), inset 0 1px 0 color-mix(in srgb, var(--white) 80%, transparent);
   margin-bottom: 0.75rem;
 }
 
@@ -888,7 +888,7 @@
   gap: 0.25rem;
   padding: 0.65rem;
   border-radius: 0.75rem;
-  background: rgba(249, 243, 232, 0.6);
+  background: color-mix(in srgb, var(--paper) 60%, transparent);
 }
 
 .paper-wrong-answer-grid span {
@@ -920,7 +920,7 @@
   padding: 0.5rem 0.75rem;
   border: 2px solid rgba(46, 90, 76, 0.2);
   border-radius: 0.75rem;
-  background: rgba(255, 255, 255, 0.9);
+  background: color-mix(in srgb, var(--white) 90%, transparent);
   font: inherit;
   font-size: 0.9rem;
   cursor: pointer;
@@ -977,8 +977,8 @@
   padding: 1rem 0.75rem;
   border: 2px solid rgba(46, 90, 76, 0.15);
   border-radius: 1rem;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.94), rgba(249, 243, 232, 0.9));
-  box-shadow: 0 4px 12px rgba(39, 80, 72, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--white) 94%, transparent), color-mix(in srgb, var(--paper) 90%, transparent));
+  box-shadow: 0 4px 12px rgba(39, 80, 72, 0.08), inset 0 1px 0 color-mix(in srgb, var(--white) 80%, transparent);
 }
 
 .paper-summary-stats strong {
@@ -999,8 +999,8 @@
   padding: 1.25rem;
   border: 2px solid rgba(46, 90, 76, 0.15);
   border-radius: 1rem;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.94), rgba(249, 243, 232, 0.9));
-  box-shadow: 0 4px 12px rgba(39, 80, 72, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--white) 94%, transparent), color-mix(in srgb, var(--paper) 90%, transparent));
+  box-shadow: 0 4px 12px rgba(39, 80, 72, 0.08), inset 0 1px 0 color-mix(in srgb, var(--white) 80%, transparent);
   margin: 1.25rem 0;
 }
 
@@ -1038,7 +1038,7 @@
 
 .mastery-comparison-track {
   height: 1.5rem;
-  border-radius: 999px;
+  border-radius:var(--radius-pill);
   background: rgba(46, 90, 76, 0.1);
   overflow: hidden;
 }
@@ -1047,7 +1047,7 @@
 .mastery-bar-after {
   display: block;
   height: 100%;
-  border-radius: 999px;
+  border-radius:var(--radius-pill);
   transition: width 400ms cubic-bezier(0.23, 1, 0.32, 1);
 }
 
@@ -1071,9 +1071,9 @@
   display: inline-block;
   padding: 0.4rem 0.85rem;
   border: 2px solid rgba(46, 90, 76, 0.2);
-  border-radius: 999px;
+  border-radius:var(--radius-pill);
   color: #2d5a4e;
-  background: rgba(255, 255, 255, 0.8);
+  background: color-mix(in srgb, var(--white) 80%, transparent);
   font-size: 0.85rem;
   font-weight: 700;
   box-shadow: 0 2px 6px rgba(39, 80, 72, 0.06);
@@ -1156,9 +1156,9 @@
 .paper-summary-actions .paper-primary-button,
 .paper-review-confirmation-actions .paper-primary-button,
 .paper-next-group-tip-actions .paper-primary-button {
-  color: #fff !important;
+  color: var(--white) !important;
   background: linear-gradient(135deg, #10b981, #059669) !important;
-  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.28), inset 0 1px 0 color-mix(in srgb, var(--white) 20%, transparent) !important;
 }
 
 .paper-question-actions .paper-primary-button:hover,
@@ -1181,9 +1181,9 @@
 .paper-review-confirmation-actions .paper-secondary-button,
 .paper-next-group-tip-actions .paper-secondary-button {
   color: #2d5a4e !important;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(249, 243, 232, 0.9)) !important;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--white) 95%, transparent), color-mix(in srgb, var(--paper) 90%, transparent)) !important;
   border-color: rgba(46, 90, 76, 0.2) !important;
-  box-shadow: 0 3px 10px rgba(39, 80, 72, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+  box-shadow: 0 3px 10px rgba(39, 80, 72, 0.08), inset 0 1px 0 color-mix(in srgb, var(--white) 80%, transparent) !important;
 }
 
 .paper-question-actions .paper-secondary-button:hover,
@@ -1249,14 +1249,14 @@
 .paper-scope-button {
   border-color: var(--eye-care-border) !important;
   color: var(--eye-care-text) !important;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), var(--eye-care-bg-light)) !important;
-  box-shadow: 0 4px 12px var(--eye-care-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--white) 95%, transparent), var(--eye-care-bg-light)) !important;
+  box-shadow: 0 4px 12px var(--eye-care-shadow), inset 0 1px 0 color-mix(in srgb, var(--white) 80%, transparent) !important;
 }
 
 .paper-scope-button.is-selected {
   border-color: var(--eye-care-primary) !important;
   background: linear-gradient(135deg, var(--eye-care-bg), #fde68a) !important;
-  box-shadow: 0 6px 16px rgba(217, 119, 6, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+  box-shadow: 0 6px 16px rgba(217, 119, 6, 0.25), inset 0 1px 0 color-mix(in srgb, var(--white) 90%, transparent) !important;
 }
 
 .paper-scope-button small {
@@ -1271,8 +1271,8 @@
 .paper-option {
   border-color: var(--eye-care-border) !important;
   color: var(--eye-care-text) !important;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.96), var(--eye-care-bg-light)) !important;
-  box-shadow: 0 3px 10px var(--eye-care-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--white) 96%, transparent), var(--eye-care-bg-light)) !important;
+  box-shadow: 0 3px 10px var(--eye-care-shadow), inset 0 1px 0 color-mix(in srgb, var(--white) 80%, transparent) !important;
 }
 
 .paper-option > span:first-of-type {
@@ -1282,7 +1282,7 @@
 .paper-option.is-selected {
   border-color: var(--eye-care-primary) !important;
   background: linear-gradient(135deg, var(--eye-care-bg), #fde68a) !important;
-  box-shadow: 0 4px 14px rgba(217, 119, 6, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+  box-shadow: 0 4px 14px rgba(217, 119, 6, 0.22), inset 0 1px 0 color-mix(in srgb, var(--white) 90%, transparent) !important;
 }
 
 .paper-option.is-correct {
@@ -1310,9 +1310,9 @@
 .paper-summary-actions .paper-primary-button,
 .paper-review-confirmation-actions .paper-primary-button,
 .paper-next-group-tip-actions .paper-primary-button {
-  color: #fff !important;
+  color: var(--white) !important;
   background: linear-gradient(135deg, var(--eye-care-primary), var(--eye-care-primary-dark)) !important;
-  box-shadow: 0 4px 14px rgba(217, 119, 6, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+  box-shadow: 0 4px 14px rgba(217, 119, 6, 0.3), inset 0 1px 0 color-mix(in srgb, var(--white) 20%, transparent) !important;
 }
 
 .paper-secondary-button,
@@ -1322,15 +1322,15 @@
 .paper-review-confirmation-actions .paper-secondary-button,
 .paper-next-group-tip-actions .paper-secondary-button {
   color: var(--eye-care-text) !important;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.96), var(--eye-care-bg-light)) !important;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--white) 96%, transparent), var(--eye-care-bg-light)) !important;
   border-color: var(--eye-care-border) !important;
-  box-shadow: 0 3px 10px var(--eye-care-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+  box-shadow: 0 3px 10px var(--eye-care-shadow), inset 0 1px 0 color-mix(in srgb, var(--white) 80%, transparent) !important;
 }
 
 .paper-retry-unmastered-button {
-  color: #fff !important;
+  color: var(--white) !important;
   background: linear-gradient(135deg, #ea580c, #c2410c) !important; /* 深橘強調 */
-  box-shadow: 0 4px 14px rgba(234, 88, 12, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+  box-shadow: 0 4px 14px rgba(234, 88, 12, 0.3), inset 0 1px 0 color-mix(in srgb, var(--white) 20%, transparent) !important;
 }
 
 /* 4. 玉山高度計 → 護眼版 */
@@ -1338,7 +1338,7 @@
   border-color: rgba(180, 83, 9, 0.25) !important;
   color: var(--eye-care-text) !important;
   background: rgba(254, 243, 199, 0.85) !important;
-  box-shadow: 0 6px 14px var(--eye-care-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.72) !important;
+  box-shadow: 0 6px 14px var(--eye-care-shadow), inset 0 1px 0 color-mix(in srgb, var(--white) 72%, transparent) !important;
 }
 
 .paper-altitude-copy p,
@@ -1356,7 +1356,7 @@
 }
 
 .paper-altitude-meter-fill {
-  background: linear-gradient(0deg, #d97706 0%, #fbbf24 46%, rgba(255, 255, 255, 0.94) 100%) !important;
+  background: linear-gradient(0deg, #d97706 0%, #fbbf24 46%, color-mix(in srgb, var(--white) 94%, transparent) 100%) !important;
 }
 
 /* 5. 下一組提示卡 → 護眼版 */
@@ -1364,7 +1364,7 @@
   border-color: rgba(180, 83, 9, 0.28) !important;
   color: var(--eye-care-text) !important;
   background: linear-gradient(135deg, rgba(254, 243, 199, 0.94), rgba(255, 251, 235, 0.9)) !important;
-  box-shadow: 0 8px 18px var(--eye-care-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.84) !important;
+  box-shadow: 0 8px 18px var(--eye-care-shadow), inset 0 1px 0 color-mix(in srgb, var(--white) 84%, transparent) !important;
 }
 
 .paper-next-group-tip > svg {
@@ -1387,14 +1387,14 @@
 .paper-next-group-tip-sound-toggle {
   border-color: rgba(180, 83, 9, 0.34) !important;
   color: var(--eye-care-text) !important;
-  background: rgba(255, 255, 255, 0.62) !important;
+  background: color-mix(in srgb, var(--white) 62%, transparent) !important;
 }
 
 /* 6. 登頂鼓勵卡 → 護眼版（本來就是暖色，微調） */
 .paper-summit-encouragement {
   border-color: rgba(180, 83, 9, 0.34) !important;
   background: linear-gradient(135deg, rgba(255, 253, 244, 0.94), rgba(253, 230, 138, 0.82)) !important;
-  box-shadow: 0 8px 18px rgba(180, 83, 9, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+  box-shadow: 0 8px 18px rgba(180, 83, 9, 0.15), inset 0 1px 0 color-mix(in srgb, var(--white) 80%, transparent) !important;
 }
 
 .paper-summit-encouragement > svg {
@@ -1416,8 +1416,8 @@
 /* 7. 錯題解析卡 → 護眼版 */
 .paper-wrong-card {
   border-color: var(--eye-care-border) !important;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.96), var(--eye-care-bg-light)) !important;
-  box-shadow: 0 4px 12px var(--eye-care-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--white) 96%, transparent), var(--eye-care-bg-light)) !important;
+  box-shadow: 0 4px 12px var(--eye-care-shadow), inset 0 1px 0 color-mix(in srgb, var(--white) 80%, transparent) !important;
 }
 
 .paper-wrong-card .paper-question-meta {
@@ -1435,8 +1435,8 @@
 /* 8. 統計數據卡 → 護眼版 */
 .paper-summary-stats > div {
   border-color: var(--eye-care-border) !important;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.96), var(--eye-care-bg-light)) !important;
-  box-shadow: 0 4px 12px var(--eye-care-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--white) 96%, transparent), var(--eye-care-bg-light)) !important;
+  box-shadow: 0 4px 12px var(--eye-care-shadow), inset 0 1px 0 color-mix(in srgb, var(--white) 80%, transparent) !important;
 }
 
 .paper-summary-stats strong {
@@ -1450,8 +1450,8 @@
 /* 9. 掌握度比較條 → 護眼版 */
 .mastery-comparison-card {
   border-color: var(--eye-care-border) !important;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.96), var(--eye-care-bg-light)) !important;
-  box-shadow: 0 4px 12px var(--eye-care-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--white) 96%, transparent), var(--eye-care-bg-light)) !important;
+  box-shadow: 0 4px 12px var(--eye-care-shadow), inset 0 1px 0 color-mix(in srgb, var(--white) 80%, transparent) !important;
 }
 
 .mastery-comparison-label span {
@@ -1474,14 +1474,14 @@
 .paper-wrong-practice-topic-list span {
   border-color: var(--eye-care-border) !important;
   color: var(--eye-care-text) !important;
-  background: rgba(255, 255, 255, 0.8) !important;
+  background: color-mix(in srgb, var(--white) 80%, transparent) !important;
   box-shadow: 0 2px 6px var(--eye-care-shadow) !important;
 }
 
 /* 11. 篩選下拉/清除按鈕 → 護眼版 */
 .paper-wrong-filters select {
   border-color: var(--eye-care-border) !important;
-  background: rgba(255, 255, 255, 0.9) !important;
+  background: color-mix(in srgb, var(--white) 90%, transparent) !important;
 }
 
 .paper-wrong-filters select:focus {
@@ -1507,7 +1507,7 @@
 .paper-doubt-button {
   border-color: var(--eye-care-border) !important;
   color: var(--eye-care-text) !important;
-  background: rgba(255, 255, 255, 0.72) !important;
+  background: color-mix(in srgb, var(--white) 72%, transparent) !important;
 }
 
 .paper-error-classification-actions button.is-selected {
@@ -1532,7 +1532,7 @@
 .paper-exam-panel,
 .paper-question-panel,
 .paper-summary-panel {
-  background: rgba(255, 255, 255, 0.6) !important;
+  background: color-mix(in srgb, var(--white) 60%, transparent) !important;
   border-radius: 1.5rem;
   padding: 1.5rem;
   margin-bottom: 1.5rem;
@@ -1560,11 +1560,11 @@ h1, h2, h3,
 .speech-read-control {
   border-color: var(--eye-care-border) !important;
   color: var(--eye-care-text) !important;
-  background: rgba(255, 255, 255, 0.7) !important;
+  background: color-mix(in srgb, var(--white) 70%, transparent) !important;
 }
 
 .speech-read-control:hover {
-  background: rgba(255, 255, 255, 0.9) !important;
+  background: color-mix(in srgb, var(--white) 90%, transparent) !important;
   box-shadow: 0 4px 10px var(--eye-care-shadow) !important;
 }
 
@@ -1575,7 +1575,7 @@ h1, h2, h3,
   border: 1px solid rgba(217, 160, 45, 0.35);
   border-left: 4px solid var(--yellow);
   border-radius: 1rem;
-  background: linear-gradient(135deg, rgba(255, 250, 235, 0.96) 0%, rgba(255, 255, 255, 0.94) 100%);
+  background: linear-gradient(135deg, rgba(255, 250, 235, 0.96) 0%, color-mix(in srgb, var(--white) 94%, transparent) 100%);
   box-shadow: 0 4px 12px rgba(39, 80, 72, 0.06);
 }
 
