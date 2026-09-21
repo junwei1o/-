@@ -1,18 +1,14 @@
 import { useCallback, useState } from "react";
-import { Link } from "wouter";
-import { Coins, Zap, CalendarCheck, Swords, Sparkles } from "lucide-react";
+import { Coins, Zap, CalendarCheck } from "lucide-react";
 import { toast } from "sonner";
 import { getDailySignIn, getPlayerData } from "@/utils/storage";
 import { loadRpgState } from "@/game/rpgStorage";
 import {
   buyShopItem,
   claimTaskReward,
-  claimWeeklyBossReward,
   getDailyTasks,
   getShopItems,
   getTodayStats,
-  getWeeklyBoss,
-  hasLuckyCharmPending,
   localDayKey,
   localWeekKey,
   performDailySignIn,
@@ -33,9 +29,7 @@ export default function DailyCamp() {
   const weekKey = localWeekKey();
   const tasks = getDailyTasks();
   const shopItems = getShopItems();
-  const boss = getWeeklyBoss();
   const stats = getTodayStats();
-  const charmPending = hasLuckyCharmPending();
 
   const handleSignIn = () => {
     const result = performDailySignIn();
@@ -67,16 +61,6 @@ export default function DailyCamp() {
     refresh();
   };
 
-  const handleClaimBoss = () => {
-    const result = claimWeeklyBossReward();
-    if (result.ok) {
-      toast.success(result.message);
-    } else {
-      toast.message(result.message);
-    }
-    refresh();
-  };
-
   const doneCount = tasks.filter((task) => task.progress >= task.target).length;
 
   return (
@@ -84,11 +68,10 @@ export default function DailyCamp() {
       <header className="daily-camp-header">
         <p className="daily-camp-eyebrow">DAILY CAMP · {dayKey} · {weekKey}</p>
         <h1>每日營地</h1>
-        <p>每天回來簽到、解任務賺金幣，再到商店幫船員補給，出發挑戰每週王！</p>
+        <p>每天回來簽到、解任務賺金幣，再到商店幫船員補給，出發探索知識島嶼！</p>
         <div className="daily-camp-wallet" aria-label="我的資源">
           <span className="daily-camp-wallet-item"><Coins size={16} aria-hidden="true" /> {player.gold} 金幣</span>
           <span className="daily-camp-wallet-item"><Zap size={16} aria-hidden="true" /> {rpg.energy} 體力</span>
-          {charmPending ? <span className="daily-camp-wallet-item is-charm"><Sparkles size={16} aria-hidden="true" /> 護身符待戰鬥</span> : null}
         </div>
       </header>
 
@@ -140,28 +123,6 @@ export default function DailyCamp() {
         </ul>
       </section>
 
-      <section className="daily-camp-section daily-camp-boss" aria-labelledby="daily-camp-boss-title">
-        <div className="daily-camp-section-heading">
-          <h2 id="daily-camp-boss-title"><Swords size={20} aria-hidden="true" /> 每週王：風暴海怪</h2>
-          <span>{boss.weekKey}</span>
-        </div>
-        <p>本週答對 {boss.target} 題就能擊敗風暴海怪。到 <Link href="/battle">答題戰鬥</Link> 或 <Link href="/practice">課綱練習</Link> 作答都算數！</p>
-        <div className="daily-camp-boss-bar" aria-label={`每週王進度 ${boss.progress} / ${boss.target}`}>
-          <span style={{ width: `${Math.round((boss.progress / boss.target) * 100)}%` }} className={boss.defeated ? "is-defeated" : ""} />
-        </div>
-        <div className="daily-camp-boss-footer">
-          <small>{boss.defeated ? "海怪已被擊敗！" : `海怪血量剩 ${boss.target - boss.progress} 題`} · 擊敗獎勵 40 金幣</small>
-          <button
-            type="button"
-            className="daily-camp-primary-action"
-            onClick={handleClaimBoss}
-            disabled={!boss.defeated || boss.claimed}
-          >
-            {boss.claimed ? "本週已領賞" : boss.defeated ? "領取 40 金幣" : "繼續努力"}
-          </button>
-        </div>
-      </section>
-
       <section className="daily-camp-section" aria-labelledby="daily-camp-shop-title">
         <div className="daily-camp-section-heading">
           <h2 id="daily-camp-shop-title">金幣商店</h2>
@@ -187,7 +148,7 @@ export default function DailyCamp() {
             </li>
           ))}
         </ul>
-        <p className="daily-camp-shop-note">體力用於答題戰鬥出戰；護身符會在下次進入答題戰鬥時自動生效。</p>
+        <p className="daily-camp-shop-note">體力用於島嶼答題冒險，購買後自動補給船員。</p>
       </section>
     </main>
   );

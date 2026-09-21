@@ -1,17 +1,15 @@
 // @vitest-environment jsdom
 import React from "react";
 import "@testing-library/jest-dom/vitest";
-import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { QuizModal } from "@/components/QuizModal";
-import { addLearningRecord, getLearningRecord, getRareMonsterDefeats, LEARNING_RECORD_KEY } from "@/utils/storage";
+import { getLearningRecord, LEARNING_RECORD_KEY } from "@/utils/storage";
 import { RPG_STORAGE_KEY } from "@/game/rpgStorage";
 import type { PaperQuestion } from "@/lib/paperExam";
 
 afterEach(() => {
   cleanup();
-  vi.useRealTimers();
-  vi.restoreAllMocks();
   window.localStorage.clear();
 });
 
@@ -32,7 +30,7 @@ describe("QuizModal", () => {
     const onCompleted = () => undefined;
     render(<QuizModal question={question} subject="數學" onClose={() => undefined} onCompleted={onCompleted} />);
 
-    expect(screen.getByRole("dialog", { name: "留下第一個學習線索" })).toHaveTextContent("哪一個分數比較大？");
+    expect(screen.getByRole("dialog", { name: "留下學習線索" })).toHaveTextContent("哪一個分數比較大？");
     fireEvent.click(screen.getByRole("button", { name: "選項 2：3/4" }));
 
     expect(screen.getByRole("status")).toHaveTextContent("答對了");
@@ -53,28 +51,13 @@ describe("QuizModal", () => {
     expect(getLearningRecord()[0]).toMatchObject({ questionId: question.id, isCorrect: false, errorType: "concept" });
   });
 
-  it("completes the battle animation after a selected answer rerenders the modal", async () => {
-    vi.useFakeTimers();
-    render(<QuizModal question={question} subject="數學" onClose={() => undefined} onCompleted={() => undefined} />);
+  it("allows closing the modal after answering", () => {
+    const onClose = vi.fn();
+    render(<QuizModal question={question} subject="數學" onClose={onClose} onCompleted={() => undefined} />);
 
     fireEvent.click(screen.getByRole("button", { name: "選項 2：3/4" }));
-    expect(screen.getByRole("button", { name: "戰鬥結算中…" })).toBeDisabled();
+    fireEvent.click(screen.getByRole("button", { name: "繼續探索" }));
 
-    await act(async () => {
-      vi.advanceTimersByTime(1_500);
-    });
-
-    expect(screen.getByRole("button", { name: "領取寶藏並繼續探索" })).toBeEnabled();
-  });
-
-  it("records a rare victory in the explorer codex after a ten-answer streak", () => {
-    vi.useFakeTimers();
-    vi.spyOn(Math, "random").mockReturnValue(0);
-    Array.from({ length: 10 }, (_, index) => addLearningRecord({ questionId: `math-streak-${index}`, subject: "數學", isCorrect: true, timestamp: index + 1, flagged: false }));
-    render(<QuizModal question={question} subject="數學" onClose={() => undefined} onCompleted={() => undefined} />);
-    expect(screen.getByText(/遭遇：/)).toHaveTextContent("無限數列龍");
-
-    fireEvent.click(screen.getByRole("button", { name: "選項 2：3/4" }));
-    expect(getRareMonsterDefeats()).toMatchObject({ "math-rare-1": 1 });
+    expect(onClose).toHaveBeenCalledTimes(1);
   });
 });

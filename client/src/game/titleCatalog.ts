@@ -33,13 +33,13 @@ export function stripTitlePrefix(rawTitle: string): string {
 const rareExpeditionTitles: readonly TitleDefinition[] = TITLE_SUBJECTS.flatMap(({ key, label }) =>
   getRareMonsters(key).map((monster) => {
     const rawTitle = monster.title ?? `${RARE_TITLE_PREFIX}${monster.name}`;
-    return {
-      id: rawTitle,
-      displayTitle: stripTitlePrefix(rawTitle),
-      category: "稀有遠征" as const,
-      condition: `在${label}遠征中連續答對 10 題後遭遇稀有怪物，並擊敗「${monster.name}」`,
-      hint: { label: "去遠征挑戰", href: "/expedition" },
-    };
+  return {
+    id: rawTitle,
+    displayTitle: stripTitlePrefix(rawTitle),
+    category: "稀有遠征" as const,
+    condition: `在${label}遠征中連續答對 10 題後，遇見稀有生物「${monster.name}」並完成知識挑戰`,
+    hint: { label: "去遠征挑戰", href: "/expedition" },
+  };
   }),
 );
 
@@ -50,13 +50,6 @@ export const TITLE_CATALOG: readonly TitleDefinition[] = [
     category: "簽到成長",
     condition: "在每日營地連續簽到滿 7 天",
     hint: { label: "去每日營地", href: "/camp" },
-  },
-  {
-    id: "連擊大師",
-    displayTitle: "連擊大師",
-    category: "連擊挑戰",
-    condition: "在答題戰鬥中達成 15 連續答對",
-    hint: { label: "去答題戰鬥", href: "/battle" },
   },
   // 潮汐牌局／文字冒險相關稱號（牌局好手、潮汐牌王、燈塔嚮導、古籍尋跡者）
   // 已隨燈塔指航中心下架移除；歷史玩家已取得的稱號仍保留在本地存檔顯示。

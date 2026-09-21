@@ -1,7 +1,7 @@
-import { BookOpen, BookOpenCheck, Compass, Crown, LifeBuoy, Lightbulb, Map as MapIcon, Medal, Orbit, Radar, Swords, Telescope, Tent, type LucideIcon } from "lucide-react";
+import { BookOpen, BookOpenCheck, Compass, Crown, LifeBuoy, Lightbulb, Map as MapIcon, Medal, Orbit, Radar, Telescope, Tent, type LucideIcon } from "lucide-react";
 
 export type FeatureSearchItem = {
-  id: "map" | "battle" | "duel" | "wrongAnswers" | "studyTips" | "dailyCamp" | "badges" | "safetyAcademy" | "worldPrinciples" | "mediaObservatory" | "astronomy" | "wisdomStories";
+  id: "map" | "wrongAnswers" | "studyTips" | "dailyCamp" | "badges" | "safetyAcademy" | "worldPrinciples" | "mediaObservatory" | "astronomy" | "wisdomStories";
   label: string;
   description: string;
   href: string;
@@ -17,14 +17,6 @@ export const FEATURE_SEARCH_ITEMS: FeatureSearchItem[] = [
     href: "/map",
     keywords: ["地圖", "航海圖", "學習地圖", "島嶼", "航線", "星級", "星星"],
     icon: MapIcon,
-  },
-  {
-    id: "battle",
-    label: "戰鬥系統",
-    description: "答題戰鬥、怒氣技能、連擊與怪物挑戰。",
-    href: "/battle",
-    keywords: ["戰鬥", "答題戰鬥", "怪物", "怒氣", "技能", "連擊"],
-    icon: Swords,
   },
   {
     id: "wrongAnswers",
@@ -47,13 +39,13 @@ export const FEATURE_SEARCH_ITEMS: FeatureSearchItem[] = [
     label: "每日營地：簽到、任務與商店",
     description: "每日簽到、解任務賺金幣、在商店買體力與護身符，還能挑戰每週王。",
     href: "/camp",
-    keywords: ["每日營地", "營地", "簽到", "每日任務", "任務", "金幣", "商店", "買東西", "體力", "護身符", "每週王", "boss"],
+    keywords: ["每日營地", "營地", "簽到", "每日任務", "任務", "金幣", "商店", "買東西", "體力"],
     icon: Tent,
   },
   {
     id: "badges",
     label: "徽章牆與成就",
-    description: "收集探險徽章，回顧答題、簽到與戰鬥達成的各種成就。",
+    description: "收集探險徽章，回顧答題、簽到與遠征達成的各種成就。",
     href: "/badges",
     keywords: ["徽章", "徽章牆", "成就", "勳章", "稱號", "收集"],
     icon: Medal,

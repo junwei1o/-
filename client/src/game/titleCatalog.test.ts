@@ -5,19 +5,18 @@ describe("title catalog", () => {
   it("lists every obtainable title with a unique id and complete metadata", () => {
     const ids = TITLE_CATALOG.map((title) => title.id);
     expect(new Set(ids).size).toBe(ids.length);
-    expect(TITLE_CATALOG.length).toBe(17);
+    expect(TITLE_CATALOG.length).toBe(16);
     TITLE_CATALOG.forEach((title) => {
       expect(title.displayTitle.length).toBeGreaterThan(1);
       expect(title.condition.length).toBeGreaterThan(6);
       expect(title.hint.label.length).toBeGreaterThan(0);
       expect(title.hint.href.startsWith("/")).toBe(true);
-      expect(["簽到成長", "連擊挑戰", "稀有遠征"]).toContain(title.category);
+      expect(["簽到成長", "稀有遠征"]).toContain(title.category);
     });
   });
 
-  it("includes the sign-in and combo titles plus fifteen rare expedition titles", () => {
+  it("includes the sign-in title plus fifteen rare expedition titles", () => {
     expect(TITLE_CATALOG.filter((title) => title.category === "簽到成長")).toHaveLength(1);
-    expect(TITLE_CATALOG.filter((title) => title.category === "連擊挑戰")).toHaveLength(1);
     expect(TITLE_CATALOG.filter((title) => title.category === "稀有遠征")).toHaveLength(15);
   });
 

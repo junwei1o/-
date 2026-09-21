@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { countHealthPotions, getInventory, INVENTORY_CAPACITY, INVENTORY_STORAGE_KEY, saveInventoryItem, tryDropHealthPotion, tryDropSpecialty } from "./inventoryService";
+import { getInventory, INVENTORY_CAPACITY, INVENTORY_STORAGE_KEY, saveInventoryItem, tryDropSpecialty } from "./inventoryService";
 
 function createStorage() {
   const data = new Map<string, string>();
@@ -13,8 +13,8 @@ function createStorage() {
 describe("inventoryService", () => {
   it("只會為同一個已驗證事件發放一次特產", () => {
     const storage = createStorage();
-    const first = tryDropSpecialty({ source: "battle-victory", awardId: "battle-1", acquiredAt: 1 }, storage, () => 0);
-    const repeated = tryDropSpecialty({ source: "battle-victory", awardId: "battle-1", acquiredAt: 2 }, storage, () => 0.5);
+    const first = tryDropSpecialty({ source: "correct-answer-milestone", awardId: "answer-1", acquiredAt: 1 }, storage, () => 0);
+    const repeated = tryDropSpecialty({ source: "correct-answer-milestone", awardId: "answer-1", acquiredAt: 2 }, storage, () => 0.5);
 
     expect(first?.name).toBe("珍珠奶茶");
     expect(repeated).toBeNull();
@@ -36,18 +36,5 @@ describe("inventoryService", () => {
     const storage = createStorage();
     storage.setItem(INVENTORY_STORAGE_KEY, "not-json");
     expect(getInventory(storage)).toEqual([]);
-  });
-
-  it("只在第 5 題答對里程碑進行補血藥水掉落判定", () => {
-    const storage = createStorage();
-    expect(tryDropHealthPotion(4, storage, () => 0)).toBeNull();
-    expect(tryDropHealthPotion(5, storage, () => 0)).not.toBeNull();
-    expect(countHealthPotions(storage)).toBe(1);
-  });
-
-  it("第 5 題若未通過掉落率則不新增補血藥水", () => {
-    const storage = createStorage();
-    expect(tryDropHealthPotion(5, storage, () => 0.99)).toBeNull();
-    expect(countHealthPotions(storage)).toBe(0);
   });
 });

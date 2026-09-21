@@ -13,7 +13,6 @@ import {
   RotateCcw,
   Shield,
   Sparkles,
-  Swords,
   Telescope,
   Timer,
   Zap,
@@ -69,7 +68,7 @@ function loadSkin(): SkinId {
 /**
  * 我的教室（原答題室）：
  * 上區是七種自由玩法（選擇題變體，成績留在自己裝置）；
- * 下區保留原本的八種答題模式（自由練習、潮汐戰鬥、週測等）。
+ * 下區保留原本的經典答題模式（自由練習、錯題、週測等）。
  * 教室皮膚可切換：極簡海／孟菲斯／經典海報，偏好存本機。
  */
 export default function QuizRoom() {
@@ -168,8 +167,7 @@ export default function QuizRoom() {
   ];
 
   const modes = [
-    { id: "free", label: "自由練習", desc: "依科目與進度開始答題，沒有戰鬥、沒有壓力。", href: "/practice", icon: BookOpenCheck },
-    { id: "battle", label: "潮汐戰鬥", desc: "答對就攻擊潮芽獸，答錯牠咬你。", href: "/battle", icon: Swords },
+    { id: "free", label: "自由練習", desc: "依科目與進度開始答題，沒有壓力。", href: "/practice", icon: BookOpenCheck },
     { id: "wrong", label: "錯題本", desc: "今日複習中心＋錯題魔王，整理真實弱點。", href: "/review-hub", icon: RotateCcw },
     { id: "topic", label: "專題觀測", desc: "天文／科學／生活安全，一次只鑽一個主題。", href: "/gallery", icon: Telescope },
     { id: "timed", label: "限時挑戰", desc: "十題自我挑戰，留下個人最佳紀錄。", href: "/community?mode=timed", icon: Timer },

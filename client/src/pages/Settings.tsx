@@ -8,7 +8,6 @@ import {
   getAnalyticsConsent,
   getAnalyticsSummary,
   saveAnalyticsConsent,
-  getBattleVolume,
   getLimitedTitles,
   getRareMonsterDefeats,
   getSelectedTitle,
@@ -22,7 +21,6 @@ import {
   saveAccessibilityPrefs,
   savePlayerProfile,
   saveSelectedTitle,
-  saveBattleVolume,
   type AccessibilityPrefs,
   type StorageErrorLog,
 } from "@/utils/storage";
@@ -444,7 +442,6 @@ export default function Settings() {
   const [isLoading, setIsLoading] = useState(true);
   const [isConfirmingClear, setIsConfirmingClear] = useState(false);
   const [copyStatus, setCopyStatus] = useState<"idle" | "success" | "error">("idle");
-  const [battleVolume, setBattleVolume] = useState(() => getBattleVolume());
   const [accessibilityPrefs, setAccessibilityPrefs] = useState(() => getAccessibilityPrefs());
   const [analyticsConsent, setAnalyticsConsent] = useState(() => getAnalyticsConsent());
   const [analyticsSummary, setAnalyticsSummary] = useState(() => getAnalyticsSummary());
@@ -622,29 +619,12 @@ export default function Settings() {
 
         <CompanionBrainSection />
 
-        <section className="settings-audio-card" aria-labelledby="battle-audio-title">
-          <div className="settings-audio-heading">
-            <span className="settings-page-icon" aria-hidden="true"><Volume2 size={20} /></span>
-            <div>
-              <p className="settings-eyebrow">戰鬥回饋</p>
-              <h2 id="battle-audio-title">戰鬥音量</h2>
-            </div>
-          </div>
-          <p className="settings-log-description">調整攻擊命中、連擊暴擊與勝利歡呼的音量。瀏覽器若暫時阻擋音效，畫面動畫仍會正常播放。</p>
-          <label className="settings-volume-control" htmlFor="battle-volume">
-            <span>音量</span>
-            <output htmlFor="battle-volume" aria-live="polite">{Math.round(battleVolume * 100)}%</output>
-          </label>
-          <input id="battle-volume" aria-label="音量" className="settings-volume-slider" type="range" min="0" max="1" step="0.05" value={battleVolume} onChange={(event) => setBattleVolume(saveBattleVolume(Number(event.target.value)))} aria-describedby="battle-volume-help" />
-          <p id="battle-volume-help" className="settings-log-description">設為 0% 可靜音；可使用鍵盤方向鍵微調音量。</p>
-        </section>
-
         <section className="settings-audio-card settings-accessibility-card" aria-labelledby="accessibility-settings-title">
           <div className="settings-audio-heading"><span className="settings-page-icon" aria-hidden="true"><Accessibility size={20} /></span><div><p className="settings-eyebrow">舒適遊玩</p><h2 id="accessibility-settings-title">無障礙設定</h2></div></div>
           <p className="settings-log-description">設定會立即套用並保存在這台裝置。若畫面效果讓你感到不適，可降低特效或開啟動畫簡化。</p>
           <label className="settings-volume-control" htmlFor="effect-intensity"><span>特效強度</span><output htmlFor="effect-intensity" aria-live="polite">{{ low: "低", medium: "中", high: "高" }[accessibilityPrefs.effectIntensity]}</output></label>
           <input id="effect-intensity" aria-label="特效強度" className="settings-volume-slider" type="range" min="1" max="3" step="1" value={{ low: 1, medium: 2, high: 3 }[accessibilityPrefs.effectIntensity]} onChange={(event) => handleAccessibilityUpdate({ effectIntensity: (["low", "medium", "high"] as const)[Number(event.target.value) - 1] })} aria-valuetext={{ low: "低", medium: "中", high: "高" }[accessibilityPrefs.effectIntensity]} />
-          <label className="settings-analytics-toggle"><span><strong>震動回饋</strong><small>{accessibilityPrefs.vibrationEnabled ? "已啟用操作與戰鬥觸感回饋" : "已關閉所有觸感回饋"}</small></span><input type="checkbox" role="switch" checked={accessibilityPrefs.vibrationEnabled} onChange={(event) => handleAccessibilityUpdate({ vibrationEnabled: event.target.checked })} /></label>
+          <label className="settings-analytics-toggle"><span><strong>震動回饋</strong><small>{accessibilityPrefs.vibrationEnabled ? "已啟用操作觸感回饋" : "已關閉所有觸感回饋"}</small></span><input type="checkbox" role="switch" checked={accessibilityPrefs.vibrationEnabled} onChange={(event) => handleAccessibilityUpdate({ vibrationEnabled: event.target.checked })} /></label>
           <label className="settings-analytics-toggle"><span><strong>動畫簡化</strong><small>{accessibilityPrefs.reducedAnimation ? "特效將以短暫淡入淡出呈現" : "保留一般移動、旋轉與粒子效果"}</small></span><input type="checkbox" role="switch" checked={accessibilityPrefs.reducedAnimation} onChange={(event) => handleAccessibilityUpdate({ reducedAnimation: event.target.checked })} /></label>
           <p className="settings-log-description" role="status">目前採用{{ low: "低", medium: "中", high: "高" }[accessibilityPrefs.effectIntensity]}強度特效；{accessibilityPrefs.reducedAnimation ? "動畫已簡化。" : "一般動畫已啟用。"}</p>
           <div className="settings-font-size-block">
@@ -654,9 +634,9 @@ export default function Settings() {
 
         <section className="settings-audio-card settings-analytics-card" aria-labelledby="analytics-sharing-title">
           <div className="settings-audio-heading"><span className="settings-page-icon" aria-hidden="true"><BarChart3 size={20} /></span><div><p className="settings-eyebrow">隱私選擇</p><h2 id="analytics-sharing-title">匿名數據分享</h2></div></div>
-          <p className="settings-log-description">資料只保存在目前裝置，用於顯示每日活躍天數、平均遊玩時長、各科卡關題目與補血藥水使用時機；不會記錄姓名、答案內容，也不會上傳至伺服器。</p>
+          <p className="settings-log-description">資料只保存在目前裝置，用於顯示每日活躍天數、平均遊玩時長、各科卡關題目與練習節奏；不會記錄姓名、答案內容，也不會上傳至伺服器。</p>
           <label className="settings-analytics-toggle"><span><strong>允許匿名記錄</strong><small>{analyticsConsent === "accepted" ? "目前已開啟本機記錄" : analyticsConsent === "declined" ? "目前已關閉本機記錄" : "尚未選擇"}</small></span><input type="checkbox" role="switch" checked={analyticsConsent === "accepted"} onChange={(event) => { const next = event.target.checked ? "accepted" : "declined"; saveAnalyticsConsent(next); setAnalyticsConsent(next); setAnalyticsSummary(getAnalyticsSummary()); }} /></label>
-          <div className="settings-analytics-summary" aria-label="匿名學習數據摘要"><span>活躍天數 <strong>{analyticsSummary.activeDays}</strong></span><span>平均遊玩 <strong>{Math.round(analyticsSummary.averagePlayMs / 60000)} 分鐘</strong></span><span>低血量用藥 <strong>{analyticsSummary.lowHpPotionUseRate}%</strong></span></div>
+          <div className="settings-analytics-summary" aria-label="匿名學習數據摘要"><span>活躍天數 <strong>{analyticsSummary.activeDays}</strong></span><span>平均遊玩 <strong>{Math.round(analyticsSummary.averagePlayMs / 60000)} 分鐘</strong></span><span>補給使用 <strong>{analyticsSummary.lowHpPotionUseRate}%</strong></span></div>
         </section>
 
         <BackupPanel />
@@ -698,7 +678,7 @@ export default function Settings() {
 
         <section className="settings-audio-card settings-showcase-card" aria-labelledby="codex-title">
           <div className="settings-audio-heading"><span className="settings-page-icon" aria-hidden="true"><BookMarked size={20} /></span><div><p className="settings-eyebrow">稀有遭遇</p><h2 id="codex-title">探險家圖鑑</h2></div></div>
-          <p className="settings-log-description">稀有守門者會在連續答對至少 10 題後才有機會出現。擊敗後可收藏限定稱號；圖鑑僅顯示本機戰鬥紀錄。</p>
+          <p className="settings-log-description">稀有守門者會在連續答對至少 10 題後才有機會出現。遇見並完成知識挑戰後可收藏限定稱號；圖鑑僅顯示本機探險紀錄。</p>
           <ul className="settings-codex-grid" aria-label="十二種稀有怪物圖鑑">
             {RARE_CODEX.map((monster) => {
               const defeats = rareDefeats[monster.id] ?? 0;

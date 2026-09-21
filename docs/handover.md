@@ -497,6 +497,7 @@ curl -s https://xue-gr3a.onrender.com/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | h
 - 驗證：tsc 0 錯、1102 tests 綠（183→180 檔，少的正是刪掉的地圖測試）、build 成功；本機 Playwright map-removal.mjs 9/9（首頁無 map-layer/hex、狀態與模式樞紐正常、/map 頁保留關係圖、無 pageerror）。
 
 ## 2026-09-19 下架燈塔指航中心（卡牌遊戲整體刪除）
+- ⚠️ **本節「保留 /battle（答題戰鬥）」已於 2026-09-22 更正為過時**：答題戰鬥體系（BattleScene＋battle* 模組＋/battle 路由）已於 2026-09-21/22 完整下架，詳見文末「2026-09-22 答題戰鬥體系下架」一節。
 - 需求：把卡牌遊戲整體刪除。commit 44ee897（33 檔，淨刪 2710 行）。保留 /battle（答題戰鬥）。
 - 刪除檔案（21）：pages Tavern.tsx/.css/.test、CardCollection.tsx/.css/.test；components TavernBar、TavernCompanion、TrumpDuelBoard.tsx/.css/.test、AdventureViewer.tsx/.test、CardArt.tsx/.test；game tavernKeeper、cardCollection、trumpDuel（各含 test）。
 - 入口清理：App.tsx 四條 /tavern* 路由＋lazy import；首頁模式樞紐燈塔卡（剩 3 卡）；homeFeatureDirectory、featureSearch（含 id union 型別）、TreasureHub 卡牌入口＋文案、TopNavigation treasure activePrefixes 的 /tavern；titleCatalog 移除 4 個稱號（牌局好手/潮汐牌王/燈塔嚮導/古籍尋跡者，目錄 21→17，歷史存檔已取得稱號仍正常顯示）；LeagueArena 排名獎不再 addCardToCollection。
@@ -970,3 +971,17 @@ curl -s https://xue-gr3a.onrender.com/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | h
 ### 後續待辦
 - `.principle-guide` 兩套視覺合併（需設計決策，非清理）。
 - 一次性陰影長尾維持原樣；新樣式用 `--shadow-*`。
+
+## 2026-09-22 答題戰鬥體系下架（/battle、BattleScene 與 battle* 模組整體移除）
+- ⚠️ **更正**：09-19「刻意保留 /battle（答題戰鬥）」的記載已過時——答題戰鬥體系已於 2026-09-21 深夜作業中完整下架（本節記錄提交內容）。
+- 需求：答題戰鬥（BattleScene／LeagueArena／PKArena／知識決鬥關聯）整體刪除，相關入口同步清除；`/battle`、`/league`、`/pk` 路由不再存在（/battle 走 NotFound）。
+- **刪除檔案（79 檔，淨刪 6742 行）**：
+  - 頁面/元件：pages/BattleScene(.tsx/.css/.test)、BattleSceneStatus.css、LeagueArena(.tsx/.css)、PKArena.tsx、components/BattleScene(.tsx/.test)、KnowledgeDuel；pages/KnowledgeDuel 相關。
+  - 引擎/邏輯：game-engine/*（battleCalculator/battleSimulator/battleState 含測試）、engine/BattleState(.ts/.test)、game/arenaRewards、battleDefeatReflection、battleMomentum、battleTactics、battleVisuals、companionCombatStyles、companionEvolution、companionGrowth、mapVictoryProgress、rpgBattle、rpgCombatFeedback、rpgGame、rpgQuestionCombat（各含測試）。
+  - 教學/邏輯：lib/battleTutorial、battleRageSkillTutorial、pkLogic、knowledgeDuelStorage（各含測試）。
+  - 資產：public/assets/illustration/island-battle.webp。
+- **入口/文案同步**：App.tsx 移除 /battle、/league、/pk 路由與 lazy import；Badges／DailyCamp／Settings／OnboardingGuide／QuizRoom／StudentMap／Expedition／TreasureHub／CommunityHub／featureSearch／titleCatalog／homeFeatureDirectory 改文案或改指向（今日任務→/camp、夥伴遠征→/expedition、昨日戰績→無、底部導覽 5→4、搜尋 placeholder 改「演練、錯題、遠征…」）。
+- **保留的精簡版（仍被生產引用）**：`arenaHabitats.ts`（新版，habitatDailyMissions/expeditionObservations 引用）、`academyExpansion.ts`（只留 generateDailyAdventureSummary，Home 用）、`academyQuestData.ts`（habitatDailyMissions/academyDaily/rpgStorage 引用）。**新版 arenaHabitats 順手修了一個 production bug**：`rareEligible` 原含 `bosses>=1`，boss 系統下架後恆 0，稀有訊號永不觸發；改為 `rareEligible = correct >= habitat.rareTarget`。
+- **測試同步**：24 個契約失敗全數修復——路由/導向類（App/MobileBottomNav/TopNavigation/QuizRoom/StudentMap/Expedition/FeaturesDirectory）改斷言下架後行為；遊戲邏輯類（academyExpansion 只留 1 例、academyQuestProgress 只留 1 例、academyQuestData 斷言改 domain/color、titleCatalog 17→16、Settings 刪戰鬥音量例、featureSearch 刪 battle 用例）；`expeditionObservations.test` 靠修 production bug 自然轉綠（未改測試）。新增 `QuizRunner.test.tsx`（quizRunner lockedRef 重設修復）。
+- **驗證**：`tsc --noEmit` 0 錯；`npx vitest run` 153 檔案 / **1054 tests 全綠**；`vite build` 成功。已 push（觸發 Render 自動部署）。
+- 本輪 commit 將一併帶上工作區既有的下架刪除與上述測試修改。

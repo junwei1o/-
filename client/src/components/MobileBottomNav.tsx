@@ -1,9 +1,9 @@
 import * as React from "react";
-import { BookOpen, ChevronDown, ChevronUp, MapPinned, Orbit, Swords, Trophy, X } from "lucide-react";
+import { BookOpen, ChevronDown, ChevronUp, MapPinned, Orbit, Trophy, X } from "lucide-react";
 import { useLocation } from "wouter";
 
 type MobileNavItem = {
-  id: "home" | "learn" | "battle" | "discover" | "report";
+  id: "home" | "learn" | "discover" | "report";
   label: string;
   icon: typeof MapPinned;
   href: string;
@@ -12,7 +12,6 @@ type MobileNavItem = {
 const ITEMS: MobileNavItem[] = [
   { id: "home", label: "探險", icon: MapPinned, href: "/" },
   { id: "learn", label: "學習", icon: BookOpen, href: "/practice" },
-  { id: "battle", label: "戰鬥", icon: Swords, href: "/battle" },
   { id: "discover", label: "觀測", icon: Orbit, href: "/astronomy" },
   { id: "report", label: "報告", icon: Trophy, href: "/learning-insights" },
 ];
@@ -34,7 +33,6 @@ type DragSession = {
 function getActiveItem(location: string): MobileNavItem["id"] {
   const [pathname] = location.split("?");
 
-  if (pathname === "/battle") return "battle";
   if (pathname === "/astronomy" || pathname.startsWith("/astronomy/")) return "discover";
   if (pathname === "/practice") return "learn";
   if (pathname === "/learning-insights") return "report";

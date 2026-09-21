@@ -48,7 +48,7 @@ describe("QuizRoom 我的教室", () => {
     render(<QuizRoom />);
     const cases: Array<[string, string]> = [
       ["自由練習", "/practice"],
-      ["潮汐戰鬥", "/battle"],
+      ["今日遠征", "/expedition"],
       ["錯題本", "/review-hub"],
       ["專題觀測", "/gallery"],
       ["限時挑戰", "/community?mode=timed"],

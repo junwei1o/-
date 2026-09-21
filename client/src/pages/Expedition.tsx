@@ -36,11 +36,11 @@ export default function Expedition() {
             <span className="hub-streak">🔥 已連續 {signIn.streak} 天</span>
             <small>前往營地 →</small>
           </button>
-          <button type="button" className="hub-card" onClick={() => setLocation("/battle")}>
+          <button type="button" className="hub-card" onClick={() => setLocation("/camp")}>
             <span className="hub-card-icon" aria-hidden="true"><Crown size={21} /></span>
             <h3>⚓ 今日任務</h3>
-            <p>答題戰鬥：用答題擊敗知識怪物，累積足跡與獎勵。</p>
-            <small>前往戰鬥 →</small>
+            <p>完成每日任務賺金幣，幫船員補給體力再出航。</p>
+            <small>前往營地 →</small>
           </button>
         </div>
       </section>

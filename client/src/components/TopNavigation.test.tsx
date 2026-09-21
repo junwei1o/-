@@ -72,7 +72,7 @@ describe("TopNavigation（22 入口 → 7 → 5 頂層，P1 導航收斂）", ()
   });
 
   it("深層頁面會標記所屬的頂層入口為 active", () => {
-    currentPath = "/battle";
+    currentPath = "/camp";
     render(<TopNavigation />);
     const primary = screen.getByRole("navigation", { name: "主要功能選單" });
     expect(within(primary).getByRole("button", { name: "我的教室" })).toHaveAttribute("aria-current", "page");
@@ -107,7 +107,7 @@ describe("TopNavigation（22 入口 → 7 → 5 頂層，P1 導航收斂）", ()
     render(<TopNavigation />);
 
     fireEvent.click(screen.getByRole("button", { name: "搜尋功能" }));
-    fireEvent.change(screen.getByPlaceholderText("搜尋戰鬥、演練、錯題…"), { target: { value: "卡牌" } });
+    fireEvent.change(screen.getByPlaceholderText("搜尋演練、錯題、遠征…"), { target: { value: "卡牌" } });
 
     expect(screen.queryByText("知識決鬥／卡牌對戰")).not.toBeInTheDocument();
     expect(screen.getByRole("status")).toHaveTextContent("找不到");

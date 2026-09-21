@@ -5,7 +5,7 @@ describe("academy quest data", () => {
   it("provides one original learning route for each island region", () => {
     expect(ACADEMY_ROUTES.map((route) => route.region)).toEqual(["north", "central", "east", "south"]);
     expect(new Set(ACADEMY_ROUTES.map((route) => route.subject))).toEqual(new Set(["數學", "自然", "社會", "國語"]));
-    expect(ACADEMY_ROUTES.every((route) => route.questTitle && route.bossTitle && route.domain && route.objectives.length === 3)).toBe(true);
+    expect(ACADEMY_ROUTES.every((route) => route.questTitle && route.domain && route.color)).toBe(true);
   });
 
   it("returns a stable route for a selected region", () => {

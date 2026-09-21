@@ -10,7 +10,6 @@ vi.mock("@/components/ui/tooltip", () => ({ TooltipProvider: ({ children }: { ch
 vi.mock("./components/ErrorBoundary", () => ({ default: ({ children }: { children: React.ReactNode }) => <>{children}</> }));
 vi.mock("./contexts/ThemeContext", () => ({ ThemeProvider: ({ children }: { children: React.ReactNode }) => <>{children}</> }));
 vi.mock("@/pages/PaperExam", () => ({ default: () => <main>試卷頁</main> }));
-vi.mock("@/pages/BattleScene", () => ({ default: () => <main aria-label="獨立對戰場景">戰鬥頁</main> }));
 vi.mock("@/pages/RegionDetail", () => ({ default: () => <main>區域頁</main> }));
 vi.mock("@/pages/MediaObservatory", () => ({ default: () => <main>觀測站</main> }));
 vi.mock("@/pages/MediaObservatoryDetail", () => ({ default: () => <main>觀測站詳情</main> }));
@@ -32,13 +31,21 @@ describe("App routing", () => {
     window.history.replaceState({}, "", "/");
   });
 
-  it("renders the standalone battle scene at /battle instead of the paper exam", async () => {
-    window.history.replaceState({}, "", "/battle");
+  it("renders the paper exam at /practice instead of the removed /battle route", async () => {
+    window.history.replaceState({}, "", "/practice");
 
     render(<App />);
 
     // 路由改為懶加載：等待 Suspense 內的動態模組解析完成。
-    expect(await screen.findByRole("main", { name: "獨立對戰場景" })).toBeInTheDocument();
+    expect(await screen.findByText("試卷頁")).toBeInTheDocument();
+  });
+
+  it("answers /battle with the not-found page after the battle feature was removed", async () => {
+    window.history.replaceState({}, "", "/battle");
+
+    render(<App />);
+
+    expect(await screen.findByText("找不到頁面")).toBeInTheDocument();
     expect(screen.queryByText("試卷頁")).not.toBeInTheDocument();
   });
 });

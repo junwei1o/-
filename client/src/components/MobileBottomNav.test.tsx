@@ -17,7 +17,7 @@ describe("MobileBottomNav", () => {
     setLocation.mockClear();
   });
 
-  it("exposes the five mobile-first destinations with an accessible current state", () => {
+  it("exposes the four mobile-first destinations with an accessible current state", () => {
     render(<MobileBottomNav />);
 
     const nav = screen.getByRole("navigation", { name: "手機版快速導覽" });
@@ -26,7 +26,7 @@ describe("MobileBottomNav", () => {
     expect(toggle).toHaveAttribute("aria-expanded", "false");
     fireEvent.click(toggle);
     expect(screen.getByRole("button", { name: "前往學習" })).toHaveAttribute("aria-current", "page");
-    expect(screen.getByRole("button", { name: "前往戰鬥" })).not.toHaveAttribute("aria-current");
+    expect(screen.getByRole("button", { name: "前往觀測" })).not.toHaveAttribute("aria-current");
     expect(screen.getByRole("group", { name: "快捷入口" })).toHaveAttribute("aria-hidden", "false");
   });
 
@@ -34,8 +34,8 @@ describe("MobileBottomNav", () => {
     render(<MobileBottomNav />);
 
     fireEvent.click(screen.getByRole("button", { name: "展開快捷入口" }));
-    fireEvent.click(screen.getByRole("button", { name: "前往戰鬥" }));
-    expect(setLocation).toHaveBeenCalledWith("/battle");
+    fireEvent.click(screen.getByRole("button", { name: "前往觀測" }));
+    expect(setLocation).toHaveBeenCalledWith("/astronomy");
   });
 });
 

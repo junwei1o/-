@@ -3,7 +3,6 @@ import type { SafetyAcademyProgress } from "./safetyAcademyProgress";
 
 export type RegionKey = "north" | "central" | "east" | "south";
 export type ArenaHabitatKey = "tidal-grove" | "cloud-shelf" | "star-current" | "coral-shallows";
-export type RpgMode = "explore" | "encounter" | "battle" | "victory" | "defeat";
 export type Rarity = "common" | "rare" | "legendary";
 
 export type Companion = {
@@ -47,7 +46,8 @@ export type RpgAchievement = {
 
 export type AcademyRouteProgress = {
   correctAnswers: number;
-  bossVictories: number;
+  /** Legacy field kept optional so pre-cleanup local saves remain valid. */
+  bossVictories?: number;
 };
 
 export type AcademyDailyProgress = {
@@ -86,52 +86,6 @@ export type Encounter = {
   rarity?: Rarity;
 };
 
-export type BattlePerformance = {
-  questionId: string;
-  correct: boolean;
-  responseMs: number;
-  accuracy: number;
-  attackPower: number;
-  defensePower: number;
-  captureChance: number;
-  /** Optional bonus unlocked by streak-based evolution passives. */
-  ultimatePowerBonus?: number;
-  /** Current correctly answered curriculum-question combo, added in battle engine stage two. */
-  comboCount?: number;
-  /** True when the combo reached the three-answer critical threshold. */
-  criticalHit?: boolean;
-  /** Optional equipment/talent critical chance, expressed as 0–1. */
-  criticalRate?: number;
-  /** Optional world-state multiplier applied to answer attack power. */
-  attackMultiplier?: number;
-};
-
-export type BattleRageSkill = "precise" | "shield" | "heal";
-
-export type BattlePendingAction =
-  | { type: "skill"; cost: number; power: number; label: string }
-  | { type: "ultimate"; cost: number; power: number; label: string }
-  | { type: `rage-${BattleRageSkill}`; cost: number; power: number; label: string };
-
-export type BattleState = {
-  playerHp: number;
-  playerMaxHp: number;
-  enemyHp: number;
-  enemyMaxHp: number;
-  energy: number;
-  enemyName: string;
-  turn: "player" | "enemy" | "ended";
-  phase: "ready" | "question" | "action";
-  questionId: string;
-  pendingAction: BattlePendingAction | null;
-  performance: BattlePerformance | null;
-  ultimateUsed: boolean;
-  /** Set only after an incorrect 防護壁壘 answer; consumed by the next enemy response. */
-  strategyShieldActive: boolean;
-  log: string[];
-  result: "active" | "victory" | "defeat";
-};
-
 export type AdventureJournalSummary = {
   dayKey: string;
   summary: string;
@@ -141,17 +95,6 @@ export type AdventureJournalSummary = {
   subject: string | null;
 };
 
-export type PlayerExpansionProgress = {
-  talentPoints: number;
-  talents: Partial<Record<"precision" | "resilience" | "knowledge-drain" | "lucky-star" | "endurance" | "swiftness" | "scholar" | "guardian-spirit" | "battle-sage" | "treasure-hunter" | "critical-thinking" | "guardian-ward", number>>;
-  equippedGearIds: string[];
-  fragments: Record<string, number>;
-  journalSummaries: AdventureJournalSummary[];
-  activeWorldEvents: Array<{ id: string; kind: "knowledge-storm" | "wandering-merchant" | "mystery-chest" | "starlight-observation"; region: RegionKey; label: string; description: string; expiresAt: number; reward: { gold?: number; potion?: number; expMultiplier?: number } }>;
-  worldEventDayKey: string;
-  worldEventsTriggeredToday: number;
-};
-
 export type RpgState = {
   version: 1;
   coins: number;
@@ -159,10 +102,7 @@ export type RpgState = {
   explored: RegionKey[];
   companions: Companion[];
   activeCompanionId: string;
-  mode: RpgMode;
   currentRegion: RegionKey;
-  encounter: Encounter | null;
-  battle: BattleState | null;
   answeredEventIds: string[];
   notice: string;
   /** Versioned answer-driven growth milestones. */
@@ -173,7 +113,6 @@ export type RpgState = {
   challengeCorrectCount?: number;
   /** Original academy expedition progress; optional keeps earlier local saves usable. */
   academyProgress?: Partial<Record<RegionKey, AcademyRouteProgress>>;
-  academyGearIds?: string[];
   /** Local-day quest progress; regenerated from real answer events on a new day. */
   academyDaily?: AcademyDailyProgress;
   /** Optional daily habitat steps keep earlier local saves compatible. */
@@ -196,11 +135,4 @@ export type RpgState = {
   animeWorldviewProgress?: AnimeWorldviewProgress;
   /** Life-safety academy card completion; optional so earlier local saves remain usable. */
   safetyAcademyProgress?: SafetyAcademyProgress;
-  /** Victory-driven map links; optional so earlier local saves remain compatible. */
-  mapVictoryProgress?: {
-    unlockedRouteIds: string[];
-    supplyMarkerIds: string[];
-  };
-  /** Mainline, growth, journal, and dynamic-world expansion state. */
-  expansionProgress?: PlayerExpansionProgress;
 };

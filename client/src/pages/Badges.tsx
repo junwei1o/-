@@ -1,8 +1,7 @@
 import { Lock, Medal, Trophy } from "lucide-react";
 import { Link } from "wouter";
-import { getDailySignIn, getLimitedTitles, getPlayerData, getRareMonsterDefeats, readStoredJson } from "@/utils/storage";
+import { getDailySignIn, getLimitedTitles, getPlayerData, readStoredJson } from "@/utils/storage";
 import { loadRpgState } from "@/game/rpgStorage";
-import { WEEKLY_BOSS_STORAGE_KEY } from "@/game/dailyCamp";
 import { countOwnedTitles, TITLE_CATALOG, type TitleCategory } from "@/game/titleCatalog";
 import { BxEmptyState } from "@/components/bx/EmptyState";
 import "./Badges.css";
@@ -19,26 +18,16 @@ interface BadgeDef {
 
 const PRACTICE_HINT = { label: "去課綱練習", href: "/practice" };
 const CAMP_HINT = { label: "去每日營地", href: "/camp" };
-const BATTLE_HINT = { label: "去答題戰鬥", href: "/battle" };
 const EXPEDITION_HINT = { label: "去遠征挑戰", href: "/expedition" };
 
 export default function Badges() {
   const player = getPlayerData();
   const rpg = loadRpgState();
   const signIn = getDailySignIn();
-  const rareDefeats = getRareMonsterDefeats();
-  const rareCount = Object.keys(rareDefeats).reduce((sum, id) => sum + (rareDefeats[id] > 0 ? 1 : 0), 0);
   const titles = getLimitedTitles();
   const rareTitleCount = titles.filter((title) => title.startsWith("擊敗後獲得限定稱號：")).length;
   const ownedTitleCount = countOwnedTitles(titles);
   const titleCategories: TitleCategory[] = ["簽到成長", "連擊挑戰", "稀有遠征"];
-  const bossVictories = rpg.academyProgress
-    ? Object.keys(rpg.academyProgress).reduce(
-        (sum, key) => sum + (rpg.academyProgress?.[key as keyof typeof rpg.academyProgress]?.bossVictories ?? 0),
-        0,
-      )
-    : 0;
-  const weeklyBossEver = readStoredJson<{ claimed?: boolean }>(WEEKLY_BOSS_STORAGE_KEY, {}).claimed === true;
   const companionCount = rpg.companions?.length ?? 0;
   const correctCount = rpg.correctAnswerCount ?? 0;
 
@@ -124,38 +113,6 @@ export default function Badges() {
       hint: CAMP_HINT,
     },
     {
-      id: "boss-1",
-      icon: "⚔️",
-      title: "首領挑戰者",
-      description: "擊敗 1 隻區域守護者",
-      earned: bossVictories >= 1,
-      hint: BATTLE_HINT,
-    },
-    {
-      id: "boss-4",
-      icon: "👑",
-      title: "四海征服者",
-      description: "擊敗 4 隻區域守護者",
-      earned: bossVictories >= 4,
-      hint: BATTLE_HINT,
-    },
-    {
-      id: "rare-monster",
-      icon: "🦄",
-      title: "稀有生物收藏家",
-      description: "在戰鬥中擊退稀有生物",
-      earned: rareCount >= 1,
-      hint: BATTLE_HINT,
-    },
-    {
-      id: "weekly-champion",
-      icon: "🐙",
-      title: "每週王征服者",
-      description: "擊敗一次每週風暴海怪",
-      earned: weeklyBossEver,
-      hint: { label: "去挑戰每週王", href: "/camp" },
-    },
-    {
       id: "weekly-quiz-voyager",
       icon: "🗓️",
       title: "每週遠征家",
@@ -169,7 +126,7 @@ export default function Badges() {
       title: "夥伴收藏家",
       description: "擁有 3 位航海夥伴",
       earned: companionCount >= 3,
-      hint: BATTLE_HINT,
+      hint: CAMP_HINT,
     },
     {
       id: "companions-4",
@@ -177,7 +134,7 @@ export default function Badges() {
       title: "全夥伴集結",
       description: "擁有全部 4 位航海夥伴",
       earned: companionCount >= 4,
-      hint: BATTLE_HINT,
+      hint: CAMP_HINT,
     },
     {
       id: "titled",

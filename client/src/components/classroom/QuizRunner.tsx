@@ -95,6 +95,7 @@ export default function QuizRunner({
     setOrder(shuffleArray(questions.map((_, i) => i)));
     setQIndex(0);
     setPicked(null);
+    lockedRef.current = false;
     setLocked(false);
     setTimedOut(false);
     setCorrectCount(0);
@@ -133,6 +134,7 @@ export default function QuizRunner({
     }
     setQIndex((i) => i + 1);
     setPicked(null);
+    lockedRef.current = false;
     setLocked(false);
     setTimedOut(false);
     setTimeLeft(Math.round(timePerQuestionMs / 1000));

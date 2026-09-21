@@ -62,7 +62,7 @@ describe("StudentMap", () => {
     fireEvent.click(screen.getByRole("button", { name: /常規試卷：/ }));
     expect(setLocation).toHaveBeenLastCalledWith("/practice");
     fireEvent.click(screen.getByRole("button", { name: /夥伴遠征：/ }));
-    expect(setLocation).toHaveBeenLastCalledWith("/battle");
+    expect(setLocation).toHaveBeenLastCalledWith("/expedition");
     fireEvent.click(screen.getByRole("button", { name: /我是奶龍：最佳 4／5 題/ }));
     expect(setLocation).toHaveBeenLastCalledWith("/observatory/nailong");
   });

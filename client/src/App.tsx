@@ -36,7 +36,6 @@ const LearningReport = React.lazy(() => import("@/pages/LearningReport"));
 const ErrorTypeStatistics = React.lazy(() => import("@/pages/ErrorTypeStatistics"));
 const TeacherParentSummary = React.lazy(() => import("@/pages/TeacherParentSummary"));
 const StudentMap = React.lazy(() => import("@/pages/StudentMap"));
-const BattleScene = React.lazy(() => import("@/pages/BattleScene"));
 const AdventureJournal = React.lazy(() => import("@/pages/AdventureJournal"));
 const DailyCamp = React.lazy(() => import("@/pages/DailyCamp"));
 const Badges = React.lazy(() => import("@/pages/Badges"));
@@ -51,8 +50,6 @@ const Expedition = React.lazy(() => import("@/pages/Expedition"));
 const LearningHub = React.lazy(() => import("@/pages/LearningHub"));
 const Gallery = React.lazy(() => import("@/pages/Gallery"));
 const TreasureHub = React.lazy(() => import("@/pages/TreasureHub"));
-const LeagueArena = React.lazy(() => import("@/pages/LeagueArena"));
-const PKArena = React.lazy(() => import("@/pages/PKArena"));
 const TeacherDashboard = React.lazy(() => import("@/pages/TeacherDashboard"));
 const StudentClass = React.lazy(() => import("@/pages/StudentClass"));
 
@@ -82,8 +79,6 @@ function Router() {
         <Route path={"/learning"} component={LearningHub} />
         <Route path={"/gallery"} component={Gallery} />
         <Route path={"/treasure"} component={TreasureHub} />
-        <Route path={"/league"} component={LeagueArena} />
-        <Route path={"/pk"} component={PKArena} />
         <Route path={"/features"} component={FeaturesDirectory} />
         <Route path={"/camp"} component={DailyCamp} />
         <Route path={"/badges"} component={Badges} />
@@ -102,7 +97,6 @@ function Router() {
         <Route path={"/wisdom/:key"} component={WisdomStoryDetail} />
         <Route path={"/safety"} component={SafetyAcademy} />
         <Route path={"/safety/:key"} component={SafetyAcademyDetail} />
-        <Route path={"/battle"} component={() => <BattleScene />} />
         <Route path={"/learning-insights"} component={LearningInsights} />
         <Route path={"/learning-report"} component={LearningReport} />
         <Route path={"/community"} component={CommunityHub} />

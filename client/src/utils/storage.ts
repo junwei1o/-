@@ -5,36 +5,8 @@ import { subjectIdForDomain, type SubjectId } from "@/data/subjects";
 export const PLAYER_DATA_KEY = "xueAdventurerData";
 export const LEARNING_RECORD_KEY = "xueLearningRecord";
 export const STORAGE_ERROR_LOG_KEY = "errorLogs";
-export const BATTLE_STATE_KEY = "xueBattleState";
-export const BATTLE_VOLUME_KEY = "xueBattleVolume";
 export const SELF_CHALLENGE_BEST_KEY = "xueSelfChallengeBest";
 export const DAILY_SIGN_IN_KEY = "xueSignIn";
-export const DEFAULT_BATTLE_VOLUME = 0.65;
-
-export function getBattleVolume(storage: StorageLike | null = browserStorage()): number {
-  const raw = safeGet(storage, BATTLE_VOLUME_KEY, "讀取戰鬥音量");
-  if (raw === null) return DEFAULT_BATTLE_VOLUME;
-  const parsed = Number(raw);
-  return Number.isFinite(parsed) ? Math.min(1, Math.max(0, parsed)) : DEFAULT_BATTLE_VOLUME;
-}
-
-export function saveBattleVolume(volume: number, storage: StorageLike | null = browserStorage()): number {
-  const normalized = Number.isFinite(volume) ? Math.min(1, Math.max(0, volume)) : DEFAULT_BATTLE_VOLUME;
-  safeSet(storage, BATTLE_VOLUME_KEY, String(normalized), "保存戰鬥音量");
-  return normalized;
-}
-
-export type BattleSnapshot = {
-  playerHP: number;
-  enemyHP: number;
-  maxHP: number;
-  currentCombo: number;
-  enemyId: string;
-  questionId: string;
-  questionIndex: number;
-  isActive: boolean;
-  updatedAt: number;
-};
 
 export type PlayerData = {
   name: string;
@@ -85,7 +57,6 @@ export type StorageUsageSummary = {
 let memoryPlayerData: PlayerData | null = null;
 let memoryLearningRecords: LearningRecord[] | null = null;
 let lastStorageNotice: StorageNotice | null = null;
-let memoryBattleState: BattleSnapshot | null = null;
 
 function browserStorage(): StorageLike | null {
   if (typeof window === "undefined") return null;
@@ -109,56 +80,6 @@ function isQuotaExceededError(error: unknown): boolean {
 
 function notifyStorageIssue(notice: StorageNotice) {
   lastStorageNotice = notice;
-}
-
-function isBattleSnapshot(value: unknown): value is BattleSnapshot {
-  if (!value || typeof value !== "object") return false;
-  const snapshot = value as Partial<BattleSnapshot>;
-  const numericValues = [snapshot.playerHP, snapshot.enemyHP, snapshot.maxHP, snapshot.currentCombo, snapshot.questionIndex, snapshot.updatedAt];
-  return numericValues.every((item) => typeof item === "number" && Number.isFinite(item))
-    && typeof snapshot.enemyId === "string"
-    && typeof snapshot.questionId === "string"
-    && typeof snapshot.isActive === "boolean"
-    && typeof snapshot.maxHP === "number" && snapshot.maxHP > 0
-    && typeof snapshot.playerHP === "number" && snapshot.playerHP >= 0
-    && typeof snapshot.enemyHP === "number" && snapshot.enemyHP >= 0;
-}
-
-export function getBattleState(storage: StorageLike | null = browserStorage()): BattleSnapshot | null {
-  if (!storage) return memoryBattleState;
-  const raw = safeGet(storage, BATTLE_STATE_KEY, "讀取戰鬥快照");
-  if (!raw) return memoryBattleState;
-  try {
-    const parsed: unknown = JSON.parse(raw);
-    if (!isBattleSnapshot(parsed)) throw new Error("戰鬥快照欄位不完整");
-    memoryBattleState = parsed;
-    return parsed;
-  } catch (error) {
-    logError(error, "戰鬥快照格式驗證", storage);
-    safeRemove(storage, BATTLE_STATE_KEY, "清除損壞戰鬥快照");
-    memoryBattleState = null;
-    return null;
-  }
-}
-
-export function saveBattleState(snapshot: BattleSnapshot, storage: StorageLike | null = browserStorage()): BattleSnapshot {
-  const next: BattleSnapshot = {
-    ...snapshot,
-    playerHP: Math.max(0, snapshot.playerHP),
-    enemyHP: Math.max(0, snapshot.enemyHP),
-    maxHP: Math.max(1, snapshot.maxHP),
-    currentCombo: Math.max(0, Math.floor(snapshot.currentCombo)),
-    questionIndex: Math.max(0, Math.floor(snapshot.questionIndex)),
-    updatedAt: Date.now(),
-  };
-  memoryBattleState = next;
-  if (!writeStoredJson(BATTLE_STATE_KEY, next, storage)) memoryBattleState = next;
-  return next;
-}
-
-export function clearBattleState(storage: StorageLike | null = browserStorage()): boolean {
-  memoryBattleState = null;
-  return safeRemove(storage, BATTLE_STATE_KEY, "清除戰鬥快照");
 }
 
 export function consumeStorageNotice(): StorageNotice | null {
@@ -650,19 +571,9 @@ export function saveOnboardingComplete(complete = true, storage: StorageLike | n
 }
 
 
-const BATTLE_TUTORIAL_KEY = "xue-adventure-battle-tutorial-complete-v1";
-export function getBattleTutorialComplete(storage: StorageLike | null = browserStorage()): boolean {
-  return safeGet(storage, BATTLE_TUTORIAL_KEY, "讀取戰鬥教學狀態") === "true";
-}
-export function saveBattleTutorialComplete(complete = true, storage: StorageLike | null = browserStorage()): boolean {
-  return safeSet(storage, BATTLE_TUTORIAL_KEY, complete ? "true" : "false", "保存戰鬥教學狀態");
-}
-
-
 export const LIMITED_TITLES_KEY = "xue-adventure-limited-titles-v1";
 export const SELECTED_TITLE_KEY = "xue-adventure-selected-title-v1";
 export const RARE_MONSTER_DEFEATS_KEY = "xue-adventure-rare-monster-defeats-v1";
-export const BATTLE_RECAPS_KEY = "xue-adventure-battle-recaps-v1";
 export const ANALYTICS_KEY = "xue-adventure-analytics-v1";
 export const ANALYTICS_CONSENT_KEY = "xue-adventure-analytics-consent-v1";
 export const PLAYER_PROFILE_KEY = "xue-adventure-player-profile-v1";
@@ -755,17 +666,6 @@ export type AnalyticsData = {
   sessions: Array<{ startedAt: number; endedAt?: number }>;
   subjectStats: Partial<Record<SubjectId, AnalyticsSubjectStats>>;
   potionUses: AnalyticsPotionUse[];
-};
-
-export type BattleRecap = {
-  id: string;
-  timestamp: number;
-  enemyId: string;
-  enemyName: string;
-  rare: boolean;
-  maxCombo: number;
-  strategyUses: number;
-  partBreakTriggered: boolean;
 };
 
 const defaultAnalytics = (): AnalyticsData => ({
@@ -891,17 +791,6 @@ export function getRareMonsterDefeats(storage: StorageLike | null = browserStora
 export function recordRareMonsterDefeat(monsterId: string, storage: StorageLike | null = browserStorage()): Record<string, number> {
   const next = { ...getRareMonsterDefeats(storage), [monsterId]: (getRareMonsterDefeats(storage)[monsterId] ?? 0) + 1 };
   writeStoredJson(RARE_MONSTER_DEFEATS_KEY, next, storage);
-  return next;
-}
-
-export function getBattleRecaps(storage: StorageLike | null = browserStorage()): BattleRecap[] {
-  const value = readStoredJson<unknown>(BATTLE_RECAPS_KEY, [], storage);
-  return Array.isArray(value) ? value.filter((item): item is BattleRecap => Boolean(item && typeof item === "object" && typeof (item as BattleRecap).id === "string" && typeof (item as BattleRecap).timestamp === "number")).slice(-30) : [];
-}
-
-export function saveBattleRecap(recap: BattleRecap, storage: StorageLike | null = browserStorage()): BattleRecap[] {
-  const next = [...getBattleRecaps(storage).filter((item) => item.id !== recap.id), recap].slice(-30);
-  writeStoredJson(BATTLE_RECAPS_KEY, next, storage);
   return next;
 }
 

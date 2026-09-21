@@ -26,7 +26,7 @@ describe("FeaturesDirectory 全站功能總覽", () => {
 
     // 4 個分組標題
     expect(screen.getByRole("heading", { name: "學習與複習" })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "探險與對戰" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "探險與挑戰" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "知識探索館" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "學習支援與設定" })).toBeInTheDocument();
 
@@ -49,7 +49,7 @@ describe("FeaturesDirectory 全站功能總覽", () => {
     // 命中：天文館；其他分組被過濾掉
     expect(screen.getByRole("heading", { name: "知識探索館" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /前往 天文館/ })).toBeInTheDocument();
-    expect(screen.queryByRole("heading", { name: "探險與對戰" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "探險與挑戰" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /前往 課綱練習/ })).not.toBeInTheDocument();
   });
 

@@ -98,7 +98,7 @@ export default function StudentMap() {
         onOpenExam={() => setLocation("/practice")}
         onOpenAstronomy={() => setLocation("/astronomy")}
         onOpenPrinciples={() => setLocation("/principles")}
-        onOpenCompanion={() => setLocation("/battle")}
+        onOpenCompanion={() => setLocation("/expedition")}
         onOpenInsights={() => setLocation("/learning-insights")}
         onOpenObservatory={() => setLocation("/observatory")}
       />

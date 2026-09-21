@@ -6,8 +6,6 @@ export type ExpeditionChapter = {
   key: ExpeditionChapterKey;
   title: string;
   subtitle: string;
-  coverSrc: string;
-  badgeSrc: string;
   unlockTarget: number;
   unlockLabel: string;
   regionKey?: RegionKey;
@@ -25,8 +23,6 @@ export const EXPEDITION_CHAPTERS: readonly ExpeditionChapter[] = [
     key: "north",
     title: "北境觀測章",
     subtitle: "霧嶺港灣的第一枚座標",
-    coverSrc: "/manus-storage/academy-chapter-covers_e6f99067.png",
-    badgeSrc: "/manus-storage/academy-collectible-badges_3f7018ea.png",
     unlockTarget: 3,
     unlockLabel: "答對 3 題北部區域題",
     regionKey: "north",
@@ -35,8 +31,6 @@ export const EXPEDITION_CHAPTERS: readonly ExpeditionChapter[] = [
     key: "central",
     title: "河谷追跡章",
     subtitle: "沿著水路讀懂土地",
-    coverSrc: "/manus-storage/academy-chapter-covers_e6f99067.png",
-    badgeSrc: "/manus-storage/academy-collectible-badges_3f7018ea.png",
     unlockTarget: 6,
     unlockLabel: "累積答對 6 題中部區域題",
     regionKey: "central",
@@ -45,8 +39,6 @@ export const EXPEDITION_CHAPTERS: readonly ExpeditionChapter[] = [
     key: "east",
     title: "星海地層章",
     subtitle: "在山脈與海岸追蹤時間",
-    coverSrc: "/manus-storage/academy-chapter-covers_e6f99067.png",
-    badgeSrc: "/manus-storage/academy-collectible-badges_3f7018ea.png",
     unlockTarget: 9,
     unlockLabel: "累積答對 9 題東部區域題",
     regionKey: "east",
@@ -55,8 +47,6 @@ export const EXPEDITION_CHAPTERS: readonly ExpeditionChapter[] = [
     key: "south",
     title: "潮境守護章",
     subtitle: "記錄暖流、濕地與生命",
-    coverSrc: "/manus-storage/academy-chapter-covers_e6f99067.png",
-    badgeSrc: "/manus-storage/academy-collectible-badges_3f7018ea.png",
     unlockTarget: 12,
     unlockLabel: "累積答對 12 題南部區域題",
     regionKey: "south",
@@ -65,8 +55,6 @@ export const EXPEDITION_CHAPTERS: readonly ExpeditionChapter[] = [
     key: "academy",
     title: "學苑躍遷章",
     subtitle: "連接所有課綱航線",
-    coverSrc: "/manus-storage/academy-chapter-covers_e6f99067.png",
-    badgeSrc: "/manus-storage/academy-collectible-badges_3f7018ea.png",
     unlockTarget: 20,
     unlockLabel: "累積答對 20 題課綱題",
   },
@@ -89,12 +77,3 @@ export function calculateExpeditionProgress(questions: readonly QuestionLike[], 
   });
 }
 
-export function getExpeditionArtworkPosition(key: ExpeditionChapterKey) {
-  return {
-    north: "0% 0%",
-    central: "50% 0%",
-    east: "100% 0%",
-    south: "0% 100%",
-    academy: "100% 100%",
-  }[key];
-}

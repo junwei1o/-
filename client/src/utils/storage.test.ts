@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { ADAPTIVE_STORAGE_KEY } from "@/game/adaptiveLearning";
-import { ACCESSIBILITY_PREFS_KEY, ANALYTICS_CONSENT_KEY, BATTLE_VOLUME_KEY, DAILY_SIGN_IN_KEY, LEARNING_RECORD_KEY, PLAYER_DATA_KEY, STORAGE_ERROR_LOG_KEY, addLearningRecord, addRecord, claimDailySignIn, consumeStorageNotice, getAccessibilityPrefs, getAnalytics, getAnalyticsConsent, getAnalyticsSummary, getBattleRecaps, getBattleVolume, getDailySignIn, getLearningRecord, getLimitedTitles, getPlayerData, getRareMonsterDefeats, getSelectedTitle, hasSignedInToday, initGameData, initLearningRecord, initPlayerData, recordAnalyticsEvent, recordRareMonsterDefeat, saveAccessibilityPrefs, saveAnalyticsConsent, saveBattleRecap, saveBattleVolume, savePlayerData, saveSelectedTitle, unlockLimitedTitle } from "@/utils/storage";
+import { ACCESSIBILITY_PREFS_KEY, ANALYTICS_CONSENT_KEY, DAILY_SIGN_IN_KEY, LEARNING_RECORD_KEY, PLAYER_DATA_KEY, STORAGE_ERROR_LOG_KEY, addLearningRecord, addRecord, claimDailySignIn, consumeStorageNotice, getAccessibilityPrefs, getAnalytics, getAnalyticsConsent, getAnalyticsSummary, getDailySignIn, getLearningRecord, getLimitedTitles, getPlayerData, getRareMonsterDefeats, getSelectedTitle, hasSignedInToday, initGameData, initLearningRecord, initPlayerData, recordAnalyticsEvent, recordRareMonsterDefeat, saveAccessibilityPrefs, saveAnalyticsConsent, savePlayerData, saveSelectedTitle, unlockLimitedTitle } from "@/utils/storage";
 
 function createStorage() {
   const values = new Map<string, string>();
@@ -93,17 +93,6 @@ describe("storage compatibility API", () => {
     expect(consumeStorageNotice()).toMatchObject({ kind: "error" });
   });
 
-  it("persists and clamps battle volume safely", () => {
-    const storage = createStorage();
-    expect(getBattleVolume(storage)).toBe(0.65);
-    expect(saveBattleVolume(1.4, storage)).toBe(1);
-    expect(storage.getItem(BATTLE_VOLUME_KEY)).toBe("1");
-    expect(saveBattleVolume(-0.4, storage)).toBe(0);
-    expect(getBattleVolume(storage)).toBe(0);
-    storage.setItem(BATTLE_VOLUME_KEY, "not-a-number");
-    expect(getBattleVolume(storage)).toBe(0.65);
-  });
-
   it("persists accessible effect, vibration and animation preferences with malformed-data fallback", () => {
     const storage = createStorage();
     expect(getAccessibilityPrefs(storage)).toEqual({ effectIntensity: "high", vibrationEnabled: true, reducedAnimation: false });
@@ -157,17 +146,15 @@ describe("storage compatibility API", () => {
     expect(storage.getItem(DAILY_SIGN_IN_KEY)).not.toBeNull();
   });
 
-  it("stores rare-monster codex defeats, a selected unlocked title, and the latest battle recap", () => {
+  it("stores rare-monster codex defeats and a selected unlocked title", () => {
     const storage = createStorage();
     recordRareMonsterDefeat("chinese-rare-1", storage);
     recordRareMonsterDefeat("chinese-rare-1", storage);
     unlockLimitedTitle("擊敗後獲得限定稱號：古籍星君", storage);
     expect(saveSelectedTitle("擊敗後獲得限定稱號：古籍星君", storage)).toBe("擊敗後獲得限定稱號：古籍星君");
-    saveBattleRecap({ id: "battle-1", timestamp: 1_700_000_000_000, enemyId: "chinese-rare-1", enemyName: "古籍星君", rare: true, maxCombo: 5, strategyUses: 2, partBreakTriggered: true }, storage);
 
     expect(getRareMonsterDefeats(storage)).toEqual({ "chinese-rare-1": 2 });
     expect(getSelectedTitle(storage)).toBe("擊敗後獲得限定稱號：古籍星君");
-    expect(getBattleRecaps(storage)).toEqual([expect.objectContaining({ id: "battle-1", maxCombo: 5, strategyUses: 2, partBreakTriggered: true })]);
   });
 
   it("cleans the oldest 100 records after a quota failure", () => {

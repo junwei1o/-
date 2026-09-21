@@ -3,13 +3,13 @@ import { useEffect, useRef, useState } from "react";
 import { useLocation, useRoute } from "wouter";
 import { MAP_REGIONS, type RegionKey } from "@/lib/mapRegions";
 
-const HERO = "/manus-storage/taiwan-island-map-no-mainland_c6696c04.png";
+const HERO = "/assets/illustration/island-overview.webp";
 
 export default function RegionDetail() {
   const [, params] = useRoute("/regions/:regionKey");
   const [, setLocation] = useLocation();
   const [isLeaving, setIsLeaving] = useState(false);
-  // 後端未設定 storage 代理（獨立部署）時台灣地圖主圖會 404，改顯示本地導航海圖兜底，避免破圖。
+  // 本地島嶼插畫載入失敗時改用導航海圖兜底，避免破圖。
   const [mapFailed, setMapFailed] = useState(false);
   const navigationTimer = useRef<number | null>(null);
   const region = MAP_REGIONS.find((item) => item.key === params?.regionKey);

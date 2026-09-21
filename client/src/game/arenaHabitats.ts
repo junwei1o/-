@@ -1,5 +1,4 @@
-import { ENCOUNTERS } from "./rpgData";
-import type { Encounter, RegionKey, RpgState } from "./rpgTypes";
+import type { RegionKey, RpgState } from "./rpgTypes";
 
 export type ArenaHabitatKey = "tidal-grove" | "cloud-shelf" | "star-current" | "coral-shallows";
 
@@ -31,47 +30,17 @@ export const ARENA_HABITATS: readonly ArenaHabitat[] = [
   { id: "coral-shallows", region: "south", name: "珊瑚淺灣", description: "潮間帶的合作訊號，會引導你辨識環境變化。", unlockTarget: 7, rareTarget: 10, rareCondition: "南方答對 10 題且累積 2 次首領突破後，可能遇見稀有守潮者。", rareChance: 0.12, commonEncounterId: "coral-sprout", rareEncounterId: "reef-warden" },
 ];
 
-const encounterById = (id: string) => ENCOUNTERS.find((encounter) => encounter.id === id) ?? ENCOUNTERS[0];
-
 const regionCorrect = (state: RpgState, region: RegionKey) => state.academyProgress?.[region]?.correctAnswers ?? 0;
-const bossVictories = (state: RpgState) => Object.values(state.academyProgress ?? {}).reduce((total, progress) => total + (progress?.bossVictories ?? 0), 0);
 
 export function arenaHabitatStatus(habitat: ArenaHabitat, state: RpgState): ArenaHabitatStatus {
-  const progress = regionCorrect(state, habitat.region);
-  const common = { unlocked: progress >= habitat.unlockTarget, regionCorrect: progress };
-  const rareEligible = progress >= habitat.rareTarget
-    && (habitat.region === "central" ? bossVictories(state) >= 1 : habitat.region === "east" ? (state.challengeCorrectCount ?? 0) >= 1 : habitat.region === "south" ? bossVictories(state) >= 2 : true);
-  const extraRequirement = habitat.region === "central" ? bossVictories(state) : habitat.region === "east" ? state.challengeCorrectCount ?? 0 : habitat.region === "south" ? bossVictories(state) : 0;
-  const extraTarget = habitat.region === "central" || habitat.region === "east" ? 1 : habitat.region === "south" ? 2 : 0;
-  const rareProgressLabel = extraTarget > 0
-    ? `答對 ${Math.min(progress, habitat.rareTarget)}/${habitat.rareTarget} 題 · 額外條件 ${Math.min(extraRequirement, extraTarget)}/${extraTarget}`
-    : `答對 ${Math.min(progress, habitat.rareTarget)}/${habitat.rareTarget} 題`;
-  return { ...habitat, ...common, rareEligible, rareProgress: progress, rareProgressLabel };
+  const correct = regionCorrect(state, habitat.region);
+  const unlocked = correct >= habitat.unlockTarget;
+  const rareEligible = correct >= habitat.rareTarget;
+  const rareProgress = Math.min(1, correct / habitat.rareTarget);
+  const rareProgressLabel = unlocked ? `${correct} / ${habitat.rareTarget}` : `${correct} / ${habitat.unlockTarget}`;
+  return { ...habitat, unlocked, regionCorrect: correct, rareEligible, rareProgress, rareProgressLabel };
 }
 
 export function arenaHabitatStatuses(state: RpgState) {
   return ARENA_HABITATS.map((habitat) => arenaHabitatStatus(habitat, state));
-}
-
-export function selectedArenaHabitat(state: RpgState) {
-  const statuses = arenaHabitatStatuses(state);
-  return statuses.find((habitat) => habitat.id === state.arenaHabitatId && habitat.unlocked) ?? statuses.find((habitat) => habitat.unlocked) ?? statuses[0];
-}
-
-export function selectArenaHabitat(state: RpgState, habitatId: ArenaHabitatKey): RpgState {
-  const habitat = arenaHabitatStatuses(state).find((item) => item.id === habitatId);
-  if (!habitat?.unlocked) return state;
-  return {
-    ...state,
-    arenaHabitatId: habitat.id,
-    currentRegion: habitat.region,
-    explored: Array.from(new Set([...state.explored, habitat.region])),
-    notice: `${habitat.name} 已設為本次觀測棲息地。`,
-  };
-}
-
-export function encounterForArenaHabitat(state: RpgState, habitatId?: ArenaHabitatKey, roll = Math.random()): { habitat: ArenaHabitatStatus; encounter: Encounter; rare: boolean } {
-  const chosen = arenaHabitatStatuses(state).find((item) => item.id === habitatId && item.unlocked) ?? selectedArenaHabitat(state);
-  const rare = chosen.rareEligible && roll < chosen.rareChance;
-  return { habitat: chosen, encounter: encounterById(rare ? chosen.rareEncounterId : chosen.commonEncounterId), rare };
 }

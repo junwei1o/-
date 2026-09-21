@@ -24,7 +24,7 @@ describe("Expedition 今日遠征", () => {
     setLocation.mockClear();
 
     fireEvent.click(screen.getByRole("button", { name: /今日任務/ }));
-    expect(setLocation).toHaveBeenCalledWith("/battle");
+    expect(setLocation).toHaveBeenCalledWith("/camp");
     setLocation.mockClear();
 
     fireEvent.click(screen.getByRole("button", { name: /數學/ }));

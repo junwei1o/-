@@ -8,7 +8,6 @@ import { Link, useLocation } from "wouter";
 const ITEMS = [
   { href: "/map", icon: "🗺️", label: "航海" },
   { href: "/practice", icon: "📚", label: "學習" },
-  { href: "/battle", icon: "⚔️", label: "挑戰" },
   { href: "/badges", icon: "🏅", label: "成就" },
   { href: "/settings", icon: "⚙️", label: "設定" },
 ];

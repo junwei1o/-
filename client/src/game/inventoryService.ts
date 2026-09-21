@@ -1,16 +1,15 @@
 export const INVENTORY_STORAGE_KEY = "xue-adventure-specialty-inventory-v1";
 export const INVENTORY_CAPACITY = 24;
 
-export type InventorySource = "battle-victory" | "correct-answer-milestone" | "map-easter-egg" | "battle-potion-drop";
+export type InventorySource = "correct-answer-milestone" | "map-easter-egg";
 
 export type InventoryItem = {
   id: string;
   name: string;
   emoji: string;
-  category: "台灣特產" | "戰鬥道具";
+  category: "台灣特產";
   acquiredAt: number;
   source: InventorySource;
-  effect?: { type: "heal"; amount: number };
 };
 
 export type SpecialtyDropInput = {
@@ -49,9 +48,9 @@ function isInventoryItem(value: unknown): value is InventoryItem {
   return typeof item.id === "string"
     && typeof item.name === "string"
     && typeof item.emoji === "string"
-    && (item.category === "台灣特產" || item.category === "戰鬥道具")
+    && item.category === "台灣特產"
     && typeof item.acquiredAt === "number"
-    && (item.source === "battle-victory" || item.source === "correct-answer-milestone" || item.source === "map-easter-egg" || item.source === "battle-potion-drop");
+    && (item.source === "correct-answer-milestone" || item.source === "map-easter-egg");
 }
 
 function inventoryStorage(storage?: InventoryStorage): InventoryStorage | null {
@@ -140,47 +139,4 @@ export function tryDropSpecialty(input: SpecialtyDropInput, storage?: InventoryS
   } catch {
     return null;
   }
-}
-
-
-export const HEALTH_POTION_ID = "health-potion";
-export const HEALTH_POTION_HEAL = 35;
-
-export function countHealthPotions(storage?: InventoryStorage): number {
-  return getInventory(storage).filter((item) => item.id.startsWith(`${HEALTH_POTION_ID}-`)).length;
-}
-
-export function tryDropHealthPotion(answerCount: number, storage?: InventoryStorage, random: () => number = Math.random): InventoryItem | null {
-  const target = inventoryStorage(storage);
-  if (!target || answerCount < 5 || random() >= 0.35) return null;
-  try {
-    const raw = target.getItem(INVENTORY_STORAGE_KEY);
-    const current = raw ? normalizeInventoryState(JSON.parse(raw)) : emptyInventoryState();
-    if (current.items.length >= INVENTORY_CAPACITY) return null;
-    const item: InventoryItem = {
-      id: `${HEALTH_POTION_ID}-${Date.now()}-${answerCount}`,
-      name: "補血藥水",
-      emoji: "🧪",
-      category: "戰鬥道具",
-      acquiredAt: Date.now(),
-      source: "battle-potion-drop",
-      effect: { type: "heal", amount: HEALTH_POTION_HEAL },
-    };
-    target.setItem(INVENTORY_STORAGE_KEY, JSON.stringify({ ...current, items: [item, ...current.items].slice(0, INVENTORY_CAPACITY) } satisfies InventoryState));
-    return item;
-  } catch { return null; }
-}
-
-export function consumeHealthPotion(storage?: InventoryStorage): InventoryItem | null {
-  const target = inventoryStorage(storage);
-  if (!target) return null;
-  try {
-    const raw = target.getItem(INVENTORY_STORAGE_KEY);
-    const current = raw ? normalizeInventoryState(JSON.parse(raw)) : emptyInventoryState();
-    const index = current.items.findIndex((item) => item.id.startsWith(`${HEALTH_POTION_ID}-`));
-    if (index < 0) return null;
-    const [item] = current.items.splice(index, 1);
-    target.setItem(INVENTORY_STORAGE_KEY, JSON.stringify(current satisfies InventoryState));
-    return item;
-  } catch { return null; }
 }

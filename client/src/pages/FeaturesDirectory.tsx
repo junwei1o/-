@@ -57,7 +57,7 @@ export function FeaturesDirectory() {
               type="search"
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              placeholder="例如：戰鬥、報告、天文、設定"
+              placeholder="例如：練習、報告、天文、設定"
               autoComplete="off"
             />
           </label>
@@ -93,7 +93,7 @@ export function FeaturesDirectory() {
           </div>
         ) : (
           <p className="features-empty" role="status">
-            找不到「{query}」相關功能。請試試戰鬥、報告、天文或設定。
+            找不到「{query}」相關功能。請試試練習、報告、天文或設定。
           </p>
         )}
 

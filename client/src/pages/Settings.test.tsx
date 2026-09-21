@@ -153,16 +153,6 @@ describe("設定頁錯誤日誌", () => {
     expect(screen.getByRole("button", { name: "匯出 JSON 診斷報告" })).toBeInTheDocument();
   });
 
-  it("可調整戰鬥音量並保存百分比偏好", () => {
-    render(<Settings />);
-    const slider = screen.getByRole("slider", { name: "音量" });
-    expect(slider).toHaveValue("0.65");
-    fireEvent.change(slider, { target: { value: "0.35" } });
-    expect(slider).toHaveValue("0.35");
-    expect(document.querySelector('output[for="battle-volume"]')).toHaveTextContent("35%");
-    expect(storage.get("xueBattleVolume")).toBe("0.35");
-  });
-
   it("可即時調整特效、震動與動畫簡化設定", () => {
     render(<Settings />);
     const intensity = screen.getByRole("slider", { name: "特效強度" });
