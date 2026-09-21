@@ -930,3 +930,43 @@ curl -s https://xue-gr3a.onrender.com/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | h
 - 一次性陰影長尾（536 種中的多數）維持原樣；新樣式請用 `--shadow-*`。
 - TSX 內聯樣式與 canvas 遊戲代碼的色碼未納入本輪。
 - `.principle-guide` 在 index.css 有新舊兩套定義（後者覆蓋前者），舊段疑似死碼待確認移除。
+
+## 2026-09-21（夜）：全站優化第二波
+
+### 做了什麼
+- **圓角全數收斂尺度**：border-radius 單一 px/rem 值（9–28px 區間）snap 到最近尺度
+  token（8/12/18/24，距離相同取大），rem 以 16px 換算；<8px 極小圓角與多值 shorthand
+  不動；99px 併入 pill。合計 **414 處**（codemod：/tmp/snap-radius.py 思路）。
+  現在全站圓角只剩：var(--radius-*) 849 處 + 50%/inherit/極小值（≤7px）+ 少量多值 shorthand。
+- **死碼清除**：
+  - CSS：`.boss-card`／`.boss-visual-*` 兩套（含混合行中的選擇器，逐一精準移除）、
+    `.read-question-btn`、`.expedition-gallery/art-card/art-caption/cover-frame/cover-ribbon/
+    lock-overlay/chapter-progress/chapter-heading/badge-*`（共約 60 行，index.css -10KB）、
+    `.companion-reflect-modal`（CompanionReflection.css）。每個類別都先 grep 過 tsx 零引用才刪。
+  - 元件：`AnalyticsConsentPrompt.tsx` + 測試（已被 PrivacyBanner 取代、無人渲染）。
+  - 注意：`.principle-guide` 新舊兩套定義**不是死碼**——PrincipleGuideQuiz.tsx 用了 100 處
+    principle-guide-* 類別，兩塊都有作用（後者覆蓋前者核心、前者供給未被重定義的子選擇器），
+    合併屬重新設計，不在清理範圍。
+- **死 fallback 清理**：60 處 `var(--token, #舊值)` → `var(--token)`
+  （token 已在 :root 定義，fallback 永遠不生效；含 #C9BFA8 等舊拼法）。
+- **TSX 內聯色碼**：審計後**刻意保留**——都是洋蒐學院動畫/插畫/彩帶的內容色
+  （EmptyState SVG、FractionStage、CONFETTI_COLORS 等），屬美術素材而非介面骨架。
+- **打包效能**：runtime_bank 題庫已是動態 import（懶加載）✓；vendor 已 manualChunks 拆分 ✓；
+  洋蔥課程 `import.meta.glob eager:true` 是文件記載的刻意決策（懶加載會破壞同步測試合約），不動。
+
+### 驗證
+- 22 張前後截圖像素 diff：平均 0.12%、最大 0.32%（home-mobile）——差異全部是圓角微調，
+  版面結構零變動（抽查放大確認）。
+- `tsc` 0 錯；**743 測試全過**（減 2 = 刪除的死組件測試）；`vite build` 成功；
+  全 CSS 檔括號平衡校驗通過。已 push（`1f9e745`）。
+
+### 本輪踩坑記錄（重要）
+- 用 regex 清 `var(--x,fallback)` 時，`[^)]*` 會在巢狀括號處截斷
+  （`var(--x,var(--y))`、`var(--ease,cubic-bezier(...))`），且第二次「修復」又誤傷了
+  `calc(var(--x))` 這類合法雙括號——靠「全檔括號平衡校驗 + git HEAD 逐行對比」才抓齊 82 處，
+  最後整體回滾 CSS 重放（腳本改成括號感知 + 逐行平衡守衛 + 全檔 {} () 校驗）。
+  **教訓：對 CSS 做字串手術，必須先寫「改動後全檔括號平衡」的斷言，且修復不要疊在壞改動上。**
+
+### 後續待辦
+- `.principle-guide` 兩套視覺合併（需設計決策，非清理）。
+- 一次性陰影長尾維持原樣；新樣式用 `--shadow-*`。
