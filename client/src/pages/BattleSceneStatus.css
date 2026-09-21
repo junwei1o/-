@@ -6,7 +6,7 @@
   align-items: center;
   margin: 0.9rem 0 1rem;
   border: 1px solid color-mix(in srgb, var(--tidal) 25%, transparent);
-  border-radius: 1rem;
+  border-radius:var(--radius-lg);
   background: linear-gradient(135deg, color-mix(in srgb, var(--white) 90%, transparent), rgba(232, 246, 244, 0.83));
   box-shadow: inset 0 1px 0 color-mix(in srgb, var(--white) 85%, transparent), 0 8px 20px rgba(17, 73, 87, 0.08);
   color: #174b57;
@@ -55,7 +55,7 @@
   gap: 0.75rem;
   margin: 0.78rem 0;
   border: 1px solid rgba(124, 91, 155, 0.28);
-  border-radius: 1rem;
+  border-radius:var(--radius-lg);
   background: linear-gradient(135deg, rgba(250, 247, 255, 0.95), rgba(237, 231, 250, 0.82));
   color: #4d3862;
   padding: 0.78rem 0.9rem;
@@ -125,7 +125,7 @@
   margin: 0.82rem 0;
   padding: 0.9rem;
   border: 1px solid rgba(162, 79, 31, 0.26);
-  border-radius: 1rem;
+  border-radius:var(--radius-lg);
   background: linear-gradient(135deg, rgba(255, 247, 235, 0.94), rgba(255, 238, 213, 0.78));
   color: #65391d;
 }
@@ -152,7 +152,7 @@
 .battle-skill-cooldown-ring-track { stroke: rgba(89, 100, 114, 0.16); }
 .battle-skill-cooldown-ring-fill { stroke: #718295; stroke-linecap: round; transition: stroke-dashoffset 180ms cubic-bezier(0.23, 1, 0.32, 1); }
 .battle-skill-cooldown-ring > span { position: relative; z-index: 1; }
-.battle-rage-tutorial { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0.62rem; align-items: start; padding: 0.72rem; border: 1px solid rgba(82, 117, 100, 0.28); border-radius: 0.78rem; background: rgba(239, 248, 234, 0.82); color: #345944; }
+.battle-rage-tutorial { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0.62rem; align-items: start; padding: 0.72rem; border: 1px solid rgba(82, 117, 100, 0.28); border-radius:var(--radius-md); background: rgba(239, 248, 234, 0.82); color: #345944; }
 .battle-rage-tutorial > div { display: grid; gap: 0.26rem; }
 .battle-rage-tutorial .eyebrow { color: #477458; font-size: 0.63rem; }
 .battle-rage-tutorial h3 { margin: 0; color: #2d5940; font-family:var(--font-display); font-size: 0.92rem; }
@@ -161,14 +161,14 @@
 .battle-rage-tutorial li { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 0.34rem; color: #42644e; font-size: 0.7rem; line-height: 1.35; }
 .battle-rage-tutorial li strong { color: #2d5940; }
 .battle-rage-tutorial > button { min-height: 2rem; white-space: nowrap; border-color: rgba(72, 116, 88, 0.32); color: #2e5c43; }
-.battle-active-strategy { margin: 0.55rem 0 0; padding: 0.55rem 0.64rem; border-radius: 0.7rem; background: rgba(226, 129, 42, 0.12); color: #74411f; font-size: 0.8rem; font-weight: 750; line-height: 1.45; }
+.battle-active-strategy { margin: 0.55rem 0 0; padding: 0.55rem 0.64rem; border-radius:var(--radius-md); background: rgba(226, 129, 42, 0.12); color: #74411f; font-size: 0.8rem; font-weight: 750; line-height: 1.45; }
 
 .battle-review-card { border-color: rgba(126, 93, 44, 0.3); background: linear-gradient(135deg, rgba(255, 252, 237, 0.98), rgba(247, 237, 205, 0.84)); text-align: left; }
 .battle-review-card.is-perfect { border-color: rgba(195, 140, 36, 0.52); background: linear-gradient(135deg, rgba(255, 249, 219, 0.98), rgba(255, 227, 157, 0.86)); }
 .battle-review-card .eyebrow { color: #8f6829; }
 .battle-review-card h3 { margin: 0.14rem 0 0; color: #53401f; font-family:var(--font-display); font-size: 1.03rem; }
 .battle-review-card ul { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.44rem; margin: 0; padding: 0; list-style: none; }
-.battle-review-card li { display: grid; gap: 0.18rem; min-width: 0; padding: 0.58rem 0.46rem; border-radius: 0.72rem; background: color-mix(in srgb, var(--white) 55%, transparent); }
+.battle-review-card li { display: grid; gap: 0.18rem; min-width: 0; padding: 0.58rem 0.46rem; border-radius:var(--radius-md); background: color-mix(in srgb, var(--white) 55%, transparent); }
 .battle-review-card li strong { color: #795020; font-size: 1rem; }
 .battle-review-card li span { color: #705b38; font-size: 0.68rem; font-weight: 750; line-height: 1.35; }
 
@@ -242,7 +242,7 @@
   margin: 1rem 0;
   padding: 0.95rem 1rem;
   border: 1px solid rgba(191, 145, 69, 0.35);
-  border-radius: 1.25rem;
+  border-radius:var(--radius-lg);
   background: rgba(255, 250, 239, 0.82);
   box-shadow: 0 10px 24px rgba(104, 78, 38, 0.08);
   text-align: left;
@@ -296,7 +296,7 @@
   margin: 1rem 0;
   padding: 1rem;
   border: 1px solid rgba(39, 102, 104, 0.28);
-  border-radius: 1.1rem;
+  border-radius:var(--radius-lg);
   background: linear-gradient(135deg, rgba(240, 249, 247, 0.94), rgba(255, 250, 240, 0.9));
   box-shadow: 0 10px 22px rgba(29, 78, 78, 0.08);
   text-align: left;
@@ -379,7 +379,7 @@
 /* Combo milestones appear above the board without interrupting the answer layout. */
 .battle-combo-milestone { --milestone-color: #4eaeff; position: absolute; inset: 0; z-index: 8; display: grid; place-items: center; padding: 1rem; overflow: hidden; border-radius: inherit; background: radial-gradient(circle at 50% 45%, color-mix(in srgb, var(--milestone-color) 24%, transparent), rgba(8, 25, 47, .08) 66%); color: var(--white); text-align: center; isolation: isolate; pointer-events: none; }
 .battle-combo-milestone.tone-gold { --milestone-color: #f6c454; }.battle-combo-milestone.tone-rainbow { --milestone-color: #ff91d9; }.battle-combo-milestone.tone-star { --milestone-color: #fff0a6; }
-.battle-combo-milestone > div { position: relative; z-index: 2; display: grid; justify-items: center; gap: .35rem; max-width: 28rem; padding: 1rem 1.2rem; border: 1px solid color-mix(in srgb, var(--milestone-color) 72%, white); border-radius: 1.1rem; background: rgba(7, 25, 48, .82); box-shadow: 0 0 0 .45rem color-mix(in srgb, var(--milestone-color) 13%, transparent), 0 0 2rem color-mix(in srgb, var(--milestone-color) 58%, transparent); }
+.battle-combo-milestone > div { position: relative; z-index: 2; display: grid; justify-items: center; gap: .35rem; max-width: 28rem; padding: 1rem 1.2rem; border: 1px solid color-mix(in srgb, var(--milestone-color) 72%, white); border-radius:var(--radius-lg); background: rgba(7, 25, 48, .82); box-shadow: 0 0 0 .45rem color-mix(in srgb, var(--milestone-color) 13%, transparent), 0 0 2rem color-mix(in srgb, var(--milestone-color) 58%, transparent); }
 .battle-combo-milestone .eyebrow { color: var(--milestone-color); font-size: .6rem; font-weight: 900; letter-spacing: .12em; }.battle-combo-milestone strong { color: var(--white); font-family:var(--font-display); font-size: clamp(1.28rem, 4.7vw, 2rem); font-weight: 900; line-height: 1.2; }.battle-combo-milestone p { margin: 0; color: color-mix(in srgb, var(--white) 86%, transparent); font-size: .79rem; line-height: 1.5; }.battle-combo-milestone b { padding: .26rem .55rem; border-radius:var(--radius-pill); background: color-mix(in srgb, var(--milestone-color) 26%, transparent); color: var(--white); font-size: .75rem; }
 .battle-combo-milestone-rim { position: absolute; inset: 8%; border: 2px solid color-mix(in srgb, var(--milestone-color) 75%, transparent); border-radius: 50%; box-shadow: 0 0 2.6rem color-mix(in srgb, var(--milestone-color) 62%, transparent); }.battle-combo-milestone-particles { position:absolute; inset:0; z-index:1; }.battle-combo-milestone-particles i { position:absolute; top:50%; left:50%; width:.38rem; height:.38rem; border-radius:50%; background:var(--milestone-color); box-shadow:0 0 .75rem var(--milestone-color); transform:rotate(calc(var(--milestone-particle) * 30deg)) translateY(-.2rem); }
 .battle-combo-milestone.tone-blue { box-shadow: inset 0 0 0 3px rgba(94, 184, 255, .75); }.battle-combo-milestone.tone-rainbow { background: linear-gradient(135deg, rgba(255,100,164,.22), rgba(92,184,255,.22), rgba(137,238,150,.22)); }.battle-combo-milestone.tone-star { background: radial-gradient(circle, rgba(255,234,151,.44), rgba(8,25,47,.12) 62%); }
@@ -397,7 +397,7 @@
   margin: 0.8rem 0;
   padding: 0.86rem 0.92rem;
   border: 1px solid rgba(63, 118, 96, 0.34);
-  border-radius: 1rem;
+  border-radius:var(--radius-lg);
   background: linear-gradient(135deg, rgba(241, 250, 238, 0.98), rgba(252, 247, 225, 0.93));
   box-shadow: 0 0.55rem 1.2rem rgba(42, 98, 73, 0.08);
   color: #2f5b48;
@@ -408,7 +408,7 @@
 .battle-difficulty-assist p { margin: 0; color: #456655; font-size: 0.78rem; font-weight: 650; line-height: 1.5; }
 .battle-difficulty-assist > div:last-child { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 0.46rem; }
 .battle-difficulty-assist > div:last-child button { min-height: 2.45rem; white-space: nowrap; }
-.battle-difficulty-applied { margin: 0.62rem 0; padding: 0.55rem 0.7rem; border-radius: 0.7rem; background: rgba(65, 120, 90, 0.11); color: #315d49; font-size: 0.78rem; font-weight: 800; line-height: 1.45; }
+.battle-difficulty-applied { margin: 0.62rem 0; padding: 0.55rem 0.7rem; border-radius:var(--radius-md); background: rgba(65, 120, 90, 0.11); color: #315d49; font-size: 0.78rem; font-weight: 800; line-height: 1.45; }
 @media (max-width: 520px) {
   .battle-difficulty-assist { grid-template-columns: 1fr; padding: 0.8rem; }
   .battle-difficulty-assist > div:last-child { display: grid; grid-template-columns: 1fr; justify-content: stretch; }
@@ -568,7 +568,7 @@ html[data-animation-simplified="true"] .battle-scene-board .duel-character.battl
 
 /* 答題即時回饋：答對整個操作面板綠光閃爍＋✓，答錯紅光＋左右震動＋✕ */
 .battle-scene-console { position: relative; }
-.battle-answer-burst { position: absolute; inset: 0; z-index: 7; display: grid; place-items: center; border-radius: 16px; pointer-events: none; font-size: clamp(2.6rem, 7vw, 4.4rem); font-weight: 900; opacity: 0; }
+.battle-answer-burst { position: absolute; inset: 0; z-index: 7; display: grid; place-items: center; border-radius:var(--radius-lg); pointer-events: none; font-size: clamp(2.6rem, 7vw, 4.4rem); font-weight: 900; opacity: 0; }
 .battle-answer-burst.is-correct { color: #7ff2b2; text-shadow: 0 0 24px rgba(86, 214, 150, 0.85), 0 4px 10px rgba(0, 0, 0, 0.35); }
 .battle-answer-burst.is-wrong { color: #ff8d86; text-shadow: 0 0 24px rgba(255, 109, 109, 0.8), 0 4px 10px rgba(0, 0, 0, 0.35); }
 
@@ -624,7 +624,7 @@ html[data-animation-simplified="true"] .battle-scene-console.is-answer-correct,
 html[data-animation-simplified="true"] .battle-scene-console.is-answer-wrong { animation-duration: 1ms !important; animation-delay: 0ms !important; animation-iteration-count: 1 !important; }
 
 /* 三步戰鬥教學（首次對戰引導） */
-.battle-step-tutorial { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0.7rem; align-items: center; padding: 0.8rem 0.9rem; border: 1px solid rgba(255, 180, 110, 0.4); border-radius: 0.85rem; background: linear-gradient(135deg, rgba(255, 246, 230, 0.92), rgba(255, 233, 205, 0.86)); color: #6b4a1f; }
+.battle-step-tutorial { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0.7rem; align-items: center; padding: 0.8rem 0.9rem; border: 1px solid rgba(255, 180, 110, 0.4); border-radius:var(--radius-md); background: linear-gradient(135deg, rgba(255, 246, 230, 0.92), rgba(255, 233, 205, 0.86)); color: #6b4a1f; }
 .battle-step-tutorial > div { display: grid; gap: 0.3rem; }
 .battle-step-tutorial .eyebrow { color: #c07a2e; font-size: 0.62rem; letter-spacing: 0.08em; }
 .battle-step-tutorial h3 { margin: 0; color: #7a4a12; font-family:var(--font-display); font-size: 0.95rem; }

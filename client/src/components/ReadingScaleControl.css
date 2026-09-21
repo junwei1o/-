@@ -3,7 +3,7 @@
 .reading-scale-control {
   margin-top: 0.9rem;
   padding: 0.9rem 1rem 1rem;
-  border-radius: 16px;
+  border-radius:var(--radius-lg);
   background: color-mix(in srgb, var(--white) 75%, transparent);
   border: 1px solid color-mix(in srgb, var(--tidal) 14%, transparent);
 }
@@ -52,7 +52,7 @@
 .reading-scale-preview {
   margin: 0;
   padding: 0.75rem;
-  border-radius: 10px;
+  border-radius:var(--radius-md);
   font-size: 0.875rem;
   line-height: 1.6;
   color: var(--color-ink, #2c3a36);

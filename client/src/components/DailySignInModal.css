@@ -45,7 +45,7 @@
   place-items: center;
   width: 44px;
   height: 44px;
-  border-radius: 10px;
+  border-radius:var(--radius-md);
   background: transparent;
   color: var(--muted);
   transition: background-color 0.16s cubic-bezier(0.23, 1, 0.32, 1), color 0.16s cubic-bezier(0.23, 1, 0.32, 1);
@@ -108,7 +108,7 @@
   gap: 4px;
   padding: 9px 4px;
   border-radius:var(--radius-md);
-  background: var(--paper-deep, #efe6d7);
+  background: var(--paper-deep);
   border: 1.5px solid transparent;
   text-align: center;
   transition: transform 0.16s cubic-bezier(0.23, 1, 0.32, 1), border-color 0.16s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.16s cubic-bezier(0.23, 1, 0.32, 1);

@@ -1,7 +1,7 @@
 .home-contact-card {
   margin-top: 18px;
   background: var(--white);
-  border: 1px solid var(--line, #C9BFA8);
+  border: 1px solid var(--line);
   border-radius:var(--radius-lg);
   overflow: hidden;
   box-shadow: 0 6px 20px -14px color-mix(in srgb, var(--tidal) 18%, transparent);
@@ -40,7 +40,7 @@
 
 .home-contact-panel {
   padding: 4px 20px 20px;
-  border-top: 1px dashed var(--line, #C9BFA8);
+  border-top: 1px dashed var(--line);
 }
 
 .home-contact-qr {
@@ -48,8 +48,8 @@
   height: 200px;
   margin: 16px auto 12px;
   background: var(--paper-deep);
-  border-radius: 14px;
-  border: 1px solid var(--line, #C9BFA8);
+  border-radius:var(--radius-md);
+  border: 1px solid var(--line);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -194,7 +194,7 @@
 .home-contact-del {
   margin-left: auto;
   background: transparent;
-  border: 1px solid var(--line, #C9BFA8);
+  border: 1px solid var(--line);
   color: var(--coral);
   padding: 2px 8px;
   border-radius: 6px;
@@ -215,8 +215,8 @@
 .home-contact-post textarea {
   width: 100%;
   padding: 10px 12px;
-  border: 1px solid var(--line, #C9BFA8);
-  border-radius: 10px;
+  border: 1px solid var(--line);
+  border-radius:var(--radius-md);
   background: var(--white);
   color: var(--ink);
   font-family: inherit;
@@ -267,10 +267,10 @@
   align-items: center;
   gap: 6px;
   padding: 8px 14px;
-  border-radius: 10px;
+  border-radius:var(--radius-md);
   background: transparent;
   color: var(--tidal-deep);
-  border: 1px solid var(--line, #C9BFA8);
+  border: 1px solid var(--line);
   font-family: inherit;
   font-size: 13px;
   font-weight: 500;
@@ -298,8 +298,8 @@
 .home-contact-field input,
 .home-contact-field textarea {
   padding: 10px 12px;
-  border: 1px solid var(--line, #C9BFA8);
-  border-radius: 10px;
+  border: 1px solid var(--line);
+  border-radius:var(--radius-md);
   background: var(--paper);
   color: var(--ink);
   font-family: inherit;
@@ -322,7 +322,7 @@
 .home-contact-status {
   margin-top: 10px;
   padding: 10px 14px;
-  border-radius: 10px;
+  border-radius:var(--radius-md);
   font-size: 13px;
 }
 

@@ -17,7 +17,7 @@
 .matching-page .mp-subject-group h3{font-size:15px;color:#1f5d6b;margin:0 0 9px;
   border-left:5px solid #2f7d8f;padding-left:9px}
 .matching-page .mp-level-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:11px}
-.matching-page .mp-level-card{background:var(--white);border:2px solid #e2d4b6;border-radius:16px;padding:13px;
+.matching-page .mp-level-card{background:var(--white);border:2px solid #e2d4b6;border-radius:var(--radius-lg);padding:13px;
   text-align:left;cursor:pointer;font-family:inherit;min-height:92px;display:flex;flex-direction:column;gap:4px;
   box-shadow:0 2px 0 rgba(58,47,35,.08)}
 .matching-page .mp-level-card.is-active{border-color:#2f7d8f;box-shadow:0 0 0 3px rgba(47,125,143,.2)}
@@ -30,7 +30,7 @@
 
 /* 玩法模式切換（連連看／單對速配／30 秒搶分） */
 .mp-modes{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 0}
-.mp-mode-chip{min-height:44px;border:2px solid var(--line,#e2d4b6);border-radius:var(--radius-pill);
+.mp-mode-chip{min-height:44px;border:2px solid var(--line);border-radius:var(--radius-pill);
   background:var(--card,var(--white));color:var(--ink2,#6b5d49);font-size:14px;font-weight:800;
   padding:8px 16px;cursor:pointer}
-.mp-mode-chip.is-active{border-color:var(--sea,#2f7d8f);background:var(--sea,#2f7d8f);color:var(--white)}
+.mp-mode-chip.is-active{border-color:var(--sea);background:var(--sea);color:var(--white)}

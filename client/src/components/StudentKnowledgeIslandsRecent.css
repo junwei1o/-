@@ -22,7 +22,7 @@
 
 .student-knowledge-island-recent button {
   border: 1px solid rgba(44, 110, 175, 0.25);
-  border-radius: 99px;
+  border-radius:var(--radius-pill);
   background: #eef6ff;
   color: #24577f;
   padding: 0.3rem 0.54rem;
@@ -62,7 +62,7 @@
   margin-top: 0.9rem;
   padding: 0.75rem;
   border: 1px solid color-mix(in srgb, var(--tidal) 14%, transparent);
-  border-radius: 1rem;
+  border-radius:var(--radius-lg);
   background: rgba(248, 252, 250, 0.72);
 }
 
@@ -109,7 +109,7 @@
   display: grid;
   gap: 0.12rem;
   padding: 0.48rem 0.56rem;
-  border-radius: 0.75rem;
+  border-radius:var(--radius-md);
   color: #24577f;
   text-decoration: none;
   transition: background 160ms var(--ease-out), transform 160ms var(--ease-out);

@@ -1,17 +1,17 @@
 /* C 分類歸位：散落項目卡＋分類籃，視覺沿用配對連連看的米黃/海藍/暖橙手繪風 */
 .sort-game{max-width:640px;margin:0 auto;padding:2px 0 8px}
 .sort-game .sg-meta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;font-size:12.5px;color:var(--mg-ink2,#6b5d49);font-weight:700;margin-bottom:10px}
-.sort-game .sg-tag{background:var(--mg-card,var(--white));border:1px solid var(--mg-line,#e2d4b6);border-radius:10px;padding:4px 10px}
+.sort-game .sg-tag{background:var(--mg-card,var(--white));border:1px solid var(--mg-line,#e2d4b6);border-radius:var(--radius-md);padding:4px 10px}
 .sort-game .sg-stats{display:flex;gap:8px;flex-wrap:wrap}
-.sort-game .sg-stats span{background:var(--mg-card,var(--white));border:1px solid var(--mg-line,#e2d4b6);border-radius:10px;padding:4px 10px}
+.sort-game .sg-stats span{background:var(--mg-card,var(--white));border:1px solid var(--mg-line,#e2d4b6);border-radius:var(--radius-md);padding:4px 10px}
 .sort-game .sg-countdown{color:var(--mg-sea-d,#1f5e6e)}
 .sort-game .sg-countdown.is-urgent{color:var(--mg-red,#d0503a);background:var(--mg-red-bg,#fbe1da);animation:sg-pulse .9s infinite}
 @keyframes sg-pulse{50%{opacity:.55}}
 
 .sort-game .sg-title{font-size:21px;margin:0 0 4px;color:var(--mg-ink,#3a2f23)}
 .sort-game .sg-instruction{font-size:14px;margin:0 0 10px;color:var(--mg-ink2,#6b5d49)}
-.sort-game .sg-progress{height:8px;border-radius:99px;background:#e8ddc4;overflow:hidden;margin-bottom:14px}
-.sort-game .sg-progress i{display:block;height:100%;background:var(--mg-sea,#2f7d8f);border-radius:99px;transition:width .3s ease}
+.sort-game .sg-progress{height:8px;border-radius:var(--radius-pill);background:#e8ddc4;overflow:hidden;margin-bottom:14px}
+.sort-game .sg-progress i{display:block;height:100%;background:var(--mg-sea,#2f7d8f);border-radius:var(--radius-pill);transition:width .3s ease}
 
 /* 散落項目卡 */
 .sort-game .sg-items{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}
@@ -31,7 +31,7 @@
 
 /* 分類籃 */
 .sort-game .sg-baskets{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
-.sort-game .sg-basket{min-height:78px;border:2px solid var(--mg-line,#e2d4b6);border-radius:16px;background:var(--mg-card,var(--white));
+.sort-game .sg-basket{min-height:78px;border:2px solid var(--mg-line,#e2d4b6);border-radius:var(--radius-lg);background:var(--mg-card,var(--white));
   padding:10px;cursor:pointer;font-family:inherit;text-align:left;position:relative;
   border-top:6px solid var(--mg-sea,#2f7d8f);transition:transform .08s,border-color .15s,box-shadow .15s}
 .sort-game .sg-basket:nth-child(2){border-top-color:var(--mg-orange,#e08a3c)}
@@ -41,14 +41,14 @@
 .sort-game .sg-basket:active{transform:scale(.98)}
 .sort-game .sg-basket-name{font-size:16px;font-weight:800;color:var(--mg-ink,#3a2f23);display:block;margin-bottom:6px}
 .sort-game .sg-basket-items{display:flex;flex-wrap:wrap;gap:5px;min-height:24px}
-.sort-game .sg-basket-items b{background:#eef3f2;border:1px solid #d8e2df;border-radius:9px;padding:3px 8px;
+.sort-game .sg-basket-items b{background:#eef3f2;border:1px solid #d8e2df;border-radius:var(--radius-sm);padding:3px 8px;
   font-size:13px;font-weight:700;color:var(--mg-ink,#3a2f23);animation:sg-plop .22s cubic-bezier(.2,1.4,.4,1)}
 @keyframes sg-plop{from{transform:scale(.5);opacity:0}to{transform:scale(1);opacity:1}}
 .sort-game .sg-basket-empty{color:#d9cfb6;font-style:normal;font-size:18px;font-weight:800}
 
 /* 提示與結果卡（沿用配對連連看 mg-* 語彙與變數） */
 .sort-game .sg-hint{min-height:24px;font-size:14px;text-align:center;color:var(--mg-ink2,#6b5d49);
-  margin:14px 0 0;font-weight:700;padding:6px 10px;border-radius:10px;transition:background .2s}
+  margin:14px 0 0;font-weight:700;padding:6px 10px;border-radius:var(--radius-md);transition:background .2s}
 .sort-game .sg-hint.ok{color:var(--mg-green,#4a8f3c);background:var(--mg-green-bg,#e9f3df)}
 .sort-game .sg-hint.err{color:var(--mg-red,#d0503a);background:var(--mg-red-bg,#fbe1da)}
 
@@ -65,7 +65,7 @@
 .sort-game .mg-result-line{font-size:15px;color:var(--mg-ink2,#6b5d49);margin:4px 0}
 .sort-game .mg-result-line b{color:var(--mg-ink,#3a2f23);font-size:18px}
 .sort-game .mg-result-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:14px}
-.sort-game .mg-btn{min-height:48px;border:none;border-radius:14px;padding:0 20px;font-size:15px;font-weight:700;
+.sort-game .mg-btn{min-height:48px;border:none;border-radius:var(--radius-md);padding:0 20px;font-size:15px;font-weight:700;
   cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:7px}
 .sort-game .mg-btn-ghost{background:var(--mg-card,var(--white));color:var(--mg-ink,#3a2f23);border:2px solid var(--mg-line,#e2d4b6)}
 .sort-game .mg-btn-primary{background:var(--mg-sea,#2f7d8f);color:var(--white)}

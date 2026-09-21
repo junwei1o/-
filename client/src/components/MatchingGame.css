@@ -17,9 +17,9 @@
 @keyframes mg-countdown-pulse{0%,100%{opacity:1}50%{opacity:.55}}
 .matching-game .mg-title{font-size:19px;font-weight:800;margin:8px 0 2px}
 .matching-game .mg-instruction{font-size:14px;color:var(--mg-ink2);margin:0 0 10px}
-.matching-game .mg-progress{height:10px;background:#ece2ca;border-radius:99px;overflow:hidden;margin-bottom:14px}
+.matching-game .mg-progress{height:10px;background:#ece2ca;border-radius:var(--radius-pill);overflow:hidden;margin-bottom:14px}
 .matching-game .mg-progress i{display:block;height:100%;width:0;
-  background:linear-gradient(90deg,var(--mg-sea),#4aa3b3);border-radius:99px;transition:width .35s ease}
+  background:linear-gradient(90deg,var(--mg-sea),#4aa3b3);border-radius:var(--radius-pill);transition:width .35s ease}
 
 .matching-game .mg-board{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .matching-game .mg-lines{position:absolute;inset:0;width:100%;height:100%;
@@ -28,7 +28,7 @@
 .matching-game .mg-left h4{color:var(--mg-sea-d)}
 .matching-game .mg-right h4{color:var(--mg-orange-d)}
 .matching-game .mg-item{display:flex;align-items:center;gap:8px;width:100%;min-height:52px;margin-bottom:10px;
-  background:var(--mg-card);border:2px solid var(--mg-line);border-radius:14px;padding:10px 12px;
+  background:var(--mg-card);border:2px solid var(--mg-line);border-radius:var(--radius-md);padding:10px 12px;
   font-size:15px;font-weight:600;color:var(--mg-ink);cursor:pointer;text-align:left;line-height:1.3;
   box-shadow:0 2px 0 rgba(58,47,35,.10);transition:transform .08s,background .15s,border-color .15s;
   font-family:inherit;position:relative;z-index:2}
@@ -47,15 +47,15 @@
 .matching-game .mg-item-imgwrap{flex-direction:column;align-items:stretch;padding:10px}
 .matching-game .mg-item-imgwrap .mg-badge{position:absolute;top:8px;left:8px;box-shadow:0 1px 3px rgba(58,47,35,.25)}
 .matching-game .mg-item-imgwrap .mg-mark{position:absolute;top:8px;right:8px;margin-left:0;
-  background:var(--mg-green);color:var(--white);font-size:12px;padding:3px 8px;border-radius:9px}
-.matching-game .mg-item-img{width:100%;height:96px;object-fit:cover;border-radius:10px;display:block;
+  background:var(--mg-green);color:var(--white);font-size:12px;padding:3px 8px;border-radius:var(--radius-sm)}
+.matching-game .mg-item-img{width:100%;height:96px;object-fit:cover;border-radius:var(--radius-md);display:block;
   background:var(--mg-paper);pointer-events:none}
 .matching-game .mg-shake{background:var(--mg-red-bg);border-color:var(--mg-red);animation:mg-shake .42s}
 @keyframes mg-shake{0%,100%{transform:translateX(0)}18%{transform:translateX(-7px)}
   38%{transform:translateX(7px)}58%{transform:translateX(-5px)}78%{transform:translateX(5px)}}
 
 .matching-game .mg-hint{min-height:24px;font-size:14px;text-align:center;color:var(--mg-ink2);
-  margin:14px 0 0;font-weight:700;padding:6px 10px;border-radius:10px;transition:background .2s}
+  margin:14px 0 0;font-weight:700;padding:6px 10px;border-radius:var(--radius-md);transition:background .2s}
 .matching-game .mg-hint.ok{color:var(--mg-green);background:var(--mg-green-bg)}
 .matching-game .mg-hint.err{color:var(--mg-red);background:var(--mg-red-bg)}
 
@@ -90,7 +90,7 @@
 .matching-game .mg-result-line{font-size:15px;color:var(--mg-ink2);margin:4px 0}
 .matching-game .mg-result-line b{color:var(--mg-ink);font-size:18px}
 .matching-game .mg-result-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:14px}
-.matching-game .mg-btn{min-height:48px;border:none;border-radius:14px;padding:0 20px;font-size:15px;font-weight:700;
+.matching-game .mg-btn{min-height:48px;border:none;border-radius:var(--radius-md);padding:0 20px;font-size:15px;font-weight:700;
   cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:7px}
 .matching-game .mg-btn-primary{background:linear-gradient(160deg,#ec9449,#d9741f);color:var(--white);box-shadow:0 3px 0 var(--mg-orange-d)}
 .matching-game .mg-btn-sea{background:linear-gradient(160deg,#3f8fa1,#256b7c);color:var(--white);box-shadow:0 3px 0 var(--mg-sea-d)}

@@ -80,7 +80,7 @@
 .teacher-assign-form select,
 .teacher-assign-form input {
   padding: 10px 12px;
-  border-radius: 11px;
+  border-radius:var(--radius-md);
   border: 1px solid color-mix(in srgb, var(--tidal) 24%, transparent);
   background: var(--white);
   font-size: 0.98rem;
@@ -345,7 +345,7 @@
   align-items: baseline;
   gap: 6px;
   padding: 5px 11px;
-  border-radius: 10px;
+  border-radius:var(--radius-md);
   font-size: 0.84rem;
   background: rgba(86, 99, 95, 0.1);
   border: 1px solid rgba(86, 99, 95, 0.22);
@@ -381,7 +381,7 @@
 
 /* AI 伴讀用量（全站） */
 .ai-usage-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin: 12px 0; }
-.ai-usage-kpis article { padding: 12px; border: 1px solid rgba(35, 114, 106, 0.2); border-radius: 14px; background: linear-gradient(145deg, rgba(231, 246, 234, 0.92), rgba(255, 252, 237, 0.9)); }
+.ai-usage-kpis article { padding: 12px; border: 1px solid rgba(35, 114, 106, 0.2); border-radius:var(--radius-md); background: linear-gradient(145deg, rgba(231, 246, 234, 0.92), rgba(255, 252, 237, 0.9)); }
 .ai-usage-kpis strong { display: block; color: #23726a; font-size: 1.25rem; }
 .ai-usage-kpis span { color: #5d857a; font-size: 0.78rem; }
 .ai-usage-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }

@@ -31,7 +31,7 @@
   justify-content: center;
   width: 34px;
   height: 34px;
-  border-radius: 10px;
+  border-radius:var(--radius-md);
   background: rgba(6, 183, 111, 0.14);
   color: #06b76f;
   flex-shrink: 0;
@@ -139,7 +139,7 @@
   gap: 6px;
   padding: 9px 16px;
   border: none;
-  border-radius: 10px;
+  border-radius:var(--radius-md);
   background: var(--tidal);
   color: var(--white);
   font-weight: 700;
@@ -165,7 +165,7 @@
 }
 
 .line-notify-btn.ghost:hover {
-  background: var(--line, #c9bfa8);
+  background: var(--line);
 }
 
 .line-notify-tip {
@@ -182,7 +182,7 @@
 .line-notify-warn {
   border: 1px solid #fca5a5;
   background: #fef2f2;
-  border-radius: 10px;
+  border-radius:var(--radius-md);
   padding: 10px 12px;
   margin-bottom: 10px;
   font-size: 13px;

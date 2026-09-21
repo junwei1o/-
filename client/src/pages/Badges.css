@@ -1,5 +1,5 @@
 /* 徽章牆 */
-.badges-wall { max-width:920px; margin:0 auto; padding:28px 20px 96px; color:var(--ink,#17384a); }
+.badges-wall { max-width:920px; margin:0 auto; padding:28px 20px 96px; color:var(--ink); }
 .badges-header h1 { margin:4px 0 6px; display:flex; align-items:center; gap:10px; color:var(--tidal-deep); font-family:var(--font-display); font-size:clamp(26px,4vw,34px); font-weight:900; letter-spacing:-.03em; }
 .badges-header p { margin:0; color:var(--muted); font-size:14px; line-height:1.7; }
 .badges-eyebrow { color:var(--coral); font-size:11px; font-weight:900; letter-spacing:.14em; }
@@ -7,7 +7,7 @@
 .badges-progress strong { color:var(--coral); font-size:17px; }
 
 .badges-grid { list-style:none; margin:20px 0 0; padding:0; display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:12px; }
-.badge-card { display:grid; justify-items:center; gap:6px; text-align:center; padding:18px 14px 15px; border:1px solid rgba(18,62,74,.1); border-radius:16px; background:linear-gradient(135deg,color-mix(in srgb, var(--white) 96%, transparent),rgba(238,247,244,.9)); box-shadow:0 8px 20px rgba(18,62,74,.06); transition:transform .18s var(--ease,cubic-bezier(.23,1,.32,1)),box-shadow .18s var(--ease,cubic-bezier(.23,1,.32,1)); }
+.badge-card { display:grid; justify-items:center; gap:6px; text-align:center; padding:18px 14px 15px; border:1px solid rgba(18,62,74,.1); border-radius:var(--radius-lg); background:linear-gradient(135deg,color-mix(in srgb, var(--white) 96%, transparent),rgba(238,247,244,.9)); box-shadow:0 8px 20px rgba(18,62,74,.06); transition:transform .18s var(--ease,cubic-bezier(.23,1,.32,1)),box-shadow .18s var(--ease,cubic-bezier(.23,1,.32,1)); }
 .badge-card.is-earned { border-color:rgba(232,124,91,.35); background:linear-gradient(135deg,rgba(255,247,238,.97),color-mix(in srgb, var(--white) 95%, transparent)); }
 .badge-card.is-earned:hover { transform:translateY(-3px) rotate(-.6deg); box-shadow:0 14px 28px rgba(217,96,63,.16); }
 .badge-card.is-locked { opacity:.62; filter:grayscale(.7); }

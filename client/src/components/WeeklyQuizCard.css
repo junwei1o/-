@@ -1,7 +1,7 @@
 .weekly-quiz-card {
   margin-top: 16px;
   background: var(--white);
-  border: 1px solid var(--line, #C9BFA8);
+  border: 1px solid var(--line);
   border-radius:var(--radius-lg);
   padding: 18px 20px;
   box-shadow: 0 6px 20px -14px color-mix(in srgb, var(--tidal) 18%, transparent);
@@ -140,8 +140,8 @@
   width: 100%;
   text-align: left;
   padding: 9px 12px;
-  border: 1px solid var(--line, #C9BFA8);
-  border-radius: 10px;
+  border: 1px solid var(--line);
+  border-radius:var(--radius-md);
   background: var(--white);
   cursor: pointer;
   font-family: inherit;
@@ -221,7 +221,7 @@
 .weekly-quiz-result {
   background: linear-gradient(135deg, color-mix(in srgb, var(--tidal) 8%, transparent), rgba(108, 132, 96, 0.10));
   border: 1px solid color-mix(in srgb, var(--tidal) 20%, transparent);
-  border-radius: 14px;
+  border-radius:var(--radius-md);
   padding: 14px 16px;
   display: flex;
   flex-direction: column;
@@ -301,8 +301,8 @@
   width: 100%;
   max-width: 400px;
   background: var(--white);
-  border: 1px solid var(--line, #C9BFA8);
-  border-radius: 22px;
+  border: 1px solid var(--line);
+  border-radius:var(--radius-xl);
   padding: 28px 24px 20px;
   text-align: center;
   box-shadow: 0 18px 50px -18px rgba(11, 60, 80, 0.45);
@@ -393,7 +393,7 @@
   max-width: 280px;
   background: linear-gradient(135deg, #FFF6DF, #FFE9B8);
   border: 1px solid #E7C880;
-  border-radius: 14px;
+  border-radius:var(--radius-md);
   padding: 10px 16px;
   text-align: left;
 }

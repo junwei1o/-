@@ -45,8 +45,8 @@
   align-items: baseline;
   gap: 12px;
   background: var(--white);
-  border: 1px solid var(--line, #C9BFA8);
-  border-radius: 16px;
+  border: 1px solid var(--line);
+  border-radius:var(--radius-lg);
   padding: 14px 18px;
   margin-bottom: 14px;
 }
@@ -65,8 +65,8 @@
 /* 複習階梯（間隔節點的可視化） */
 .review-hub-ladder {
   background: var(--white);
-  border: 1px solid var(--line, #C9BFA8);
-  border-radius: 16px;
+  border: 1px solid var(--line);
+  border-radius:var(--radius-lg);
   padding: 14px 18px;
   margin-bottom: 14px;
 }
@@ -93,7 +93,7 @@
   padding: 10px 6px;
   border-radius:var(--radius-md);
   background: var(--paper-deep);
-  border: 1px solid var(--line, #C9BFA8);
+  border: 1px solid var(--line);
   text-align: center;
 }
 
@@ -138,7 +138,7 @@
 
 .review-hub-question {
   background: var(--white);
-  border: 1px solid var(--line, #C9BFA8);
+  border: 1px solid var(--line);
   border-radius:var(--radius-lg);
   padding: 18px 20px;
   box-shadow: 0 6px 20px -14px color-mix(in srgb, var(--tidal) 18%, transparent);
@@ -203,7 +203,7 @@
   text-align: left;
   padding: 10px 14px;
   border-radius:var(--radius-md);
-  border: 1px solid var(--line, #C9BFA8);
+  border: 1px solid var(--line);
   background: var(--white);
   font-family: inherit;
   font-size: 14px;
@@ -277,7 +277,7 @@
 /* 完成結果面板 */
 .review-hub-result {
   background: var(--white);
-  border: 1px solid var(--line, #C9BFA8);
+  border: 1px solid var(--line);
   border-radius:var(--radius-lg);
   padding: 24px;
   box-shadow: 0 8px 24px -14px color-mix(in srgb, var(--tidal) 22%, transparent);
@@ -337,7 +337,7 @@
 /* 空狀態 */
 .review-hub-empty {
   background: var(--white);
-  border: 1px dashed var(--line, #C9BFA8);
+  border: 1px dashed var(--line);
   border-radius:var(--radius-lg);
   padding: 40px 24px;
   display: flex;
@@ -394,7 +394,7 @@
 }
 
 .review-hub-cta.ghost:hover {
-  background: var(--line, #C9BFA8);
+  background: var(--line);
 }
 
 /* 頁尾 */

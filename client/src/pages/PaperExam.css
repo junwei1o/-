@@ -8,7 +8,7 @@
   flex-wrap: wrap;
   padding: 14px 18px;
   margin-bottom: 14px;
-  border-radius: 16px;
+  border-radius:var(--radius-lg);
   background: linear-gradient(120deg, color-mix(in srgb, var(--tidal) 10%, transparent), color-mix(in srgb, var(--coral) 12%, transparent));
   border: 1px solid color-mix(in srgb, var(--tidal) 22%, transparent);
 }
@@ -63,7 +63,7 @@
 .paper-matching-summary {
   margin-top: 14px;
   padding: 14px 16px;
-  border-radius: 16px;
+  border-radius:var(--radius-lg);
   background: linear-gradient(120deg, color-mix(in srgb, var(--tidal) 10%, transparent), color-mix(in srgb, var(--coral) 12%, transparent));
   border: 1px solid color-mix(in srgb, var(--tidal) 22%, transparent);
 }
