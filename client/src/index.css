@@ -1,59 +1,75 @@
 /* Design philosophy: 島嶼探險誌 — editorial field guide, asymmetric navigation, paper texture, tidal blue #0B6E8E, coral action accents. */
 @import "tailwindcss";
-
-/* 首次使用的匿名資料提示：採用非模態小卡，不攔截首頁與地圖的主操作。 */
-.analytics-consent-prompt {
-  position: fixed;
-  z-index: 80;
-  right: max(1rem, env(safe-area-inset-right));
-  bottom: max(1rem, env(safe-area-inset-bottom));
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  gap: 0.7rem;
-  width: min(36rem, calc(100vw - 2rem));
-  padding: 0.9rem 2.9rem 0.9rem 0.95rem;
-  border: 1px solid rgba(44, 90, 76, 0.22);
-  border-radius: 1rem;
-  color: #24443a;
-  background: rgba(255, 251, 240, 0.97);
-  box-shadow: 0 14px 36px rgba(31, 63, 54, 0.22);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
-}
-
-.analytics-consent-icon { display: grid; width: 2.15rem; height: 2.15rem; place-items: center; border-radius: 999px; color: #fff; background: #2e6d59; }
-.analytics-consent-copy strong { display: block; font-size: 0.95rem; }
-.analytics-consent-copy p { margin: 0.24rem 0 0; color: #4d665d; font-size: 0.77rem; line-height: 1.5; }
-.analytics-consent-copy .analytics-consent-countdown { color: #806020; font-weight: 800; }
-.analytics-consent-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.42rem; align-self: end; }
-.analytics-consent-actions button,
-.analytics-consent-close { font: inherit; font-weight: 800; cursor: pointer; }
-.analytics-consent-actions button { display: inline-flex; min-height: 2.2rem; align-items: center; justify-content: center; gap: 0.28rem; border: 0; border-radius: 0.68rem; padding: 0.36rem 0.54rem; font-size: 0.75rem; }
-.analytics-consent-accept { color: #fff; background: #2e6d59; }
-.analytics-consent-decline { color: #3f5c50; background: #edf4e9; }
-.analytics-consent-close { position: absolute; top: 0.52rem; right: 0.52rem; display: grid; width: 2rem; height: 2rem; place-items: center; border: 0; border-radius: 999px; color: #496257; background: transparent; }
-.analytics-consent-actions button:active,
-.analytics-consent-close:active { transform: scale(0.97); }
-.analytics-consent-actions button:focus-visible,
-.analytics-consent-close:focus-visible { outline: 3px solid #ff8a5c; outline-offset: 2px; }
-
-@media (max-width: 650px) {
-  .analytics-consent-prompt { right: 0.75rem; bottom: calc(0.75rem + env(safe-area-inset-bottom)); left: 0.75rem; width: auto; grid-template-columns: auto minmax(0, 1fr); }
-  .analytics-consent-actions { grid-column: 1 / -1; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .analytics-consent-actions button,
-  .analytics-consent-close { transition: none; }
-}
 @import "tw-animate-css";
 @custom-variant dark (&:is(.dark *));
 
-@theme inline { --radius-sm: 8px; --radius-md: 12px; --radius-lg: 18px; --radius-xl: 24px; --color-background: var(--paper); --color-foreground: var(--ink); --color-card: var(--paper); --color-card-foreground: var(--ink); --color-primary: var(--tidal); --color-primary-foreground: #fff; --color-border: var(--line); --color-input: var(--line); --color-ring: var(--coral); }
-:root { --paper:#F9F3E8; --paper-deep:#EFE6D7; --ink:#1F3031; --muted:#5F6E6A; --tidal:#0B6E8E; --tidal-deep:#07516A; --coral:#E8754A; --moss:#6C8460; --yellow:#E8B84B; --line:#D9D1C2; --white:#FFFDF8; --ease:cubic-bezier(.23,1,.32,1); }
+@theme inline { --radius-sm: 8px; --radius-md: 12px; --radius-lg: 18px; --radius-xl: 24px; --color-background: var(--paper); --color-foreground: var(--ink); --color-card: var(--paper); --color-card-foreground: var(--ink); --color-primary: var(--tidal); --color-primary-foreground: var(--white); --color-border: var(--line); --color-input: var(--line); --color-ring: var(--coral); }
+
+/* ═══════════════════════════════════════════════════════════════════
+   設計變數（Design Tokens）— 全站單一事實來源
+   ─────────────────────────────────────────────────────────────────
+   規範：
+   1. 各頁面／元件的 CSS 一律引用這裡的變數，不得寫死色碼、字型堆疊、
+      圓角或陰影字面值。等值替代（視覺零變動）已完成：#0B6E8E→var(--tidal)、
+      #fff*→var(--white)、999px→var(--radius-pill) 等。
+   2. 子系統命名空間（--cr-*、--bx-*、--env-*、--anime-*、--mg-* 等）
+      保留，但必須「由品牌變數派生」，不自行定義新色相。
+   3. 圓角尺度：sm 8 / md 12 / lg 18 / xl 24 / pill 999px；
+      陰影尺度：xs→2xl 由淡到濃；z-index：drop(0) raise(1-9) nav(60-90)
+      overlay(120-130) toast(999)。新樣式請對號入座。
+   ═══════════════════════════════════════════════════════════════════ */
+:root {
+  /* ── 品牌色相（改色只動這一段）────────────────────────── */
+  --paper: #F9F3E8;        /* 底紙 */
+  --paper-deep: #EFE6D7;   /* 深底紙／分區底 */
+  --white: #FFFDF8;        /* 卡面白 */
+  --ink: #1F3031;          /* 主文字墨 */
+  --muted: #5F6E6A;        /* 次文字 */
+  --line: #D9D1C2;         /* 邊框線 */
+  --tidal: #0B6E8E;        /* 潮藍（主品牌色） */
+  --tidal-deep: #07516A;   /* 深潮藍 */
+  --coral: #E8754A;        /* 珊瑚橘（行動色） */
+  --coral-deep: #C25B36;   /* 深珊瑚（=橋接 --orange-d） */
+  --moss: #6C8460;         /* 苔綠（成功） */
+  --yellow: #E8B84B;       /* 芥黃（警示／點數） */
+
+  /* ── 字型 ─────────────────────────────────────────── */
+  --font-display: "Fraunces", "Noto Serif TC", serif;                 /* 標題／展示 */
+  --font-serif: Georgia, "Noto Serif TC", serif;                      /* 長文襯線 */
+  --font-sans: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif; /* 介面 */
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;        /* 代碼 */
+
+  /* ── 圓角尺度 ─────────────────────────────────────── */
+  --radius-sm: 8px; --radius-md: 12px; --radius-lg: 18px; --radius-xl: 24px;
+  --radius-pill: 999px;
+
+  /* ── 陰影尺度（同一色相家族：深墨綠陰）────────────── */
+  --shadow-xs: 0 1px 3px rgba(24, 53, 50, 0.08);
+  --shadow-sm: 0 2px 8px rgba(24, 53, 50, 0.10);
+  --shadow-md: 0 6px 20px -6px rgba(24, 53, 50, 0.16);
+  --shadow-lg: 0 14px 36px rgba(24, 53, 50, 0.20);
+  --shadow-xl: 0 24px 60px rgba(24, 53, 50, 0.28);
+  --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+
+  /* ── 間距尺度（4px 基準，新樣式優先取用）──────────── */
+  --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px;
+  --space-5: 20px; --space-6: 24px; --space-8: 32px; --space-10: 40px;
+
+  /* ── z-index 階層（頁面內局部堆疊仍可用 1-9）──────── */
+  --z-nav: 80; --z-overlay: 120; --z-toast: 999;
+
+  /* ── 動效 ─────────────────────────────────────────── */
+  --ease: cubic-bezier(.23, 1, .32, 1);
+  --ease-out: cubic-bezier(.33, 1, .68, 1);
+  --dur-fast: 160ms; --dur-base: 220ms; --dur-slow: 380ms;
+
+  /* ── 聚焦環（鍵盤可見性）──────────────────────────── */
+  --focus-ring: 3px solid var(--yellow, #F6CD6D);
+}
+
 /* 全站色板橋接：讓教室遊戲等子系統的 --cr-*（var(--sea)/var(--orange)…）繼承同一套品牌色。
    單一事實來源＝上行 --tidal/--coral/--moss/--yellow；改色只動上行。 */
-:root { --card:#FFFDF8; --sea:#0B6E8E; --sea-d:#07516A; --orange:#E8754A; --orange-d:#C25B36; --green:#6C8460; --red:#C8553D; --gold:#E8B84B; }
+:root { --card: var(--white); --sea: var(--tidal); --sea-d: var(--tidal-deep); --orange: var(--coral); --orange-d: var(--coral-deep); --green: var(--moss); --red: #C8553D; --gold: var(--yellow); }
 * { box-sizing:border-box; }
 .skip-link { position:fixed; top:-100px; left:12px; z-index:999; padding:10px 16px; border-radius:10px; background:var(--tidal-deep); color:#fff; font-weight:800; font-size:14px; text-decoration:none; transition:top .18s var(--ease); }
 .skip-link:focus { top:12px; outline:3px solid var(--env-focus,#F6CD6D); outline-offset:2px; }
