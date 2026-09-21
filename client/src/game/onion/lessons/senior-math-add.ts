@@ -25,11 +25,11 @@ const SH_MATH_POLYNOMIAL: OnionLesson = {
     { step: "步驟 7：帶走這個判斷", id: 7, caption: "記住：先看次數定形狀、再看係數定方向；要驗根就用因式定理代進去。準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
   ],
   questions: [
-    { id: "shp1", prompt: "多項式 f(x) ＝ 4x⁵ − x³ ＋ 2 是幾次多項式？", options: ["3 次", "4 次", "5 次", "6 次"], answer: 2, hints: ["看最高次的 x", "x⁵ 的指數就是次數"], explanation: "最高次項是 4x⁵，指數 5，所以是 5 次多項式。" },
-    { id: "shp2", prompt: "f(x) ＝ x² − 4x ＋ 3，則 f(2) 等於多少？", options: ["−1", "0", "1", "3"], answer: 0, hints: ["把 x 全部換成 2", "4 − 8 ＋ 3 ＝ ?"], explanation: "f(2) ＝ 2² − 4×2 ＋ 3 ＝ 4 − 8 ＋ 3 ＝ −1。" },
-    { id: "shp3", prompt: "若 f(−1) ＝ 0，則下列何者為 f(x) 的因式？", options: ["x − 1", "x ＋ 1", "x", "x² ＋ 1"], answer: 1, hints: ["因式定理：f(a) ＝ 0 →（x − a）是因式", "這裡的 a 是 −1"], explanation: "f(−1) ＝ 0 表示（x −（−1））＝（x ＋ 1）是因式。" },
-    { id: "shp4", prompt: "三次多項式的圖形最多會有幾個「轉彎」（極值）？", options: ["0 個", "1 個", "2 個", "3 個"], answer: 2, hints: ["二次拋物線有 1 個轉彎", "次數每多一次，最多多一個轉彎"], explanation: "三次函數最多有 2 個極值（轉彎處）。" },
-    { id: "shp5", prompt: "f(x) ＝ −2x² ＋ 6x − 1 的圖形，下列敘述何者正確？", options: ["開口向上且有最大值", "開口向下且有最大值", "開口向下且有最小值", "是一條直線"], answer: 1, hints: ["x² 係數是 −2，是負的", "開口向下時，頂點是最高點"], explanation: "二次項係數為負，開口向下，頂點是最高點，因此有最大值。" },
+    { id: "sh-math-polynomial-1", prompt: "多項式 f(x) ＝ 4x⁵ − x³ ＋ 2 是幾次多項式？", options: ["3 次", "4 次", "5 次", "6 次"], answer: 2, hints: ["看最高次的 x", "x⁵ 的指數就是次數"], explanation: "最高次項是 4x⁵，指數 5，所以是 5 次多項式。" },
+    { id: "sh-math-polynomial-2", prompt: "f(x) ＝ x² − 4x ＋ 3，則 f(2) 等於多少？", options: ["−1", "0", "1", "3"], answer: 0, hints: ["把 x 全部換成 2", "4 − 8 ＋ 3 ＝ ?"], explanation: "f(2) ＝ 2² − 4×2 ＋ 3 ＝ 4 − 8 ＋ 3 ＝ −1。" },
+    { id: "sh-math-polynomial-3", prompt: "若 f(−1) ＝ 0，則下列何者為 f(x) 的因式？", options: ["x − 1", "x ＋ 1", "x", "x² ＋ 1"], answer: 1, hints: ["因式定理：f(a) ＝ 0 →（x − a）是因式", "這裡的 a 是 −1"], explanation: "f(−1) ＝ 0 表示（x −（−1））＝（x ＋ 1）是因式。" },
+    { id: "sh-math-polynomial-4", prompt: "三次多項式的圖形最多會有幾個「轉彎」（極值）？", options: ["0 個", "1 個", "2 個", "3 個"], answer: 2, hints: ["二次拋物線有 1 個轉彎", "次數每多一次，最多多一個轉彎"], explanation: "三次函數最多有 2 個極值（轉彎處）。" },
+    { id: "sh-math-polynomial-5", prompt: "f(x) ＝ −2x² ＋ 6x − 1 的圖形，下列敘述何者正確？", options: ["開口向上且有最大值", "開口向下且有最大值", "開口向下且有最小值", "是一條直線"], answer: 1, hints: ["x² 係數是 −2，是負的", "開口向下時，頂點是最高點"], explanation: "二次項係數為負，開口向下，頂點是最高點，因此有最大值。" },
   ],
 };
 
@@ -52,11 +52,11 @@ const SH_MATH_EXP_LOG: OnionLesson = {
     { step: "步驟 7：帶走這個判斷", id: 7, caption: "記住：指數問「乘幾次」、對數問「要乘幾次才得到」；看到 log 就翻回指數來看。準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
   ],
   questions: [
-    { id: "she1", prompt: "3⁴ 等於多少？", options: ["12", "27", "81", "64"], answer: 2, hints: ["3 連乘 4 次", "3×3 ＝ 9，再乘 3 再乘 3"], explanation: "3⁴ ＝ 3×3×3×3 ＝ 81。" },
-    { id: "she2", prompt: "log₃ 27 等於多少？", options: ["3", "9", "27", "1/3"], answer: 0, hints: ["問「3 要乘幾次才得到 27」", "3³ ＝ 27"], explanation: "因為 3³ ＝ 27，所以 log₃ 27 ＝ 3。" },
-    { id: "she3", prompt: "log₂ 8 ＋ log₂ 4 等於多少？", options: ["5", "log₂ 12", "32", "2"], answer: 0, hints: ["log₂8 ＝ 3、log₂4 ＝ 2", "相加就是 5（也等於 log₂32）"], explanation: "log₂ 8 ＝ 3、log₂ 4 ＝ 2，相加得 5，也就是 log₂ 32。" },
-    { id: "she4", prompt: "下列何者等於 1？", options: ["5⁰", "0⁰", "log₂ 1", "log₅ 0"], answer: 0, hints: ["任何非零數的零次方都是 1", "log₂1 ＝ 0，不是 1"], explanation: "5⁰ ＝ 1；log₂1 ＝ 0、log₅0 無意義、0⁰ 無定義。" },
-    { id: "she5", prompt: "若 log_a b ＝ n，則下列關係何者正確？", options: ["aⁿ ＝ b", "bⁿ ＝ a", "a ＋ b ＝ n", "a × b ＝ n"], answer: 0, hints: ["把對數翻回指數的寫法", "底數的 n 次方等於真數"], explanation: "對數的定義就是 log_a b ＝ n ⟺ aⁿ ＝ b。" },
+    { id: "sh-math-exp-log-1", prompt: "3⁴ 等於多少？", options: ["12", "27", "81", "64"], answer: 2, hints: ["3 連乘 4 次", "3×3 ＝ 9，再乘 3 再乘 3"], explanation: "3⁴ ＝ 3×3×3×3 ＝ 81。" },
+    { id: "sh-math-exp-log-2", prompt: "log₃ 27 等於多少？", options: ["3", "9", "27", "1/3"], answer: 0, hints: ["問「3 要乘幾次才得到 27」", "3³ ＝ 27"], explanation: "因為 3³ ＝ 27，所以 log₃ 27 ＝ 3。" },
+    { id: "sh-math-exp-log-3", prompt: "log₂ 8 ＋ log₂ 4 等於多少？", options: ["5", "log₂ 12", "32", "2"], answer: 0, hints: ["log₂8 ＝ 3、log₂4 ＝ 2", "相加就是 5（也等於 log₂32）"], explanation: "log₂ 8 ＝ 3、log₂ 4 ＝ 2，相加得 5，也就是 log₂ 32。" },
+    { id: "sh-math-exp-log-4", prompt: "下列何者等於 1？", options: ["5⁰", "0⁰", "log₂ 1", "log₅ 0"], answer: 0, hints: ["任何非零數的零次方都是 1", "log₂1 ＝ 0，不是 1"], explanation: "5⁰ ＝ 1；log₂1 ＝ 0、log₅0 無意義、0⁰ 無定義。" },
+    { id: "sh-math-exp-log-5", prompt: "若 log_a b ＝ n，則下列關係何者正確？", options: ["aⁿ ＝ b", "bⁿ ＝ a", "a ＋ b ＝ n", "a × b ＝ n"], answer: 0, hints: ["把對數翻回指數的寫法", "底數的 n 次方等於真數"], explanation: "對數的定義就是 log_a b ＝ n ⟺ aⁿ ＝ b。" },
   ],
 };
 
@@ -79,11 +79,11 @@ const SH_MATH_TRIG: OnionLesson = {
     { step: "步驟 7：帶走這個判斷", id: 7, caption: "記住：先分清對邊、鄰邊、斜邊，比值只是「對誰除以誰」；正負號交給象限判斷。準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
   ],
   questions: [
-    { id: "sht1", prompt: "直角三角形中，對邊 6、鄰邊 8、斜邊 10，則 cos 等於？", options: ["6/10", "8/10", "6/8", "10/8"], answer: 1, hints: ["cos 是鄰邊除以斜邊", "鄰邊是 8、斜邊是 10"], explanation: "cos ＝ 鄰邊/斜邊 ＝ 8/10 ＝ 4/5。" },
-    { id: "sht2", prompt: "sin30° 等於多少？", options: ["1/2", "√2/2", "√3/2", "1"], answer: 0, hints: ["特別角要記牢", "30-60-90 的邊比是 1 : √3 : 2"], explanation: "30° 的對邊是 1、斜邊是 2，sin30° ＝ 1/2。" },
-    { id: "sht3", prompt: "150° 位在哪個象限？其 cos 值的正負為？", options: ["第一象限、正", "第二象限、負", "第三象限、負", "第四象限、正"], answer: 1, hints: ["90° 到 180° 之間是第二象限", "第二象限 x 是負的"], explanation: "150° 在第二象限，x 座標為負，所以 cos 為負。" },
-    { id: "sht4", prompt: "正弦定理的內容是？", options: ["a ＋ b ＝ c", "a/sinA ＝ b/sinB ＝ c/sinC", "a×sinA ＝ b×sinB", "sinA ＋ sinB ＝ sinC"], answer: 1, hints: ["把每一邊除以它的對角的正弦", "這些比值都相等"], explanation: "正弦定理：a/sinA ＝ b/sinB ＝ c/sinC。" },
-    { id: "sht5", prompt: "tan45° 等於多少？", options: ["0", "1/2", "1", "√3"], answer: 2, hints: ["45-45-90 的兩股一樣長", "tan 是對邊除以鄰邊"], explanation: "45° 時對邊與鄰邊相等，所以 tan45° ＝ 1。" },
+    { id: "sh-math-trig-1", prompt: "直角三角形中，對邊 6、鄰邊 8、斜邊 10，則 cos 等於？", options: ["6/10", "8/10", "6/8", "10/8"], answer: 1, hints: ["cos 是鄰邊除以斜邊", "鄰邊是 8、斜邊是 10"], explanation: "cos ＝ 鄰邊/斜邊 ＝ 8/10 ＝ 4/5。" },
+    { id: "sh-math-trig-2", prompt: "sin30° 等於多少？", options: ["1/2", "√2/2", "√3/2", "1"], answer: 0, hints: ["特別角要記牢", "30-60-90 的邊比是 1 : √3 : 2"], explanation: "30° 的對邊是 1、斜邊是 2，sin30° ＝ 1/2。" },
+    { id: "sh-math-trig-3", prompt: "150° 位在哪個象限？其 cos 值的正負為？", options: ["第一象限、正", "第二象限、負", "第三象限、負", "第四象限、正"], answer: 1, hints: ["90° 到 180° 之間是第二象限", "第二象限 x 是負的"], explanation: "150° 在第二象限，x 座標為負，所以 cos 為負。" },
+    { id: "sh-math-trig-4", prompt: "正弦定理的內容是？", options: ["a ＋ b ＝ c", "a/sinA ＝ b/sinB ＝ c/sinC", "a×sinA ＝ b×sinB", "sinA ＋ sinB ＝ sinC"], answer: 1, hints: ["把每一邊除以它的對角的正弦", "這些比值都相等"], explanation: "正弦定理：a/sinA ＝ b/sinB ＝ c/sinC。" },
+    { id: "sh-math-trig-5", prompt: "tan45° 等於多少？", options: ["0", "1/2", "1", "√3"], answer: 2, hints: ["45-45-90 的兩股一樣長", "tan 是對邊除以鄰邊"], explanation: "45° 時對邊與鄰邊相等，所以 tan45° ＝ 1。" },
   ],
 };
 
@@ -106,11 +106,11 @@ const SH_MATH_LINE_CIRCLE: OnionLesson = {
     { step: "步驟 7：帶走這個判斷", id: 7, caption: "記住：圓的問題幾乎都在比較「距離與半徑」；看到切線就先想垂直。準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
   ],
   questions: [
-    { id: "shl1", prompt: "圓（x − 2）² ＋ （y ＋ 1）² ＝ 9 的圓心與半徑是？", options: ["圓心（2, −1）、半徑 3", "圓心（−2, 1）、半徑 3", "圓心（2, −1）、半徑 9", "圓心（2, 1）、半徑 9"], answer: 0, hints: ["標準式裡是（x − h）² ＋ （y − k）²", "等號右邊是半徑的平方"], explanation: "圓心（2, −1），半徑平方是 9，所以半徑是 3。" },
-    { id: "shl2", prompt: "圓心到直線的距離 d ＞ 半徑 r 時，直線與圓的關係是？", options: ["相交於兩點", "相切於一點", "不相交", "重疊"], answer: 2, hints: ["距離比半徑還遠", "直線完全在圓外"], explanation: "d ＞ r 表示直線在圓外，沒有交點。" },
-    { id: "shl3", prompt: "切線與圓心的連線（到切點）有什麼關係？", options: ["平行", "垂直", "重合", "夾 45 度"], answer: 1, hints: ["這是切線最基本的性質", "垂直代表斜率相乘等於 −1"], explanation: "切線垂直於圓心與切點的連線。" },
-    { id: "shl4", prompt: "半徑的斜率是 −2，則過該切點的切線斜率是？", options: ["−2", "2", "1/2", "−1/2"], answer: 2, hints: ["垂直 → 斜率相乘等於 −1", "−2 × ? ＝ −1"], explanation: "（−2）×（1/2）＝ −1，所以切線斜率是 1/2。" },
-    { id: "shl5", prompt: "點（0, 0）到直線 3x ＋ 4y − 10 ＝ 0 的距離是？", options: ["1", "2", "5", "10"], answer: 1, hints: ["d ＝ |ax₀ ＋ by₀ ＋ c| ÷ √（a² ＋ b²）", "分母是 √（9 ＋ 16） ＝ 5"], explanation: "d ＝ |3×0 ＋ 4×0 − 10| ÷ √（3² ＋ 4²） ＝ 10 ÷ 5 ＝ 2。" },
+    { id: "sh-math-line-circle-1", prompt: "圓（x − 2）² ＋ （y ＋ 1）² ＝ 9 的圓心與半徑是？", options: ["圓心（2, −1）、半徑 3", "圓心（−2, 1）、半徑 3", "圓心（2, −1）、半徑 9", "圓心（2, 1）、半徑 9"], answer: 0, hints: ["標準式裡是（x − h）² ＋ （y − k）²", "等號右邊是半徑的平方"], explanation: "圓心（2, −1），半徑平方是 9，所以半徑是 3。" },
+    { id: "sh-math-line-circle-2", prompt: "圓心到直線的距離 d ＞ 半徑 r 時，直線與圓的關係是？", options: ["相交於兩點", "相切於一點", "不相交", "重疊"], answer: 2, hints: ["距離比半徑還遠", "直線完全在圓外"], explanation: "d ＞ r 表示直線在圓外，沒有交點。" },
+    { id: "sh-math-line-circle-3", prompt: "切線與圓心的連線（到切點）有什麼關係？", options: ["平行", "垂直", "重合", "夾 45 度"], answer: 1, hints: ["這是切線最基本的性質", "垂直代表斜率相乘等於 −1"], explanation: "切線垂直於圓心與切點的連線。" },
+    { id: "sh-math-line-circle-4", prompt: "半徑的斜率是 −2，則過該切點的切線斜率是？", options: ["−2", "2", "1/2", "−1/2"], answer: 2, hints: ["垂直 → 斜率相乘等於 −1", "−2 × ? ＝ −1"], explanation: "（−2）×（1/2）＝ −1，所以切線斜率是 1/2。" },
+    { id: "sh-math-line-circle-5", prompt: "點（0, 0）到直線 3x ＋ 4y − 10 ＝ 0 的距離是？", options: ["1", "2", "5", "10"], answer: 1, hints: ["d ＝ |ax₀ ＋ by₀ ＋ c| ÷ √（a² ＋ b²）", "分母是 √（9 ＋ 16） ＝ 5"], explanation: "d ＝ |3×0 ＋ 4×0 − 10| ÷ √（3² ＋ 4²） ＝ 10 ÷ 5 ＝ 2。" },
   ],
 };
 
@@ -133,11 +133,11 @@ const SH_MATH_SEQUENCE: OnionLesson = {
     { step: "步驟 7：帶走這個判斷", id: 7, caption: "記住：先判斷「加」還是「乘」，再套一般項；求和先問「有沒有收斂」。準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
   ],
   questions: [
-    { id: "shs1", prompt: "等差數列 3, 7, 11, …的第 10 項是多少？", options: ["39", "43", "40", "37"], answer: 0, hints: ["首項 3、公差 4", "a₁₀ ＝ 3 ＋（10 − 1）× 4"], explanation: "a₁₀ ＝ 3 ＋ 9×4 ＝ 39。" },
-    { id: "shs2", prompt: "等差數列 2, 4, 6, …, 20 的總和是多少？", options: ["100", "110", "120", "90"], answer: 1, hints: ["共有 10 項", "（2 ＋ 20）× 10 ÷ 2"], explanation: "S ＝（2 ＋ 20）× 10 ÷ 2 ＝ 110。" },
-    { id: "shs3", prompt: "等比數列 2, 6, 18, … 的公比是多少？", options: ["3", "4", "6", "1/3"], answer: 0, hints: ["公比是「後項除以本項」", "6 ÷ 2 ＝ ?"], explanation: "6 ÷ 2 ＝ 3，且 18 ÷ 6 ＝ 3，公比為 3。" },
-    { id: "shs4", prompt: "無窮等比級數 8 ＋ 4 ＋ 2 ＋ … 的總和是多少？", options: ["14", "15", "16", "無限大"], answer: 2, hints: ["a₁ ＝ 8、r ＝ 1/2", "和 ＝ a₁ ÷（1 − r）"], explanation: "8 ÷（1 − 1/2）＝ 16。" },
-    { id: "shs5", prompt: "下列哪一個等比級數的「和」會收斂？", options: ["公比 2", "公比 −1.5", "公比 1/3", "公比 1"], answer: 2, hints: ["收斂條件是公比的絕對值小於 1", "1/3 的絕對值小於 1"], explanation: "只有 |r| ＜ 1 時無窮等比級數才會收斂，1/3 符合。" },
+    { id: "sh-math-sequence-1", prompt: "等差數列 3, 7, 11, …的第 10 項是多少？", options: ["39", "43", "40", "37"], answer: 0, hints: ["首項 3、公差 4", "a₁₀ ＝ 3 ＋（10 − 1）× 4"], explanation: "a₁₀ ＝ 3 ＋ 9×4 ＝ 39。" },
+    { id: "sh-math-sequence-2", prompt: "等差數列 2, 4, 6, …, 20 的總和是多少？", options: ["100", "110", "120", "90"], answer: 1, hints: ["共有 10 項", "（2 ＋ 20）× 10 ÷ 2"], explanation: "S ＝（2 ＋ 20）× 10 ÷ 2 ＝ 110。" },
+    { id: "sh-math-sequence-3", prompt: "等比數列 2, 6, 18, … 的公比是多少？", options: ["3", "4", "6", "1/3"], answer: 0, hints: ["公比是「後項除以本項」", "6 ÷ 2 ＝ ?"], explanation: "6 ÷ 2 ＝ 3，且 18 ÷ 6 ＝ 3，公比為 3。" },
+    { id: "sh-math-sequence-4", prompt: "無窮等比級數 8 ＋ 4 ＋ 2 ＋ … 的總和是多少？", options: ["14", "15", "16", "無限大"], answer: 2, hints: ["a₁ ＝ 8、r ＝ 1/2", "和 ＝ a₁ ÷（1 − r）"], explanation: "8 ÷（1 − 1/2）＝ 16。" },
+    { id: "sh-math-sequence-5", prompt: "下列哪一個等比級數的「和」會收斂？", options: ["公比 2", "公比 −1.5", "公比 1/3", "公比 1"], answer: 2, hints: ["收斂條件是公比的絕對值小於 1", "1/3 的絕對值小於 1"], explanation: "只有 |r| ＜ 1 時無窮等比級數才會收斂，1/3 符合。" },
   ],
 };
 
@@ -160,11 +160,11 @@ const SH_MATH_PERMUTATION: OnionLesson = {
     { step: "步驟 7：帶走這個判斷", id: 7, caption: "記住：分階段用乘法；看順序用排列、不看順序用組合。準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
   ],
   questions: [
-    { id: "shq1", prompt: "從 4 個不同的球中選 2 個排成一列，共有幾種排法？", options: ["6", "8", "12", "16"], answer: 2, hints: ["第一個位置 4 種", "第二個位置剩 3 種"], explanation: "4 × 3 ＝ 12 種（排列，順序有意義）。" },
-    { id: "shq2", prompt: "從 4 個不同的球中任選 2 個（不看順序），共有幾種選法？", options: ["4", "6", "8", "12"], answer: 1, hints: ["組合 ＝ 排列 ÷ 重複次數", "12 ÷ 2 ＝ ?"], explanation: "C(4,2) ＝ 12 ÷ 2 ＝ 6 種。" },
-    { id: "shq3", prompt: "早餐店有 3 種飲料、5 種主食，各選一種的搭配共有幾種？", options: ["8", "12", "15", "20"], answer: 2, hints: ["飲料與主食是兩個階段", "階段之間用乘法"], explanation: "3 × 5 ＝ 15 種（乘法原理）。" },
-    { id: "shq4", prompt: "下列哪一種情境適合用「組合」計算？", options: ["4 個人排隊照相", "從 8 個隊員中選 5 個上場（不分位置）", "3 位數的密碼排列", "比賽的名次順序"], answer: 1, hints: ["組合是「只看選了誰」", "不分位置表示順序不要緊"], explanation: "只選人不分位置，順序不要緊，用組合 C。" },
-    { id: "shq5", prompt: "C(6, 2) 等於多少？", options: ["30", "15", "12", "36"], answer: 1, hints: ["分子 6 × 5", "分母 2 × 1"], explanation: "C(6,2) ＝（6 × 5）÷（2 × 1）＝ 15。" },
+    { id: "sh-math-permutation-1", prompt: "從 4 個不同的球中選 2 個排成一列，共有幾種排法？", options: ["6", "8", "12", "16"], answer: 2, hints: ["第一個位置 4 種", "第二個位置剩 3 種"], explanation: "4 × 3 ＝ 12 種（排列，順序有意義）。" },
+    { id: "sh-math-permutation-2", prompt: "從 4 個不同的球中任選 2 個（不看順序），共有幾種選法？", options: ["4", "6", "8", "12"], answer: 1, hints: ["組合 ＝ 排列 ÷ 重複次數", "12 ÷ 2 ＝ ?"], explanation: "C(4,2) ＝ 12 ÷ 2 ＝ 6 種。" },
+    { id: "sh-math-permutation-3", prompt: "早餐店有 3 種飲料、5 種主食，各選一種的搭配共有幾種？", options: ["8", "12", "15", "20"], answer: 2, hints: ["飲料與主食是兩個階段", "階段之間用乘法"], explanation: "3 × 5 ＝ 15 種（乘法原理）。" },
+    { id: "sh-math-permutation-4", prompt: "下列哪一種情境適合用「組合」計算？", options: ["4 個人排隊照相", "從 8 個隊員中選 5 個上場（不分位置）", "3 位數的密碼排列", "比賽的名次順序"], answer: 1, hints: ["組合是「只看選了誰」", "不分位置表示順序不要緊"], explanation: "只選人不分位置，順序不要緊，用組合 C。" },
+    { id: "sh-math-permutation-5", prompt: "C(6, 2) 等於多少？", options: ["30", "15", "12", "36"], answer: 1, hints: ["分子 6 × 5", "分母 2 × 1"], explanation: "C(6,2) ＝（6 × 5）÷（2 × 1）＝ 15。" },
   ],
 };
 
@@ -187,11 +187,11 @@ const SH_MATH_PROBABILITY: OnionLesson = {
     { step: "步驟 7：帶走這個判斷", id: 7, caption: "記住：機率先把情形數清楚；獨立事件相乘；期望值就是加權平均。準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
   ],
   questions: [
-    { id: "shpr1", prompt: "擲一顆公正骰子，出現偶數的機率是多少？", options: ["1/6", "1/3", "1/2", "2/3"], answer: 2, hints: ["偶數有 2、4、6", "3 ÷ 6 ＝ ?"], explanation: "偶數有 3 種，機率是 3/6 ＝ 1/2。" },
-    { id: "shpr2", prompt: "同時擲兩顆公正骰子，兩顆都是 6 的機率是多少？", options: ["1/6", "1/12", "1/36", "2/36"], answer: 2, hints: ["兩顆骰子互不影響（獨立）", "1/6 × 1/6"], explanation: "獨立事件相乘：1/6 × 1/6 ＝ 1/36。" },
-    { id: "shpr3", prompt: "擲一顆公正骰子，點數的期望值是多少？", options: ["3", "3.5", "4", "6"], answer: 1, hints: ["每個點數機率都是 1/6", "（1 ＋ 2 ＋ 3 ＋ 4 ＋ 5 ＋ 6）÷ 6"], explanation: "期望值 ＝ 21 ÷ 6 ＝ 3.5。" },
-    { id: "shpr4", prompt: "一組資料是 10, 12, 13, 14, 100。哪一個統計量最能代表「典型的值」？", options: ["平均數，因為它用到所有資料", "中位數，因為極端值 100 會拉高平均", "眾數", "全距"], answer: 1, hints: ["100 是明顯的極端值", "哪個統計量不會被極端值拉走？"], explanation: "有極端值時，中位數（13）比平均數（29.8）更能代表典型值。" },
-    { id: "shpr5", prompt: "一個抽獎活動有 1/100 的機率得到 1000 元，其他情況拿 0 元，期望獎金是多少？", options: ["1 元", "10 元", "100 元", "1000 元"], answer: 1, hints: ["期望值 ＝ 結果 × 機率", "1000 × 1/100"], explanation: "期望獎金 ＝ 1000 × 1/100 ＝ 10 元。" },
+    { id: "sh-math-probability-1", prompt: "擲一顆公正骰子，出現偶數的機率是多少？", options: ["1/6", "1/3", "1/2", "2/3"], answer: 2, hints: ["偶數有 2、4、6", "3 ÷ 6 ＝ ?"], explanation: "偶數有 3 種，機率是 3/6 ＝ 1/2。" },
+    { id: "sh-math-probability-2", prompt: "同時擲兩顆公正骰子，兩顆都是 6 的機率是多少？", options: ["1/6", "1/12", "1/36", "2/36"], answer: 2, hints: ["兩顆骰子互不影響（獨立）", "1/6 × 1/6"], explanation: "獨立事件相乘：1/6 × 1/6 ＝ 1/36。" },
+    { id: "sh-math-probability-3", prompt: "擲一顆公正骰子，點數的期望值是多少？", options: ["3", "3.5", "4", "6"], answer: 1, hints: ["每個點數機率都是 1/6", "（1 ＋ 2 ＋ 3 ＋ 4 ＋ 5 ＋ 6）÷ 6"], explanation: "期望值 ＝ 21 ÷ 6 ＝ 3.5。" },
+    { id: "sh-math-probability-4", prompt: "一組資料是 10, 12, 13, 14, 100。哪一個統計量最能代表「典型的值」？", options: ["平均數，因為它用到所有資料", "中位數，因為極端值 100 會拉高平均", "眾數", "全距"], answer: 1, hints: ["100 是明顯的極端值", "哪個統計量不會被極端值拉走？"], explanation: "有極端值時，中位數（13）比平均數（29.8）更能代表典型值。" },
+    { id: "sh-math-probability-5", prompt: "一個抽獎活動有 1/100 的機率得到 1000 元，其他情況拿 0 元，期望獎金是多少？", options: ["1 元", "10 元", "100 元", "1000 元"], answer: 1, hints: ["期望值 ＝ 結果 × 機率", "1000 × 1/100"], explanation: "期望獎金 ＝ 1000 × 1/100 ＝ 10 元。" },
   ],
 };
 
@@ -214,11 +214,11 @@ const SH_MATH_MATRIX: OnionLesson = {
     { step: "步驟 7：帶走這個判斷", id: 7, caption: "記住：先看大小能不能算、乘法看行列對位、一次處理一整組資料就是矩陣的價值。準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
   ],
   questions: [
-    { id: "shm1", prompt: "一個 3 × 4 的矩陣有幾列、幾行？", options: ["3 列 4 行", "4 列 3 行", "12 列", "7 行"], answer: 0, hints: ["（列 × 行）", "前面那個數字是列數"], explanation: "3 × 4 表示 3 列 4 行。" },
-    { id: "shm2", prompt: "（2 × 3）矩陣與（3 × 5）矩陣相乘後，結果的大小是？", options: ["2 × 3", "3 × 5", "2 × 5", "不能相乘"], answer: 2, hints: ["左邊行數 3 ＝ 右邊列數 3，可以相乘", "結果是「左列 × 右行」"], explanation: "可以相乘，結果為 2 × 5 矩陣。" },
-    { id: "shm3", prompt: "矩陣相加的前提是什麼？", options: ["大小必須相同", "行數相加等於列數", "必須是方陣", "沒有條件"], answer: 0, hints: ["加法是「同位置相加」", "位置對不上就沒辦法相加"], explanation: "矩陣相加要求兩個矩陣大小相同。" },
-    { id: "shm4", prompt: "關於矩陣乘法 AB 與 BA，下列敘述何者正確？", options: ["一定相等", "不一定相等，甚至可能無法相乘", "一定不相等", "只看數字大小決定"], answer: 1, hints: ["乘法的順序會影響能不能算", "矩陣乘法不滿足交換律"], explanation: "矩陣乘法不滿足交換律：AB 與 BA 不一定相等，甚至大小條件可能不成立。" },
-    { id: "shm5", prompt: "把線性方程組寫成矩陣後，高斯消去法主要在做什麼？", options: ["把矩陣轉置", "做列運算把係數化簡，方便讀出解", "計算行列式", "把矩陣變大"], answer: 1, hints: ["重點在「消去」未知數", "把係數整理成容易讀的形式"], explanation: "高斯消去法用列運算把增廣矩陣化簡，讓解一目了然。" },
+    { id: "sh-math-matrix-1", prompt: "一個 3 × 4 的矩陣有幾列、幾行？", options: ["3 列 4 行", "4 列 3 行", "12 列", "7 行"], answer: 0, hints: ["（列 × 行）", "前面那個數字是列數"], explanation: "3 × 4 表示 3 列 4 行。" },
+    { id: "sh-math-matrix-2", prompt: "（2 × 3）矩陣與（3 × 5）矩陣相乘後，結果的大小是？", options: ["2 × 3", "3 × 5", "2 × 5", "不能相乘"], answer: 2, hints: ["左邊行數 3 ＝ 右邊列數 3，可以相乘", "結果是「左列 × 右行」"], explanation: "可以相乘，結果為 2 × 5 矩陣。" },
+    { id: "sh-math-matrix-3", prompt: "矩陣相加的前提是什麼？", options: ["大小必須相同", "行數相加等於列數", "必須是方陣", "沒有條件"], answer: 0, hints: ["加法是「同位置相加」", "位置對不上就沒辦法相加"], explanation: "矩陣相加要求兩個矩陣大小相同。" },
+    { id: "sh-math-matrix-4", prompt: "關於矩陣乘法 AB 與 BA，下列敘述何者正確？", options: ["一定相等", "不一定相等，甚至可能無法相乘", "一定不相等", "只看數字大小決定"], answer: 1, hints: ["乘法的順序會影響能不能算", "矩陣乘法不滿足交換律"], explanation: "矩陣乘法不滿足交換律：AB 與 BA 不一定相等，甚至大小條件可能不成立。" },
+    { id: "sh-math-matrix-5", prompt: "把線性方程組寫成矩陣後，高斯消去法主要在做什麼？", options: ["把矩陣轉置", "做列運算把係數化簡，方便讀出解", "計算行列式", "把矩陣變大"], answer: 1, hints: ["重點在「消去」未知數", "把係數整理成容易讀的形式"], explanation: "高斯消去法用列運算把增廣矩陣化簡，讓解一目了然。" },
   ],
 };
 
@@ -241,11 +241,11 @@ const SH_MATH_VECTOR: OnionLesson = {
     { step: "步驟 7：帶走這個判斷", id: 7, caption: "記住：向量看座標就對了；內積算座標最快，要判斷垂直只看內積是否為 0。準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
   ],
   questions: [
-    { id: "shv1", prompt: "向量（6, 8）的長度是多少？", options: ["10", "14", "48", "100"], answer: 0, hints: ["長度 ＝ √（x² ＋ y²）", "√（36 ＋ 64）＝ ?"], explanation: "長度 ＝ √（6² ＋ 8²）＝ √100 ＝ 10。" },
-    { id: "shv2", prompt: "a ＝（2, 3）、b ＝（4, −1），a·b 等於多少？", options: ["5", "11", "8", "3"], answer: 0, hints: ["內積 ＝ x₁x₂ ＋ y₁y₂", "2×4 ＋ 3×（−1）"], explanation: "2×4 ＋ 3×（−1）＝ 8 − 3 ＝ 5。" },
-    { id: "shv3", prompt: "若兩向量垂直，則它們的內積是多少？", options: ["0", "1", "等於兩者長度相乘", "無法判斷"], answer: 0, hints: ["垂直代表夾角 90°", "cos90° ＝ 0"], explanation: "夾角 90° 時 cosθ ＝ 0，所以內積為 0。" },
-    { id: "shv4", prompt: "下列哪一個向量與（3, 4）垂直？", options: ["（4, 3）", "（4, −3）", "（3, −4）", "（6, 8）"], answer: 1, hints: ["垂直的內積要為 0", "3×4 ＋ 4×（−3）＝ ?"], explanation: "（3, 4）·（4, −3）＝ 12 − 12 ＝ 0，所以垂直。" },
-    { id: "shv5", prompt: "a·b ＝ 0、|a| ＝ 5、|b| ＝ 2，則兩向量的夾角是？", options: ["90°", "60°", "30°", "0°"], answer: 0, hints: ["cosθ ＝（a·b）÷（|a||b|）", "0 除以任何正數都是 0"], explanation: "cosθ ＝ 0 ÷ 10 ＝ 0，所以 θ ＝ 90°。" },
+    { id: "sh-math-vector-1", prompt: "向量（6, 8）的長度是多少？", options: ["10", "14", "48", "100"], answer: 0, hints: ["長度 ＝ √（x² ＋ y²）", "√（36 ＋ 64）＝ ?"], explanation: "長度 ＝ √（6² ＋ 8²）＝ √100 ＝ 10。" },
+    { id: "sh-math-vector-2", prompt: "a ＝（2, 3）、b ＝（4, −1），a·b 等於多少？", options: ["5", "11", "8", "3"], answer: 0, hints: ["內積 ＝ x₁x₂ ＋ y₁y₂", "2×4 ＋ 3×（−1）"], explanation: "2×4 ＋ 3×（−1）＝ 8 − 3 ＝ 5。" },
+    { id: "sh-math-vector-3", prompt: "若兩向量垂直，則它們的內積是多少？", options: ["0", "1", "等於兩者長度相乘", "無法判斷"], answer: 0, hints: ["垂直代表夾角 90°", "cos90° ＝ 0"], explanation: "夾角 90° 時 cosθ ＝ 0，所以內積為 0。" },
+    { id: "sh-math-vector-4", prompt: "下列哪一個向量與（3, 4）垂直？", options: ["（4, 3）", "（4, −3）", "（3, −4）", "（6, 8）"], answer: 1, hints: ["垂直的內積要為 0", "3×4 ＋ 4×（−3）＝ ?"], explanation: "（3, 4）·（4, −3）＝ 12 − 12 ＝ 0，所以垂直。" },
+    { id: "sh-math-vector-5", prompt: "a·b ＝ 0、|a| ＝ 5、|b| ＝ 2，則兩向量的夾角是？", options: ["90°", "60°", "30°", "0°"], answer: 0, hints: ["cosθ ＝（a·b）÷（|a||b|）", "0 除以任何正數都是 0"], explanation: "cosθ ＝ 0 ÷ 10 ＝ 0，所以 θ ＝ 90°。" },
   ],
 };
 
@@ -268,11 +268,11 @@ const SH_MATH_CALCULUS: OnionLesson = {
     { step: "步驟 7：帶走這個判斷", id: 7, caption: "記住：看到「瞬時、最快、極值」想微分；看到「總量、面積、累積」想積分。準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
   ],
   questions: [
-    { id: "shc1", prompt: "f(x) ＝ x² 的導函數 f'(x) 是？", options: ["x", "2x", "x²", "2x²"], answer: 1, hints: ["xⁿ 的導數是 n·x^(n−1)", "指數 2 搬到前面，指數減 1"], explanation: "x² 的導數是 2x^(2−1) ＝ 2x。" },
-    { id: "shc2", prompt: "函數 f(x) ＝ 5（常數函數）的導數是？", options: ["5", "1", "0", "x"], answer: 2, hints: ["常數不會變化", "變化率為 0"], explanation: "常數函數圖形是水平線，斜率 0，所以導數為 0。" },
-    { id: "shc3", prompt: "若 f'(3) ＞ 0，則函數在 x ＝ 3 附近？", options: ["正在上升", "正在下降", "有最大值", "是水平線"], answer: 0, hints: ["導數就是切線斜率", "斜率為正代表往上"], explanation: "導數為正表示切線斜率為正，函數在該處上升。" },
-    { id: "shc4", prompt: "定積分在圖形上代表什麼？", options: ["切線斜率", "曲線與 x 軸之間的面積", "函數的極值", "資料的眾數"], answer: 1, hints: ["切成很多細長條加起來", "算的是累積量"], explanation: "定積分代表曲線與 x 軸之間的面積（累積量）。" },
-    { id: "shc5", prompt: "下列哪一種問法最需要用「積分」？", options: ["求某瞬間的速度", "求圖形在某點的切線斜率", "求曲線下從 0 到 3 的面積", "求函數的最大值"], answer: 2, hints: ["積分處理「累積的總量」", "面積是典型的累積問題"], explanation: "求曲線下的面積要用定積分；切線斜率與極值屬微分。" },
+    { id: "sh-math-calculus-intro-1", prompt: "f(x) ＝ x² 的導函數 f'(x) 是？", options: ["x", "2x", "x²", "2x²"], answer: 1, hints: ["xⁿ 的導數是 n·x^(n−1)", "指數 2 搬到前面，指數減 1"], explanation: "x² 的導數是 2x^(2−1) ＝ 2x。" },
+    { id: "sh-math-calculus-intro-2", prompt: "函數 f(x) ＝ 5（常數函數）的導數是？", options: ["5", "1", "0", "x"], answer: 2, hints: ["常數不會變化", "變化率為 0"], explanation: "常數函數圖形是水平線，斜率 0，所以導數為 0。" },
+    { id: "sh-math-calculus-intro-3", prompt: "若 f'(3) ＞ 0，則函數在 x ＝ 3 附近？", options: ["正在上升", "正在下降", "有最大值", "是水平線"], answer: 0, hints: ["導數就是切線斜率", "斜率為正代表往上"], explanation: "導數為正表示切線斜率為正，函數在該處上升。" },
+    { id: "sh-math-calculus-intro-4", prompt: "定積分在圖形上代表什麼？", options: ["切線斜率", "曲線與 x 軸之間的面積", "函數的極值", "資料的眾數"], answer: 1, hints: ["切成很多細長條加起來", "算的是累積量"], explanation: "定積分代表曲線與 x 軸之間的面積（累積量）。" },
+    { id: "sh-math-calculus-intro-5", prompt: "下列哪一種問法最需要用「積分」？", options: ["求某瞬間的速度", "求圖形在某點的切線斜率", "求曲線下從 0 到 3 的面積", "求函數的最大值"], answer: 2, hints: ["積分處理「累積的總量」", "面積是典型的累積問題"], explanation: "求曲線下的面積要用定積分；切線斜率與極值屬微分。" },
   ],
 };
 

@@ -35,7 +35,7 @@ function opt(text: string): HTMLElement {
 }
 
 describe("洋蔥動畫講解 OnionAcademyGame", () => {
-  it("選課器預設顯示國小課；可切換國中／全部，也可回我的教室", () => {
+  it("選課器預設顯示國小課；可切換國中／高中／全部，也可回我的教室", () => {
     const onBest = vi.fn();
     const onExit = vi.fn();
     render(<OnionAcademyGame bestStars={undefined} onBest={onBest} onExit={onExit} />);
@@ -51,7 +51,12 @@ describe("洋蔥動畫講解 OnionAcademyGame", () => {
     fireEvent.click(screen.getByRole("tab", { name: "國中" }));
     for (const l of junior) expect(screen.getByText(l.title)).toBeInTheDocument();
 
-    // 切到「全部」：8 堂都在
+    // 切到「高中」：高中課程要能單獨篩出來
+    fireEvent.click(screen.getByRole("tab", { name: "高中" }));
+    const senior = ONION_LESSONS.filter((l) => l.stages.includes("高中"));
+    for (const l of senior) expect(screen.getByText(l.title)).toBeInTheDocument();
+
+    // 切到「全部」：200 堂課程全部列出（也順帶驗證課名不重複，否則 getByText 會撞）
     fireEvent.click(screen.getByRole("tab", { name: "全部" }));
     for (const l of ONION_LESSONS) expect(screen.getByText(l.title)).toBeInTheDocument();
 

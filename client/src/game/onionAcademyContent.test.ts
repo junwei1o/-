@@ -7,20 +7,48 @@ import { ONION_LESSONS } from "./onionAcademyLessons";
  * 固化成測試，避免之後新增課程時又把「步驟標籤」或「題數」漏掉。
  */
 describe("洋蔥學院內容驗證", () => {
-  /**
-   * 規模門檻採「只升不降」的階段式檢查：
-   * 目標是累計 200 堂（國小 70／國中 65／高中 65），高中批次還在產出中，
-   * 所以先鎖住已達成的部分，等高中課程補齊後再往上調。
-   */
-  it("課程規模達標（階段門檻，最終目標 200 堂）", () => {
+  /** 最終目標：累計 200 堂（國小 70／國中 65／高中 65），每學段各 350／325／325 題。 */
+  it("課程規模達標（200 堂、三學段各 65~70 堂）", () => {
     const of = (stage: string) => ONION_LESSONS.filter((l) => l.stages.includes(stage));
     const count = (list: typeof ONION_LESSONS) => list.reduce((sum, l) => sum + l.questions.length, 0);
-    // 最終目標：200 堂／國小 70／國中 65／高中 65
-    expect(ONION_LESSONS.length).toBeGreaterThanOrEqual(135);
+    expect(ONION_LESSONS.length).toBeGreaterThanOrEqual(200);
     expect(of("國小").length).toBeGreaterThanOrEqual(70);
     expect(of("國中").length).toBeGreaterThanOrEqual(65);
+    expect(of("高中").length).toBeGreaterThanOrEqual(65);
     expect(count(of("國小"))).toBeGreaterThanOrEqual(350);
     expect(count(of("國中"))).toBeGreaterThanOrEqual(325);
+    expect(count(of("高中"))).toBeGreaterThanOrEqual(325);
+  });
+
+  it("三個學段都有課，且涵蓋多個科目", () => {
+    const stages = new Set(ONION_LESSONS.map((l) => l.stages[0]));
+    expect([...stages].sort()).toEqual(["國中", "國小", "高中"]);
+    // 高中要真的橫跨自然與社會各科，不能只有數學
+    const seniorSubjects = new Set(
+      ONION_LESSONS.filter((l) => l.stages.includes("高中")).map((l) => l.subject),
+    );
+    expect(seniorSubjects.size).toBeGreaterThanOrEqual(8);
+  });
+
+  /**
+   * 題目 id 必須全站唯一。
+   *
+   * App 目前用「題目索引」追蹤作答，所以撞號還不會出錯；但題目 id 是天然的
+   * 作答紀錄鍵，一旦日後用它存進度，兩堂課撞號就會互相污染。實際踩過：
+   * 1000 題裡有 85 個重複（例如角的分類與大氣的結構都用 at1-at5）。
+   */
+  it("題目 id 全站唯一，且以自己課程的 id 開頭", () => {
+    const owners = new Map<string, string[]>();
+    for (const lesson of ONION_LESSONS) {
+      for (const question of lesson.questions) {
+        expect(question.id, `${lesson.id} 的題目 id 未以課程 id 開頭`).toMatch(
+          new RegExp(`^${lesson.id}-`),
+        );
+        owners.set(question.id, [...(owners.get(question.id) ?? []), lesson.id]);
+      }
+    }
+    const duplicated = [...owners.entries()].filter(([, list]) => list.length > 1);
+    expect(duplicated, `重複的題目 id：${duplicated.map(([id]) => id).join("、")}`).toHaveLength(0);
   });
 
   it("每一堂課都屬於剛好一個學段，且 id 不重複", () => {

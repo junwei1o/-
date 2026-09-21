@@ -13,7 +13,8 @@
  *      cycle/flow/shape）的資料相符——抓出「圖和字幕打架」的變態畫面
  *   4. 提問與題目：ask 的 answer 索引合法、選項不重複；題目的 answer 索引
  *      合法、選項不重複、詳解與提示不缺
- *   5. 規模：累計 200 堂課，涵蓋國小／國中／高中三個學段
+ *   5. 題目 id：全站唯一，且以自己課程的 id 開頭（作答紀錄的鍵不能撞號）
+ *   6. 規模：累計 200 堂課，涵蓋國小／國中／高中三個學段
  *
  * 用法：npx tsx scripts/qc-onion-lessons.mts
  */
@@ -268,6 +269,33 @@ const ids = ONION_LESSONS.map((l) => l.id);
 const dupIds = ids.filter((id, i) => ids.indexOf(id) !== i);
 if (dupIds.length) console.log(`❗ 課程 id 重複：${dupIds.join("、")}`);
 
+/*
+ * 題目 id 也要全站唯一。
+ *
+ * App 目前是用「題目索引」在追蹤作答，所以撞號還不會出錯；但題目 id 是天然的
+ * 作答紀錄鍵，一旦日後拿它存進度，兩堂課撞號就會互相污染。這個檢查同時要求
+ * id 以自己課程的 id 開頭（`<課程 id>-<序號>`），除錯時一眼看得出屬於哪一堂。
+ * （實際踩過：1000 題裡有 85 個重複，例如角的分類與大氣的結構都用 at1-at5。）
+ */
+const questionOwners = new Map<string, string[]>();
+for (const lesson of ONION_LESSONS) {
+  for (const question of lesson.questions) {
+    const owners = questionOwners.get(question.id) ?? [];
+    owners.push(lesson.id);
+    questionOwners.set(question.id, owners);
+  }
+}
+for (const [id, owners] of questionOwners) {
+  if (owners.length > 1) console.log(`❗ 題目 id 重複：${id} 同時出現在 ${owners.join("、")}`);
+}
+for (const lesson of ONION_LESSONS) {
+  for (const question of lesson.questions) {
+    if (!question.id.startsWith(lesson.id + "-")) {
+      console.log(`❗ 題目 id 未依「課程 id-序號」命名：${lesson.id} → ${question.id}`);
+    }
+  }
+}
+
 ONION_LESSONS.forEach(checkLesson);
 
 const elementary = ONION_LESSONS.filter((l) => l.stages.includes("國小"));
@@ -284,14 +312,18 @@ console.log(
 console.log(
   `題目總數：${questionsOf(ONION_LESSONS)} 題（國小 ${questionsOf(elementary)}、國中 ${questionsOf(junior)}、高中 ${questionsOf(senior)}）`,
 );
-console.log(`步驟標籤：${stepsOf(ONION_LESSONS)} / ${ONION_LESSONS.length * 7} 幀`);
+// 分母要用「實際分鏡總數」：核心課程有 10 幀的課，寫死 length * 7 會算出
+// 「1033 / 1015」這種分子大於分母的荒謬數字。
+const framesOf = (list: OnionLesson[]) => list.reduce((sum, l) => sum + l.frames.length, 0);
+console.log(`步驟標籤：${stepsOf(ONION_LESSONS)} / ${framesOf(ONION_LESSONS)} 幀`);
 console.log(`科目：${[...new Set(ONION_LESSONS.map((l) => l.subject))].join("、")}`);
 
 // 規模門檻：累計 200 堂，三個學段都要有足夠份量（課程數／題數同步檢查）。
+// 這是「最終目標」而非階段目標——產課期間會看到 ❗，補齊後就該消失。
 const TARGETS = [
   { stage: "國小", lessons: elementary, minLessons: 70, minQuestions: 350 },
   { stage: "國中", lessons: junior, minLessons: 65, minQuestions: 325 },
-  { stage: "高中", lessons: senior, minLessons: 60, minQuestions: 300 },
+  { stage: "高中", lessons: senior, minLessons: 65, minQuestions: 325 },
 ];
 for (const target of TARGETS) {
   if (target.lessons.length < target.minLessons) {

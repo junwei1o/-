@@ -27,11 +27,11 @@ const EL_CHI_IDIOM: OnionLesson = {
     { id: 7, step: "步驟 7：準備闖關複習", caption: "口訣：成語看本意、情境來挑選，望文生義最危險。準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
   ],
   questions: [
-    { id: "ci1", prompt: "「守株待兔」的正確意思是？", options: ["守在樹下等兔子", "比喻不知變通、傻等機會", "養兔子的人", "種樹的人"], answer: 1, hints: ["不是字面意思", "想想比喻義"], explanation: "守株待兔比喻不知變通、妄想不勞而獲，不是真的守樹等兔。" },
-    { id: "ci2", prompt: "下列哪個成語形容人勤奮不懈？", options: ["孜孜不倦", "畫蛇添足", "守株待兔", "井底之蛙"], answer: 0, hints: ["找表示努力不懈的", "孜孜是勤奮的樣子"], explanation: "孜孜不倦形容勤奮努力、不知疲倦，符合勤奮不懈。" },
-    { id: "ci3", prompt: "小明做事總是做一半就換別的，可用哪個成語？", options: ["一絲不苟", "三心二意", "持之以恆", "全神貫注"], answer: 1, hints: ["他常常分心、不專心", "找相反於專心的詞"], explanation: "三心二意形容心意不專、容易分心，符合做一半就換的情形。" },
-    { id: "ci4", prompt: "「朝三暮四」現在多用來形容？", options: ["時間觀念強", "反覆無常、變來變去", "早起晚睡", "很有計畫"], answer: 1, hints: ["原意是變來變去", "不是字面的三點四點"], explanation: "朝三暮四現多比喻反覆無常、變來變去，不能按字面理解。" },
-    { id: "ci5", prompt: "下列哪一句的成語用法正確？", options: ["他守株待兔，每天認真練習", "這題畫蛇添足，剛好不多不少", "他孜孜不倦地準備考試", "小明井底之蛙，見多識廣"], answer: 2, hints: ["檢查每個成語的意思是否相符", "孜孜不倦＝勤奮"], explanation: "孜孜不倦形容勤奮，用來說認真準備考試正確；其他句子的成語意思都相反或用錯。" },
+    { id: "el-chi-idiom-1", prompt: "「守株待兔」的正確意思是？", options: ["守在樹下等兔子", "比喻不知變通、傻等機會", "養兔子的人", "種樹的人"], answer: 1, hints: ["不是字面意思", "想想比喻義"], explanation: "守株待兔比喻不知變通、妄想不勞而獲，不是真的守樹等兔。" },
+    { id: "el-chi-idiom-2", prompt: "下列哪個成語形容人勤奮不懈？", options: ["孜孜不倦", "畫蛇添足", "守株待兔", "井底之蛙"], answer: 0, hints: ["找表示努力不懈的", "孜孜是勤奮的樣子"], explanation: "孜孜不倦形容勤奮努力、不知疲倦，符合勤奮不懈。" },
+    { id: "el-chi-idiom-3", prompt: "小明做事總是做一半就換別的，可用哪個成語？", options: ["一絲不苟", "三心二意", "持之以恆", "全神貫注"], answer: 1, hints: ["他常常分心、不專心", "找相反於專心的詞"], explanation: "三心二意形容心意不專、容易分心，符合做一半就換的情形。" },
+    { id: "el-chi-idiom-4", prompt: "「朝三暮四」現在多用來形容？", options: ["時間觀念強", "反覆無常、變來變去", "早起晚睡", "很有計畫"], answer: 1, hints: ["原意是變來變去", "不是字面的三點四點"], explanation: "朝三暮四現多比喻反覆無常、變來變去，不能按字面理解。" },
+    { id: "el-chi-idiom-5", prompt: "下列哪一句的成語用法正確？", options: ["他守株待兔，每天認真練習", "這題畫蛇添足，剛好不多不少", "他孜孜不倦地準備考試", "小明井底之蛙，見多識廣"], answer: 2, hints: ["檢查每個成語的意思是否相符", "孜孜不倦＝勤奮"], explanation: "孜孜不倦形容勤奮，用來說認真準備考試正確；其他句子的成語意思都相反或用錯。" },
   ],
 };
 
@@ -55,11 +55,11 @@ const EL_CHI_RHETORIC: OnionLesson = {
     { id: 7, step: "步驟 7：準備闖關練習", caption: "口訣：像什麼是譬喻、物做人動作是擬人。準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
   ],
   questions: [
-    { id: "rh1", prompt: "下列哪一句使用了譬喻？", options: ["風兒輕輕唱歌", "彎月像小船", "星星眨眨眼", "花兒點點頭"], answer: 1, hints: ["找「像、如、是」", "把月亮比成小船"], explanation: "彎月像小船用『像』把月亮比成小船，是譬喻。" },
-    { id: "rh2", prompt: "譬喻中「被拿來比喻的東西」叫做？", options: ["喻體", "本體", "喻詞", "主詞"], answer: 1, hints: ["月亮是被比的那個", "小船才是喻體"], explanation: "本體是句子裡被比喻的對象（如月亮），喻體是用來比喻的對象（如小船）。" },
-    { id: "rh3", prompt: "「柳樹垂下長髮，靜靜地想心事」用了什麼修辭？", options: ["譬喻", "擬人", "對偶", "誇飾"], answer: 1, hints: ["柳樹被當人，會『想心事』", "有人的情感與動作"], explanation: "柳樹被賦予人的動作與情感（垂長髮、想心事），是擬人。" },
-    { id: "rh4", prompt: "下列何者同時出現譬喻的喻詞？", options: ["他跑得像風一樣快", "小草向我招手", "太陽公公笑", "鳥兒唱著歌"], answer: 0, hints: ["找『像、如、是』", "像風一樣是譬喻"], explanation: "『像風一樣』用喻詞『像』構成譬喻；其他三句是擬人。" },
-    { id: "rh5", prompt: "「書像一座迷宮，我在裡面迷路」這句包含？", options: ["只有譬喻", "只有擬人", "譬喻與擬人都有", "沒有修辭"], answer: 2, hints: ["『像迷宮』是譬喻", "『我在裡面迷路』把書當場所擬人化"], explanation: "『書像迷宮』是譬喻（喻詞『像』）；把書當成可以走進迷路的場所，帶有擬人意味，兩者皆有。" },
+    { id: "el-chi-rhetoric-1", prompt: "下列哪一句使用了譬喻？", options: ["風兒輕輕唱歌", "彎月像小船", "星星眨眨眼", "花兒點點頭"], answer: 1, hints: ["找「像、如、是」", "把月亮比成小船"], explanation: "彎月像小船用『像』把月亮比成小船，是譬喻。" },
+    { id: "el-chi-rhetoric-2", prompt: "譬喻中「被拿來比喻的東西」叫做？", options: ["喻體", "本體", "喻詞", "主詞"], answer: 1, hints: ["月亮是被比的那個", "小船才是喻體"], explanation: "本體是句子裡被比喻的對象（如月亮），喻體是用來比喻的對象（如小船）。" },
+    { id: "el-chi-rhetoric-3", prompt: "「柳樹垂下長髮，靜靜地想心事」用了什麼修辭？", options: ["譬喻", "擬人", "對偶", "誇飾"], answer: 1, hints: ["柳樹被當人，會『想心事』", "有人的情感與動作"], explanation: "柳樹被賦予人的動作與情感（垂長髮、想心事），是擬人。" },
+    { id: "el-chi-rhetoric-4", prompt: "下列何者同時出現譬喻的喻詞？", options: ["他跑得像風一樣快", "小草向我招手", "太陽公公笑", "鳥兒唱著歌"], answer: 0, hints: ["找『像、如、是』", "像風一樣是譬喻"], explanation: "『像風一樣』用喻詞『像』構成譬喻；其他三句是擬人。" },
+    { id: "el-chi-rhetoric-5", prompt: "「書像一座迷宮，我在裡面迷路」這句包含？", options: ["只有譬喻", "只有擬人", "譬喻與擬人都有", "沒有修辭"], answer: 2, hints: ["『像迷宮』是譬喻", "『我在裡面迷路』把書當場所擬人化"], explanation: "『書像迷宮』是譬喻（喻詞『像』）；把書當成可以走進迷路的場所，帶有擬人意味，兩者皆有。" },
   ],
 };
 
@@ -83,11 +83,11 @@ const EL_CHI_POEM_RHYTHM: OnionLesson = {
     { id: 7, step: "步驟 7：準備闖關朗讀", caption: "口訣：尾字押韻順口、分句停頓清楚、語氣帶情。準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
   ],
   questions: [
-    { id: "pr1", prompt: "詩歌中句尾字音相近，稱為？", options: ["對仗", "押韻", "排比", "擬人"], answer: 1, hints: ["句尾音相近才順口", "想想『光、霜』"], explanation: "句尾字音相近稱為押韻，讓詩歌讀來順口。" },
-    { id: "pr2", prompt: "「光、香、長」三者共同的韻是哪個？", options: ["an", "ang", "ong", "a"], answer: 1, hints: ["三個字後面都是 ang", "光 guang、香 xiang、長 chang"], explanation: "光、香、長都押 ang 韻，讀起來音韻相近。" },
-    { id: "pr3", prompt: "朗讀「床前／明月／光」時，斜線表示？", options: ["換氣", "依語意停頓", "該大聲", "該重複"], answer: 1, hints: ["分句是為了節奏清楚", "停對地方才好聽"], explanation: "斜線表示依語意分句停頓，讓朗讀節奏清楚。" },
-    { id: "pr4", prompt: "讀一首描寫歡樂生日會的詩，語氣應該？", options: ["低沉哀傷", "輕快活潑", "平淡無波", "急促緊張"], answer: 1, hints: ["內容歡樂，語氣跟著快樂", "配合詩的情绪"], explanation: "朗讀語氣要配合詩的情绪，歡樂的詩用輕快活潑的語氣。" },
-    { id: "pr5", prompt: "下列哪一句「沒有」押韻？", options: ["梅花朵朵開，蜜蜂陣陣來", "青山層層疊，白雲片片接", "春風輕輕吹，柳枝慢慢垂", "貓在桌下睡，狗在門邊跑"], answer: 3, hints: ["檢查每句句尾字音是否相近", "睡(shui)和跑(pao)音不近"], explanation: "『貓在桌下睡，狗在門邊跑』句尾『睡、跑』字音不相近，沒有押韻；前三句句尾都押韻。" },
+    { id: "el-chi-poem-rhythm-1", prompt: "詩歌中句尾字音相近，稱為？", options: ["對仗", "押韻", "排比", "擬人"], answer: 1, hints: ["句尾音相近才順口", "想想『光、霜』"], explanation: "句尾字音相近稱為押韻，讓詩歌讀來順口。" },
+    { id: "el-chi-poem-rhythm-2", prompt: "「光、香、長」三者共同的韻是哪個？", options: ["an", "ang", "ong", "a"], answer: 1, hints: ["三個字後面都是 ang", "光 guang、香 xiang、長 chang"], explanation: "光、香、長都押 ang 韻，讀起來音韻相近。" },
+    { id: "el-chi-poem-rhythm-3", prompt: "朗讀「床前／明月／光」時，斜線表示？", options: ["換氣", "依語意停頓", "該大聲", "該重複"], answer: 1, hints: ["分句是為了節奏清楚", "停對地方才好聽"], explanation: "斜線表示依語意分句停頓，讓朗讀節奏清楚。" },
+    { id: "el-chi-poem-rhythm-4", prompt: "讀一首描寫歡樂生日會的詩，語氣應該？", options: ["低沉哀傷", "輕快活潑", "平淡無波", "急促緊張"], answer: 1, hints: ["內容歡樂，語氣跟著快樂", "配合詩的情绪"], explanation: "朗讀語氣要配合詩的情绪，歡樂的詩用輕快活潑的語氣。" },
+    { id: "el-chi-poem-rhythm-5", prompt: "下列哪一句「沒有」押韻？", options: ["梅花朵朵開，蜜蜂陣陣來", "青山層層疊，白雲片片接", "春風輕輕吹，柳枝慢慢垂", "貓在桌下睡，狗在門邊跑"], answer: 3, hints: ["檢查每句句尾字音是否相近", "睡(shui)和跑(pao)音不近"], explanation: "『貓在桌下睡，狗在門邊跑』句尾『睡、跑』字音不相近，沒有押韻；前三句句尾都押韻。" },
   ],
 };
 
@@ -111,11 +111,11 @@ const EL_CHI_STRUCTURE: OnionLesson = {
     { id: 7, step: "步驟 7：準備闖關寫作", caption: "口訣：開頭總說、中間分說、結尾總結。準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
   ],
   questions: [
-    { id: "st1", prompt: "總分總結構的開頭『總說』要做什麼？", options: ["舉很多例子", "點出文章主題", "寫結論", "描述細節"], answer: 1, hints: ["開頭先定調", "一句話說明要講什麼"], explanation: "總說在開頭點出主題，讓讀者知道文章方向。" },
-    { id: "st2", prompt: "總分總的中間『分說』主要做什麼？", options: ["重複總說", "舉例或說明支持主題", "換一個新題目", "寫結尾"], answer: 1, hints: ["用例子把主題講清楚", "分說是主體"], explanation: "分說用具體的例子或說明來支持、充實總說的主題。" },
-    { id: "st3", prompt: "要描寫『我的媽媽很辛苦』，分說可以寫？", options: ["再寫一次媽媽很辛苦", "媽媽早起做早餐、深夜還在加班", "換寫我的老師", "直接寫結尾"], answer: 1, hints: ["分說要舉具體例子", "用早起、加班來說明辛苦"], explanation: "分說應舉具體例子（早起做早餐、深夜加班）來說明媽媽的辛苦。" },
-    { id: "st4", prompt: "總結段落應該怎麼寫？", options: ["再舉新的例子", "回扣開頭的主題", "完全換主題", "越長越好"], answer: 1, hints: ["結尾要收束", "再點一次主題"], explanation: "總結要回扣開頭的主題，讓文章前後呼應、收束有力。" },
-    { id: "st5", prompt: "下列哪一段符合『總分總』？", options: ["只寫一大段例子", "總說→分說→總結", "開頭分說、結尾總說", "只有總說和總結"], answer: 1, hints: ["順序是總、分、總", "三段缺一不可"], explanation: "總分總是『總說→分說→總結』的順序，三者齊全才完整；其他都缺了某一段。" },
+    { id: "el-chi-structure-1", prompt: "總分總結構的開頭『總說』要做什麼？", options: ["舉很多例子", "點出文章主題", "寫結論", "描述細節"], answer: 1, hints: ["開頭先定調", "一句話說明要講什麼"], explanation: "總說在開頭點出主題，讓讀者知道文章方向。" },
+    { id: "el-chi-structure-2", prompt: "總分總的中間『分說』主要做什麼？", options: ["重複總說", "舉例或說明支持主題", "換一個新題目", "寫結尾"], answer: 1, hints: ["用例子把主題講清楚", "分說是主體"], explanation: "分說用具體的例子或說明來支持、充實總說的主題。" },
+    { id: "el-chi-structure-3", prompt: "要描寫『我的媽媽很辛苦』，分說可以寫？", options: ["再寫一次媽媽很辛苦", "媽媽早起做早餐、深夜還在加班", "換寫我的老師", "直接寫結尾"], answer: 1, hints: ["分說要舉具體例子", "用早起、加班來說明辛苦"], explanation: "分說應舉具體例子（早起做早餐、深夜加班）來說明媽媽的辛苦。" },
+    { id: "el-chi-structure-4", prompt: "總結段落應該怎麼寫？", options: ["再舉新的例子", "回扣開頭的主題", "完全換主題", "越長越好"], answer: 1, hints: ["結尾要收束", "再點一次主題"], explanation: "總結要回扣開頭的主題，讓文章前後呼應、收束有力。" },
+    { id: "el-chi-structure-5", prompt: "下列哪一段符合『總分總』？", options: ["只寫一大段例子", "總說→分說→總結", "開頭分說、結尾總說", "只有總說和總結"], answer: 1, hints: ["順序是總、分、總", "三段缺一不可"], explanation: "總分總是『總說→分說→總結』的順序，三者齊全才完整；其他都缺了某一段。" },
   ],
 };
 
@@ -139,11 +139,11 @@ const EL_CHI_LETTER: OnionLesson = {
     { id: 7, step: "步驟 7：準備闖關寫信", caption: "口訣：稱謂頂格、問候空格、署名日期在右下。準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
   ],
   questions: [
-    { id: "lt1", prompt: "書信第一行的稱謂應該怎麼寫？", options: ["空兩格寫", "頂格寫並加冒號", "寫在中間", "不用寫稱謂"], answer: 1, hints: ["稱謂要頂格", "後面加冒號"], explanation: "稱謂頂格書寫，後接冒號（如『親愛的媽媽：』）。" },
-    { id: "lt2", prompt: "書信的問候語（如『您好』）應該？", options: ["頂格寫", "空兩格後另起", "寫在最後", "不用問候"], answer: 1, hints: ["問候在稱謂下一行", "縮格兩格較有禮"], explanation: "問候語在稱謂下一行，空兩格後書寫。" },
-    { id: "lt3", prompt: "正文開始前應該？", options: ["頂格寫", "空兩格再寫", "寫在右下", "寫日期"], answer: 1, hints: ["正文也要縮格", "空兩格才整齊"], explanation: "正文從稱謂、問候之後，空兩格開始書寫。" },
-    { id: "lt4", prompt: "下列哪個書信格式正確？", options: ["署名寫在左上", "日期和署名在右下", "稱謂寫在正中間", "問候語頂格"], answer: 1, hints: ["署名日期靠右", "在結尾下方"], explanation: "署名和日期應寫在右下角（結尾下方靠右），其餘寫法都錯。" },
-    { id: "lt5", prompt: "便條和書信最大的不同是？", options: ["便條不用稱謂", "便條較簡短隨意", "便條不能寫日期", "便條要很正式"], answer: 1, hints: ["便條是短訊息", "三樣就夠：對象、內容、留條人"], explanation: "便條比書信簡短隨意，只要寫對象、內容、留條人即可，不必像書信那麼正式。" },
+    { id: "el-chi-letter-1", prompt: "書信第一行的稱謂應該怎麼寫？", options: ["空兩格寫", "頂格寫並加冒號", "寫在中間", "不用寫稱謂"], answer: 1, hints: ["稱謂要頂格", "後面加冒號"], explanation: "稱謂頂格書寫，後接冒號（如『親愛的媽媽：』）。" },
+    { id: "el-chi-letter-2", prompt: "書信的問候語（如『您好』）應該？", options: ["頂格寫", "空兩格後另起", "寫在最後", "不用問候"], answer: 1, hints: ["問候在稱謂下一行", "縮格兩格較有禮"], explanation: "問候語在稱謂下一行，空兩格後書寫。" },
+    { id: "el-chi-letter-3", prompt: "正文開始前應該？", options: ["頂格寫", "空兩格再寫", "寫在右下", "寫日期"], answer: 1, hints: ["正文也要縮格", "空兩格才整齊"], explanation: "正文從稱謂、問候之後，空兩格開始書寫。" },
+    { id: "el-chi-letter-4", prompt: "下列哪個書信格式正確？", options: ["署名寫在左上", "日期和署名在右下", "稱謂寫在正中間", "問候語頂格"], answer: 1, hints: ["署名日期靠右", "在結尾下方"], explanation: "署名和日期應寫在右下角（結尾下方靠右），其餘寫法都錯。" },
+    { id: "el-chi-letter-5", prompt: "便條和書信最大的不同是？", options: ["便條不用稱謂", "便條較簡短隨意", "便條不能寫日期", "便條要很正式"], answer: 1, hints: ["便條是短訊息", "三樣就夠：對象、內容、留條人"], explanation: "便條比書信簡短隨意，只要寫對象、內容、留條人即可，不必像書信那麼正式。" },
   ],
 };
 
@@ -167,11 +167,11 @@ const EL_CHI_TYPO: OnionLesson = {
     { id: 7, step: "步驟 7：準備闖關辨字", caption: "口訣：形近看部首、同音想字義，查字典最穩。準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
   ],
   questions: [
-    { id: "ty1", prompt: "分辨「己、已、巳」可以看什麼？", options: ["讀音高低", "開口的大小", "筆順", "顏色"], answer: 1, hints: ["看那個小開口", "己開、已半、巳全"], explanation: "三個字形近，靠開口大小分辨：己開口、已半關、巳全關。" },
-    { id: "ty2", prompt: "「休」字由哪兩個部件組成？", options: ["亻＋木", "亻＋體", "木＋禾", "骨＋豊"], answer: 0, hints: ["人靠在樹旁休息", "亻是單人旁"], explanation: "休＝亻（人）＋木（樹），表示人倚樹休息。" },
-    { id: "ty3", prompt: "「再見」常被誤寫成「在見」，這是哪一種錯誤？", options: ["形近字錯", "同音字混淆", "部首錯", "筆畫錯"], answer: 1, hints: ["再、在同音", "音同字不同"], explanation: "再、在讀音相同但意思不同，屬同音字混淆造成的錯別字。" },
-    { id: "ty4", prompt: "「我已經吃完飯了」的「已」表示？", options: ["自己", "已經、已經發生", "地支", "時間"], answer: 1, hints: ["已經是已經做完", "不是自己的己"], explanation: "句中的『已』是『已經』，表示事情已發生，不是『自己』的己。" },
-    { id: "ty5", prompt: "下列哪一句完全沒有錯別字？", options: ["他己經回家了", "我們在見吧", "請你休息一下", "我已經寫完功課了"], answer: 3, hints: ["檢查每句的形近／同音字", "已經的已、寫完都對"], explanation: "只有『我已經寫完功課了』正確；其餘『己經、在見、休息』都是錯別字。" },
+    { id: "el-chi-typo-1", prompt: "分辨「己、已、巳」可以看什麼？", options: ["讀音高低", "開口的大小", "筆順", "顏色"], answer: 1, hints: ["看那個小開口", "己開、已半、巳全"], explanation: "三個字形近，靠開口大小分辨：己開口、已半關、巳全關。" },
+    { id: "el-chi-typo-2", prompt: "「休」字由哪兩個部件組成？", options: ["亻＋木", "亻＋體", "木＋禾", "骨＋豊"], answer: 0, hints: ["人靠在樹旁休息", "亻是單人旁"], explanation: "休＝亻（人）＋木（樹），表示人倚樹休息。" },
+    { id: "el-chi-typo-3", prompt: "「再見」常被誤寫成「在見」，這是哪一種錯誤？", options: ["形近字錯", "同音字混淆", "部首錯", "筆畫錯"], answer: 1, hints: ["再、在同音", "音同字不同"], explanation: "再、在讀音相同但意思不同，屬同音字混淆造成的錯別字。" },
+    { id: "el-chi-typo-4", prompt: "「我已經吃完飯了」的「已」表示？", options: ["自己", "已經、已經發生", "地支", "時間"], answer: 1, hints: ["已經是已經做完", "不是自己的己"], explanation: "句中的『已』是『已經』，表示事情已發生，不是『自己』的己。" },
+    { id: "el-chi-typo-5", prompt: "下列哪一句完全沒有錯別字？", options: ["他己經回家了", "我們在見吧", "請你休息一下", "我已經寫完功課了"], answer: 3, hints: ["檢查每句的形近／同音字", "已經的已、寫完都對"], explanation: "只有『我已經寫完功課了』正確；其餘『己經、在見、休息』都是錯別字。" },
   ],
 };
 
@@ -195,11 +195,11 @@ const EL_CHI_MAIN_IDEA: OnionLesson = {
     { id: 7, step: "步驟 7：準備闖關閱讀", caption: "口訣：關鍵句、重複詞、自己歸納，主旨抓得準。準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
   ],
   questions: [
-    { id: "mi1", prompt: "文章主旨指的是？", options: ["最有趣的細節", "作者最想表達的重點", "最少出現的詞", "標題本身"], answer: 1, hints: ["是文章的核心", "像靈魂一樣貫穿全文"], explanation: "主旨是作者最想傳達的核心重點，貫穿整篇文章。" },
-    { id: "mi2", prompt: "關鍵句常出現在文章的哪裡？", options: ["只在中間", "開頭或結尾", "只在插圖裡", "隨處都有"], answer: 1, hints: ["作者常在首尾點題", "首尾最常直接說重點"], explanation: "關鍵句多藏在文章開頭或結尾，作者會在那裡直接點出主旨。" },
-    { id: "mi3", prompt: "一篇文反覆提到『誠實、信任、說實話』，主旨可能是？", options: ["怎麼釣魚", "誠實的重要", "如何搭車", "天氣預報"], answer: 1, hints: ["重複詞是文章重心", "誠實被強調"], explanation: "重複出現的『誠實、信任』指向文章在談誠實的重要。" },
-    { id: "mi4", prompt: "找主旨時，有趣的細節應該？", options: ["當成主旨", "當成支持主旨的例子", "完全不看", "放在標題"], answer: 1, hints: ["細節是例子不是主題", "用來支持主旨"], explanation: "細節是用來支持主旨的例子，不能把單一細節當成整篇主旨。" },
-    { id: "mi5", prompt: "下列哪一項是抓主旨最好的做法？", options: ["只讀第一句", "讀完用一句話歸納重點", "挑最長的段落", "找最少出現的詞"], answer: 1, hints: ["自己歸納最準", "結合關鍵句與重複詞"], explanation: "讀完後用自己的話用一句話歸納，並結合關鍵句與重複概念，才是最穩的抓主旨方法。" },
+    { id: "el-chi-main-idea-1", prompt: "文章主旨指的是？", options: ["最有趣的細節", "作者最想表達的重點", "最少出現的詞", "標題本身"], answer: 1, hints: ["是文章的核心", "像靈魂一樣貫穿全文"], explanation: "主旨是作者最想傳達的核心重點，貫穿整篇文章。" },
+    { id: "el-chi-main-idea-2", prompt: "關鍵句常出現在文章的哪裡？", options: ["只在中間", "開頭或結尾", "只在插圖裡", "隨處都有"], answer: 1, hints: ["作者常在首尾點題", "首尾最常直接說重點"], explanation: "關鍵句多藏在文章開頭或結尾，作者會在那裡直接點出主旨。" },
+    { id: "el-chi-main-idea-3", prompt: "一篇文反覆提到『誠實、信任、說實話』，主旨可能是？", options: ["怎麼釣魚", "誠實的重要", "如何搭車", "天氣預報"], answer: 1, hints: ["重複詞是文章重心", "誠實被強調"], explanation: "重複出現的『誠實、信任』指向文章在談誠實的重要。" },
+    { id: "el-chi-main-idea-4", prompt: "找主旨時，有趣的細節應該？", options: ["當成主旨", "當成支持主旨的例子", "完全不看", "放在標題"], answer: 1, hints: ["細節是例子不是主題", "用來支持主旨"], explanation: "細節是用來支持主旨的例子，不能把單一細節當成整篇主旨。" },
+    { id: "el-chi-main-idea-5", prompt: "下列哪一項是抓主旨最好的做法？", options: ["只讀第一句", "讀完用一句話歸納重點", "挑最長的段落", "找最少出現的詞"], answer: 1, hints: ["自己歸納最準", "結合關鍵句與重複詞"], explanation: "讀完後用自己的話用一句話歸納，並結合關鍵句與重複概念，才是最穩的抓主旨方法。" },
   ],
 };
 
@@ -223,11 +223,11 @@ const EL_CHI_QUOTATION: OnionLesson = {
     { id: 7, step: "步驟 7：準備闖關用引號", caption: "口訣：別人說的話、特別的詞，圈上引號不會錯。準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
   ],
   questions: [
-    { id: "qt1", prompt: "引號「」最主要用來做什麼？", options: ["標示書名", "標示引用話語或特別指稱", "當作逗號", "標示數字"], answer: 1, hints: ["小鉤子把話圈起來", "引用或特別指稱"], explanation: "引號用來標示他人說的話，或特別、反諷的指稱。" },
-    { id: "qt2", prompt: "「老師說『下課了』」的引號是在？", options: ["標示書名", "引用老師說的話", "標示數字", "強調名詞"], answer: 1, hints: ["是老師說的話", "圈起來表示引用"], explanation: "這裡引號標示老師說的話『下課了』，屬於引用話語。" },
-    { id: "qt3", prompt: "「他真是個『好人』，把別人的東西都拿走了」的引號是？", options: ["引用話語", "特別／反諷指稱", "書名號", "沒意義"], answer: 1, hints: ["不是真的好人，是反話", "強調相反意思"], explanation: "這裡用引號表示反諷，『好人』其實是反話，屬特別指稱。" },
-    { id: "qt4", prompt: "引號內原本有問號時，應該？", options: ["刪掉問號", "照原句留在引號內", "改成句號", "移到引號外"], answer: 1, hints: ["引號內標點照留", "保持原句語氣"], explanation: "引號內原有的標點（如問號）應照原句保留在引號內。" },
-    { id: "qt5", prompt: "下列哪一句的引號用法正確？", options: ["他說「我今天很快樂」", "「天空」是藍色的", "這本書叫「小說」很好看", "他買了「三」蘋果"], answer: 0, hints: ["檢查是否為引用話語或特別指稱", "第一句是引用說的話"], explanation: "第一句引號正確標示引用的話；其他把普通名詞（天空、小說、三）不當地加上引號，用法不當。" },
+    { id: "el-chi-quotation-1", prompt: "引號「」最主要用來做什麼？", options: ["標示書名", "標示引用話語或特別指稱", "當作逗號", "標示數字"], answer: 1, hints: ["小鉤子把話圈起來", "引用或特別指稱"], explanation: "引號用來標示他人說的話，或特別、反諷的指稱。" },
+    { id: "el-chi-quotation-2", prompt: "「老師說『下課了』」的引號是在？", options: ["標示書名", "引用老師說的話", "標示數字", "強調名詞"], answer: 1, hints: ["是老師說的話", "圈起來表示引用"], explanation: "這裡引號標示老師說的話『下課了』，屬於引用話語。" },
+    { id: "el-chi-quotation-3", prompt: "「他真是個『好人』，把別人的東西都拿走了」的引號是？", options: ["引用話語", "特別／反諷指稱", "書名號", "沒意義"], answer: 1, hints: ["不是真的好人，是反話", "強調相反意思"], explanation: "這裡用引號表示反諷，『好人』其實是反話，屬特別指稱。" },
+    { id: "el-chi-quotation-4", prompt: "引號內原本有問號時，應該？", options: ["刪掉問號", "照原句留在引號內", "改成句號", "移到引號外"], answer: 1, hints: ["引號內標點照留", "保持原句語氣"], explanation: "引號內原有的標點（如問號）應照原句保留在引號內。" },
+    { id: "el-chi-quotation-5", prompt: "下列哪一句的引號用法正確？", options: ["他說「我今天很快樂」", "「天空」是藍色的", "這本書叫「小說」很好看", "他買了「三」蘋果"], answer: 0, hints: ["檢查是否為引用話語或特別指稱", "第一句是引用說的話"], explanation: "第一句引號正確標示引用的話；其他把普通名詞（天空、小說、三）不當地加上引號，用法不當。" },
   ],
 };
 
@@ -251,11 +251,11 @@ const EL_ENG_PHONICS: OnionLesson = {
     { id: 7, step: "步驟 7：準備闖關拼讀", caption: "口訣：聽音找字母、母音當中心，自然發音起步囉。準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
   ],
   questions: [
-    { id: "ph1", prompt: "Which letter makes the sound /æ/ in 'apple'?", options: ["A", "B", "E", "O"], answer: 0, hints: ["apple 開頭是 a", "a 發 /æ/"], explanation: "/æ/ 是字母 A 的常見發音，apple 以 A 開頭。" },
-    { id: "ph2", prompt: "How many vowels are there in English?", options: ["3", "5", "21", "26"], answer: 1, hints: ["母音是 a e i o u", "數數看這五個"], explanation: "英文有五個母音：a、e、i、o、u。" },
-    { id: "ph3", prompt: "What word is made by /k/ /æ/ /t/?", options: ["cat", "dog", "sun", "red"], answer: 0, hints: ["c-a-t 連起來", "意思是貓"], explanation: "三個音 /k/ /æ/ /t/ 拼起來是 cat（貓）。" },
-    { id: "ph4", prompt: "Which word begins with the sound /b/?", options: ["apple", "ball", "cat", "egg"], answer: 1, hints: ["ball 開頭是 b", "b 發 /b/"], explanation: "ball 以 B 開頭，發 /b/ 音；其他分別以 a、c、e 開頭。" },
-    { id: "ph5", prompt: "Which group has ALL vowels?", options: ["a, b, c", "a, e, i, o, u", "b, c, d, f", "x, y, z"], answer: 1, hints: ["母音只有 a e i o u", "其他是子音"], explanation: "五個母音是 a、e、i、o、u；選項一才是完整的母音組，其餘含子音。" },
+    { id: "el-eng-phonics-1", prompt: "Which letter makes the sound /æ/ in 'apple'?", options: ["A", "B", "E", "O"], answer: 0, hints: ["apple 開頭是 a", "a 發 /æ/"], explanation: "/æ/ 是字母 A 的常見發音，apple 以 A 開頭。" },
+    { id: "el-eng-phonics-2", prompt: "How many vowels are there in English?", options: ["3", "5", "21", "26"], answer: 1, hints: ["母音是 a e i o u", "數數看這五個"], explanation: "英文有五個母音：a、e、i、o、u。" },
+    { id: "el-eng-phonics-3", prompt: "What word is made by /k/ /æ/ /t/?", options: ["cat", "dog", "sun", "red"], answer: 0, hints: ["c-a-t 連起來", "意思是貓"], explanation: "三個音 /k/ /æ/ /t/ 拼起來是 cat（貓）。" },
+    { id: "el-eng-phonics-4", prompt: "Which word begins with the sound /b/?", options: ["apple", "ball", "cat", "egg"], answer: 1, hints: ["ball 開頭是 b", "b 發 /b/"], explanation: "ball 以 B 開頭，發 /b/ 音；其他分別以 a、c、e 開頭。" },
+    { id: "el-eng-phonics-5", prompt: "Which group has ALL vowels?", options: ["a, b, c", "a, e, i, o, u", "b, c, d, f", "x, y, z"], answer: 1, hints: ["母音只有 a e i o u", "其他是子音"], explanation: "五個母音是 a、e、i、o、u；選項一才是完整的母音組，其餘含子音。" },
   ],
 };
 
@@ -279,11 +279,11 @@ const EL_ENG_GREETING: OnionLesson = {
     { id: 7, step: "步驟 7：準備闖關開口說", caption: "口訣：Hello 打招呼、My name is 報名字、Nice to meet you 有禮貌。準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
   ],
   questions: [
-    { id: "gr1", prompt: "How do you say 'hello' to a friend?", options: ["Goodbye", "Hello", "Sorry", "Thanks"], answer: 1, hints: ["見面打招呼用 hello", "再見才用 goodbye"], explanation: "Hello 是常見的打招呼用語；Goodbye 是再見。" },
-    { id: "gr2", prompt: "To tell your name, you say:", options: ["How are you?", "My name is Ann.", "What is this?", "Nice to meet you."], answer: 1, hints: ["My name is… 用來介紹自己", "後面接你的名字"], explanation: "My name is… 用來介紹自己的名字，後面接名字。" },
-    { id: "gr3", prompt: "When you meet someone new, you can say:", options: ["See you.", "Nice to meet you.", "I am a cat.", "What is this?"], answer: 1, hints: ["初次見面用這句", "表示很高興認識"], explanation: "初次見面時說 Nice to meet you（很高興認識你）很有禮貌。" },
-    { id: "gr4", prompt: "Which is the polite reply to 'Nice to meet you'?", options: ["Nice to meet you, too.", "Bye bye.", "No, thanks.", "My name is Tom."], answer: 0, hints: ["回 too 表示我也一樣", "我也很高興認識你"], explanation: "回 Nice to meet you, too. 表示『我也很高興認識你』。" },
-    { id: "gr5", prompt: "Which sentence is NOT a greeting?", options: ["Hello!", "Hi!", "My name is Ben.", "Goodbye!"], answer: 3, hints: ["Goodbye 是再見不是打招呼", "其他都用於見面"], explanation: "Goodbye 是道別語，不是問候；Hello、Hi、My name is 都用於見面交流。" },
+    { id: "el-eng-greeting-1", prompt: "How do you say 'hello' to a friend?", options: ["Goodbye", "Hello", "Sorry", "Thanks"], answer: 1, hints: ["見面打招呼用 hello", "再見才用 goodbye"], explanation: "Hello 是常見的打招呼用語；Goodbye 是再見。" },
+    { id: "el-eng-greeting-2", prompt: "To tell your name, you say:", options: ["How are you?", "My name is Ann.", "What is this?", "Nice to meet you."], answer: 1, hints: ["My name is… 用來介紹自己", "後面接你的名字"], explanation: "My name is… 用來介紹自己的名字，後面接名字。" },
+    { id: "el-eng-greeting-3", prompt: "When you meet someone new, you can say:", options: ["See you.", "Nice to meet you.", "I am a cat.", "What is this?"], answer: 1, hints: ["初次見面用這句", "表示很高興認識"], explanation: "初次見面時說 Nice to meet you（很高興認識你）很有禮貌。" },
+    { id: "el-eng-greeting-4", prompt: "Which is the polite reply to 'Nice to meet you'?", options: ["Nice to meet you, too.", "Bye bye.", "No, thanks.", "My name is Tom."], answer: 0, hints: ["回 too 表示我也一樣", "我也很高興認識你"], explanation: "回 Nice to meet you, too. 表示『我也很高興認識你』。" },
+    { id: "el-eng-greeting-5", prompt: "Which sentence is NOT a greeting?", options: ["Hello!", "Hi!", "My name is Ben.", "Goodbye!"], answer: 3, hints: ["Goodbye 是再見不是打招呼", "其他都用於見面"], explanation: "Goodbye 是道別語，不是問候；Hello、Hi、My name is 都用於見面交流。" },
   ],
 };
 
@@ -307,11 +307,11 @@ const EL_ENG_NUMBERS: OnionLesson = {
     { id: 7, step: "步驟 7：準備闖關數數", caption: "口訣：one 到 twenty 順口數，How old are you 問年齡。準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
   ],
   questions: [
-    { id: "nu1", prompt: "What comes after 'five'?", options: ["four", "six", "ten", "three"], answer: 1, hints: ["five 之後是 six", "5 的下一個是 6"], explanation: "five（5）之後是 six（6）。" },
-    { id: "nu2", prompt: "How do you ask someone's age?", options: ["What is your name?", "How old are you?", "How are you?", "What is this?"], answer: 1, hints: ["問年齡用 How old", "old 是『老／年紀』"], explanation: "How old are you? 用來詢問對方的年齡。" },
-    { id: "nu3", prompt: "You are 7 years old. You answer:", options: ["I am 7 years old.", "I am 17 years old.", "How old are you?", "I am seven boy."], answer: 0, hints: ["用 I am… years old", "把 7 放進去"], explanation: "七歲回答 I am 7 years old." },
-    { id: "nu4", prompt: "Which number is 'twenty'?", options: ["12", "20", "2", "22"], answer: 1, hints: ["twenty 是 20", "十的兩倍"], explanation: "twenty 表示 20。" },
-    { id: "nu5", prompt: "Which is the correct order from small to large?", options: ["ten, five, one", "one, ten, twenty", "twenty, ten, one", "five, twenty, one"], answer: 1, hints: ["從小排到大", "1 < 10 < 20"], explanation: "由小到大是 one（1）、ten（10）、twenty（20）。" },
+    { id: "el-eng-numbers-1", prompt: "What comes after 'five'?", options: ["four", "six", "ten", "three"], answer: 1, hints: ["five 之後是 six", "5 的下一個是 6"], explanation: "five（5）之後是 six（6）。" },
+    { id: "el-eng-numbers-2", prompt: "How do you ask someone's age?", options: ["What is your name?", "How old are you?", "How are you?", "What is this?"], answer: 1, hints: ["問年齡用 How old", "old 是『老／年紀』"], explanation: "How old are you? 用來詢問對方的年齡。" },
+    { id: "el-eng-numbers-3", prompt: "You are 7 years old. You answer:", options: ["I am 7 years old.", "I am 17 years old.", "How old are you?", "I am seven boy."], answer: 0, hints: ["用 I am… years old", "把 7 放進去"], explanation: "七歲回答 I am 7 years old." },
+    { id: "el-eng-numbers-4", prompt: "Which number is 'twenty'?", options: ["12", "20", "2", "22"], answer: 1, hints: ["twenty 是 20", "十的兩倍"], explanation: "twenty 表示 20。" },
+    { id: "el-eng-numbers-5", prompt: "Which is the correct order from small to large?", options: ["ten, five, one", "one, ten, twenty", "twenty, ten, one", "five, twenty, one"], answer: 1, hints: ["從小排到大", "1 < 10 < 20"], explanation: "由小到大是 one（1）、ten（10）、twenty（20）。" },
   ],
 };
 
@@ -335,11 +335,11 @@ const EL_ENG_COLORS_SHAPES: OnionLesson = {
     { id: 7, step: "步驟 7：準備闖關配對", caption: "口訣：紅藍黃記顏色、圓方三角記形狀，顏色放前面。準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
   ],
   questions: [
-    { id: "cs1", prompt: "Which word means 紅色 (red)?", options: ["blue", "red", "yellow", "green"], answer: 1, hints: ["red 是紅色", "聖誕紅"], explanation: "red 表示紅色。" },
-    { id: "cs2", prompt: "Which word means 圓形 (circle)?", options: ["square", "circle", "triangle", "star"], answer: 1, hints: ["circle 是圓", "圓圓的"], explanation: "circle 表示圓形。" },
-    { id: "cs3", prompt: "How do you say '藍色的方形'?", options: ["a square blue", "a blue square", "a red circle", "a yellow star"], answer: 1, hints: ["顏色 blue 放 square 前", "藍色方形"], explanation: "顏色形容詞放在名詞前，藍色的方形是 a blue square。" },
-    { id: "cs4", prompt: "Which is 'a yellow triangle'?", options: ["a blue square", "a red circle", "a yellow triangle", "a green star"], answer: 2, hints: ["yellow 黃、triangle 三角", "黃色三角形"], explanation: "a yellow triangle 是黃色的三角形。" },
-    { id: "cs5", prompt: "In English, where does the color word go?", options: ["after the noun (circle red)", "before the noun (red circle)", "inside the noun", "nowhere"], answer: 1, hints: ["英文顏色放名詞前", "red ＋ 名詞"], explanation: "英文中顏色形容詞要放在名詞前面，所以是 red circle（而不是 circle red）。" },
+    { id: "el-eng-colors-shapes-1", prompt: "Which word means 紅色 (red)?", options: ["blue", "red", "yellow", "green"], answer: 1, hints: ["red 是紅色", "聖誕紅"], explanation: "red 表示紅色。" },
+    { id: "el-eng-colors-shapes-2", prompt: "Which word means 圓形 (circle)?", options: ["square", "circle", "triangle", "star"], answer: 1, hints: ["circle 是圓", "圓圓的"], explanation: "circle 表示圓形。" },
+    { id: "el-eng-colors-shapes-3", prompt: "How do you say '藍色的方形'?", options: ["a square blue", "a blue square", "a red circle", "a yellow star"], answer: 1, hints: ["顏色 blue 放 square 前", "藍色方形"], explanation: "顏色形容詞放在名詞前，藍色的方形是 a blue square。" },
+    { id: "el-eng-colors-shapes-4", prompt: "Which is 'a yellow triangle'?", options: ["a blue square", "a red circle", "a yellow triangle", "a green star"], answer: 2, hints: ["yellow 黃、triangle 三角", "黃色三角形"], explanation: "a yellow triangle 是黃色的三角形。" },
+    { id: "el-eng-colors-shapes-5", prompt: "In English, where does the color word go?", options: ["after the noun (circle red)", "before the noun (red circle)", "inside the noun", "nowhere"], answer: 1, hints: ["英文顏色放名詞前", "red ＋ 名詞"], explanation: "英文中顏色形容詞要放在名詞前面，所以是 red circle（而不是 circle red）。" },
   ],
 };
 
@@ -363,11 +363,11 @@ const EL_ENG_FAMILY: OnionLesson = {
     { id: 7, step: "步驟 7：準備闖關認家人", caption: "口訣：father 爸爸、mother 媽媽，'s 放後面表所有。準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
   ],
   questions: [
-    { id: "fa1", prompt: "Who is 'father'?", options: ["媽媽", "爸爸", "兄弟", "姐妹"], answer: 1, hints: ["father 是爸爸", "家庭成員"], explanation: "father 表示爸爸。" },
-    { id: "fa2", prompt: "How do you say '這是我媽媽'?", options: ["This is my mother.", "This is my father.", "He is brother.", "My sister is."], answer: 0, hints: ["mother 是媽媽", "This is my… 介紹"], explanation: "This is my mother. 是『這是我媽媽』。" },
-    { id: "fa3", prompt: "To say '哥哥的書', you add 's after:", options: ["book", "brother", "the", "my"], answer: 1, hints: ["哥哥是 brother", "'s 加在擁有者後"], explanation: "所有格 's 加在擁有者 brother 後面：brother's book。" },
-    { id: "fa4", prompt: "Which shows possession (誰的)?", options: ["father book", "father's car", "car father", "my father"], answer: 1, hints: ["'s 表示『的』", "father's = 爸爸的"], explanation: "father's car 中的 's 表示所有格『爸爸的』。" },
-    { id: "fa5", prompt: "Which is WRONG?", options: ["This is my sister.", "mother's bag", "brother book", "father's book"], answer: 2, hints: ["缺少 's", "應為 brother's"], explanation: "brother book 缺少所有格 's，正確是 brother's book；其他都正確。" },
+    { id: "el-eng-family-1", prompt: "Who is 'father'?", options: ["媽媽", "爸爸", "兄弟", "姐妹"], answer: 1, hints: ["father 是爸爸", "家庭成員"], explanation: "father 表示爸爸。" },
+    { id: "el-eng-family-2", prompt: "How do you say '這是我媽媽'?", options: ["This is my mother.", "This is my father.", "He is brother.", "My sister is."], answer: 0, hints: ["mother 是媽媽", "This is my… 介紹"], explanation: "This is my mother. 是『這是我媽媽』。" },
+    { id: "el-eng-family-3", prompt: "To say '哥哥的書', you add 's after:", options: ["book", "brother", "the", "my"], answer: 1, hints: ["哥哥是 brother", "'s 加在擁有者後"], explanation: "所有格 's 加在擁有者 brother 後面：brother's book。" },
+    { id: "el-eng-family-4", prompt: "Which shows possession (誰的)?", options: ["father book", "father's car", "car father", "my father"], answer: 1, hints: ["'s 表示『的』", "father's = 爸爸的"], explanation: "father's car 中的 's 表示所有格『爸爸的』。" },
+    { id: "el-eng-family-5", prompt: "Which is WRONG?", options: ["This is my sister.", "mother's bag", "brother book", "father's book"], answer: 2, hints: ["缺少 's", "應為 brother's"], explanation: "brother book 缺少所有格 's，正確是 brother's book；其他都正確。" },
   ],
 };
 
@@ -391,11 +391,11 @@ const EL_ENG_ROUTINE: OnionLesson = {
     { id: 7, step: "步驟 7：準備闖關說作息", caption: "口訣：What time 問幾點、at 加時間答，整點半點分得清。準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
   ],
   questions: [
-    { id: "rt1", prompt: "How do you ask '你幾點起床'?", options: ["What time do you get up?", "What is your name?", "How are you?", "Where is the book?"], answer: 0, hints: ["問時刻用 What time", "get up 是起床"], explanation: "What time do you get up? 用來問起床的時間。" },
-    { id: "rt2", prompt: "7:00 is said as:", options: ["half past seven", "seven o'clock", "seven thirty", "twelve o'clock"], answer: 1, hints: ["整點用 o'clock", "七點整"], explanation: "七點整說 seven o'clock。" },
-    { id: "rt3", prompt: "7:30 is said as:", options: ["seven o'clock", "half past seven", "seven fifteen", "twelve thirty"], answer: 1, hints: ["半點用 half past", "七點半"], explanation: "七點半說 half past seven。" },
-    { id: "rt4", prompt: "You eat lunch at 12:00. Answer:", options: ["I eat lunch at 12:00.", "I eat lunch at 7:00.", "What time?", "I am twelve."], answer: 0, hints: ["用 I … at 時間", "把 12:00 放進去"], explanation: "十二點吃午餐回答 I eat lunch at 12:00." },
-    { id: "rt5", prompt: "Which is the correct full sentence?", options: ["What time you get up?", "I get up at seven o'clock.", "I get up seven.", "At seven I get up?"], answer: 1, hints: ["用 at 加時間", "完整句子有主詞動詞"], explanation: "正確是 I get up at seven o'clock.，用 at 接時間；其他句子缺少 at 或語序不對。" },
+    { id: "el-eng-routine-1", prompt: "How do you ask '你幾點起床'?", options: ["What time do you get up?", "What is your name?", "How are you?", "Where is the book?"], answer: 0, hints: ["問時刻用 What time", "get up 是起床"], explanation: "What time do you get up? 用來問起床的時間。" },
+    { id: "el-eng-routine-2", prompt: "7:00 is said as:", options: ["half past seven", "seven o'clock", "seven thirty", "twelve o'clock"], answer: 1, hints: ["整點用 o'clock", "七點整"], explanation: "七點整說 seven o'clock。" },
+    { id: "el-eng-routine-3", prompt: "7:30 is said as:", options: ["seven o'clock", "half past seven", "seven fifteen", "twelve thirty"], answer: 1, hints: ["半點用 half past", "七點半"], explanation: "七點半說 half past seven。" },
+    { id: "el-eng-routine-4", prompt: "You eat lunch at 12:00. Answer:", options: ["I eat lunch at 12:00.", "I eat lunch at 7:00.", "What time?", "I am twelve."], answer: 0, hints: ["用 I … at 時間", "把 12:00 放進去"], explanation: "十二點吃午餐回答 I eat lunch at 12:00." },
+    { id: "el-eng-routine-5", prompt: "Which is the correct full sentence?", options: ["What time you get up?", "I get up at seven o'clock.", "I get up seven.", "At seven I get up?"], answer: 1, hints: ["用 at 加時間", "完整句子有主詞動詞"], explanation: "正確是 I get up at seven o'clock.，用 at 接時間；其他句子缺少 at 或語序不對。" },
   ],
 };
 

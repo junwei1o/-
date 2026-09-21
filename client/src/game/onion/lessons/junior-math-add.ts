@@ -33,11 +33,11 @@ const JH_MATH_INTEGER_OPS: OnionLesson = {
     { id: 7, step: "步驟 7：背起口訣", caption: "口訣：數線右加左減；負負得正、異號得負。準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
   ],
   questions: [
-    { id: "io1", prompt: "−3 ＋ 5 ＝ ？", options: ["2", "−8", "8", "−2"], answer: 0, hints: ["負數加法往數線右邊走", "從 −3 往右 5 格到 2"], explanation: "−3 ＋ 5 ＝ 2：從 −3 往右數 5 格，停在 2。" },
-    { id: "io2", prompt: "−4 × −3 ＝ ？", options: ["12", "−12", "−1", "7"], answer: 0, hints: ["先看符號：負×負得正", "再算 4 × 3 ＝ 12"], explanation: "負負得正，4 × 3 ＝ 12，所以 −4 × −3 ＝ 12。" },
-    { id: "io3", prompt: "7 − 10 ＝ ？", options: ["−3", "3", "17", "−17"], answer: 0, hints: ["減法想成往左走", "7 往左 10 格到 −3"], explanation: "7 − 10 ＝ −3：從 7 往左數 10 格，停在 −3。" },
-    { id: "io4", prompt: "(−2) × 6 ＝ ？", options: ["−12", "12", "4", "−4"], answer: 0, hints: ["一正一負相乘得負", "2 × 6 ＝ 12，再加負號"], explanation: "一正一負相乘得負，2 × 6 ＝ 12，所以 (−2) × 6 ＝ −12。" },
-    { id: "io5", prompt: "先算括號：−3 × (2 − 5) ＝ ？", options: ["9", "−9", "3", "−3"], answer: 0, hints: ["先算括號內：2 − 5 ＝ −3", "再算 −3 × (−3)，負負得正"], explanation: "括號內 2 − 5 ＝ −3，再算 −3 × (−3) ＝ 9（負負得正）。" },
+    { id: "jh-math-integer-ops-1", prompt: "−3 ＋ 5 ＝ ？", options: ["2", "−8", "8", "−2"], answer: 0, hints: ["負數加法往數線右邊走", "從 −3 往右 5 格到 2"], explanation: "−3 ＋ 5 ＝ 2：從 −3 往右數 5 格，停在 2。" },
+    { id: "jh-math-integer-ops-2", prompt: "−4 × −3 ＝ ？", options: ["12", "−12", "−1", "7"], answer: 0, hints: ["先看符號：負×負得正", "再算 4 × 3 ＝ 12"], explanation: "負負得正，4 × 3 ＝ 12，所以 −4 × −3 ＝ 12。" },
+    { id: "jh-math-integer-ops-3", prompt: "7 − 10 ＝ ？", options: ["−3", "3", "17", "−17"], answer: 0, hints: ["減法想成往左走", "7 往左 10 格到 −3"], explanation: "7 − 10 ＝ −3：從 7 往左數 10 格，停在 −3。" },
+    { id: "jh-math-integer-ops-4", prompt: "(−2) × 6 ＝ ？", options: ["−12", "12", "4", "−4"], answer: 0, hints: ["一正一負相乘得負", "2 × 6 ＝ 12，再加負號"], explanation: "一正一負相乘得負，2 × 6 ＝ 12，所以 (−2) × 6 ＝ −12。" },
+    { id: "jh-math-integer-ops-5", prompt: "先算括號：−3 × (2 − 5) ＝ ？", options: ["9", "−9", "3", "−3"], answer: 0, hints: ["先算括號內：2 − 5 ＝ −3", "再算 −3 × (−3)，負負得正"], explanation: "括號內 2 − 5 ＝ −3，再算 −3 × (−3) ＝ 9（負負得正）。" },
   ],
 };
 
@@ -65,11 +65,11 @@ const JH_MATH_FRACTION_OPS: OnionLesson = {
     { id: 7, step: "步驟 7：背起口訣", caption: "口訣：同分母加分子、異分母先通分；乘法上下各乘、再約分。準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
   ],
   questions: [
-    { id: "fo1", prompt: "1/4 ＋ 2/4 ＝ ？", options: ["3/4", "3/8", "1/3", "5/4"], answer: 0, hints: ["分母相同，分母保持不變", "分子 1 ＋ 2 ＝ 3"], explanation: "同分母相加：分母 4 不變，分子 1 ＋ 2 ＝ 3，答案是 3/4。" },
-    { id: "fo2", prompt: "1/2 × 1/3 ＝ ？", options: ["1/6", "1/5", "2/5", "1/3"], answer: 0, hints: ["分子乘分子、分母乘分母", "1×1 ＝ 1，2×3 ＝ 6"], explanation: "分數乘法：分子 1×1 ＝ 1，分母 2×3 ＝ 6，答案是 1/6。" },
-    { id: "fo3", prompt: "1/3 ＋ 1/2 ＝ ？", options: ["5/6", "1/6", "2/5", "5/12"], answer: 0, hints: ["先通分到 6", "1/3 ＝ 2/6，1/2 ＝ 3/6"], explanation: "通分到 6：1/3 ＝ 2/6，1/2 ＝ 3/6，2/6 ＋ 3/6 ＝ 5/6。" },
-    { id: "fo4", prompt: "3/4 × 2/3 ＝ ？", options: ["1/2", "1/4", "5/12", "6/7"], answer: 0, hints: ["分子 3×2 ＝ 6，分母 4×3 ＝ 12", "6/12 約分後是 1/2"], explanation: "3/4 × 2/3 ＝ (3×2)/(4×3) ＝ 6/12 ＝ 1/2（約分）。" },
-    { id: "fo5", prompt: "2/3 ÷ 1/6 ＝ ？", options: ["4", "2/18", "2/9", "1/4"], answer: 0, hints: ["除以分數＝乘它的倒數", "2/3 × 6/1 ＝ 12/3 ＝ 4"], explanation: "除以分數等於乘其倒數：2/3 ÷ 1/6 ＝ 2/3 × 6/1 ＝ 12/3 ＝ 4。" },
+    { id: "jh-math-fraction-ops-1", prompt: "1/4 ＋ 2/4 ＝ ？", options: ["3/4", "3/8", "1/3", "5/4"], answer: 0, hints: ["分母相同，分母保持不變", "分子 1 ＋ 2 ＝ 3"], explanation: "同分母相加：分母 4 不變，分子 1 ＋ 2 ＝ 3，答案是 3/4。" },
+    { id: "jh-math-fraction-ops-2", prompt: "1/2 × 1/3 ＝ ？", options: ["1/6", "1/5", "2/5", "1/3"], answer: 0, hints: ["分子乘分子、分母乘分母", "1×1 ＝ 1，2×3 ＝ 6"], explanation: "分數乘法：分子 1×1 ＝ 1，分母 2×3 ＝ 6，答案是 1/6。" },
+    { id: "jh-math-fraction-ops-3", prompt: "1/3 ＋ 1/2 ＝ ？", options: ["5/6", "1/6", "2/5", "5/12"], answer: 0, hints: ["先通分到 6", "1/3 ＝ 2/6，1/2 ＝ 3/6"], explanation: "通分到 6：1/3 ＝ 2/6，1/2 ＝ 3/6，2/6 ＋ 3/6 ＝ 5/6。" },
+    { id: "jh-math-fraction-ops-4", prompt: "3/4 × 2/3 ＝ ？", options: ["1/2", "1/4", "5/12", "6/7"], answer: 0, hints: ["分子 3×2 ＝ 6，分母 4×3 ＝ 12", "6/12 約分後是 1/2"], explanation: "3/4 × 2/3 ＝ (3×2)/(4×3) ＝ 6/12 ＝ 1/2（約分）。" },
+    { id: "jh-math-fraction-ops-5", prompt: "2/3 ÷ 1/6 ＝ ？", options: ["4", "2/18", "2/9", "1/4"], answer: 0, hints: ["除以分數＝乘它的倒數", "2/3 × 6/1 ＝ 12/3 ＝ 4"], explanation: "除以分數等於乘其倒數：2/3 ÷ 1/6 ＝ 2/3 × 6/1 ＝ 12/3 ＝ 4。" },
   ],
 };
 
@@ -97,11 +97,11 @@ const JH_MATH_INEQUALITY: OnionLesson = {
     { id: 7, step: "步驟 7：畫在數線上", caption: "最後把答案畫在數線：x ＞ −3 就是 −3 右邊那一整段（不含 −3）。", action: "point", prop: { kind: "numberLine", from: -6, to: 2, marks: [{ at: -3, label: "空心圈", tone: "warn" }], cursor: -3 }, duration: 3600 },
   ],
   questions: [
-    { id: "in1", prompt: "x ＋ 3 ＜ 8，x ？", options: ["x ＜ 5", "x ＞ 5", "x ＜ 11", "x ＝ 5"], answer: 0, hints: ["把 ＋3 移項到右邊變 −3", "8 − 3 ＝ 5"], explanation: "移項：＋3 變 −3，x ＜ 8 − 3，所以 x ＜ 5。" },
-    { id: "in2", prompt: "x − 2 ＞ 4，x ？", options: ["x ＞ 6", "x ＜ 6", "x ＞ 2", "x ＝ 6"], answer: 0, hints: ["−2 移過去變 ＋2", "4 ＋ 2 ＝ 6"], explanation: "−2 移到右邊變 ＋2：x ＞ 4 ＋ 2，所以 x ＞ 6。" },
-    { id: "in3", prompt: "−2x ＜ 6，x ？", options: ["x ＞ −3", "x ＜ −3", "x ＜ 3", "x ＝ −3"], answer: 0, hints: ["兩邊同除 −2，要變號", "6 ÷ (−2) ＝ −3，＜ 變 ＞"], explanation: "兩邊同除負數 −2：6 ÷ (−2) ＝ −3，方向反轉，x ＞ −3。" },
-    { id: "in4", prompt: "3x − 1 ≦ 8，x ？", options: ["x ≦ 3", "x ≧ 3", "x ≦ 9", "x ＞ 3"], answer: 0, hints: ["先移項：−1 變 ＋1", "3x ≦ 9，再除 3"], explanation: "移項：3x ≦ 8 ＋ 1 ＝ 9；再除 3：x ≦ 3。" },
-    { id: "in5", prompt: "−4x ＋ 5 ＞ 1，x ？", options: ["x ＜ 1", "x ＞ 1", "x ＜ −1", "x ＞ −1"], answer: 0, hints: ["先移項：5 變 −5", "−4x ＞ −4，同除 −4 要變號"], explanation: "移項：−4x ＞ 1 − 5 ＝ −4；同除負數 −4，方向反轉：x ＜ 1。" },
+    { id: "jh-math-inequality-1", prompt: "x ＋ 3 ＜ 8，x ？", options: ["x ＜ 5", "x ＞ 5", "x ＜ 11", "x ＝ 5"], answer: 0, hints: ["把 ＋3 移項到右邊變 −3", "8 − 3 ＝ 5"], explanation: "移項：＋3 變 −3，x ＜ 8 − 3，所以 x ＜ 5。" },
+    { id: "jh-math-inequality-2", prompt: "x − 2 ＞ 4，x ？", options: ["x ＞ 6", "x ＜ 6", "x ＞ 2", "x ＝ 6"], answer: 0, hints: ["−2 移過去變 ＋2", "4 ＋ 2 ＝ 6"], explanation: "−2 移到右邊變 ＋2：x ＞ 4 ＋ 2，所以 x ＞ 6。" },
+    { id: "jh-math-inequality-3", prompt: "−2x ＜ 6，x ？", options: ["x ＞ −3", "x ＜ −3", "x ＜ 3", "x ＝ −3"], answer: 0, hints: ["兩邊同除 −2，要變號", "6 ÷ (−2) ＝ −3，＜ 變 ＞"], explanation: "兩邊同除負數 −2：6 ÷ (−2) ＝ −3，方向反轉，x ＞ −3。" },
+    { id: "jh-math-inequality-4", prompt: "3x − 1 ≦ 8，x ？", options: ["x ≦ 3", "x ≧ 3", "x ≦ 9", "x ＞ 3"], answer: 0, hints: ["先移項：−1 變 ＋1", "3x ≦ 9，再除 3"], explanation: "移項：3x ≦ 8 ＋ 1 ＝ 9；再除 3：x ≦ 3。" },
+    { id: "jh-math-inequality-5", prompt: "−4x ＋ 5 ＞ 1，x ？", options: ["x ＜ 1", "x ＞ 1", "x ＜ −1", "x ＞ −1"], answer: 0, hints: ["先移項：5 變 −5", "−4x ＞ −4，同除 −4 要變號"], explanation: "移項：−4x ＞ 1 − 5 ＝ −4；同除負數 −4，方向反轉：x ＜ 1。" },
   ],
 };
 
@@ -129,11 +129,11 @@ const JH_MATH_SQUARE_ROOT: OnionLesson = {
     { id: 7, step: "步驟 7：背起口訣", caption: "口訣：√a 是平方還原；估算夾在相鄰整數間；完全平方數先提出來。準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
   ],
   questions: [
-    { id: "sr1", prompt: "√9 是幾的平方？", options: ["3", "9", "81", "±3"], answer: 0, hints: ["想哪個數平方等於 9", "3 × 3 ＝ 9"], explanation: "平方根取非負值：3² ＝ 9，所以 √9 ＝ 3。" },
-    { id: "sr2", prompt: "√25 是幾的平方？", options: ["5", "25", "±5", "2.5"], answer: 0, hints: ["想哪個數平方等於 25", "5 × 5 ＝ 25"], explanation: "5² ＝ 25，所以 √25 ＝ 5（取非負值）。" },
-    { id: "sr3", prompt: "√20 介於哪兩個連續整數之間？", options: ["4 和 5", "3 和 4", "5 和 6", "2 和 3"], answer: 0, hints: ["找夾住 20 的完全平方數", "16＜20＜25"], explanation: "因為 16＜20＜25，開根後 4＜√20＜5，介於 4 和 5 之間。" },
-    { id: "sr4", prompt: "√50 化簡後等於？", options: ["5√2", "2√5", "√10", "10"], answer: 0, hints: ["把 50 拆成 25 × 2", "√25 ＝ 5 提出來"], explanation: "√50 ＝ √(25×2) ＝ √25 × √2 ＝ 5√2。" },
-    { id: "sr5", prompt: "√8 化簡後等於？", options: ["2√2", "4√2", "√4", "8"], answer: 0, hints: ["8 ＝ 4 × 2", "√4 ＝ 2 提出來"], explanation: "√8 ＝ √(4×2) ＝ √4 × √2 ＝ 2√2。" },
+    { id: "jh-math-square-root-1", prompt: "√9 是幾的平方？", options: ["3", "9", "81", "±3"], answer: 0, hints: ["想哪個數平方等於 9", "3 × 3 ＝ 9"], explanation: "平方根取非負值：3² ＝ 9，所以 √9 ＝ 3。" },
+    { id: "jh-math-square-root-2", prompt: "√25 是幾的平方？", options: ["5", "25", "±5", "2.5"], answer: 0, hints: ["想哪個數平方等於 25", "5 × 5 ＝ 25"], explanation: "5² ＝ 25，所以 √25 ＝ 5（取非負值）。" },
+    { id: "jh-math-square-root-3", prompt: "√20 介於哪兩個連續整數之間？", options: ["4 和 5", "3 和 4", "5 和 6", "2 和 3"], answer: 0, hints: ["找夾住 20 的完全平方數", "16＜20＜25"], explanation: "因為 16＜20＜25，開根後 4＜√20＜5，介於 4 和 5 之間。" },
+    { id: "jh-math-square-root-4", prompt: "√50 化簡後等於？", options: ["5√2", "2√5", "√10", "10"], answer: 0, hints: ["把 50 拆成 25 × 2", "√25 ＝ 5 提出來"], explanation: "√50 ＝ √(25×2) ＝ √25 × √2 ＝ 5√2。" },
+    { id: "jh-math-square-root-5", prompt: "√8 化簡後等於？", options: ["2√2", "4√2", "√4", "8"], answer: 0, hints: ["8 ＝ 4 × 2", "√4 ＝ 2 提出來"], explanation: "√8 ＝ √(4×2) ＝ √4 × √2 ＝ 2√2。" },
   ],
 };
 
@@ -161,11 +161,11 @@ const JH_MATH_POLY_FORMULA: OnionLesson = {
     { id: 7, step: "步驟 7：背起口訣", caption: "口訣：完全平方展三項、平方差一減一加變相減。多練就熟！準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
   ],
   questions: [
-    { id: "pf1", prompt: "(a＋b)² 展開等於？", options: ["a²＋2ab＋b²", "a²＋b²", "a²＋ab＋b²", "2a＋2b"], answer: 0, hints: ["完全平方有三項", "中間是 2ab"], explanation: "(a＋b)² ＝ (a＋b)(a＋b) ＝ a²＋2ab＋b²。" },
-    { id: "pf2", prompt: "(a−b)(a＋b) 展開等於？", options: ["a²−b²", "a²＋b²", "a²−2ab＋b²", "(a−b)²"], answer: 0, hints: ["一減一加相乘", "相同項平方相減"], explanation: "(a−b)(a＋b) ＝ a² − b²（平方差公式）。" },
-    { id: "pf3", prompt: "(x＋5)² 展開等於？", options: ["x²＋10x＋25", "x²＋25", "x²＋5x＋25", "x²＋10x＋5"], answer: 0, hints: ["中間項 2×x×5 ＝ 10x", "5² ＝ 25"], explanation: "(x＋5)² ＝ x² ＋ 2·x·5 ＋ 5² ＝ x²＋10x＋25。" },
-    { id: "pf4", prompt: "(x−2)(x＋2) 展開等於？", options: ["x²−4", "x²＋4", "x²−2x＋4", "x²−4x"], answer: 0, hints: ["平方差：x² − 2²", "2² ＝ 4"], explanation: "(x−2)(x＋2) ＝ x² − 2² ＝ x² − 4。" },
-    { id: "pf5", prompt: "(2x＋3)² 展開等於？", options: ["4x²＋12x＋9", "4x²＋9", "2x²＋12x＋9", "4x²＋6x＋9"], answer: 0, hints: ["(2x)² ＝ 4x²", "2×2x×3 ＝ 12x，3² ＝ 9"], explanation: "(2x＋3)² ＝ (2x)² ＋ 2·2x·3 ＋ 3² ＝ 4x²＋12x＋9。" },
+    { id: "jh-math-poly-formula-1", prompt: "(a＋b)² 展開等於？", options: ["a²＋2ab＋b²", "a²＋b²", "a²＋ab＋b²", "2a＋2b"], answer: 0, hints: ["完全平方有三項", "中間是 2ab"], explanation: "(a＋b)² ＝ (a＋b)(a＋b) ＝ a²＋2ab＋b²。" },
+    { id: "jh-math-poly-formula-2", prompt: "(a−b)(a＋b) 展開等於？", options: ["a²−b²", "a²＋b²", "a²−2ab＋b²", "(a−b)²"], answer: 0, hints: ["一減一加相乘", "相同項平方相減"], explanation: "(a−b)(a＋b) ＝ a² − b²（平方差公式）。" },
+    { id: "jh-math-poly-formula-3", prompt: "(x＋5)² 展開等於？", options: ["x²＋10x＋25", "x²＋25", "x²＋5x＋25", "x²＋10x＋5"], answer: 0, hints: ["中間項 2×x×5 ＝ 10x", "5² ＝ 25"], explanation: "(x＋5)² ＝ x² ＋ 2·x·5 ＋ 5² ＝ x²＋10x＋25。" },
+    { id: "jh-math-poly-formula-4", prompt: "(x−2)(x＋2) 展開等於？", options: ["x²−4", "x²＋4", "x²−2x＋4", "x²−4x"], answer: 0, hints: ["平方差：x² − 2²", "2² ＝ 4"], explanation: "(x−2)(x＋2) ＝ x² − 2² ＝ x² − 4。" },
+    { id: "jh-math-poly-formula-5", prompt: "(2x＋3)² 展開等於？", options: ["4x²＋12x＋9", "4x²＋9", "2x²＋12x＋9", "4x²＋6x＋9"], answer: 0, hints: ["(2x)² ＝ 4x²", "2×2x×3 ＝ 12x，3² ＝ 9"], explanation: "(2x＋3)² ＝ (2x)² ＋ 2·2x·3 ＋ 3² ＝ 4x²＋12x＋9。" },
   ],
 };
 
@@ -193,11 +193,11 @@ const JH_MATH_QUADRATIC_FORMULA: OnionLesson = {
     { id: 7, step: "步驟 7：背起口訣", caption: "口訣：先算 D 看解數，再套 x ＝(−b±√D)÷2a。判別式是靈魂！準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
   ],
   questions: [
-    { id: "qf1", prompt: "x²−5x＋6＝0 的解是？", options: ["x＝3 或 2", "x＝3 或 −2", "x＝−3 或 2", "x＝6 或 1"], answer: 0, hints: ["想因式分解", "(x−3)(x−2)＝0"], explanation: "x²−5x＋6 ＝ (x−3)(x−2)，所以 x＝3 或 x＝2。" },
-    { id: "qf2", prompt: "x²−5x＋6＝0 的判別式 D ＝ ？", options: ["1", "−1", "25", "11"], answer: 0, hints: ["D ＝ b²−4ac", "b＝−5，c＝6，a＝1"], explanation: "D ＝ (−5)² − 4×1×6 ＝ 25 − 24 ＝ 1。" },
-    { id: "qf3", prompt: "2x²−4x−6＝0 的解是？", options: ["x＝3 或 −1", "x＝−3 或 1", "x＝3 或 1", "x＝2 或 −2"], answer: 0, hints: ["先算 D ＝ 16＋48 ＝ 64", "x ＝ (4 ± 8)÷4"], explanation: "D ＝ 16−4×2×(−6) ＝ 64，√64＝8，x ＝ (4±8)÷4 ＝ 3 或 −1。" },
-    { id: "qf4", prompt: "2x²−4x−6＝0 的判別式 D ＝ ？", options: ["64", "16", "48", "−48"], answer: 0, hints: ["b＝−4，a＝2，c＝−6", "D ＝ (−4)² − 4×2×(−6)"], explanation: "D ＝ (−4)² − 4×2×(−6) ＝ 16 ＋ 48 ＝ 64。" },
-    { id: "qf5", prompt: "x²＋4x＋4＝0 的解是？", options: ["x＝−2（重根）", "x＝2", "x＝−4 或 0", "x＝±2"], answer: 0, hints: ["這是 (x＋2)² ＝ 0", "D ＝ 16 − 16 ＝ 0 只有一解"], explanation: "x²＋4x＋4 ＝ (x＋2)² ＝ 0，所以 x＝−2（兩相等實根，重根）。" },
+    { id: "jh-math-quadratic-formula-1", prompt: "x²−5x＋6＝0 的解是？", options: ["x＝3 或 2", "x＝3 或 −2", "x＝−3 或 2", "x＝6 或 1"], answer: 0, hints: ["想因式分解", "(x−3)(x−2)＝0"], explanation: "x²−5x＋6 ＝ (x−3)(x−2)，所以 x＝3 或 x＝2。" },
+    { id: "jh-math-quadratic-formula-2", prompt: "x²−5x＋6＝0 的判別式 D ＝ ？", options: ["1", "−1", "25", "11"], answer: 0, hints: ["D ＝ b²−4ac", "b＝−5，c＝6，a＝1"], explanation: "D ＝ (−5)² − 4×1×6 ＝ 25 − 24 ＝ 1。" },
+    { id: "jh-math-quadratic-formula-3", prompt: "2x²−4x−6＝0 的解是？", options: ["x＝3 或 −1", "x＝−3 或 1", "x＝3 或 1", "x＝2 或 −2"], answer: 0, hints: ["先算 D ＝ 16＋48 ＝ 64", "x ＝ (4 ± 8)÷4"], explanation: "D ＝ 16−4×2×(−6) ＝ 64，√64＝8，x ＝ (4±8)÷4 ＝ 3 或 −1。" },
+    { id: "jh-math-quadratic-formula-4", prompt: "2x²−4x−6＝0 的判別式 D ＝ ？", options: ["64", "16", "48", "−48"], answer: 0, hints: ["b＝−4，a＝2，c＝−6", "D ＝ (−4)² − 4×2×(−6)"], explanation: "D ＝ (−4)² − 4×2×(−6) ＝ 16 ＋ 48 ＝ 64。" },
+    { id: "jh-math-quadratic-formula-5", prompt: "x²＋4x＋4＝0 的解是？", options: ["x＝−2（重根）", "x＝2", "x＝−4 或 0", "x＝±2"], answer: 0, hints: ["這是 (x＋2)² ＝ 0", "D ＝ 16 − 16 ＝ 0 只有一解"], explanation: "x²＋4x＋4 ＝ (x＋2)² ＝ 0，所以 x＝−2（兩相等實根，重根）。" },
   ],
 };
 
@@ -225,11 +225,11 @@ const JH_MATH_CONGRUENCE: OnionLesson = {
     { id: 7, step: "步驟 7：背起口訣", caption: "口訣：SSS 三邊、SAS 夾角、ASA 夾邊、AAS 兩角一邊。準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
   ],
   questions: [
-    { id: "cg1", prompt: "三邊對應相等，判定三角形全等用？", options: ["SSS", "SAS", "ASA", "AAS"], answer: 0, hints: ["三邊相等", "邊邊邊"], explanation: "三邊對應相等（SSS）即可判定兩三角形全等。" },
-    { id: "cg2", prompt: "兩邊及其夾角對應相等，判定用？", options: ["SAS", "SSS", "ASA", "AAS"], answer: 0, hints: ["兩邊加中間的角", "邊角邊"], explanation: "兩邊及其夾角對應相等（SAS）可判定全等。" },
-    { id: "cg3", prompt: "兩角及其夾邊對應相等，判定用？", options: ["ASA", "SAS", "SSS", "RHS"], answer: 0, hints: ["兩角中間夾一邊", "角邊角"], explanation: "兩角及其夾邊對應相等（ASA）可判定全等。" },
-    { id: "cg4", prompt: "直角三角形中斜邊和一股對應相等，可用？", options: ["RHS", "SAS", "SSS", "ASA"], answer: 0, hints: ["直角三角形專用", "斜邊—一股"], explanation: "直角三角形的斜邊與一股對應相等（RHS，斜邊一股）即可判定全等。" },
-    { id: "cg5", prompt: "只有兩個角對應相等，沒有邊對應相等，能判定全等嗎？", options: ["不能，還需要一邊", "可以，AA 就全等", "可以，兩角決定", "不一定，看形狀"], answer: 0, hints: ["只有角相等只能說相似", "要 ASA 或 AAS 才全等"], explanation: "只有角相等只能判定相似；必須再有一組邊對應相等（ASA 或 AAS）才能判定全等。" },
+    { id: "jh-math-congruence-1", prompt: "三邊對應相等，判定三角形全等用？", options: ["SSS", "SAS", "ASA", "AAS"], answer: 0, hints: ["三邊相等", "邊邊邊"], explanation: "三邊對應相等（SSS）即可判定兩三角形全等。" },
+    { id: "jh-math-congruence-2", prompt: "兩邊及其夾角對應相等，判定用？", options: ["SAS", "SSS", "ASA", "AAS"], answer: 0, hints: ["兩邊加中間的角", "邊角邊"], explanation: "兩邊及其夾角對應相等（SAS）可判定全等。" },
+    { id: "jh-math-congruence-3", prompt: "兩角及其夾邊對應相等，判定用？", options: ["ASA", "SAS", "SSS", "RHS"], answer: 0, hints: ["兩角中間夾一邊", "角邊角"], explanation: "兩角及其夾邊對應相等（ASA）可判定全等。" },
+    { id: "jh-math-congruence-4", prompt: "直角三角形中斜邊和一股對應相等，可用？", options: ["RHS", "SAS", "SSS", "ASA"], answer: 0, hints: ["直角三角形專用", "斜邊—一股"], explanation: "直角三角形的斜邊與一股對應相等（RHS，斜邊一股）即可判定全等。" },
+    { id: "jh-math-congruence-5", prompt: "只有兩個角對應相等，沒有邊對應相等，能判定全等嗎？", options: ["不能，還需要一邊", "可以，AA 就全等", "可以，兩角決定", "不一定，看形狀"], answer: 0, hints: ["只有角相等只能說相似", "要 ASA 或 AAS 才全等"], explanation: "只有角相等只能判定相似；必須再有一組邊對應相等（ASA 或 AAS）才能判定全等。" },
   ],
 };
 
@@ -257,11 +257,11 @@ const JH_MATH_CIRCLE: OnionLesson = {
     { id: 7, step: "步驟 7：背起口訣", caption: "口訣：切線垂直半徑、圓心角等於圓周角的兩倍。看弧想角度！準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
   ],
   questions: [
-    { id: "ci1", prompt: "通過圓心、兩端在圓上的弦叫？", options: ["直徑", "半徑", "切線", "圓心角"], answer: 0, hints: ["是最長的弦", "通過圓心"], explanation: "通過圓心且兩端在圓上的弦最長，稱為直徑。" },
-    { id: "ci2", prompt: "切線與過切點的半徑夾角為？", options: ["90 度", "180 度", "60 度", "45 度"], answer: 0, hints: ["切線和半徑互相垂直", "垂直就是直角"], explanation: "切線垂直於過切點的半徑，所以夾角是 90 度。" },
-    { id: "ci3", prompt: "同一段弧，圓周角 40 度，圓心角多少？", options: ["80 度", "40 度", "20 度", "160 度"], answer: 0, hints: ["圓心角＝2×圓周角", "40 × 2 ＝ 80"], explanation: "同一弧的圓心角是圓周角的兩倍：40 × 2 ＝ 80 度。" },
-    { id: "ci4", prompt: "同一段弧，圓心角 100 度，圓周角多少？", options: ["50 度", "100 度", "200 度", "25 度"], answer: 0, hints: ["圓周角＝圓心角÷2", "100 ÷ 2 ＝ 50"], explanation: "圓周角是圓心角的一半：100 ÷ 2 ＝ 50 度。" },
-    { id: "ci5", prompt: "直徑所對的圓周角是多少？", options: ["90 度", "180 度", "60 度", "45 度"], answer: 0, hints: ["直徑對應圓心角 180 度", "圓周角再除以 2"], explanation: "直徑對應圓心角 180 度，圓周角為其一半 90 度（半圓上的圓周角是直角）。" },
+    { id: "jh-math-circle-1", prompt: "通過圓心、兩端在圓上的弦叫？", options: ["直徑", "半徑", "切線", "圓心角"], answer: 0, hints: ["是最長的弦", "通過圓心"], explanation: "通過圓心且兩端在圓上的弦最長，稱為直徑。" },
+    { id: "jh-math-circle-2", prompt: "切線與過切點的半徑夾角為？", options: ["90 度", "180 度", "60 度", "45 度"], answer: 0, hints: ["切線和半徑互相垂直", "垂直就是直角"], explanation: "切線垂直於過切點的半徑，所以夾角是 90 度。" },
+    { id: "jh-math-circle-3", prompt: "同一段弧，圓周角 40 度，圓心角多少？", options: ["80 度", "40 度", "20 度", "160 度"], answer: 0, hints: ["圓心角＝2×圓周角", "40 × 2 ＝ 80"], explanation: "同一弧的圓心角是圓周角的兩倍：40 × 2 ＝ 80 度。" },
+    { id: "jh-math-circle-4", prompt: "同一段弧，圓心角 100 度，圓周角多少？", options: ["50 度", "100 度", "200 度", "25 度"], answer: 0, hints: ["圓周角＝圓心角÷2", "100 ÷ 2 ＝ 50"], explanation: "圓周角是圓心角的一半：100 ÷ 2 ＝ 50 度。" },
+    { id: "jh-math-circle-5", prompt: "直徑所對的圓周角是多少？", options: ["90 度", "180 度", "60 度", "45 度"], answer: 0, hints: ["直徑對應圓心角 180 度", "圓周角再除以 2"], explanation: "直徑對應圓心角 180 度，圓周角為其一半 90 度（半圓上的圓周角是直角）。" },
   ],
 };
 
@@ -289,11 +289,11 @@ const JH_MATH_STATISTICS: OnionLesson = {
     { id: 7, step: "步驟 7：背起口訣", caption: "口訣：平均看總和、中位數排中間、眾數最多次、全距看落差。準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
   ],
   questions: [
-    { id: "st1", prompt: "資料 70、80、90、80、100 的平均數是？", options: ["84", "80", "90", "100"], answer: 0, hints: ["先加總再除以筆數", "70+80+90+80+100 ＝ 420"], explanation: "總和 420 ÷ 5 ＝ 84，所以平均數是 84。" },
-    { id: "st2", prompt: "同一組資料的眾數是？", options: ["80", "70", "90", "100"], answer: 0, hints: ["看哪個數出現最多次", "80 出現了兩次"], explanation: "80 出現兩次，比其他數都多，所以眾數是 80。" },
-    { id: "st3", prompt: "同一組資料的中位數是？", options: ["80", "90", "70", "100"], answer: 0, hints: ["先由小排到大", "中間那個就是中位數"], explanation: "排序 70、80、80、90、100，中間第 3 個是 80，中位數 80。" },
-    { id: "st4", prompt: "同一組資料的全距是？", options: ["30", "100", "70", "20"], answer: 0, hints: ["全距＝最大−最小", "100 − 70 ＝ 30"], explanation: "全距 ＝ 最大值 100 − 最小值 70 ＝ 30。" },
-    { id: "st5", prompt: "另一組資料 10、20、20、30、40，平均數與中位數分別是？", options: ["平均 24、中位 20", "平均 20、中位 24", "平均 24、中位 24", "平均 20、中位 20"], answer: 0, hints: ["平均＝總和÷5", "中位＝排序後中間那個"], explanation: "總和 120 ÷ 5 ＝ 24（平均）；排序後中間是 20（中位數）。" },
+    { id: "jh-math-statistics-1", prompt: "資料 70、80、90、80、100 的平均數是？", options: ["84", "80", "90", "100"], answer: 0, hints: ["先加總再除以筆數", "70+80+90+80+100 ＝ 420"], explanation: "總和 420 ÷ 5 ＝ 84，所以平均數是 84。" },
+    { id: "jh-math-statistics-2", prompt: "同一組資料的眾數是？", options: ["80", "70", "90", "100"], answer: 0, hints: ["看哪個數出現最多次", "80 出現了兩次"], explanation: "80 出現兩次，比其他數都多，所以眾數是 80。" },
+    { id: "jh-math-statistics-3", prompt: "同一組資料的中位數是？", options: ["80", "90", "70", "100"], answer: 0, hints: ["先由小排到大", "中間那個就是中位數"], explanation: "排序 70、80、80、90、100，中間第 3 個是 80，中位數 80。" },
+    { id: "jh-math-statistics-4", prompt: "同一組資料的全距是？", options: ["30", "100", "70", "20"], answer: 0, hints: ["全距＝最大−最小", "100 − 70 ＝ 30"], explanation: "全距 ＝ 最大值 100 − 最小值 70 ＝ 30。" },
+    { id: "jh-math-statistics-5", prompt: "另一組資料 10、20、20、30、40，平均數與中位數分別是？", options: ["平均 24、中位 20", "平均 20、中位 24", "平均 24、中位 24", "平均 20、中位 20"], answer: 0, hints: ["平均＝總和÷5", "中位＝排序後中間那個"], explanation: "總和 120 ÷ 5 ＝ 24（平均）；排序後中間是 20（中位數）。" },
   ],
 };
 
@@ -321,11 +321,11 @@ const JH_MATH_PROBABILITY_TREE: OnionLesson = {
     { id: 7, step: "步驟 7：背起口訣", caption: "口訣：先畫樹狀圖列出全部，再數想要的有幾種，相除就是機率。準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
   ],
   questions: [
-    { id: "pr1", prompt: "機率的計算方式是？", options: ["想要 ÷ 全部", "全部 ÷ 想要", "想要 × 全部", "全部 − 想要"], answer: 0, hints: ["看符合的佔全部幾分之幾", "分子是想要的"], explanation: "機率 ＝ 想要的情形數 ÷ 所有可能的情形數。" },
-    { id: "pr2", prompt: "抛一枚硬幣出正面的機率是？", options: ["1/2", "1", "0", "1/4"], answer: 0, hints: ["只有正面、反面兩種", "正面佔 1 種"], explanation: "兩種等可能結果中正面佔 1 種，機率 1/2。" },
-    { id: "pr3", prompt: "兩枚硬幣恰好一正一反的機率是？", options: ["1/2", "1/4", "3/4", "2/3"], answer: 0, hints: ["正反、反正共 2 種", "全部 4 種"], explanation: "一正一反有『正反、反正』2 種，共 4 種，機率 2/4 ＝ 1/2。" },
-    { id: "pr4", prompt: "兩枚硬幣至少一面是正面的機率是？", options: ["3/4", "1/2", "1/4", "2/3"], answer: 0, hints: ["只『反反』不符合", "符合的有 3 種"], explanation: "4 種中除『反反』外都符合，共 3 種，機率 3/4。" },
-    { id: "pr5", prompt: "擲一顆骰子，點數大於 4 的機率是？", options: ["1/3", "1/2", "2/3", "1/6"], answer: 0, hints: ["點數 1~6 共 6 種", "大於 4 是 5、6 兩種"], explanation: "6 種等可能中，5 和 6 兩種符合，機率 2/6 ＝ 1/3。" },
+    { id: "jh-math-probability-tree-1", prompt: "機率的計算方式是？", options: ["想要 ÷ 全部", "全部 ÷ 想要", "想要 × 全部", "全部 − 想要"], answer: 0, hints: ["看符合的佔全部幾分之幾", "分子是想要的"], explanation: "機率 ＝ 想要的情形數 ÷ 所有可能的情形數。" },
+    { id: "jh-math-probability-tree-2", prompt: "抛一枚硬幣出正面的機率是？", options: ["1/2", "1", "0", "1/4"], answer: 0, hints: ["只有正面、反面兩種", "正面佔 1 種"], explanation: "兩種等可能結果中正面佔 1 種，機率 1/2。" },
+    { id: "jh-math-probability-tree-3", prompt: "兩枚硬幣恰好一正一反的機率是？", options: ["1/2", "1/4", "3/4", "2/3"], answer: 0, hints: ["正反、反正共 2 種", "全部 4 種"], explanation: "一正一反有『正反、反正』2 種，共 4 種，機率 2/4 ＝ 1/2。" },
+    { id: "jh-math-probability-tree-4", prompt: "兩枚硬幣至少一面是正面的機率是？", options: ["3/4", "1/2", "1/4", "2/3"], answer: 0, hints: ["只『反反』不符合", "符合的有 3 種"], explanation: "4 種中除『反反』外都符合，共 3 種，機率 3/4。" },
+    { id: "jh-math-probability-tree-5", prompt: "擲一顆骰子，點數大於 4 的機率是？", options: ["1/3", "1/2", "2/3", "1/6"], answer: 0, hints: ["點數 1~6 共 6 種", "大於 4 是 5、6 兩種"], explanation: "6 種等可能中，5 和 6 兩種符合，機率 2/6 ＝ 1/3。" },
   ],
 };
 
@@ -353,11 +353,11 @@ const JH_MATH_SIMILAR: OnionLesson = {
     { id: 7, step: "步驟 7：背起口訣", caption: "口訣：相似看對應角相等、對應邊成比例；知道一邊就能推算全部。準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
   ],
   questions: [
-    { id: "sm1", prompt: "相似三角形一定具備什麼？", options: ["對應角相等、對應邊成比例", "邊都相等", "角都不同", "面積相等"], answer: 0, hints: ["形狀相同大小可不同", "重點在對應"], explanation: "相似三角形對應角相等、對應邊成比例，但邊長不必相等。" },
-    { id: "sm2", prompt: "對應邊比 2：3，小邊 4，大邊是多少？", options: ["6", "8", "5", "12"], answer: 0, hints: ["比例 4→大邊是 ×(3/2)", "4 × 3 ÷ 2 ＝ 6"], explanation: "對應邊比 2：3，大邊 ＝ 4 × 3 ÷ 2 ＝ 6。" },
-    { id: "sm3", prompt: "對應邊比 3：5，小邊 9，大邊是多少？", options: ["15", "12", "10", "20"], answer: 0, hints: ["9 ÷ 3 ＝ 3", "3 × 5 ＝ 15"], explanation: "比例 3：5，大邊 ＝ 9 × 5 ÷ 3 ＝ 15。" },
-    { id: "sm4", prompt: "小三角形邊 5、10，相似大三角形對應邊 15、？", options: ["30", "20", "25", "35"], answer: 0, hints: ["比例 15÷5 ＝ 3 倍", "10 × 3 ＝ 30"], explanation: "比例是 15 ÷ 5 ＝ 3 倍，所以另一對應邊 10 × 3 ＝ 30。" },
-    { id: "sm5", prompt: "兩個三角形三組對應角都相等，是否一定相似？", options: ["一定相似", "不一定，還要邊成比例", "一定全等", "無關"], answer: 0, hints: ["AA 是相似的判定", "角相等形狀就相同"], explanation: "三組對應角相等（AA）就足以判定相似，因為形狀相同、邊長自然成比例。" },
+    { id: "jh-math-similar-1", prompt: "相似三角形一定具備什麼？", options: ["對應角相等、對應邊成比例", "邊都相等", "角都不同", "面積相等"], answer: 0, hints: ["形狀相同大小可不同", "重點在對應"], explanation: "相似三角形對應角相等、對應邊成比例，但邊長不必相等。" },
+    { id: "jh-math-similar-2", prompt: "對應邊比 2：3，小邊 4，大邊是多少？", options: ["6", "8", "5", "12"], answer: 0, hints: ["比例 4→大邊是 ×(3/2)", "4 × 3 ÷ 2 ＝ 6"], explanation: "對應邊比 2：3，大邊 ＝ 4 × 3 ÷ 2 ＝ 6。" },
+    { id: "jh-math-similar-3", prompt: "對應邊比 3：5，小邊 9，大邊是多少？", options: ["15", "12", "10", "20"], answer: 0, hints: ["9 ÷ 3 ＝ 3", "3 × 5 ＝ 15"], explanation: "比例 3：5，大邊 ＝ 9 × 5 ÷ 3 ＝ 15。" },
+    { id: "jh-math-similar-4", prompt: "小三角形邊 5、10，相似大三角形對應邊 15、？", options: ["30", "20", "25", "35"], answer: 0, hints: ["比例 15÷5 ＝ 3 倍", "10 × 3 ＝ 30"], explanation: "比例是 15 ÷ 5 ＝ 3 倍，所以另一對應邊 10 × 3 ＝ 30。" },
+    { id: "jh-math-similar-5", prompt: "兩個三角形三組對應角都相等，是否一定相似？", options: ["一定相似", "不一定，還要邊成比例", "一定全等", "無關"], answer: 0, hints: ["AA 是相似的判定", "角相等形狀就相同"], explanation: "三組對應角相等（AA）就足以判定相似，因為形狀相同、邊長自然成比例。" },
   ],
 };
 
@@ -385,11 +385,11 @@ const JH_MATH_LINEAR_FUNCTION: OnionLesson = {
     { id: 7, step: "步驟 7：背起口訣", caption: "口訣：y＝ax＋b 是直線，b 是起步高度、a 是斜度。代 x 算 y 再連線！準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
   ],
   questions: [
-    { id: "lf1", prompt: "y ＝ 2x ＋ 3 的 y 截距（b）是？", options: ["3", "2", "0", "5"], answer: 0, hints: ["y 截距是 x＝0 時的 y", "2×0＋3 ＝ 3"], explanation: "y ＝ ax＋b 中 b 即 y 截距，這裡 b ＝ 3。" },
-    { id: "lf2", prompt: "y ＝ −x ＋ 4 與 y 軸的交點是？", options: ["(0,4)", "(0,−1)", "(4,0)", "(0,0)"], answer: 0, hints: ["令 x＝0", "y ＝ −0 ＋ 4 ＝ 4"], explanation: "x ＝ 0 時 y ＝ 4，與 y 軸交於 (0,4)。" },
-    { id: "lf3", prompt: "通過 (0,3) 和 (2,7) 的直線斜率 a ＝ ？", options: ["2", "4", "1", "7"], answer: 0, hints: ["a ＝ 上升 ÷ 前進", "(7−3) ÷ (2−0)"], explanation: "斜率 a ＝ (7−3) ÷ (2−0) ＝ 4 ÷ 2 ＝ 2。" },
-    { id: "lf4", prompt: "y ＝ 2x ＋ 3，x ＝ 5 時 y ＝ ？", options: ["13", "10", "8", "15"], answer: 0, hints: ["代入 x＝5", "2×5＋3 ＝ 13"], explanation: "y ＝ 2×5 ＋ 3 ＝ 10 ＋ 3 ＝ 13。" },
-    { id: "lf5", prompt: "y ＝ −3x ＋ 6，與 x 軸的交點（y＝0）是？", options: ["(2,0)", "(0,6)", "(−2,0)", "(6,0)"], answer: 0, hints: ["令 y＝0 解 x", "−3x＋6 ＝ 0"], explanation: "令 y ＝ 0：−3x ＋ 6 ＝ 0 → 3x ＝ 6 → x ＝ 2，交點 (2,0)。" },
+    { id: "jh-math-linear-function-1", prompt: "y ＝ 2x ＋ 3 的 y 截距（b）是？", options: ["3", "2", "0", "5"], answer: 0, hints: ["y 截距是 x＝0 時的 y", "2×0＋3 ＝ 3"], explanation: "y ＝ ax＋b 中 b 即 y 截距，這裡 b ＝ 3。" },
+    { id: "jh-math-linear-function-2", prompt: "y ＝ −x ＋ 4 與 y 軸的交點是？", options: ["(0,4)", "(0,−1)", "(4,0)", "(0,0)"], answer: 0, hints: ["令 x＝0", "y ＝ −0 ＋ 4 ＝ 4"], explanation: "x ＝ 0 時 y ＝ 4，與 y 軸交於 (0,4)。" },
+    { id: "jh-math-linear-function-3", prompt: "通過 (0,3) 和 (2,7) 的直線斜率 a ＝ ？", options: ["2", "4", "1", "7"], answer: 0, hints: ["a ＝ 上升 ÷ 前進", "(7−3) ÷ (2−0)"], explanation: "斜率 a ＝ (7−3) ÷ (2−0) ＝ 4 ÷ 2 ＝ 2。" },
+    { id: "jh-math-linear-function-4", prompt: "y ＝ 2x ＋ 3，x ＝ 5 時 y ＝ ？", options: ["13", "10", "8", "15"], answer: 0, hints: ["代入 x＝5", "2×5＋3 ＝ 13"], explanation: "y ＝ 2×5 ＋ 3 ＝ 10 ＋ 3 ＝ 13。" },
+    { id: "jh-math-linear-function-5", prompt: "y ＝ −3x ＋ 6，與 x 軸的交點（y＝0）是？", options: ["(2,0)", "(0,6)", "(−2,0)", "(6,0)"], answer: 0, hints: ["令 y＝0 解 x", "−3x＋6 ＝ 0"], explanation: "令 y ＝ 0：−3x ＋ 6 ＝ 0 → 3x ＝ 6 → x ＝ 2，交點 (2,0)。" },
   ],
 };
 

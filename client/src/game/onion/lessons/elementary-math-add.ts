@@ -33,11 +33,11 @@ const EL_MATH_DECIMAL_MULTIPLY: OnionLesson = {
     { step: "步驟 7：背口訣準備闖關", id: 7, caption: "口訣：先當整數算、數清小數位、再點小數點。準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
   ],
   questions: [
-    { id: "dm1", prompt: "0.5 × 0.4 等於多少？", options: ["0.20", "2.0", "0.02", "20"], answer: 0, hints: ["先算 5×4=20", "兩數各 1 位小數，共 2 位，從右點 2 位"], explanation: "先算 5×4=20，兩數各有 1 位小數共 2 位，20 從右數 2 位點成 0.20（即 0.2）。" },
-    { id: "dm2", prompt: "0.2 × 0.5 等於多少？", options: ["0.10", "1.0", "0.01", "10"], answer: 0, hints: ["2×5=10", "共 2 位小數"], explanation: "2×5=10，共 2 位小數，得 0.10（即 0.1）。" },
-    { id: "dm3", prompt: "一條繩子每公尺 0.7 元，買 0.6 公尺要多少錢？", options: ["0.42 元", "4.2 元", "0.042 元", "42 元"], answer: 0, hints: ["0.7×0.6", "7×6=42，共 2 位小數"], explanation: "0.7×0.6：先算 7×6=42，兩數共 2 位小數，得 0.42 元。" },
-    { id: "dm4", prompt: "0.12 × 0.3 等於多少？（0.12 有 2 位、0.3 有 1 位）", options: ["0.036", "0.36", "0.0036", "3.6"], answer: 0, hints: ["12×3=36", "共 3 位小數，從右點 3 位"], explanation: "12×3=36，0.12 有 2 位、0.3 有 1 位共 3 位小數，36 從右數 3 位得 0.036。" },
-    { id: "dm5", prompt: "下面哪一個算式的結果最大？", options: ["0.1×0.1", "0.2×0.3", "0.4×0.2", "0.5×0.1"], answer: 2, hints: ["分別算出：0.01、0.06、0.08、0.05", "比較這四個小數"], explanation: "0.1×0.1=0.01，0.2×0.3=0.06，0.4×0.2=0.08，0.5×0.1=0.05，最大的是 0.08（0.4×0.2）。" },
+    { id: "el-math-decimal-multiply-1", prompt: "0.5 × 0.4 等於多少？", options: ["0.20", "2.0", "0.02", "20"], answer: 0, hints: ["先算 5×4=20", "兩數各 1 位小數，共 2 位，從右點 2 位"], explanation: "先算 5×4=20，兩數各有 1 位小數共 2 位，20 從右數 2 位點成 0.20（即 0.2）。" },
+    { id: "el-math-decimal-multiply-2", prompt: "0.2 × 0.5 等於多少？", options: ["0.10", "1.0", "0.01", "10"], answer: 0, hints: ["2×5=10", "共 2 位小數"], explanation: "2×5=10，共 2 位小數，得 0.10（即 0.1）。" },
+    { id: "el-math-decimal-multiply-3", prompt: "一條繩子每公尺 0.7 元，買 0.6 公尺要多少錢？", options: ["0.42 元", "4.2 元", "0.042 元", "42 元"], answer: 0, hints: ["0.7×0.6", "7×6=42，共 2 位小數"], explanation: "0.7×0.6：先算 7×6=42，兩數共 2 位小數，得 0.42 元。" },
+    { id: "el-math-decimal-multiply-4", prompt: "0.12 × 0.3 等於多少？（0.12 有 2 位、0.3 有 1 位）", options: ["0.036", "0.36", "0.0036", "3.6"], answer: 0, hints: ["12×3=36", "共 3 位小數，從右點 3 位"], explanation: "12×3=36，0.12 有 2 位、0.3 有 1 位共 3 位小數，36 從右數 3 位得 0.036。" },
+    { id: "el-math-decimal-multiply-5", prompt: "下面哪一個算式的結果最大？", options: ["0.1×0.1", "0.2×0.3", "0.4×0.2", "0.5×0.1"], answer: 2, hints: ["分別算出：0.01、0.06、0.08、0.05", "比較這四個小數"], explanation: "0.1×0.1=0.01，0.2×0.3=0.06，0.4×0.2=0.08，0.5×0.1=0.05，最大的是 0.08（0.4×0.2）。" },
   ],
 };
 
@@ -64,11 +64,11 @@ const EL_MATH_DECIMAL_DIVIDE: OnionLesson = {
     { step: "步驟 7：背口訣準備闖關", id: 7, caption: "口訣：除數是小數，兩邊同乘變整數，再照整數除法算。準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
   ],
   questions: [
-    { id: "dd1", prompt: "算 4.8 ÷ 0.2，要先同乘幾？", options: ["乘 10", "乘 100", "乘 5", "不用乘"], answer: 0, hints: ["除數 0.2 是 1 位小數", "乘 10 讓 0.2 變 2"], explanation: "除數 0.2 有 1 位小數，兩邊同乘 10 變成 48 ÷ 2。" },
-    { id: "dd2", prompt: "6.3 ÷ 0.7 等於多少？", options: ["9", "0.9", "90", "0.09"], answer: 0, hints: ["同乘 10 → 63 ÷ 7", "63 裡有幾個 7"], explanation: "同乘 10：63 ÷ 7 = 9。" },
-    { id: "dd3", prompt: "一瓶果汁 0.5 公升，3.5 公升能倒滿幾瓶？", options: ["7 瓶", "70 瓶", "0.7 瓶", "35 瓶"], answer: 0, hints: ["3.5 ÷ 0.5", "同乘 10 → 35 ÷ 5"], explanation: "3.5 ÷ 0.5，同乘 10 變 35 ÷ 5 = 7，能倒滿 7 瓶。" },
-    { id: "dd4", prompt: "14.4 ÷ 0.06 等於多少？", options: ["240", "24", "2.4", "0.24"], answer: 0, hints: ["除數 0.06 有 2 位小數，同乘 100", "1440 ÷ 6"], explanation: "同乘 100：1440 ÷ 6 = 240。" },
-    { id: "dd5", prompt: "下面哪一個和 9.6 ÷ 0.4 的商相同？", options: ["96 ÷ 4", "9.6 ÷ 4", "0.96 ÷ 4", "96 ÷ 0.4"], answer: 0, hints: ["0.4 是 1 位小數，同乘 10", "9.6×10=96，0.4×10=4"], explanation: "9.6 ÷ 0.4 同乘 10 變 96 ÷ 4 = 24；只有 96 ÷ 4 與它商相同。" },
+    { id: "el-math-decimal-divide-1", prompt: "算 4.8 ÷ 0.2，要先同乘幾？", options: ["乘 10", "乘 100", "乘 5", "不用乘"], answer: 0, hints: ["除數 0.2 是 1 位小數", "乘 10 讓 0.2 變 2"], explanation: "除數 0.2 有 1 位小數，兩邊同乘 10 變成 48 ÷ 2。" },
+    { id: "el-math-decimal-divide-2", prompt: "6.3 ÷ 0.7 等於多少？", options: ["9", "0.9", "90", "0.09"], answer: 0, hints: ["同乘 10 → 63 ÷ 7", "63 裡有幾個 7"], explanation: "同乘 10：63 ÷ 7 = 9。" },
+    { id: "el-math-decimal-divide-3", prompt: "一瓶果汁 0.5 公升，3.5 公升能倒滿幾瓶？", options: ["7 瓶", "70 瓶", "0.7 瓶", "35 瓶"], answer: 0, hints: ["3.5 ÷ 0.5", "同乘 10 → 35 ÷ 5"], explanation: "3.5 ÷ 0.5，同乘 10 變 35 ÷ 5 = 7，能倒滿 7 瓶。" },
+    { id: "el-math-decimal-divide-4", prompt: "14.4 ÷ 0.06 等於多少？", options: ["240", "24", "2.4", "0.24"], answer: 0, hints: ["除數 0.06 有 2 位小數，同乘 100", "1440 ÷ 6"], explanation: "同乘 100：1440 ÷ 6 = 240。" },
+    { id: "el-math-decimal-divide-5", prompt: "下面哪一個和 9.6 ÷ 0.4 的商相同？", options: ["96 ÷ 4", "9.6 ÷ 4", "0.96 ÷ 4", "96 ÷ 0.4"], answer: 0, hints: ["0.4 是 1 位小數，同乘 10", "9.6×10=96，0.4×10=4"], explanation: "9.6 ÷ 0.4 同乘 10 變 96 ÷ 4 = 24；只有 96 ÷ 4 與它商相同。" },
   ],
 };
 
@@ -95,11 +95,11 @@ const EL_MATH_FRACTION_DIVIDE: OnionLesson = {
     { step: "步驟 7：背口訣準備闖關", id: 7, caption: "口訣：分數除以 n，分母乘 n、分子不動（或乘 1/n）。準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
   ],
   questions: [
-    { id: "fd1", prompt: "1/3 ÷ 2 等於多少？", options: ["1/6", "1/5", "2/3", "1/2"], answer: 0, hints: ["分母 3×2=6，分子 1 不動", "或想成 1/3 × 1/2"], explanation: "1/3 ÷ 2 = 1/(3×2) = 1/6。" },
-    { id: "fd2", prompt: "3/4 ÷ 3 等於多少？", options: ["1/4", "3/12", "9/4", "1/3"], answer: 0, hints: ["分母 4×3=12，分子 3 → 3/12", "3/12 = 1/4"], explanation: "3/4 ÷ 3 = 3/(4×3) = 3/12 = 1/4。" },
-    { id: "fd3", prompt: "一瓶水有 3/5 公升，平分給 3 人，每人幾公升？", options: ["1/5 公升", "3/15 公升", "1/3 公升", "3/8 公升"], answer: 0, hints: ["3/5 ÷ 3", "分母 5×3=15，分子 3 → 3/15 = 1/5"], explanation: "3/5 ÷ 3 = 3/(5×3) = 3/15 = 1/5 公升。" },
-    { id: "fd4", prompt: "2/7 ÷ 5 等於多少？", options: ["2/35", "10/7", "2/12", "7/10"], answer: 0, hints: ["分母 7×5=35，分子 2 不動", "2/7 × 1/5"], explanation: "2/7 ÷ 5 = 2/(7×5) = 2/35。" },
-    { id: "fd5", prompt: "下面哪一個等於 4/9 ÷ 2？", options: ["4/18 = 2/9", "8/9", "4/7", "2/9 ÷ 2"], answer: 0, hints: ["分母 9×2=18，分子 4 → 4/18", "4/18 約分是 2/9"], explanation: "4/9 ÷ 2 = 4/(9×2) = 4/18 = 2/9，選第一項。" },
+    { id: "el-math-fraction-divide-1", prompt: "1/3 ÷ 2 等於多少？", options: ["1/6", "1/5", "2/3", "1/2"], answer: 0, hints: ["分母 3×2=6，分子 1 不動", "或想成 1/3 × 1/2"], explanation: "1/3 ÷ 2 = 1/(3×2) = 1/6。" },
+    { id: "el-math-fraction-divide-2", prompt: "3/4 ÷ 3 等於多少？", options: ["1/4", "3/12", "9/4", "1/3"], answer: 0, hints: ["分母 4×3=12，分子 3 → 3/12", "3/12 = 1/4"], explanation: "3/4 ÷ 3 = 3/(4×3) = 3/12 = 1/4。" },
+    { id: "el-math-fraction-divide-3", prompt: "一瓶水有 3/5 公升，平分給 3 人，每人幾公升？", options: ["1/5 公升", "3/15 公升", "1/3 公升", "3/8 公升"], answer: 0, hints: ["3/5 ÷ 3", "分母 5×3=15，分子 3 → 3/15 = 1/5"], explanation: "3/5 ÷ 3 = 3/(5×3) = 3/15 = 1/5 公升。" },
+    { id: "el-math-fraction-divide-4", prompt: "2/7 ÷ 5 等於多少？", options: ["2/35", "10/7", "2/12", "7/10"], answer: 0, hints: ["分母 7×5=35，分子 2 不動", "2/7 × 1/5"], explanation: "2/7 ÷ 5 = 2/(7×5) = 2/35。" },
+    { id: "el-math-fraction-divide-5", prompt: "下面哪一個等於 4/9 ÷ 2？", options: ["4/18 = 2/9", "8/9", "4/7", "2/9 ÷ 2"], answer: 0, hints: ["分母 9×2=18，分子 4 → 4/18", "4/18 約分是 2/9"], explanation: "4/9 ÷ 2 = 4/(9×2) = 4/18 = 2/9，選第一項。" },
   ],
 };
 
@@ -126,11 +126,11 @@ const EL_MATH_PERCENT: OnionLesson = {
     { step: "步驟 7：背口訣準備闖關", id: 7, caption: "口訣：百分率＝部分÷全部×100%；打折＝原價×折扣。準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
   ],
   questions: [
-    { id: "pc1", prompt: "20 人中有 5 人遲到，百分率是？", options: ["25%", "20%", "5%", "75%"], answer: 0, hints: ["5 ÷ 20 = 0.25", "0.25 × 100% = 25%"], explanation: "5 ÷ 20 = 0.25 = 25%。" },
-    { id: "pc2", prompt: "打 9 折等於乘以多少？", options: ["0.9", "0.09", "9", "0.1"], answer: 0, hints: ["幾折就是十分之幾", "9 折 = 9/10 = 0.9"], explanation: "打 9 折＝原價 × 0.9。" },
-    { id: "pc3", prompt: "原價 200 元打 7 折，售價多少？", options: ["140 元", "70 元", "130 元", "14 元"], answer: 0, hints: ["200 × 0.7", "7 折 = 0.7"], explanation: "200 × 0.7 = 140 元。" },
-    { id: "pc4", prompt: "班上有 50 人，20 人喜歡紅色，百分率多少？", options: ["40%", "20%", "25%", "50%"], answer: 0, hints: ["20 ÷ 50 = 0.4", "0.4 × 100% = 40%"], explanation: "20 ÷ 50 = 0.4 = 40%。" },
-    { id: "pc5", prompt: "下面哪一句對「打 8 折」的描述正確？", options: ["是原價的 80%", "是原價減 80 元", "是原價的 8%", "付原價再加上 8 元"], answer: 0, hints: ["8 折 = 8/10 = 0.8", "也就是原價的 80%"], explanation: "打 8 折＝原價 × 0.8，也就是付原價的 80%。" },
+    { id: "el-math-percent-1", prompt: "20 人中有 5 人遲到，百分率是？", options: ["25%", "20%", "5%", "75%"], answer: 0, hints: ["5 ÷ 20 = 0.25", "0.25 × 100% = 25%"], explanation: "5 ÷ 20 = 0.25 = 25%。" },
+    { id: "el-math-percent-2", prompt: "打 9 折等於乘以多少？", options: ["0.9", "0.09", "9", "0.1"], answer: 0, hints: ["幾折就是十分之幾", "9 折 = 9/10 = 0.9"], explanation: "打 9 折＝原價 × 0.9。" },
+    { id: "el-math-percent-3", prompt: "原價 200 元打 7 折，售價多少？", options: ["140 元", "70 元", "130 元", "14 元"], answer: 0, hints: ["200 × 0.7", "7 折 = 0.7"], explanation: "200 × 0.7 = 140 元。" },
+    { id: "el-math-percent-4", prompt: "班上有 50 人，20 人喜歡紅色，百分率多少？", options: ["40%", "20%", "25%", "50%"], answer: 0, hints: ["20 ÷ 50 = 0.4", "0.4 × 100% = 40%"], explanation: "20 ÷ 50 = 0.4 = 40%。" },
+    { id: "el-math-percent-5", prompt: "下面哪一句對「打 8 折」的描述正確？", options: ["是原價的 80%", "是原價減 80 元", "是原價的 8%", "付原價再加上 8 元"], answer: 0, hints: ["8 折 = 8/10 = 0.8", "也就是原價的 80%"], explanation: "打 8 折＝原價 × 0.8，也就是付原價的 80%。" },
   ],
 };
 
@@ -157,11 +157,11 @@ const EL_MATH_RATIO: OnionLesson = {
     { step: "步驟 7：背口訣準備闖關", id: 7, caption: "口訣：比寫前項：後項，比值是前項÷後項。準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
   ],
   questions: [
-    { id: "ro1", prompt: "比 10：5 化成最簡比是？", options: ["2：1", "5：10", "1：2", "10：5"], answer: 0, hints: ["10 和 5 同除以 5", "10÷5=2，5÷5=1"], explanation: "10：5 同除以 5 得 2：1。" },
-    { id: "ro2", prompt: "比 3：6 的比值是多少？", options: ["0.5", "2", "3", "6"], answer: 0, hints: ["比值＝前項÷後項", "3 ÷ 6 = 0.5"], explanation: "3 ÷ 6 = 0.5，所以比值是 0.5。" },
-    { id: "ro3", prompt: "紅球 4 個、白球 8 個，紅：白的比是多少？", options: ["1：2", "2：1", "4：8", "1：4"], answer: 0, hints: ["4：8 再同除以 4", "4÷4=1，8÷4=2"], explanation: "4：8 同除以 4 化成最簡比 1：2。" },
-    { id: "ro4", prompt: "比值是 2.5，前項 10，後項多少？", options: ["4", "25", "2.5", "10"], answer: 0, hints: ["後項＝前項÷比值", "10 ÷ 2.5 = 4"], explanation: "後項 ＝ 前項 ÷ 比值 ＝ 10 ÷ 2.5 = 4。" },
-    { id: "ro5", prompt: "下面哪一組比的比值相同？", options: ["2：3 和 4：6", "2：3 和 3：2", "4：6 和 6：4", "3：1 和 1：3"], answer: 0, hints: ["比值分別算：2/3、4/6", "4/6 約分後也是 2/3"], explanation: "2：3 比值 2/3，4：6 比值 4/6 = 2/3，兩者比值相同；選 2：3 和 4：6。" },
+    { id: "el-math-ratio-1", prompt: "比 10：5 化成最簡比是？", options: ["2：1", "5：10", "1：2", "10：5"], answer: 0, hints: ["10 和 5 同除以 5", "10÷5=2，5÷5=1"], explanation: "10：5 同除以 5 得 2：1。" },
+    { id: "el-math-ratio-2", prompt: "比 3：6 的比值是多少？", options: ["0.5", "2", "3", "6"], answer: 0, hints: ["比值＝前項÷後項", "3 ÷ 6 = 0.5"], explanation: "3 ÷ 6 = 0.5，所以比值是 0.5。" },
+    { id: "el-math-ratio-3", prompt: "紅球 4 個、白球 8 個，紅：白的比是多少？", options: ["1：2", "2：1", "4：8", "1：4"], answer: 0, hints: ["4：8 再同除以 4", "4÷4=1，8÷4=2"], explanation: "4：8 同除以 4 化成最簡比 1：2。" },
+    { id: "el-math-ratio-4", prompt: "比值是 2.5，前項 10，後項多少？", options: ["4", "25", "2.5", "10"], answer: 0, hints: ["後項＝前項÷比值", "10 ÷ 2.5 = 4"], explanation: "後項 ＝ 前項 ÷ 比值 ＝ 10 ÷ 2.5 = 4。" },
+    { id: "el-math-ratio-5", prompt: "下面哪一組比的比值相同？", options: ["2：3 和 4：6", "2：3 和 3：2", "4：6 和 6：4", "3：1 和 1：3"], answer: 0, hints: ["比值分別算：2/3、4/6", "4/6 約分後也是 2/3"], explanation: "2：3 比值 2/3，4：6 比值 4/6 = 2/3，兩者比值相同；選 2：3 和 4：6。" },
   ],
 };
 
@@ -188,11 +188,11 @@ const EL_MATH_POLYGON_AREA: OnionLesson = {
     { step: "步驟 7：背口訣準備闖關", id: 7, caption: "口訣：平行四邊形底×高；梯形（上底＋下底）×高÷2。準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
   ],
   questions: [
-    { id: "pa1", prompt: "平行四邊形底 5、高 3，面積？", options: ["15", "8", "1.5", "10"], answer: 0, hints: ["面積＝底×高", "5 × 3"], explanation: "5 × 3 = 15。" },
-    { id: "pa2", prompt: "梯形上底 2、下底 4、高 3，面積？", options: ["9", "6", "18", "3"], answer: 0, hints: ["（2＋4）×3÷2", "6×3÷2=9"], explanation: "（2＋4）×3÷2 = 6×3÷2 = 9。" },
-    { id: "pa3", prompt: "平行四邊形底 7 高 6，面積多少平方公尺？", options: ["42", "13", "26", "48"], answer: 0, hints: ["7 × 6", "底×高"], explanation: "7 × 6 = 42 平方公尺。" },
-    { id: "pa4", prompt: "梯形上底 6、下底 10、高 5，面積？", options: ["40", "16", "80", "30"], answer: 0, hints: ["（6＋10）=16", "16×5÷2=40"], explanation: "（6＋10）×5÷2 = 16×5÷2 = 40。" },
-    { id: "pa5", prompt: "兩個完全一樣的梯形可以拼成什麼，幫助記公式？", options: ["平行四邊形", "三角形", "圓形", "長條圖"], answer: 0, hints: ["兩個梯形上下顛倒拼", "底變成（上底＋下底）"], explanation: "兩個相同梯形可拼成一個平行四邊形，其底為（上底＋下底），所以梯形面積＝（上底＋下底）×高÷2。" },
+    { id: "el-math-polygon-area-1", prompt: "平行四邊形底 5、高 3，面積？", options: ["15", "8", "1.5", "10"], answer: 0, hints: ["面積＝底×高", "5 × 3"], explanation: "5 × 3 = 15。" },
+    { id: "el-math-polygon-area-2", prompt: "梯形上底 2、下底 4、高 3，面積？", options: ["9", "6", "18", "3"], answer: 0, hints: ["（2＋4）×3÷2", "6×3÷2=9"], explanation: "（2＋4）×3÷2 = 6×3÷2 = 9。" },
+    { id: "el-math-polygon-area-3", prompt: "平行四邊形底 7 高 6，面積多少平方公尺？", options: ["42", "13", "26", "48"], answer: 0, hints: ["7 × 6", "底×高"], explanation: "7 × 6 = 42 平方公尺。" },
+    { id: "el-math-polygon-area-4", prompt: "梯形上底 6、下底 10、高 5，面積？", options: ["40", "16", "80", "30"], answer: 0, hints: ["（6＋10）=16", "16×5÷2=40"], explanation: "（6＋10）×5÷2 = 16×5÷2 = 40。" },
+    { id: "el-math-polygon-area-5", prompt: "兩個完全一樣的梯形可以拼成什麼，幫助記公式？", options: ["平行四邊形", "三角形", "圓形", "長條圖"], answer: 0, hints: ["兩個梯形上下顛倒拼", "底變成（上底＋下底）"], explanation: "兩個相同梯形可拼成一個平行四邊形，其底為（上底＋下底），所以梯形面積＝（上底＋下底）×高÷2。" },
   ],
 };
 
@@ -219,11 +219,11 @@ const EL_MATH_SCALE_DRAWING: OnionLesson = {
     { step: "步驟 7：背口訣準備闖關", id: 7, caption: "口訣：圖上×後項得實際，實際÷後項得圖上。準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
   ],
   questions: [
-    { id: "sc1", prompt: "比例尺 1：50，圖上 1 公分代表實際？", options: ["50 公分", "5 公分", "1 公分", "500 公分"], answer: 0, hints: ["後項就是實際倍數", "圖上 1 × 50"], explanation: "1：50 表示圖上 1 公分＝實際 50 公分。" },
-    { id: "sc2", prompt: "圖上 2 公分、比例尺 1：100，實際幾公分？", options: ["200 公分", "2 公分", "100 公分", "20 公分"], answer: 0, hints: ["2 × 100", "圖上×後項"], explanation: "2 × 100 = 200 公分。" },
-    { id: "sc3", prompt: "實際 600 公分、比例尺 1：100，圖上幾公分？", options: ["6 公分", "60 公分", "600 公分", "0.6 公分"], answer: 0, hints: ["600 ÷ 100", "實際÷後項"], explanation: "600 ÷ 100 = 6 公分。" },
-    { id: "sc4", prompt: "比例尺 1：20，圖上 5 公分實際多少公分？", options: ["100 公分", "5 公分", "20 公分", "25 公分"], answer: 0, hints: ["5 × 20", "圖上×後項"], explanation: "5 × 20 = 100 公分。" },
-    { id: "sc5", prompt: "比例尺 1：100 和 1：50，哪一個圖「放大得比較大」？", options: ["1：50", "1：100", "一樣大", "無法比較"], answer: 0, hints: ["後項越小，同圖上長代表實際越短", "1：50 的實際是 1：100 的一半，所以圖較大"], explanation: "後項越小，縮放倍率越小、同樣圖上長對應的實際越短，表示圖放大得比較大，所以 1：50 比 1：100 放大得多。" },
+    { id: "el-math-scale-drawing-1", prompt: "比例尺 1：50，圖上 1 公分代表實際？", options: ["50 公分", "5 公分", "1 公分", "500 公分"], answer: 0, hints: ["後項就是實際倍數", "圖上 1 × 50"], explanation: "1：50 表示圖上 1 公分＝實際 50 公分。" },
+    { id: "el-math-scale-drawing-2", prompt: "圖上 2 公分、比例尺 1：100，實際幾公分？", options: ["200 公分", "2 公分", "100 公分", "20 公分"], answer: 0, hints: ["2 × 100", "圖上×後項"], explanation: "2 × 100 = 200 公分。" },
+    { id: "el-math-scale-drawing-3", prompt: "實際 600 公分、比例尺 1：100，圖上幾公分？", options: ["6 公分", "60 公分", "600 公分", "0.6 公分"], answer: 0, hints: ["600 ÷ 100", "實際÷後項"], explanation: "600 ÷ 100 = 6 公分。" },
+    { id: "el-math-scale-drawing-4", prompt: "比例尺 1：20，圖上 5 公分實際多少公分？", options: ["100 公分", "5 公分", "20 公分", "25 公分"], answer: 0, hints: ["5 × 20", "圖上×後項"], explanation: "5 × 20 = 100 公分。" },
+    { id: "el-math-scale-drawing-5", prompt: "比例尺 1：100 和 1：50，哪一個圖「放大得比較大」？", options: ["1：50", "1：100", "一樣大", "無法比較"], answer: 0, hints: ["後項越小，同圖上長代表實際越短", "1：50 的實際是 1：100 的一半，所以圖較大"], explanation: "後項越小，縮放倍率越小、同樣圖上長對應的實際越短，表示圖放大得比較大，所以 1：50 比 1：100 放大得多。" },
   ],
 };
 
@@ -250,11 +250,11 @@ const EL_MATH_CALENDAR: OnionLesson = {
     { step: "步驟 7：背口訣準備闖關", id: 7, caption: "口訣：大月 31、小月 30、二月最特別；算相差，整月相加別漏天。準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
   ],
   questions: [
-    { id: "ca1", prompt: "下列哪一個月是大月（31 天）？", options: ["三月", "四月", "六月", "九月"], answer: 0, hints: ["一三五七八十臘是大月", "三月排第三，是大月"], explanation: "三月是大月，有 31 天；四、六、九月是小月 30 天。" },
-    { id: "ca2", prompt: "平年二月有幾天？", options: ["28 天", "29 天", "30 天", "31 天"], answer: 0, hints: ["平年比閏年少 1 天", "平年 365 天"], explanation: "平年二月 28 天，閏年二月 29 天。" },
-    { id: "ca3", prompt: "閏年一年有幾天？", options: ["366 天", "365 天", "364 天", "367 天"], answer: 0, hints: ["平年 365 加閏日 1 天", "二月多 1 天"], explanation: "閏年二月 29 天，全年 366 天。" },
-    { id: "ca4", prompt: "4 月 5 日到 4 月 12 日相差幾天？", options: ["7 天", "12 天", "6 天", "5 天"], answer: 0, hints: ["12 − 5 ＝ 7", "不含首日"], explanation: "12 − 5 = 7 天。" },
-    { id: "ca5", prompt: "下面哪一個年份是閏年？", options: ["2024 年", "2023 年", "2025 年", "1900 年"], answer: 0, hints: ["年份÷4 能整除", "2024 ÷ 4 = 506 整除"], explanation: "2024 ÷ 4 = 506 能整除，是閏年；2023、2025 不能整除；1900 是百年且÷400 不整除，不是閏年。" },
+    { id: "el-math-calendar-1", prompt: "下列哪一個月是大月（31 天）？", options: ["三月", "四月", "六月", "九月"], answer: 0, hints: ["一三五七八十臘是大月", "三月排第三，是大月"], explanation: "三月是大月，有 31 天；四、六、九月是小月 30 天。" },
+    { id: "el-math-calendar-2", prompt: "平年二月有幾天？", options: ["28 天", "29 天", "30 天", "31 天"], answer: 0, hints: ["平年比閏年少 1 天", "平年 365 天"], explanation: "平年二月 28 天，閏年二月 29 天。" },
+    { id: "el-math-calendar-3", prompt: "閏年一年有幾天？", options: ["366 天", "365 天", "364 天", "367 天"], answer: 0, hints: ["平年 365 加閏日 1 天", "二月多 1 天"], explanation: "閏年二月 29 天，全年 366 天。" },
+    { id: "el-math-calendar-4", prompt: "4 月 5 日到 4 月 12 日相差幾天？", options: ["7 天", "12 天", "6 天", "5 天"], answer: 0, hints: ["12 − 5 ＝ 7", "不含首日"], explanation: "12 − 5 = 7 天。" },
+    { id: "el-math-calendar-5", prompt: "下面哪一個年份是閏年？", options: ["2024 年", "2023 年", "2025 年", "1900 年"], answer: 0, hints: ["年份÷4 能整除", "2024 ÷ 4 = 506 整除"], explanation: "2024 ÷ 4 = 506 能整除，是閏年；2023、2025 不能整除；1900 是百年且÷400 不整除，不是閏年。" },
   ],
 };
 
@@ -281,11 +281,11 @@ const EL_MATH_WEIGHT_CAPACITY: OnionLesson = {
     { step: "步驟 7：背口訣準備闖關", id: 7, caption: "口訣：公斤對公克、公升對毫升，都是 ×1000／÷1000。準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
   ],
   questions: [
-    { id: "wc1", prompt: "4 公斤等於幾公克？", options: ["4000 公克", "400 公克", "40 公克", "4 公克"], answer: 0, hints: ["1 公斤=1000 公克", "4×1000"], explanation: "4 × 1000 = 4000 公克。" },
-    { id: "wc2", prompt: "2000 毫升等於幾公升？", options: ["2 公升", "20 公升", "200 公升", "0.2 公升"], answer: 0, hints: ["小換大用除 1000", "2000÷1000"], explanation: "2000 ÷ 1000 = 2 公升。" },
-    { id: "wc3", prompt: "一瓶水 1500 毫升，等於幾公升幾毫升？", options: ["1 公升 500 毫升", "15 公升", "1 公升 50 毫升", "150 公升"], answer: 0, hints: ["1500÷1000=1 餘 500", "1000 毫升=1 公升"], explanation: "1500 毫升 = 1000 + 500 = 1 公升 500 毫升。" },
-    { id: "wc4", prompt: "5 公升的桶裝水有幾毫升？", options: ["5000 毫升", "500 毫升", "50 毫升", "5 毫升"], answer: 0, hints: ["5 × 1000", "大換小乘 1000"], explanation: "5 × 1000 = 5000 毫升。" },
-    { id: "wc5", prompt: "下面哪一個最重？", options: ["3 公斤", "2500 公克", "1 公升", "200 公克"], answer: 0, hints: ["都換成公克再比", "3 公斤=3000 公克最大"], explanation: "3 公斤 = 3000 公克，比 2500、200 公克都重；公升是容量不是重量不能直接比。" },
+    { id: "el-math-weight-capacity-1", prompt: "4 公斤等於幾公克？", options: ["4000 公克", "400 公克", "40 公克", "4 公克"], answer: 0, hints: ["1 公斤=1000 公克", "4×1000"], explanation: "4 × 1000 = 4000 公克。" },
+    { id: "el-math-weight-capacity-2", prompt: "2000 毫升等於幾公升？", options: ["2 公升", "20 公升", "200 公升", "0.2 公升"], answer: 0, hints: ["小換大用除 1000", "2000÷1000"], explanation: "2000 ÷ 1000 = 2 公升。" },
+    { id: "el-math-weight-capacity-3", prompt: "一瓶水 1500 毫升，等於幾公升幾毫升？", options: ["1 公升 500 毫升", "15 公升", "1 公升 50 毫升", "150 公升"], answer: 0, hints: ["1500÷1000=1 餘 500", "1000 毫升=1 公升"], explanation: "1500 毫升 = 1000 + 500 = 1 公升 500 毫升。" },
+    { id: "el-math-weight-capacity-4", prompt: "5 公升的桶裝水有幾毫升？", options: ["5000 毫升", "500 毫升", "50 毫升", "5 毫升"], answer: 0, hints: ["5 × 1000", "大換小乘 1000"], explanation: "5 × 1000 = 5000 毫升。" },
+    { id: "el-math-weight-capacity-5", prompt: "下面哪一個最重？", options: ["3 公斤", "2500 公克", "1 公升", "200 公克"], answer: 0, hints: ["都換成公克再比", "3 公斤=3000 公克最大"], explanation: "3 公斤 = 3000 公克，比 2500、200 公克都重；公升是容量不是重量不能直接比。" },
   ],
 };
 
@@ -312,11 +312,11 @@ const EL_MATH_MONEY: OnionLesson = {
     { step: "步驟 7：背口訣準備闖關", id: 7, caption: "口訣：找錢＝付款−售價，付剛好要挑對面額。準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
   ],
   questions: [
-    { id: "mo1", prompt: "鉛筆 8 元，付 20 元找回？", options: ["12 元", "8 元", "20 元", "10 元"], answer: 0, hints: ["找錢＝付款−售價", "20 − 8"], explanation: "20 − 8 = 12 元。" },
-    { id: "mo2", prompt: "橡皮 5 元，付 10 元找回？", options: ["5 元", "10 元", "15 元", "0 元"], answer: 0, hints: ["10 − 5", "付款減售價"], explanation: "10 − 5 = 5 元。" },
-    { id: "mo3", prompt: "糖果 15 元，付 50 元找回？", options: ["35 元", "15 元", "50 元", "25 元"], answer: 0, hints: ["50 − 15", "付款減售價"], explanation: "50 − 15 = 35 元。" },
-    { id: "mo4", prompt: "一本本子 28 元，付 100 元找回？", options: ["72 元", "28 元", "88 元", "70 元"], answer: 0, hints: ["100 − 28", "小心借位"], explanation: "100 − 28 = 72 元。" },
-    { id: "mo5", prompt: "下面哪一種付法「剛好」付 37 元？", options: ["20+10+5+1+1 元", "50 元", "20+20 元", "10+10+10+10 元"], answer: 0, hints: ["把面額加起來看是否等於 37", "20+10+5+1+1"], explanation: "20+10+5+1+1 = 37 元，剛好付 37 元；其他都不是 37。" },
+    { id: "el-math-money-1", prompt: "鉛筆 8 元，付 20 元找回？", options: ["12 元", "8 元", "20 元", "10 元"], answer: 0, hints: ["找錢＝付款−售價", "20 − 8"], explanation: "20 − 8 = 12 元。" },
+    { id: "el-math-money-2", prompt: "橡皮 5 元，付 10 元找回？", options: ["5 元", "10 元", "15 元", "0 元"], answer: 0, hints: ["10 − 5", "付款減售價"], explanation: "10 − 5 = 5 元。" },
+    { id: "el-math-money-3", prompt: "糖果 15 元，付 50 元找回？", options: ["35 元", "15 元", "50 元", "25 元"], answer: 0, hints: ["50 − 15", "付款減售價"], explanation: "50 − 15 = 35 元。" },
+    { id: "el-math-money-4", prompt: "一本本子 28 元，付 100 元找回？", options: ["72 元", "28 元", "88 元", "70 元"], answer: 0, hints: ["100 − 28", "小心借位"], explanation: "100 − 28 = 72 元。" },
+    { id: "el-math-money-5", prompt: "下面哪一種付法「剛好」付 37 元？", options: ["20+10+5+1+1 元", "50 元", "20+20 元", "10+10+10+10 元"], answer: 0, hints: ["把面額加起來看是否等於 37", "20+10+5+1+1"], explanation: "20+10+5+1+1 = 37 元，剛好付 37 元；其他都不是 37。" },
   ],
 };
 
@@ -343,11 +343,11 @@ const EL_MATH_TRIANGLE_ANGLES: OnionLesson = {
     { step: "步驟 7：背口訣準備闖關", id: 7, caption: "口訣：三角形內角和 180，求第三角用 180 減另兩角。準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
   ],
   questions: [
-    { id: "ta1", prompt: "等邊三角形每個角幾度？", options: ["60 度", "90 度", "45 度", "30 度"], answer: 0, hints: ["三内角和 180", "180÷3"], explanation: "180 ÷ 3 = 60 度。" },
-    { id: "ta2", prompt: "三角形兩角 90、30，第三角？", options: ["60 度", "90 度", "30 度", "120 度"], answer: 0, hints: ["180−90−30", "直角三角"], explanation: "180 − 90 − 30 = 60 度。" },
-    { id: "ta3", prompt: "三角形兩角 40、75，第三角？", options: ["65 度", "115 度", "40 度", "75 度"], answer: 0, hints: ["180−40−75", "先加 40+75=115"], explanation: "180 − 40 − 75 = 65 度。" },
-    { id: "ta4", prompt: "等腰三角形兩底角各 50，頂角？", options: ["80 度", "50 度", "100 度", "130 度"], answer: 0, hints: ["兩底角共 100", "180−100=80"], explanation: "50 + 50 = 100，180 − 100 = 80 度。" },
-    { id: "ta5", prompt: "下面哪一組三個角「不能」組成三角形？", options: ["90、45、45", "60、60、60", "100、50、40", "90、90、10"], answer: 3, hints: ["三個角相加要等於 180", "90+90+10=190 超過"], explanation: "三角形內角和必須正好 180 度；90＋90＋10＝190，超過 180，不能組成三角形。" },
+    { id: "el-math-triangle-angles-1", prompt: "等邊三角形每個角幾度？", options: ["60 度", "90 度", "45 度", "30 度"], answer: 0, hints: ["三内角和 180", "180÷3"], explanation: "180 ÷ 3 = 60 度。" },
+    { id: "el-math-triangle-angles-2", prompt: "三角形兩角 90、30，第三角？", options: ["60 度", "90 度", "30 度", "120 度"], answer: 0, hints: ["180−90−30", "直角三角"], explanation: "180 − 90 − 30 = 60 度。" },
+    { id: "el-math-triangle-angles-3", prompt: "三角形兩角 40、75，第三角？", options: ["65 度", "115 度", "40 度", "75 度"], answer: 0, hints: ["180−40−75", "先加 40+75=115"], explanation: "180 − 40 − 75 = 65 度。" },
+    { id: "el-math-triangle-angles-4", prompt: "等腰三角形兩底角各 50，頂角？", options: ["80 度", "50 度", "100 度", "130 度"], answer: 0, hints: ["兩底角共 100", "180−100=80"], explanation: "50 + 50 = 100，180 − 100 = 80 度。" },
+    { id: "el-math-triangle-angles-5", prompt: "下面哪一組三個角「不能」組成三角形？", options: ["90、45、45", "60、60、60", "100、50、40", "90、90、10"], answer: 3, hints: ["三個角相加要等於 180", "90+90+10=190 超過"], explanation: "三角形內角和必須正好 180 度；90＋90＋10＝190，超過 180，不能組成三角形。" },
   ],
 };
 
@@ -374,11 +374,11 @@ const EL_MATH_SYMMETRY: OnionLesson = {
     { step: "步驟 7：背口訣準備闖關", id: 7, caption: "口訣：對摺重合是線對稱，對稱軸是折痕、對稱點等距。準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
   ],
   questions: [
-    { id: "sy1", prompt: "對摺後兩邊完全疊合，這圖形是？", options: ["線對稱圖形", "圓形", "長條圖", "天平"], answer: 0, hints: ["關鍵是對摺重合", "線對稱的定義"], explanation: "對摺後兩邊完全重合的圖形稱為線對稱圖形。" },
-    { id: "sy2", prompt: "對摺的那條折痕叫做？", options: ["對稱軸", "對稱點", "底邊", "高線"], answer: 0, hints: ["它是軸", "兩側對稱的基準線"], explanation: "那條對摺的折痕叫做對稱軸。" },
-    { id: "sy3", prompt: "正方形有幾條對稱軸？", options: ["4 條", "2 條", "1 條", "無限多條"], answer: 0, hints: ["可對摺成上下、左右、兩斜", "共 4 種折法"], explanation: "正方形有 4 條對稱軸（橫、直、兩條對角線）。" },
-    { id: "sy4", prompt: "圓形有幾條對稱軸？", options: ["無限多條", "1 條", "4 條", "0 條"], answer: 0, hints: ["過圓心任意直線都對稱", "所以無限多"], explanation: "通過圓心的任意一條直線都是對稱軸，因此圓形有無限多條。" },
-    { id: "sy5", prompt: "下面哪一個「不是」線對稱圖形？", options: ["平行四邊形（一般）", "正方形", "圓形", "等腰三角形"], answer: 0, hints: ["平行四邊形對摺不重合", "除非是菱形或長方形"], explanation: "一般的平行四邊形對摺後兩邊不會重合，不是線對稱圖形；正方形、圓形、等腰三角形都是。" },
+    { id: "el-math-symmetry-1", prompt: "對摺後兩邊完全疊合，這圖形是？", options: ["線對稱圖形", "圓形", "長條圖", "天平"], answer: 0, hints: ["關鍵是對摺重合", "線對稱的定義"], explanation: "對摺後兩邊完全重合的圖形稱為線對稱圖形。" },
+    { id: "el-math-symmetry-2", prompt: "對摺的那條折痕叫做？", options: ["對稱軸", "對稱點", "底邊", "高線"], answer: 0, hints: ["它是軸", "兩側對稱的基準線"], explanation: "那條對摺的折痕叫做對稱軸。" },
+    { id: "el-math-symmetry-3", prompt: "正方形有幾條對稱軸？", options: ["4 條", "2 條", "1 條", "無限多條"], answer: 0, hints: ["可對摺成上下、左右、兩斜", "共 4 種折法"], explanation: "正方形有 4 條對稱軸（橫、直、兩條對角線）。" },
+    { id: "el-math-symmetry-4", prompt: "圓形有幾條對稱軸？", options: ["無限多條", "1 條", "4 條", "0 條"], answer: 0, hints: ["過圓心任意直線都對稱", "所以無限多"], explanation: "通過圓心的任意一條直線都是對稱軸，因此圓形有無限多條。" },
+    { id: "el-math-symmetry-5", prompt: "下面哪一個「不是」線對稱圖形？", options: ["平行四邊形（一般）", "正方形", "圓形", "等腰三角形"], answer: 0, hints: ["平行四邊形對摺不重合", "除非是菱形或長方形"], explanation: "一般的平行四邊形對摺後兩邊不會重合，不是線對稱圖形；正方形、圓形、等腰三角形都是。" },
   ],
 };
 
@@ -405,11 +405,11 @@ const EL_MATH_AVERAGE: OnionLesson = {
     { step: "步驟 7：背口訣準備闖關", id: 7, caption: "口訣：平均＝總和÷筆數，拉平長條就是它。準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
   ],
   questions: [
-    { id: "av1", prompt: "三數 10、20、30 的平均？", options: ["20", "30", "10", "60"], answer: 0, hints: ["總和 60", "60÷3"], explanation: "（10+20+30）÷3 = 60÷3 = 20。" },
-    { id: "av2", prompt: "兩數 50、70 的平均？", options: ["60", "50", "70", "120"], answer: 0, hints: ["50+70=120", "120÷2"], explanation: "（50+70）÷2 = 60。" },
-    { id: "av3", prompt: "四天零用錢 20、30、40、50，平均多少？", options: ["35", "40", "30", "25"], answer: 0, hints: ["總和 140", "140÷4"], explanation: "（20+30+40+50）÷4 = 140÷4 = 35。" },
-    { id: "av4", prompt: "五次測驗平均 80，總分多少？", options: ["400", "80", "160", "320"], answer: 0, hints: ["總分＝平均×筆數", "80×5"], explanation: "總分 ＝ 平均 × 筆數 ＝ 80 × 5 = 400。" },
-    { id: "av5", prompt: "一組平均 70，加入一個 100 後，平均會？", options: ["變高", "變低", "不變", "變成 0"], answer: 0, hints: ["100 比原平均 70 大", "大於平均會把平均拉高"], explanation: "加入的數（100）大於原平均（70），會把整組平均拉高。" },
+    { id: "el-math-average-1", prompt: "三數 10、20、30 的平均？", options: ["20", "30", "10", "60"], answer: 0, hints: ["總和 60", "60÷3"], explanation: "（10+20+30）÷3 = 60÷3 = 20。" },
+    { id: "el-math-average-2", prompt: "兩數 50、70 的平均？", options: ["60", "50", "70", "120"], answer: 0, hints: ["50+70=120", "120÷2"], explanation: "（50+70）÷2 = 60。" },
+    { id: "el-math-average-3", prompt: "四天零用錢 20、30、40、50，平均多少？", options: ["35", "40", "30", "25"], answer: 0, hints: ["總和 140", "140÷4"], explanation: "（20+30+40+50）÷4 = 140÷4 = 35。" },
+    { id: "el-math-average-4", prompt: "五次測驗平均 80，總分多少？", options: ["400", "80", "160", "320"], answer: 0, hints: ["總分＝平均×筆數", "80×5"], explanation: "總分 ＝ 平均 × 筆數 ＝ 80 × 5 = 400。" },
+    { id: "el-math-average-5", prompt: "一組平均 70，加入一個 100 後，平均會？", options: ["變高", "變低", "不變", "變成 0"], answer: 0, hints: ["100 比原平均 70 大", "大於平均會把平均拉高"], explanation: "加入的數（100）大於原平均（70），會把整組平均拉高。" },
   ],
 };
 
@@ -436,11 +436,11 @@ const EL_MATH_TWO_STEP: OnionLesson = {
     { step: "步驟 7：背口訣準備闖關", id: 7, caption: "口訣：兩步題先拆「先算什麼、再算什麼」，一步步來。準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
   ],
   questions: [
-    { id: "ts1", prompt: "糖 3 元買 2 包、餅 4 元買 3 包，共？", options: ["18 元", "6 元", "12 元", "7 元"], answer: 0, hints: ["3×2=6，4×3=12", "6+12"], explanation: "3×2=6，4×3=12，6+12=18 元。" },
-    { id: "ts2", prompt: "書 25 元買 2 本、筆 5 元買 4 支，共？", options: ["70 元", "50 元", "30 元", "45 元"], answer: 0, hints: ["25×2=50，5×4=20", "50+20"], explanation: "25×2=50，5×4=20，50+20=70 元。" },
-    { id: "ts3", prompt: "弟有 30 元、妹有 20 元，合買 8 元橡皮，剩？", options: ["42 元", "50 元", "8 元", "22 元"], answer: 0, hints: ["先算共有 30+20=50", "再減 8"], explanation: "30+20=50，50−8=42 元。" },
-    { id: "ts4", prompt: "一盒蛋 6 顆，買 3 盒，吃掉 4 顆剩？", options: ["14 顆", "18 顆", "4 顆", "9 顆"], answer: 0, hints: ["先算 6×3=18 顆", "再減 4"], explanation: "6×3=18，18−4=14 顆。" },
-    { id: "ts5", prompt: "下面哪一題「不是」兩步驟問題？", options: ["直接問 5＋3 的答案", "先買再打折", "先算總量再平分", "先各算再相加"], answer: 0, hints: ["兩步題要先算一結果再算下一結果", "5+3 一步就夠"], explanation: "5＋3 只要一步就算完，不屬於兩步驟應用問題；其餘都要分兩步。" },
+    { id: "el-math-two-step-1", prompt: "糖 3 元買 2 包、餅 4 元買 3 包，共？", options: ["18 元", "6 元", "12 元", "7 元"], answer: 0, hints: ["3×2=6，4×3=12", "6+12"], explanation: "3×2=6，4×3=12，6+12=18 元。" },
+    { id: "el-math-two-step-2", prompt: "書 25 元買 2 本、筆 5 元買 4 支，共？", options: ["70 元", "50 元", "30 元", "45 元"], answer: 0, hints: ["25×2=50，5×4=20", "50+20"], explanation: "25×2=50，5×4=20，50+20=70 元。" },
+    { id: "el-math-two-step-3", prompt: "弟有 30 元、妹有 20 元，合買 8 元橡皮，剩？", options: ["42 元", "50 元", "8 元", "22 元"], answer: 0, hints: ["先算共有 30+20=50", "再減 8"], explanation: "30+20=50，50−8=42 元。" },
+    { id: "el-math-two-step-4", prompt: "一盒蛋 6 顆，買 3 盒，吃掉 4 顆剩？", options: ["14 顆", "18 顆", "4 顆", "9 顆"], answer: 0, hints: ["先算 6×3=18 顆", "再減 4"], explanation: "6×3=18，18−4=14 顆。" },
+    { id: "el-math-two-step-5", prompt: "下面哪一題「不是」兩步驟問題？", options: ["直接問 5＋3 的答案", "先買再打折", "先算總量再平分", "先各算再相加"], answer: 0, hints: ["兩步題要先算一結果再算下一結果", "5+3 一步就夠"], explanation: "5＋3 只要一步就算完，不屬於兩步驟應用問題；其餘都要分兩步。" },
   ],
 };
 

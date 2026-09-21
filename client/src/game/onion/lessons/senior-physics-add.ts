@@ -1,0 +1,267 @@
+/**
+ * 高中物理課程（洋蔥學院 200 堂擴充計畫：三、高中新增 65 堂／物理 8 堂）。
+ *
+ * 設計原則：每一堂都從生活現象引入，把物理量拆成看得見的步驟，
+ * 字幕裡出現的數字一定和舞臺教具對得上（圖解一致性），
+ * 最後收在一條能帶走的口訣或通則，再進入闖關。
+ */
+import type { OnionLesson } from "@/game/onionAcademyLessons";
+
+const SH_PHY_KINEMATICS: OnionLesson = {
+  id: "sh-phy-kinematics",
+  title: "運動學：位移、速度與 v-t 圖",
+  subject: "物理",
+  topic: "運動學",
+  grade: "高一",
+  stages: ["高中"],
+  desc: "分清位移與路程，學會用 v-t 圖：斜率是加速度、下方面積是位移。",
+  takeaways: [
+    "位移是「起點到終點的直線向量」，路程是「實際走過的總長」，兩者常不同",
+    "v-t 圖的「斜率」＝加速度、「下方面積」＝位移",
+    "平均速度＝位移÷時間；平均速率＝路程÷時間",
+  ],
+  frames: [
+    { step: "步驟 1：看位移與路程的不同", id: 1, caption: "先向右走 100 公尺、再向左走 40 公尺：總共走的路程 140 公尺，但最後位置只偏右 60 公尺，這 60 公尺就是位移。", action: "wave", prop: { kind: "bars", items: [{ label: "路程", value: 140 }, { label: "位移", value: 60 }], unit: "公尺", active: 1 }, duration: 3800 },
+    { step: "步驟 2：平均速度用位移來算", id: 2, caption: "速度看的是「位移」而不是「路程」：位移 60 公尺、花了 20 秒，平均速度就是 60 ÷ 20 ＝ 3 m/s。", ask: { prompt: "平均速度的分母應該用什麼？", options: ["路程", "位移", "兩者都行", "都不用"], answer: 1, hint: "速度描述的是位置改變的快慢，所以用位移。" }, action: "point", prop: { kind: "text", text: "v ＝ Δx ÷ Δt", sub: "60 ÷ 20 ＝ 3 m/s", tone: "ok" }, duration: 3800 },
+    { step: "步驟 3：加速度描述速度變化", id: 3, caption: "速度從 0 變成 10 m/s 花了 5 秒，加速度就是（10 − 0）÷ 5 ＝ 2 m/s²，單位裡帶了「平方秒」。", action: "walk", prop: { kind: "text", text: "a ＝ Δv ÷ Δt", sub: "（10 − 0）÷ 5 ＝ 2 m/s²", tone: "ok" }, duration: 3800 },
+    { step: "步驟 4：動手畫一張 v-t 圖", id: 4, caption: "畫 v-t 圖有三步：先把時間畫在橫軸、速度畫在縱軸，再把每秒的速度點出來，最後連成直線或曲線。", action: "point", prop: { kind: "flow", steps: ["時間畫橫軸、速度畫縱軸", "把每秒的速度點出來", "連成直線或曲線"], active: 1 }, duration: 3800 },
+    { step: "步驟 5：圖下的面積就是位移", id: 5, caption: "v-t 圖下方的面積就是位移：這條三角形底 5 秒、高 10 m/s，面積 ½ × 5 × 10 ＝ 25 公尺，正是這 5 秒走的距離。", action: "think", prop: { kind: "text", text: "面積 ＝ ½ × 底 × 高", sub: "½ × 5 × 10 ＝ 25 m（位移）", tone: "ok" }, duration: 3800 },
+    { step: "步驟 6：斜率代表加速度", id: 6, caption: "v-t 圖是一條斜直線時，它的斜率等於加速度：線越陡，加速度越大；水平線代表等速、加速度為 0。", ask: { prompt: "v-t 圖的「斜率」代表的是哪一個物理量？", options: ["位移", "速度", "加速度", "時間"], answer: 2, hint: "斜率＝縱軸變化量÷橫軸變化量＝速度變化÷時間。" }, action: "jump", prop: { kind: "text", text: "斜率 ＝ Δv ÷ Δt ＝ 加速度", sub: "水平線 → 等速 → 加速度 0", tone: "ok" }, duration: 3800 },
+    { step: "步驟 7：帶走這張圖的判讀", id: 7, caption: "記住：v-t 圖斜率是加速度、下方面積是位移。拿到運動學題，先畫圖再讀圖，答案就出來了。準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
+  ],
+  questions: [
+    { id: "sh-phy-kinematics-1", prompt: "小明繞操場一圈回到原點，他的位移是多少？", options: ["操場周長", "0", "周長的一半", "操場直徑"], answer: 1, hints: ["位移是起點到終點的直線距離", "回到原點代表終點＝起點"], explanation: "繞一圈回到原點，起點與終點重合，位移為 0。" },
+    { id: "sh-phy-kinematics-2", prompt: "物體在 10 秒內位移 50 公尺，平均速度為多少？", options: ["5 m/s", "500 m/s", "0.2 m/s", "10 m/s"], answer: 0, hints: ["平均速度＝位移÷時間", "50 ÷ 10 等於多少"], explanation: "v ＝ 50 ÷ 10 ＝ 5 m/s。" },
+    { id: "sh-phy-kinematics-3", prompt: "物體以 4 m/s 的等速前進 6 秒，位移為多少？", options: ["24 m", "10 m", "4 m", "1.5 m"], answer: 0, hints: ["等速時位移＝速度×時間", "4 × 6 等於多少"], explanation: "等速運動位移 ＝ v t ＝ 4 × 6 ＝ 24 公尺（也可用 v-t 圖長方形面積）。" },
+    { id: "sh-phy-kinematics-4", prompt: "速度在 2 秒內從 10 變成 20 m/s，加速度為多少？", options: ["5 m/s²", "10 m/s²", "15 m/s²", "4 m/s²"], answer: 0, hints: ["加速度＝速度變化量÷時間", "（20 − 10）÷ 2 等於多少"], explanation: "a ＝（20 − 10）÷ 2 ＝ 5 m/s²。" },
+    { id: "sh-phy-kinematics-5", prompt: "關於 v-t 圖，下列敘述何者正確？", options: ["斜率＝位移、面積＝加速度", "斜率＝加速度、面積＝位移", "兩者都代表位移", "兩者都代表加速度"], answer: 1, hints: ["想清楚縱軸是速度", "面積是「速度×時間」"], explanation: "v-t 圖斜率＝加速度，下方面積＝位移，這是運動學最重要的判讀。" },
+  ],
+};
+
+const SH_PHY_NEWTON: OnionLesson = {
+  id: "sh-phy-newton",
+  title: "牛頓運動定律：慣性、F＝ma、作用反作用",
+  subject: "物理",
+  topic: "力與運動",
+  grade: "高一",
+  stages: ["高中"],
+  desc: "用推車與煞車講清慣性、合力等於質量乘加速度，以及為何作用反作用不能抵銷。",
+  takeaways: [
+    "慣性：物體維持原有運動狀態的性質，質量越大越難改變",
+    "牛頓第二定律 F ＝ m a：合力等於質量乘加速度",
+    "作用力與反作用力大小相等、方向相反，作用在不同物體上，不能抵銷",
+  ],
+  frames: [
+    { step: "步驟 1：先認識慣性", id: 1, caption: "公車突然煞車，你會往前傾——因為你的身體想保持原來向前的速度，這種「不想變」的性質就叫做慣性。", action: "wave", prop: { kind: "text", text: "慣性：物體維持原有運動狀態", sub: "質量越大，慣性越大", tone: "ok" }, duration: 3600 },
+    { step: "步驟 2：第一定律講合力為零", id: 2, caption: "牛頓第一定律：物體不受力（或合力為 0）時，靜者恆靜、動者恆作等速直線運動。", action: "point", prop: { kind: "balance", left: "合力 0 N", right: "加速度 0", tip: "合力為零，速度就不會改變" }, duration: 3600 },
+    { step: "步驟 3：第二定律 F 等於 m a", id: 3, caption: "牛頓第二定律：合力 F 等於質量 m 乘加速度 a。2 公斤的物體以 5 m/s² 加速，需要 10 牛頓的力。", ask: { prompt: "質量 2 kg 的物體要得到 10 N 的合力，加速度應為多少？", options: ["2 m/s²", "5 m/s²", "10 m/s²", "20 m/s²"], answer: 1, hint: "由 F ＝ m a 改寫成 a ＝ F ÷ m。" }, action: "think", prop: { kind: "balance", left: "F ＝ 10 N", right: "2 kg × 5 m/s²", tip: "合力＝質量×加速度" }, duration: 3800 },
+    { step: "步驟 4：用 F＝ma 解題三步", id: 4, caption: "遇到力學題，照這三步走：先列出已知的 m 與 a、再套 F ＝ m a、最後算出合力 F。", action: "walk", prop: { kind: "flow", steps: ["列出已知 m 與 a", "套用 F ＝ m a", "算出合力 F"], active: 1 }, duration: 3800 },
+    { step: "步驟 5：作用反作用長這樣", id: 5, caption: "你推牆，牆也推你。這兩個力大小相等、方向相反，但分別作用在「你」和「牆」上，是成對出現的。", ask: { prompt: "你推牆時，牆也推你。這兩個力可以互相抵銷嗎？", options: ["可以，因為大小相等", "不能，因為作用在不同物體", "可以，因為方向相反", "不能，因為大小不同"], answer: 1, hint: "抵銷的前提是作用在同一個物體上。" }, action: "jump", prop: { kind: "text", text: "作用力與反作用力", sub: "大小相等、方向相反、不同物體", tone: "ok" }, duration: 3800 },
+    { step: "步驟 6：天平兩邊數字要相等", id: 6, caption: "你對牆施 10 牛頓，牆也對你施 10 牛頓：大小相等、方向相反，但分別作用在你和牆上，不能抵銷。", action: "point", prop: { kind: "balance", left: "你對牆的力 ＝ 10 N", right: "牆對你的力 ＝ 10 N", tip: "成對出現，但作用在兩個不同物體" }, duration: 3800 },
+    { step: "步驟 7：帶走三條定律", id: 7, caption: "記住：合力為零靠慣性、要加速用 F＝ma、作用反作用永遠成對且不抵銷。準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
+  ],
+  questions: [
+    { id: "sh-phy-newton-1", prompt: "根據牛頓第一定律，物體不受外力時會如何？", options: ["一定靜止不動", "做等速直線運動或保持靜止", "一定加速前進", "速度越來越快"], answer: 1, hints: ["想想合力為零的情況", "原來動的就繼續動、原來靜的就繼續靜"], explanation: "合力為零時，物體維持原運動狀態：靜止或等速直線運動。" },
+    { id: "sh-phy-newton-2", prompt: "質量 4 kg 的物體產生 3 m/s² 的加速度，需要多大的合力？", options: ["7 N", "12 N", "1.33 N", "0.75 N"], answer: 1, hints: ["合力＝質量×加速度", "4 × 3 等於多少"], explanation: "F ＝ m a ＝ 4 × 3 ＝ 12 N。" },
+    { id: "sh-phy-newton-3", prompt: "同一個力分別作用在質量 2 kg 與 4 kg 的物體上，兩者的加速度比為？", options: ["1：2", "2：1", "1：1", "4：1"], answer: 1, hints: ["a ＝ F ÷ m，與質量成反比", "4 kg 的加速度是 2 kg 的一半"], explanation: "F 相同時 a ∝ 1/m，故 a₂：a₄ ＝ 4：2 ＝ 2：1。" },
+    { id: "sh-phy-newton-4", prompt: "火箭向下噴出氣體，氣體對火箭的反作用力方向為何？", options: ["向下", "向上", "向前", "向後"], answer: 1, hints: ["反作用力與作用力方向相反", "火箭要往上飛，反作用力就往上推"], explanation: "火箭向下噴氣，氣體對火箭的反作用力向上，把火箭推離地面。" },
+    { id: "sh-phy-newton-5", prompt: "人用力踏地，地也用人相同的力反推人。這兩個力能否互相抵消？", options: ["可以，因為大小相等", "不可，因為作用在不同物體", "可以，因為方向相反", "不可，因為大小不相等"], answer: 1, hints: ["一個力作用在「人」、一個作用在「地」", "抵消的前提是同一物體上的兩力"], explanation: "作用力與反作用力作用在不同物體上，不能相加抵消；人會被推離地面。" },
+  ],
+};
+
+const SH_PHY_WORK_ENERGY: OnionLesson = {
+  id: "sh-phy-work-energy",
+  title: "功與能量：動能、位能與能量守恆",
+  subject: "物理",
+  topic: "功與能量",
+  grade: "高一",
+  stages: ["高中"],
+  desc: "用推箱子、拋球與落體講清 W＝Fd、Ek＝½mv²、U＝mgh，以及能量如何守恆。",
+  takeaways: [
+    "功 W ＝ F d（力與位移同向時），單位是焦耳 J",
+    "動能 Ek ＝ ½ m v²、重力位能 U ＝ m g h",
+    "無外力做功時總能量守恆：位能與動能互相轉換，總和不變",
+  ],
+  frames: [
+    { step: "步驟 1：做功等於力乘距離", id: 1, caption: "用 10 牛頓的力推箱子，沿著力的方向移動 3 公尺，做的功就是 10 × 3 ＝ 30 焦耳。", action: "wave", prop: { kind: "text", text: "W ＝ F × d", sub: "10 × 3 ＝ 30 J", tone: "ok" }, duration: 3600 },
+    { step: "步驟 2：動能看速度的平方", id: 2, caption: "質量 2 公斤、速度 4 m/s 的球，動能 ½ × 2 × 4² ＝ 16 焦耳。速度變 2 倍，動能會變 4 倍！", ask: { prompt: "若速度從 4 變成 8 m/s（質量不變），動能變為幾倍？", options: ["2 倍", "4 倍", "½ 倍", "不變"], answer: 1, hint: "動能與速度的平方成正比，速度加倍就乘 4。" }, action: "point", prop: { kind: "text", text: "Ek ＝ ½ m v²", sub: "½ × 2 × 4² ＝ 16 J", tone: "ok" }, duration: 3800 },
+    { step: "步驟 3：重力位能看高度", id: 3, caption: "2 公斤的書放在高 5 公尺的架子上，位能 ＝ 2 × 10 × 5 ＝ 100 焦耳（這裡 g 取 10 m/s²）。", action: "walk", prop: { kind: "text", text: "U ＝ m g h", sub: "2 × 10 × 5 ＝ 100 J", tone: "ok" }, duration: 3800 },
+    { step: "步驟 4：能量守恆的解題步驟", id: 4, caption: "用能量守恆解題三步：先算初始的總能量、再算末狀態的總能量、最後令兩者總和相等。", action: "point", prop: { kind: "flow", steps: ["計算初始總能量", "計算末狀態總能量", "兩者總和相等"], active: 1 }, duration: 3800 },
+    { step: "步驟 5：位能變動能的長條", id: 5, caption: "這顆 2 公斤的球從 5 公尺落下，初始位能 100 焦耳，落地時全部變成動能 100 焦耳——總能量守恆。", action: "think", prop: { kind: "bars", items: [{ label: "初始位能", value: 100 }, { label: "落地動能", value: 100 }], unit: "J", active: 1 }, duration: 3800 },
+    { step: "步驟 6：總能量保持不變", id: 6, caption: "忽略空氣阻力時，落下的球一邊失去位能、一邊得到動能，兩者加起來的總能量始終是那個定值。", ask: { prompt: "忽略空氣阻力，自由落下的球其總能量如何變化？", options: ["逐漸變少", "保持不變", "變成無限大", "先增後減"], answer: 1, hint: "位能轉成動能，但兩者總和不變。" }, action: "jump", prop: { kind: "text", text: "總能量 ＝ 位能 ＋ 動能 ＝ 定值", sub: "只轉換形式，不增不減", tone: "ok" }, duration: 3800 },
+    { step: "步驟 7：帶走能量三兄弟", id: 7, caption: "記住：W＝Fd 是做功、Ek＝½mv² 是動能、U＝mgh 是位能；沒外力就守恆。準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
+  ],
+  questions: [
+    { id: "sh-phy-work-energy-1", prompt: "用 5 N 的力沿力的方向推物體前進 4 m，做功多少？", options: ["9 J", "20 J", "1.25 J", "0.8 J"], answer: 1, hints: ["功＝力×距離", "5 × 4 等於多少"], explanation: "W ＝ F d ＝ 5 × 4 ＝ 20 J。" },
+    { id: "sh-phy-work-energy-2", prompt: "質量 1 kg、速度 2 m/s 的物體，其動能為多少？", options: ["1 J", "2 J", "4 J", "0.5 J"], answer: 1, hints: ["動能＝½ m v²", "½ × 1 × 2² 等於多少"], explanation: "Ek ＝ ½ × 1 × 2² ＝ ½ × 4 ＝ 2 J。" },
+    { id: "sh-phy-work-energy-3", prompt: "質量 2 kg 的物體升高 3 m（g 取 10），重力位能增加多少？", options: ["6 J", "60 J", "20 J", "30 J"], answer: 1, hints: ["位能＝m g h", "2 × 10 × 3 等於多少"], explanation: "ΔU ＝ m g h ＝ 2 × 10 × 3 ＝ 60 J。" },
+    { id: "sh-phy-work-energy-4", prompt: "一顆具有 10 J 重力位能的球自由落下（無空氣阻力），落地瞬間的動能為？", options: ["0", "5 J", "10 J", "20 J"], answer: 2, hints: ["能量守恆", "位能全部轉成動能"], explanation: "無阻力時總能量守恆，10 J 位能全部轉為 10 J 動能。" },
+    { id: "sh-phy-work-energy-5", prompt: "物體速度從 3 變成 6 m/s（質量不變），動能變為幾倍？", options: ["2 倍", "3 倍", "4 倍", "6 倍"], answer: 2, hints: ["動能∝速度的平方", "（6 ÷ 3）² 等於多少"], explanation: "Ek ∝ v²，速度變 2 倍，動能變 2² ＝ 4 倍。" },
+  ],
+};
+
+const SH_PHY_MOMENTUM: OnionLesson = {
+  id: "sh-phy-momentum",
+  title: "動量與碰撞：動量守恆與彈性碰撞",
+  subject: "物理",
+  topic: "動量與碰撞",
+  grade: "高二",
+  stages: ["高中"],
+  desc: "用撞球講清 p＝mv、系統動量守恆，以及彈性與非彈性碰撞的差別。",
+  takeaways: [
+    "動量 p ＝ m v；系統不受外力時總動量守恆",
+    "彈性碰撞：動量與動能都守恆；非彈性碰撞：動量守恆但動能不守恆",
+    "完全非彈性碰撞兩物黏在一起，動能損失最大",
+  ],
+  frames: [
+    { step: "步驟 1：動量是質量乘速度", id: 1, caption: "質量 3 公斤、速度 4 m/s 的球，動量 ＝ 3 × 4 ＝ 12 kg·m/s。動量越大，越難讓它停下來。", action: "wave", prop: { kind: "text", text: "p ＝ m v", sub: "3 × 4 ＝ 12 kg·m/s", tone: "ok" }, duration: 3600 },
+    { step: "步驟 2：系統動量守恆", id: 2, caption: "兩球碰撞前後，只要系統不受外力，總動量就保持不變：碰撞前是 12、碰撞後加起來也還是 12。", action: "point", prop: { kind: "balance", left: "總動量前 12", right: "總動量後 12", tip: "不受外力 → 總動量守恆" }, duration: 3800 },
+    { step: "步驟 3：算一次非彈性碰撞", id: 3, caption: "1 公斤的 A 以 6 m/s 撞上靜止的 1 公斤 B，黏在一起後速度 3 m/s；前後總動量都是 6，守恆成立。", ask: { prompt: "上例兩球黏在一起後的共同速度是多少？", options: ["3 m/s", "6 m/s", "2 m/s", "12 m/s"], answer: 0, hint: "用動量守恆：碰撞前總動量÷碰撞後總質量。" }, action: "think", prop: { kind: "balance", left: "前：1×6 ＝ 6", right: "後：2×3 ＝ 6", tip: "總動量前後都是 6" }, duration: 3800 },
+    { step: "步驟 4：動量守恆解題三步", id: 4, caption: "用動量守恆解題：先算碰撞前總動量、再算碰撞後總動量、最後令兩者相等求出未知的速度。", action: "walk", prop: { kind: "flow", steps: ["算碰撞前總動量", "算碰撞後總動量", "令兩者相等求未知"], active: 1 }, duration: 3800 },
+    { step: "步驟 5：彈性與非彈性差在動能", id: 5, caption: "上面這個非彈性碰撞，碰前動能 18 焦耳、碰後只剩 9 焦耳——動量守恆，但動能變少（變成熱與聲）。", action: "point", prop: { kind: "bars", items: [{ label: "碰前動能", value: 18 }, { label: "碰後動能", value: 9 }], unit: "J", active: 1 }, duration: 3800 },
+    { step: "步驟 6：何時動量守恆", id: 6, caption: "只要系統不受外力，不管彈性或非彈性碰撞，守恆的都是「總動量」；動能只在彈性碰撞才守恆。", ask: { prompt: "系統不受外力時，下列何者一定守恆？", options: ["只有動能", "只有位能", "總動量", "總質量會改變"], answer: 2, hint: "碰撞守恆律說的是動量，不是動能。" }, action: "jump", prop: { kind: "text", text: "系統不受外力 → 總動量守恆", sub: "動能只在彈性碰撞守恆", tone: "ok" }, duration: 3800 },
+    { step: "步驟 7：帶走碰撞兩種情形", id: 7, caption: "記住：p＝mv、總動量必守恆；彈性碰撞動能也守恆，非彈性碰撞動能會變少。準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
+  ],
+  questions: [
+    { id: "sh-phy-momentum-1", prompt: "質量 2 kg、速度 5 m/s 的物體，動量為多少？", options: ["7", "10", "2.5", "25"], answer: 1, hints: ["動量＝質量×速度", "2 × 5 等於多少"], explanation: "p ＝ m v ＝ 2 × 5 ＝ 10 kg·m/s。" },
+    { id: "sh-phy-momentum-2", prompt: "系統不受外力，碰撞前總動量為 8，則碰撞後總動量為？", options: ["0", "4", "8", "16"], answer: 2, hints: ["動量守恆", "前後總動量相同"], explanation: "不受外力時總動量守恆，碰撞後仍是 8。" },
+    { id: "sh-phy-momentum-3", prompt: "m₁＝2 kg、v₁＝3 m/s 的 A，撞上靜止的 m₂＝2 kg 的 B，完全非彈性碰撞後共同速度為？", options: ["1.5 m/s", "3 m/s", "6 m/s", "0.75 m/s"], answer: 0, hints: ["總動量＝(2×3)＋0＝6", "共同質量＝4 kg，v＝6÷4"], explanation: "v ＝ 總動量÷總質量 ＝ 6 ÷ 4 ＝ 1.5 m/s。" },
+    { id: "sh-phy-momentum-4", prompt: "質量與速度都相同的兩球發生彈性正碰，碰後會如何？", options: ["兩球都靜止", "交換速度", "一起向前", "速度都反向加倍"], answer: 1, hints: ["等質量彈性碰撞的特性", "想想動量與動能都要守恆"], explanation: "等質量彈性正碰會交換速度：原運動的球停下，原靜止的球以對方速度離開。" },
+    { id: "sh-phy-momentum-5", prompt: "完全非彈性碰撞的特徵是？", options: ["兩球分開且動能守恆", "兩物黏在一起、動能不守恆", "兩球速度都變 0", "質量會改變"], answer: 1, hints: ["「完全非彈性」＝黏在一起", "動能會轉成熱與形變"], explanation: "完全非彈性碰撞兩物黏在一起，動量仍守恆但動能損失最大。" },
+  ],
+};
+
+const SH_PHY_CIRCULAR: OnionLesson = {
+  id: "sh-phy-circular",
+  title: "圓周運動與萬有引力：向心力與衛星",
+  subject: "物理",
+  topic: "圓周運動與萬有引力",
+  grade: "高二",
+  stages: ["高中"],
+  desc: "用繞圈與衛星軌道講清向心力 F＝mv²/r、萬有引力 F＝GMm/r²。",
+  takeaways: [
+    "圓周運動需向心力，方向恆指向圓心：F ＝ m v² / r",
+    "萬有引力 F ＝ G M m / r²，距離加倍引力變 1/4",
+    "衛星繞行時，地球引力就是向心力，提供軌道運動",
+  ],
+  frames: [
+    { step: "步驟 1：繞圈需要向心力", id: 1, caption: "繞圈圈的物體一直被拉向圓心，這個力叫做向心力；沒有它的話，物體會沿切線方向直直飛出去。", action: "wave", prop: { kind: "text", text: "向心力：恆指向圓心", sub: "消失就沿切線飛出", tone: "ok" }, duration: 3600 },
+    { step: "步驟 2：向心力公式", id: 2, caption: "質量 2 公斤、速度 4 m/s、半徑 8 公尺，向心力 ＝ 2 × 4² ÷ 8 ＝ 4 牛頓。速度變 2 倍，向心力會變 4 倍！", ask: { prompt: "若半徑變為 2 倍、其餘不變，向心力變為幾倍？", options: ["2 倍", "½ 倍", "4 倍", "不變"], answer: 1, hint: "F ＝ m v² / r，與半徑成反比。" }, action: "point", prop: { kind: "text", text: "F ＝ m v² / r", sub: "2 × 4² ÷ 8 ＝ 4 N", tone: "ok" }, duration: 3800 },
+    { step: "步驟 3：畫出這個圓的半徑", id: 3, caption: "這個圓半徑 8 公尺：物體沿圓周運動，半徑越大、所需向心力越小，因為分母 r 變大了。", action: "walk", prop: { kind: "shape", shape: "circle", base: 8, height: 8, label: "半徑 8 m 的圓周運動" }, duration: 3800 },
+    { step: "步驟 4：萬有引力怎麼來", id: 4, caption: "任何兩個物體都互相吸引，這就是萬有引力：距離越遠越弱，距離變 2 倍，引力只剩原來的 1/4。", action: "point", prop: { kind: "flow", steps: ["任何兩物體互相吸引", "引力 F ＝ G M m / r²", "距離變 2 倍 → 引力變 1/4"], active: 1 }, duration: 3800 },
+    { step: "步驟 5：引力提供向心力", id: 5, caption: "地球對衛星的引力正好提供向心力。若軌道距離變為 2 倍，引力只剩 1/4，衛星就需要更慢的速度才穩定。", action: "think", prop: { kind: "text", text: "F ＝ G M m / r²", sub: "距離加倍 → 引力變 1/4", tone: "ok" }, duration: 3800 },
+    { step: "步驟 6：衛星的向心力來源", id: 6, caption: "人造衛星繞地球轉，是誰在拉住它？正是地球的萬有引力，它同時扮演了「向心力」的角色。", ask: { prompt: "人造衛星繞地球運動時，向心力由誰提供？", options: ["地球的萬有引力", "衛星自己的推力", "空氣阻力", "一種叫離心力的力"], answer: 0, hint: "衛星在太空中幾乎沒有推力與空氣，拉住它的是引力。" }, action: "jump", prop: { kind: "text", text: "向心力由萬有引力提供", sub: "引力＝向心力，才能維持軌道", tone: "ok" }, duration: 3800 },
+    { step: "步驟 7：帶走兩條力的公式", id: 7, caption: "記住：圓周靠向心力 F＝mv²/r，天體靠萬有引力 F＝GMm/r²；衛星繞行時兩者就是同一個力。準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
+  ],
+  questions: [
+    { id: "sh-phy-circular-1", prompt: "圓周運動中，向心力的方向為何？", options: ["沿運動切線方向", "指向圓心", "沿半徑向外", "方向隨機"], answer: 1, hints: ["向心力名稱就說了", "它把物體「拉向」中心"], explanation: "向心力方向恆指向圓心，才能使物體轉彎。" },
+    { id: "sh-phy-circular-2", prompt: "質量 1 kg、速度 3 m/s、半徑 3 m，向心力為多少？", options: ["3 N", "9 N", "1 N", "27 N"], answer: 0, hints: ["F ＝ m v² / r", "1 × 3² ÷ 3 等於多少"], explanation: "F ＝ 1 × 9 ÷ 3 ＝ 3 N。" },
+    { id: "sh-phy-circular-3", prompt: "兩物體距離變為原來的 3 倍，萬有引力變為幾倍？", options: ["3 倍", "1/9", "9 倍", "1/3"], answer: 1, hints: ["引力與距離平方成反比", "3 的平方是 9"], explanation: "F ∝ 1/r²，距離變 3 倍，引力變 1/9。" },
+    { id: "sh-phy-circular-4", prompt: "衛星繞地球做圓周運動，提供向心力的是？", options: ["地球的萬有引力", "火箭持續推力", "慣性本身", "一種離心力"], answer: 0, hints: ["太空中沒有空氣也沒有持續推力", "是引力把衛星拉住"], explanation: "衛星的向心力由地球萬有引力提供，故引力＝向心力。" },
+    { id: "sh-phy-circular-5", prompt: "若圓周運動的速率變為 2 倍（其餘不變），向心力變為幾倍？", options: ["2 倍", "4 倍", "½ 倍", "不變"], answer: 1, hints: ["F ＝ m v² / r", "力與速度平方成正比"], explanation: "F ∝ v²，速率變 2 倍，向心力變 2² ＝ 4 倍。" },
+  ],
+};
+
+const SH_PHY_WAVE: OnionLesson = {
+  id: "sh-phy-wave",
+  title: "波動：波長、頻率、干涉與繞射",
+  subject: "物理",
+  topic: "波動",
+  grade: "高二",
+  stages: ["高中"],
+  desc: "用聲波與光波講清 v＝fλ，以及干涉、繞射和兩種波的本質差異。",
+  takeaways: [
+    "波速 v ＝ 頻率 f × 波長 λ",
+    "干涉：同相疊加變大、反相抵消；繞射：波穿過狹縫會散開",
+    "聲波是縱波需介質；光波是電磁波，可在真空中傳播",
+  ],
+  frames: [
+    { step: "步驟 1：波的三個要素", id: 1, caption: "波有波長 λ（相鄰波峰的距離）、頻率 f（每秒通過幾個波）、波速 v，三者滿足 v ＝ f λ。", action: "wave", prop: { kind: "text", text: "v ＝ f × λ", sub: "波速＝頻率×波長", tone: "ok" }, duration: 3600 },
+    { step: "步驟 2：用公式算波長", id: 2, caption: "聲波在空氣中速度約 340 m/s，頻率 170 Hz，波長 ＝ 340 ÷ 170 ＝ 2 公尺。頻率越高，波長越短。", ask: { prompt: "波速 340 m/s、頻率 680 Hz，波長為多少？", options: ["0.5 m", "2 m", "340 m", "680 m"], answer: 0, hint: "波長＝波速÷頻率，340 ÷ 680。" }, action: "point", prop: { kind: "text", text: "λ ＝ v ÷ f", sub: "340 ÷ 170 ＝ 2 m", tone: "ok" }, duration: 3800 },
+    { step: "步驟 3：波怎麼傳遞能量", id: 3, caption: "波傳遞能量有三步：介質粒子只是上下振動、能量卻向前傳、而粒子本身不會隨波遠離原地。", action: "walk", prop: { kind: "flow", steps: ["介質粒子上下振動", "能量向前傳遞", "粒子不隨波遠離"], active: 1 }, duration: 3800 },
+    { step: "步驟 4：兩道波相遇會干涉", id: 4, caption: "兩道波相遇會疊加：波峰遇波峰變得更大（建設性干涉）、波峰遇波谷互相抵消（摧毀性干涉）。", action: "point", prop: { kind: "text", text: "干涉：波峰＋波峰＝更大", sub: "波峰＋波谷＝抵消", tone: "ok" }, duration: 3800 },
+    { step: "步驟 5：波會繞過障礙物", id: 5, caption: "波穿過狹縫或繞過障礙會彎散開，這就是繞射；縫越窄，繞射散開的角度越明顯。", action: "think", prop: { kind: "text", text: "繞射：波穿過狹縫會散開", sub: "縫越窄，散得越開", tone: "ok" }, duration: 3800 },
+    { step: "步驟 6：聲波與光波大不同", id: 6, caption: "聲波是縱波、必須靠空氣等介質才能傳；光波是電磁波，不需要介質，能在真空中傳播。", ask: { prompt: "下列哪一種波是橫波、且能在真空中傳播？", options: ["聲波", "光波", "兩者都需要介質", "兩者都不能"], answer: 1, hint: "聲波靠介質、光波是電磁波。" }, action: "jump", prop: { kind: "text", text: "光波＝電磁波，可在真空傳播", sub: "聲波＝縱波，需介質", tone: "ok" }, duration: 3800 },
+    { step: "步驟 7：帶走波的三件大事", id: 7, caption: "記住：v＝fλ 是基本式；干涉是疊加、繞射是散開；聲波靠介質、光波走真空。準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
+  ],
+  questions: [
+    { id: "sh-phy-wave-1", prompt: "已知 v＝fλ，若頻率加倍而波速不變，波長會如何？", options: ["加倍", "減半", "不變", "變 4 倍"], answer: 1, hints: ["波長＝波速÷頻率", "分母變 2 倍，結果變一半"], explanation: "v 不變時 λ ∝ 1/f，頻率加倍則波長減半。" },
+    { id: "sh-phy-wave-2", prompt: "波速 300 m/s、頻率 100 Hz，波長為多少？", options: ["3 m", "30 m", "0.33 m", "100 m"], answer: 0, hints: ["λ ＝ v ÷ f", "300 ÷ 100 等於多少"], explanation: "λ ＝ 300 ÷ 100 ＝ 3 m。" },
+    { id: "sh-phy-wave-3", prompt: "兩道波「波峰遇波峰」疊加，屬於哪種干涉？", options: ["摧毀性干涉", "建設性干涉", "繞射", "折射"], answer: 1, hints: ["同相疊加會變大", "想一想結果振幅"], explanation: "波峰遇波峰振幅相加，是建設性干涉。" },
+    { id: "sh-phy-wave-4", prompt: "聲波無法在下列哪個地方傳播？", options: ["水中", "空氣中", "真空中", "固體中"], answer: 2, hints: ["聲波需要介質", "真空裡沒有粒子可振動"], explanation: "聲波是機械波，需要介質；真空中沒有介質，故無法傳播。" },
+    { id: "sh-phy-wave-5", prompt: "關於聲波，下列敘述何者正確？", options: ["它是橫波", "它是縱波", "它是電磁波", "它傳播不需要能量"], answer: 1, hints: ["聲波靠介質粒子前後振動", "縱波＝振動方向與傳播方向平行"], explanation: "聲波是縱波，介質粒子沿傳播方向振動，且需要介質。" },
+  ],
+};
+
+const SH_PHY_THERMO: OnionLesson = {
+  id: "sh-phy-thermo",
+  title: "熱學：比熱、熱平衡與熱力學定律",
+  subject: "物理",
+  topic: "熱學",
+  grade: "高二",
+  stages: ["高中"],
+  desc: "用加熱水與鐵、冷熱水混合講清 Q＝mcΔT、熱平衡與熱力學兩大定律。",
+  takeaways: [
+    "吸熱 Q ＝ m c ΔT：比熱 c 是「1 kg 升 1°C 所需熱量」",
+    "熱平衡：熱水放出的熱等於冷水吸收的熱，最後溫度相同",
+    "熱力學：能量守恆（第一定律）、熱自高溫流向低溫且熵只增不減（第二定律）",
+  ],
+  frames: [
+    { step: "步驟 1：比熱決定升溫快慢", id: 1, caption: "同樣加 1000 焦耳的熱，水的比熱大只升 5°C，鐵的比熱小升了 20°C——比熱大的物質比較「難」升溫。", action: "wave", prop: { kind: "bars", items: [{ label: "水", value: 5 }, { label: "鐵", value: 20 }], unit: "°C", active: 0 }, duration: 3800 },
+    { step: "步驟 2：比熱公式 Q＝mcΔT", id: 2, caption: "2 公斤的水（比熱 4200）升溫 10°C，吸熱 ＝ 2 × 4200 × 10 ＝ 84000 焦耳。質量或溫差越大，吸熱越多。", ask: { prompt: "1 kg 的水（c＝4200）升溫 5°C，需吸熱多少？", options: ["21000 J", "8400 J", "4200 J", "10500 J"], answer: 0, hint: "Q ＝ m c ΔT ＝ 1 × 4200 × 5。" }, action: "point", prop: { kind: "text", text: "Q ＝ m c ΔT", sub: "2 × 4200 × 10 ＝ 84000 J", tone: "ok" }, duration: 3800 },
+    { step: "步驟 3：冷熱水混合到熱平衡", id: 3, caption: "熱水與冷水混合，熱水放出的熱等於冷水吸收的熱，最後兩者達到同一個共同溫度，叫做熱平衡。", action: "walk", prop: { kind: "text", text: "熱平衡：放熱 ＝ 吸熱", sub: "最後溫度相同", tone: "ok" }, duration: 3800 },
+    { step: "步驟 4：熱力學第一定律", id: 4, caption: "熱力學第一定律三步：系統吸熱 Q、對外做功 W、內能變化就是 ΔU ＝ Q − W，能量不會憑空消失。", action: "point", prop: { kind: "flow", steps: ["系統吸熱 Q", "對外做功 W", "內能變化 ΔU ＝ Q − W"], active: 1 }, duration: 3800 },
+    { step: "步驟 5：熱力學第二定律", id: 5, caption: "熱總是從高溫流向低溫，不會自己從冷處流向熱處；孤立系統的總亂度（熵）只會增加、不會減少。", action: "think", prop: { kind: "text", text: "熱力學第二定律：熵增", sub: "熱自理流向低溫、不可逆", tone: "ok" }, duration: 3800 },
+    { step: "步驟 6：比熱到底是什麼", id: 6, caption: "比熱 c 的定義很具體：讓 1 公斤的物質升高 1°C 所需要的熱量，就是它的比熱，單位是 J/(kg·°C)。", ask: { prompt: "比熱 c 的物理意義是？", options: ["1 kg 升 1°C 所需的熱量", "物體所含的總熱量", "溫度本身", "物質的密度"], answer: 0, hint: "比熱是「每單位質量每升高 1 度」的熱量。" }, action: "jump", prop: { kind: "text", text: "比熱 c：1 kg 升 1°C 的吸熱", sub: "單位 J/(kg·°C)", tone: "ok" }, duration: 3800 },
+    { step: "步驟 7：帶走熱的四個觀念", id: 7, caption: "記住：Q＝mcΔT 算吸熱、熱平衡放熱等於吸熱、能量守恆、熵只增不減。準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
+  ],
+  questions: [
+    { id: "sh-phy-thermo-1", prompt: "根據 Q＝mcΔT，若質量加倍而其餘不變，所需熱量如何？", options: ["加倍", "減半", "不變", "變 4 倍"], answer: 0, hints: ["Q 與質量成正比", "2 倍質量就 2 倍熱量"], explanation: "Q ∝ m，質量加倍則所需熱量加倍。" },
+    { id: "sh-phy-thermo-2", prompt: "2 kg 的水（c＝4200）升溫 5°C，需吸熱多少？", options: ["42000 J", "21000 J", "8400 J", "4200 J"], answer: 0, hints: ["Q ＝ m c ΔT", "2 × 4200 × 5 等於多少"], explanation: "Q ＝ 2 × 4200 × 5 ＝ 42000 J。" },
+    { id: "sh-phy-thermo-3", prompt: "熱水與冷水混合達到熱平衡時，會出現什麼結果？", options: ["各自維持原溫", "兩者溫度相同", "兩者都沸騰", "兩者都結冰"], answer: 1, hints: ["熱平衡的意思是什麼", "放熱＝吸熱直到同溫"], explanation: "熱平衡時系統達到共同溫度，熱水放出的熱等於冷水吸收的熱。" },
+    { id: "sh-phy-thermo-4", prompt: "物質的比熱越大，代表它？", options: ["容易升溫", "難升溫（需更多熱）", "完全不含熱", "密度較大"], answer: 1, hints: ["比熱＝升 1°C 要的熱", "要大熱量才升得動"], explanation: "比熱大表示讓 1 kg 升 1°C 需要更多熱，因此較難升溫。" },
+    { id: "sh-phy-thermo-5", prompt: "對一個孤立系統而言，其「熵（亂度）」的變化是？", options: ["只增不減", "只減不增", "保持不變", "可以變成負值"], answer: 0, hints: ["這是熱力學第二定律", "自然過程朝更亂的方向"], explanation: "熱力學第二定律：孤立系統的熵只會增加（或極限不變），不會減少。" },
+  ],
+};
+
+const SH_PHY_CIRCUIT: OnionLesson = {
+  id: "sh-phy-circuit",
+  title: "電流與電路：歐姆定律、串並聯與電功率",
+  subject: "物理",
+  topic: "電流與電路",
+  grade: "高三",
+  stages: ["高中"],
+  desc: "用燈泡與電池講清 V＝IR、串聯並聯的差別，以及電功率 P＝IV。",
+  takeaways: [
+    "歐姆定律 V ＝ I R：電流 I 單位安培 A、電壓 V 單位伏特 V、電阻 R 單位歐姆 Ω",
+    "串聯：電流相同、電壓相加；並聯：電壓相同、電流相加",
+    "電功率 P ＝ I V，表示每秒消耗的能量，單位是瓦特 W",
+  ],
+  frames: [
+    { step: "步驟 1：歐姆定律 V 等於 I R", id: 1, caption: "電阻 4 歐姆的燈泡通 2 安培電流，兩端電壓 ＝ 2 × 4 ＝ 8 伏特。電阻越大或電流越大，電壓降越多。", ask: { prompt: "電阻 6 Ω 的元件通過 3 A 電流，兩端電壓為？", options: ["18 V", "9 V", "2 V", "21 V"], answer: 0, hint: "V ＝ I R ＝ 3 × 6。" }, action: "wave", prop: { kind: "text", text: "V ＝ I R", sub: "2 × 4 ＝ 8 V", tone: "ok" }, duration: 3800 },
+    { step: "步驟 2：串聯與並聯的差別", id: 2, caption: "串聯時電流處處相同、電壓依電阻分配；並聯時電壓處處相同、電流依支路分配。總電阻串加並減。", action: "point", prop: { kind: "flow", steps: ["串聯：電流處處相同", "並聯：電壓處處相同", "總電阻串加並減"], active: 1 }, duration: 3800 },
+    { step: "步驟 3：串聯的電壓相加", id: 3, caption: "兩顆電阻串聯，通過的電流相同；電壓分別是 8 V 與 4 V，總電壓 ＝ 8 ＋ 4 ＝ 12 V，等於各段電壓之和。", action: "walk", prop: { kind: "balance", left: "總電壓 ＝ 各壓和", right: "V ＝ 8 ＋ 4 ＝ 12 V", tip: "串聯：電壓相加" }, duration: 3800 },
+    { step: "步驟 4：並聯的電壓相同", id: 4, caption: "兩顆電阻並聯，兩端電壓都是 12 V；支路電流分別是 2 A 與 3 A，總電流 ＝ 2 ＋ 3 ＝ 5 A，等於各支路電流之和。", action: "think", prop: { kind: "balance", left: "各支路電壓 ＝ 12 V", right: "總電流 ＝ 2 ＋ 3 ＝ 5 A", tip: "並聯：電壓相同、電流相加" }, duration: 3800 },
+    { step: "步驟 5：電功率 P 等於 I V", id: 5, caption: "燈泡通 2 安培、電壓 8 伏特，消耗功率 ＝ 2 × 8 ＝ 16 瓦特。功率越大，每秒消耗的電能越多、越亮。", action: "point", prop: { kind: "text", text: "P ＝ I V", sub: "2 × 8 ＝ 16 W", tone: "ok" }, duration: 3800 },
+    { step: "步驟 6：並聯時電壓怎麼算", id: 6, caption: "同一個電源下，並聯的兩顆燈泡兩端電壓相同；所以各自承受的電壓都等於電源電壓，不會被分配。", ask: { prompt: "同一電源下，並聯的兩顆燈泡其兩端電壓關係為？", options: ["相同", "相加", "成反比", "隨機"], answer: 0, hint: "並聯電路的特徵就是電壓處處相等。" }, action: "jump", prop: { kind: "text", text: "並聯：電壓相同", sub: "各支路都接在同一電源兩端", tone: "ok" }, duration: 3800 },
+    { step: "步驟 7：帶走電路三條規則", id: 7, caption: "記住：V＝IR 算電壓、串聯電流同並聯電壓同、P＝IV 算功率。準備闖關！", action: "cheer", prop: { kind: "none" }, duration: 2800 },
+  ],
+  questions: [
+    { id: "sh-phy-circuit-1", prompt: "電阻 5 Ω、電流 2 A，兩端電壓為多少？", options: ["10 V", "7 V", "2.5 V", "3 V"], answer: 0, hints: ["V ＝ I R", "2 × 5 等於多少"], explanation: "V ＝ I R ＝ 2 × 5 ＝ 10 V。" },
+    { id: "sh-phy-circuit-2", prompt: "燈泡通 2 A 電流、兩端 6 V，消耗功率為多少？", options: ["12 W", "8 W", "3 W", "4 W"], answer: 0, hints: ["P ＝ I V", "2 × 6 等於多少"], explanation: "P ＝ I V ＝ 2 × 6 ＝ 12 W。" },
+    { id: "sh-phy-circuit-3", prompt: "3 Ω 與 6 Ω 串聯接在 12 V 電源上，總電流為多少？", options: ["4 A", "1.33 A", "2 A", "0.75 A"], answer: 1, hints: ["串聯總電阻＝3＋6＝9 Ω", "I ＝ V ÷ R ＝ 12 ÷ 9"], explanation: "總電阻 9 Ω，I ＝ 12 ÷ 9 ≒ 1.33 A。" },
+    { id: "sh-phy-circuit-4", prompt: "兩顆燈泡並聯在同一個 12 V 電源上，各燈泡兩端電壓為？", options: ["6 V", "12 V", "24 V", "兩者相加"], answer: 1, hints: ["並聯電壓相同", "都直接接在電源兩端"], explanation: "並聯時各支路電壓等於電源電壓，都是 12 V。" },
+    { id: "sh-phy-circuit-5", prompt: "在串聯電路中，流經各個元件的電流關係為？", options: ["處處相同", "與電阻成正比", "與電阻成反比", "各處相加"], answer: 0, hints: ["串聯只有一條路徑", "電荷不會憑空消失"], explanation: "串聯電路只有一條路徑，電流處處相同。" },
+  ],
+};
+
+export default [
+  SH_PHY_KINEMATICS,
+  SH_PHY_NEWTON,
+  SH_PHY_WORK_ENERGY,
+  SH_PHY_MOMENTUM,
+  SH_PHY_CIRCULAR,
+  SH_PHY_WAVE,
+  SH_PHY_THERMO,
+  SH_PHY_CIRCUIT,
+];

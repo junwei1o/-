@@ -7,6 +7,9 @@
 > 7 幀分鏡（每幀都有 `step` 步驟標籤、caption、action、prop、duration，至少 2 幀有 `ask`）＋ 5 題闖關（含 2 級提示與詳解）＋ 3 條 takeaways。
 > 寫完後跑 `npm run qc:onion` 確認自己那幾堂沒有問題。
 
+> **撰寫規格**：怎麼寫一堂課（檔案結構、分鏡、教具與字幕一致性、題目規則、驗證指令）
+> 請看 `docs/onion-authoring-spec.md`；本文件負責「要寫哪些課」。
+
 ## 設計原則（務求巧妙、循序漸進）
 
 1. **一步一觀念**：7 幀就是 7 個步驟，順序固定為「引起動機 → 拆解觀念 1 → 觀念 2（中途提問）→ 動手算／推導（中途提問）→ 對照或易錯點 → 統整 → 口訣」。步驟標籤寫「步驟 N：具體動作」，不要寫「步驟 N：說明」這種空話。
@@ -227,7 +230,7 @@
 | sh-bio-human-body | 高三 | 人體生理整合 | 神經、內分泌與恆定 | flow → cycle |
 | sh-bio-biotech | 高三 | 生物科技 | PCR、基因轉殖、倫理 | flow → text |
 
-### 地球科學 6 堂（`senior-earth-history-add.ts` 前半）
+### 地球科學 6 堂（`senior-earth-add.ts`）
 | id | 年級 | 課名 | 核心概念 | 圖解建議 |
 |---|---|---|---|---|
 | sh-earth-structure | 高一 | 地球的構造與板塊 | 分層、板塊邊界類型 | cycle → flow |
@@ -237,7 +240,7 @@
 | sh-earth-astronomy | 高二 | 天文與星系 | 太陽系、恆星演化、光年 | flow → text |
 | sh-earth-geologic-time | 高二 | 地質時間 | 相對與絕對定年、化石 | flow |
 
-### 歷史 6 堂（`senior-earth-history-add.ts` 後半）
+### 歷史 6 堂（`senior-history-add.ts`）
 | id | 年級 | 課名 | 核心概念 | 圖解建議 |
 |---|---|---|---|---|
 | sh-hist-east-asia | 高一 | 東亞史的變遷 | 中原王朝與周邊互動 | flow → text |
@@ -247,7 +250,7 @@
 | sh-hist-cold-war | 高三 | 冷戰與兩極體系 | 圍堵、代理戰爭、解體 | flow → text |
 | sh-hist-global-now | 高三 | 當代世界 | 全球化、區域整合與挑戰 | flow → text |
 
-### 地理 6 堂（`senior-geo-civics-add.ts` 前半）
+### 地理 6 堂（`senior-geo-add.ts`）
 | id | 年級 | 課名 | 核心概念 | 圖解建議 |
 |---|---|---|---|---|
 | sh-geo-gis | 高一 | 地圖與地理資訊 | 座標、等高線、GIS | text → flow |
@@ -257,7 +260,7 @@
 | sh-geo-urban | 高二 | 都市與人口 | 都市化、人口轉型 | flow → bars |
 | sh-geo-hazard | 高三 | 自然災害與調適 | 颱風、地震、洪水與防災 | flow → text |
 
-### 公民 5 堂（`senior-geo-civics-add.ts` 後半）
+### 公民 5 堂（`senior-civics-add.ts`）
 | id | 年級 | 課名 | 核心概念 | 圖解建議 |
 |---|---|---|---|---|
 | sh-civ-democracy | 高一 | 民主政治與憲政 | 主權在民、權力分立 | flow → text |
@@ -266,7 +269,7 @@
 | sh-civ-global-org | 高二 | 國際組織與全球化 | 聯合國、WTO、區域組織 | text → flow |
 | sh-civ-media-literacy | 高三 | 媒體識讀 | 假訊息辨識、媒體立場 | text → flow |
 
-### 國文 4 堂（`senior-language-add.ts` 前半）
+### 國文 4 堂（`senior-chinese-add.ts`）
 | id | 年級 | 課名 | 核心概念 | 圖解建議 |
 |---|---|---|---|---|
 | sh-chi-classical-reading | 高一 | 文言文閱讀策略 | 斷句、虛詞、人物關係 | flow → text |
@@ -274,7 +277,7 @@
 | sh-chi-prose | 高二 | 現代散文賞析 | 意象、節奏與情感 | text → flow |
 | sh-chi-essay-writing | 高三 | 論說文寫作 | 立論、舉證、駁論、結論 | flow → text |
 
-### 英文 4 堂（`senior-language-add.ts` 後半）
+### 英文 4 堂（`senior-english-add.ts`）
 | id | 年級 | 課名 | 核心概念 | 圖解建議 |
 |---|---|---|---|---|
 | sh-eng-tenses | 高一 | 時態總整理 | 12 時態的軸線與用法 | flow → text |
@@ -289,3 +292,9 @@
 - `npm run qc:onion`：0 問題（步驟標籤、圖解一致性、題目結構、規模門檻 200 堂）
 - `npx tsc --noEmit`：0 錯誤
 - `vitest run client/src/game/onionAcademyContent.test.ts`：全過
+
+## 產出方式（給後續接手的人）
+- 一堂課一檔放在 `client/src/game/onion/lessons/*.ts`，`export default` 一個 `OnionLesson[]`；
+  主檔 `onionAcademyLessons.ts` 用 `import.meta.glob` 自動彙總，**新增課程不需要改主檔**。
+- 撰寫規格看 `docs/onion-authoring-spec.md`；驗收看 `npm run qc:onion`。
+- 多批並行撰寫時，**一批一檔、一位寫手一個檔**，避免搶同一個檔案。

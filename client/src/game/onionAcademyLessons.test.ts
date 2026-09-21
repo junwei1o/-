@@ -135,21 +135,36 @@ function lessonIntegrity(lesson: typeof FRACTION_LESSON) {
 }
 
 describe("registry & lookup", () => {
-  it("registers all lessons across 5 subjects", () => {
-    expect(ONION_LESSONS.length).toBeGreaterThanOrEqual(24);
+  it("registers all lessons across every subject", () => {
+    expect(ONION_LESSONS.length).toBeGreaterThanOrEqual(200);
     const subjects = new Set(ONION_LESSONS.map((l) => l.subject));
-    expect(subjects.size).toBe(5); // 數學、國語、自然、英語、社會
-    expect(subjects.has("數學")).toBe(true);
-    expect(subjects.has("國語")).toBe(true);
-    expect(subjects.has("自然")).toBe(true);
-    expect(subjects.has("英語")).toBe(true);
-    expect(subjects.has("社會")).toBe(true);
+    // 擴充到 200 堂後科目橫跨國小到高中：國小五大科 ＋ 高中各科。
+    // 這裡逐一列出（而不是只檢查數量），這樣漏掉一整科會被抓到。
+    for (const subject of [
+      "數學",
+      "國語",
+      "自然",
+      "英語",
+      "社會",
+      "物理",
+      "化學",
+      "生物",
+      "地球科學",
+      "歷史",
+      "地理",
+      "公民",
+      "英文",
+      "國文",
+    ]) {
+      expect(subjects.has(subject), `缺少科目：${subject}`).toBe(true);
+    }
+    expect(subjects.size).toBeGreaterThanOrEqual(14);
   });
 
   it("每一堂課只屬於一個學段（國中看過的國小不會再來一遍）", () => {
     for (const lesson of ONION_LESSONS) {
       expect(lesson.stages).toHaveLength(1);
-      expect(["國小", "國中"]).toContain(lesson.stages[0]);
+      expect(["國小", "國中", "高中"]).toContain(lesson.stages[0]);
     }
     // 知識點可以跨學段各開一堂（如光合作用），但 id 必須不同，不能同一堂掛兩邊
     const ids = ONION_LESSONS.map((l) => l.id);
@@ -159,8 +174,10 @@ describe("registry & lookup", () => {
   it("每個學段都有足夠的課可選（不再只有個位數）", () => {
     const elementary = ONION_LESSONS.filter((l) => l.stages.includes("國小"));
     const junior = ONION_LESSONS.filter((l) => l.stages.includes("國中"));
-    expect(elementary.length).toBeGreaterThanOrEqual(10);
-    expect(junior.length).toBeGreaterThanOrEqual(8);
+    const senior = ONION_LESSONS.filter((l) => l.stages.includes("高中"));
+    expect(elementary.length).toBeGreaterThanOrEqual(70);
+    expect(junior.length).toBeGreaterThanOrEqual(65);
+    expect(senior.length).toBeGreaterThanOrEqual(65);
   });
 
   it("國中三個年級都有動畫課（八、九年級不再是空的）", () => {
