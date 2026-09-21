@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { useLocation, useRoute } from "wouter";
 import { MAP_REGIONS, type RegionKey } from "@/lib/mapRegions";
 
-const HERO = "/assets/illustration/island-overview.webp";
+const HERO = "/assets/illustration/taiwan-map.jpg";
 
 export default function RegionDetail() {
   const [, params] = useRoute("/regions/:regionKey");

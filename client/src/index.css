@@ -372,10 +372,10 @@ nav { display:grid; gap:7px; }
 .region-detail-map img { display:block; width:100%; height:100%; object-fit:cover; border-radius:4px; box-shadow:12px 14px 0 rgba(11,62,74,.09); transform:rotate(1deg); }
 .region-detail-pin { position:absolute; z-index:2; display:grid; place-items:center; border:1px solid color-mix(in srgb, var(--coral) 48%, transparent); border-radius:var(--radius-pill); background:color-mix(in srgb, var(--coral) 13%, transparent); box-shadow:0 0 0 7px color-mix(in srgb, var(--coral) 10%, transparent); }
 .region-detail-pin span { width:17px; height:17px; border:4px solid var(--white); border-radius:50%; background:var(--coral); box-shadow:0 2px 8px color-mix(in srgb, var(--ink) 25%, transparent); }
-.region-detail-pin.map-hotspot-north { top:8%; left:43%; width:22%; height:20%; }
-.region-detail-pin.map-hotspot-central { top:30%; left:38%; width:22%; height:25%; }
-.region-detail-pin.map-hotspot-east { top:27%; right:20%; width:17%; height:45%; }
-.region-detail-pin.map-hotspot-south { bottom:6%; left:39%; width:23%; height:27%; }
+.region-detail-pin.map-hotspot-north { top:15%; left:12%; width:27%; height:24%; }
+.region-detail-pin.map-hotspot-central { top:32%; left:28%; width:28%; height:27%; }
+.region-detail-pin.map-hotspot-east { top:41%; left:40%; width:18%; height:44%; }
+.region-detail-pin.map-hotspot-south { top:55%; left:57%; width:27%; height:31%; }
 .region-detail-map-label { position:absolute; left:12px; bottom:-27px; color:var(--coral); font-size:9px; font-weight:800; letter-spacing:.16em; }
 /* 後端 storage 未配置時的本地導航海圖兜底（不依賴外部圖檔，避免破圖） */
 .region-map-fallback { position:relative; display:grid; place-items:center; align-content:center; gap:9px; width:100%; height:100%; text-align:center; border-radius:4px; box-shadow:12px 14px 0 rgba(11,62,74,.09); transform:rotate(1deg); overflow:hidden; color:var(--white);
