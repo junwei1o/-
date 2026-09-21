@@ -220,7 +220,7 @@ export function HomeContactCard() {
             <>
               <div className="home-contact-qr">
                 {qrSrc ? (
-                  <img src={qrSrc} alt={`${contact.teacherName || "老師"} 的 LINE 好友 QR code`} />
+                  <img src={qrSrc} alt={`${contact.teacherName || "老師"} 的 LINE 好友 QR code`} loading="lazy" decoding="async" />
                 ) : (
                   <div className="home-contact-qr-placeholder" aria-hidden="true">
                     設定 LINE ID<br />後自動產生 QR

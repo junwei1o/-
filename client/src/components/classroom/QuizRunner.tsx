@@ -278,7 +278,7 @@ export default function QuizRunner({
             )}
             {question.img ? (
               <figure className="cr-q-img-wrap">
-                <img src={question.img} alt="看圖選答的圖片" draggable={false} />
+                <img src={question.img} alt="看圖選答的圖片" draggable={false} decoding="async" />
               </figure>
             ) : null}
             <p className="cr-q-prompt">{question.prompt}</p>

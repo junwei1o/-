@@ -4,10 +4,14 @@
  * 動畫微課（洋蔥動畫講解）原本只存在於「我的教室」裡，首頁完全沒有入口，
  * 學生幾乎不會發現。此處依「學段」與「本週最弱科目」挑一堂課推到首頁。
  */
-import { ONION_LESSONS, type OnionLesson, type OnionStage } from "@/game/onionAcademyLessons";
+// 只依賴輕量目錄（每堂 id/標題/學科/年級/學段/介紹），不要 import 完整 ONION_LESSONS，
+// 否則首頁會把 200 堂課的分鏡與題目（約 580KB）一起打進首屏主 bundle。
+// 完整課程只在「我的教室」洋蔥學園 lazy 載入。
+import { ONION_LESSON_CATALOG, type OnionLessonSummary } from "@/game/onionLessonCatalog.gen";
+import type { OnionStage } from "@/game/onionAcademyLessons";
 
 export type RecommendedLesson = {
-  lesson: OnionLesson;
+  lesson: OnionLessonSummary;
   reason: string;
 };
 
@@ -50,7 +54,7 @@ export function pickRecommendedLesson(input: {
   now?: number;
 }): RecommendedLesson | null {
   const now = input.now ?? Date.now();
-  const pool = ONION_LESSONS.filter((lesson) => lesson.stages.includes(input.stage));
+  const pool = ONION_LESSON_CATALOG.filter((lesson) => lesson.stages.includes(input.stage));
   if (!pool.length) return null;
 
   const weak = input.weakSubject ? pool.filter((lesson) => lesson.subject === input.weakSubject) : [];

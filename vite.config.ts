@@ -23,7 +23,7 @@ export default defineConfig({
   build: {
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
-    // 程式碼分包：大型第三方庫拆成獨立快取檔，換頁不重複下載。
+    // 程式碼分包：大型第三方庫拆成獨立、可長期快取的檔，換頁／改版不重複下載。
     rollupOptions: {
       output: {
         manualChunks: {
@@ -33,7 +33,8 @@ export default defineConfig({
             "class-variance-authority",
             "clsx",
             "tailwind-merge",
-            "framer-motion",
+            // framer-motion 僅「深度反思」lazy 頁使用，移出首屏必載的 ui-vendor，
+            // 由 Rollup 跟隨使用它的 lazy chunk（PaperExam）。
             "lucide-react",
             "sonner",
           ],

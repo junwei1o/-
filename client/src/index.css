@@ -33,11 +33,11 @@
   --moss: #6C8460;         /* 苔綠（成功） */
   --yellow: #E8B84B;       /* 芥黃（警示／點數） */
 
-  /* ── 字型 ─────────────────────────────────────────── */
-  --font-display: "Fraunces", "Noto Serif TC", serif;                 /* 標題／展示 */
-  --font-serif: Georgia, "Noto Serif TC", serif;                      /* 長文襯線 */
-  --font-serif-tc: "Noto Serif TC", serif;                            /* 純中文襯線 */
-  --font-sans: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif; /* 介面 */
+  /* ── 字型（全本地系統字體堆疊，不外載 web font，離線可用、不擋首屏）── */
+  --font-display: "Fraunces", Georgia, "Times New Roman", "Noto Serif TC", "Songti TC", "PMingLiU", serif; /* 標題／展示 */
+  --font-serif: Georgia, "Times New Roman", "Noto Serif TC", "Songti TC", "PMingLiU", serif; /* 長文襯線 */
+  --font-serif-tc: "Noto Serif TC", "Songti TC", "PMingLiU", serif;  /* 純中文襯線 */
+  --font-sans: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", "Heiti TC", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; /* 介面 */
   --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;        /* 代碼 */
 
   /* ── 圓角尺度 ─────────────────────────────────────── */

@@ -9,10 +9,9 @@ import TopNavigation from "@/components/TopNavigation";
 import BxEnhance from "@/components/bx/BxEnhance";
 import CloudModePrompt from "@/components/CloudModePrompt";
 import Home from "@/pages/Home";
-import FeaturesDirectory from "@/pages/FeaturesDirectory";
 import { initGameData } from "@/utils/storage";
-// 開站就背景預載 5000 題的內建題庫：教室玩法等同步消費端進場時才不會開天窗。
-import { loadLocalBank } from "@/lib/questionBank";
+// 5000 題內建題庫合計約 2.7MB：不在開站關鍵路徑 static 載入，改於下方 useEffect
+// 在瀏覽器閒置時才動態 import 預載，避免與首屏搶頻寬。
 import { OfflineBanner } from "@/components/OfflineBanner";
 import MobileBottomNav from "@/components/MobileBottomNav";
 
@@ -52,6 +51,7 @@ const Gallery = React.lazy(() => import("@/pages/Gallery"));
 const TreasureHub = React.lazy(() => import("@/pages/TreasureHub"));
 const TeacherDashboard = React.lazy(() => import("@/pages/TeacherDashboard"));
 const StudentClass = React.lazy(() => import("@/pages/StudentClass"));
+const FeaturesDirectory = React.lazy(() => import("@/pages/FeaturesDirectory"));
 
 // 懶加載時的輕量佔位：品牌色系的帆船載入提示。
 function PageLoader() {
@@ -124,8 +124,25 @@ function Router() {
 function App() {
   useEffect(() => {
     initGameData();
-    // 題庫 2.7MB，動態載入；這裡只是先起個頭，玩到哪裡都已經載好了。
-    void loadLocalBank();
+    // 題庫合計約 2.7MB，不在開站關鍵路徑與首屏搶頻寬：等瀏覽器閒置（最長 2.5s）
+    // 再背景預載；不支援 requestIdleCallback 的瀏覽器退為 1.2s 後執行。
+    let handle: number;
+    const preload = () => {
+      // 動態 import：確保題庫模組本身也不站在開站關鍵路徑上。
+      void import("@/lib/questionBank").then((m) => m.loadLocalBank());
+    };
+    if (typeof window.requestIdleCallback === "function") {
+      handle = window.requestIdleCallback(preload, { timeout: 2500 });
+    } else {
+      handle = window.setTimeout(preload, 1200);
+    }
+    return () => {
+      if (typeof window.cancelIdleCallback === "function") {
+        window.cancelIdleCallback(handle);
+      } else {
+        window.clearTimeout(handle);
+      }
+    };
   }, []);
 
   return (

@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { useLocation, useRoute } from "wouter";
 import { MAP_REGIONS, type RegionKey } from "@/lib/mapRegions";
 
-const HERO = "/assets/illustration/taiwan-map.jpg";
+const HERO = "/assets/illustration/taiwan-map.webp";
 
 export default function RegionDetail() {
   const [, params] = useRoute("/regions/:regionKey");
@@ -55,7 +55,15 @@ export default function RegionDetail() {
               <i>TAIWAN · {region.romanized}</i>
             </div>
           ) : (
-            <img src={HERO} alt={`台灣地圖中的${region.name}區域`} onError={() => setMapFailed(true)} />
+            <img
+              src={HERO}
+              alt={`台灣地圖中的${region.name}區域`}
+              width={1517}
+              height={1024}
+              decoding="async"
+              fetchPriority="high"
+              onError={() => setMapFailed(true)}
+            />
           )}
           {!mapFailed && <div className={`region-detail-pin ${region.className}`}><span /></div>}
           <div className="region-detail-map-label">REGION / {region.romanized}</div>

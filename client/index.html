@@ -29,7 +29,7 @@
     <meta property="og:title" content="寶島探險家｜互動學習航線" />
     <meta property="og:description" content="專為國小 3~6 年級設計的 RPG 學習冒險，涵蓋國語、數學、自然、社會四大課綱領域，邊玩邊有效學習。" />
     <meta property="og:url" content="https://xue-gr3a.onrender.com/" />
-    <meta property="og:image" content="https://xue-gr3a.onrender.com/og-image.png" />
+    <meta property="og:image" content="https://xue-gr3a.onrender.com/og-image.jpg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
 
@@ -48,9 +48,8 @@
     <!-- 首屏骨架屏（JS 載入完成前顯示，不用等 React） -->
     <link rel="stylesheet" href="/skeleton.css" />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800&family=Noto+Sans+TC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <!-- 字型改用全本地系統字體堆疊（見 index.css），不再外部載入 Google Fonts：
+         離線可用、不發第三方請求、避免 render-blocking 與 FOUT。 -->
   </head>
 
   <body>

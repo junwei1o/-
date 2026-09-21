@@ -383,6 +383,7 @@ export default function MatchingGame({ set, onComplete, resultActions, muted = f
                     src={set.pairs[pair].img}
                     alt={set.pairs[pair].l}
                     draggable={false}
+                    decoding="async"
                   />
                 ) : (
                   <span>{set.pairs[pair].l}</span>
