@@ -891,3 +891,42 @@ curl -s https://xue-gr3a.onrender.com/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | h
   本輪 9 批全部一次交件、0 問題。
 - `scripts/qc-temp-junior-chinese.mts`、`scripts/step_labels.py` 是早期遺留的臨時腳本，
   功能已被 `qc:onion` 涵蓋，可擇期刪除（未在本次動）。
+
+## 2026-09-21（晚）：全站 UI 視覺統一（design token 化）
+
+### 做了什麼
+- **建立設計變數層**（`client/src/index.css` 檔頭）：品牌色 13 色、字型 5 堆疊
+  （`--font-display/serif/serif-tc/sans/mono`）、圓角尺度（sm8/md12/lg18/xl24/pill）、
+  陰影尺度（`--shadow-xs`–`--xl`）、間距（`--space-1`–`10`）、z-index（`--z-nav/overlay/toast`）、
+  動效（`--ease/--dur-*`）、聚焦環（`--focus-ring`）。既有 `--cr-*/--bx-*/--env-*` 等
+  子系統命名空間不動，但橋接層改為由品牌變數派生（`--sea: var(--tidal)` 等）。
+- **全站字面值收斂**（一次性 codemod，34 檔、約 1990 處）：
+  - 品牌色字面值 → var()：`#0B6E8E`→`var(--tidal)`、`#07516A`→`var(--tidal-deep)`、
+    `#1F3031`→`var(--ink)` 等 11 種。
+  - 白色系八種寫法（`#fff/#ffffff/#fffdf8/#fffdf6/#fffdf7/#fffdf5/#fffaf2/#fffaff`）
+    全部併入 `var(--white)`；拼法不一致的 `#EFE6D2` 併入 `var(--paper-deep)`。
+  - 品牌色 rgba 家族 → `color-mix(in srgb, var(--tidal) 18%, transparent)`（等值替換）。
+  - 圓角恰為 8/12/18/24/999(px) → `var(--radius-*)`；`var(--x,#HEX)` 等值 fallback 清理為 `var(--x)`。
+  - 字型堆疊：Fraunces 5 種寫法 → `var(--font-display)`；Georgia 3 種 → `var(--font-serif)`；
+    Noto Sans TC → `var(--font-sans)`；等寬 → `var(--font-mono)`。
+- **共用元件類別**：新增 `.app-btn`（primary/accent/secondary/ghost）、`.app-card`、
+  `.app-input`——外觀基準取自全站多數按鈕（44px 高、md 圓角、字重 800），新頁面直接取用。
+- **死碼移除**：`index.css` 開頭的 `.analytics-consent-*` 區塊（元件已被 PrivacyBanner
+  取代、無人渲染）。`components/AnalyticsConsentPrompt.tsx` 本體+測試仍在，可擇期刪。
+- **文件**：新增 `docs/design-tokens.md`（色板表、尺度、規範、後續空間）。
+- **守門測試更新**：`globalTheme.test.ts` 改斷言 token 化後的合約（`var(--paper)`、
+  `var(--font-sans)`、`var(--radius-pill)`）。
+
+### 驗證（視覺零變動的證據）
+- **前後截圖比對**：11 個代表頁 × 桌面 1280／手機 390，22 張全拍（先關掉隱私橫幅、
+  簽到彈窗、新手導覽）。逐張像素 diff：**手機 0.00%、桌面 0.03%**——唯一差異是
+  頁首 logo 副標「台灣學習航海日誌」的襯線字換成 Noto Serif TC（字型統一的預期效果），
+  其餘版面完全一致。
+- `tsc --noEmit` 0 錯誤；全測試 **745 項全過**（game 393／components 191／pages 161）；
+  `vite build` 成功。已 push（`a2b9f3a` + `11d5e79`），Render 會自動部署。
+
+### 後續待辦
+- 圓角過渡值（10/13/14/16/20/22px，約 250 處）收斂會微調外觀，需逐頁目檢後再做。
+- 一次性陰影長尾（536 種中的多數）維持原樣；新樣式請用 `--shadow-*`。
+- TSX 內聯樣式與 canvas 遊戲代碼的色碼未納入本輪。
+- `.principle-guide` 在 index.css 有新舊兩套定義（後者覆蓋前者），舊段疑似死碼待確認移除。
