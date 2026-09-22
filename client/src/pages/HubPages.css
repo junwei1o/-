@@ -20,11 +20,16 @@
 }
 
 .hub-title {
+  display: flex;
+  align-items: center;
+  gap: 9px;
   margin: 0;
   color: var(--tidal-deep);
   font-size: 30px;
   line-height: 1.2;
 }
+
+.hub-title svg { flex: none; color: var(--tidal); }
 
 .hub-sub {
   margin: 6px 0 0;

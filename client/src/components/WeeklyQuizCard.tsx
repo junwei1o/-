@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { CheckCircle2, Coins, Lock, RotateCw, TrendingUp, X } from "lucide-react";
+import { BookOpenCheck, CalendarDays, CheckCircle2, Coins, Lock, RotateCw, Sparkles, TrendingUp, X } from "lucide-react";
 import { toast } from "sonner";
 import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
@@ -192,26 +192,31 @@ export function WeeklyQuizCard() {
     body = (
       <section className="weekly-quiz-card" aria-label="AI 自動週測">
         <div className="weekly-quiz-head">
-          <span className="weekly-quiz-emoji" aria-hidden="true">🗓️</span>
+          <span className="weekly-quiz-emoji" aria-hidden="true"><CalendarDays size={22} /></span>
           <div>
             <h2 className="weekly-quiz-title">AI 自動週測</h2>
             <p className="weekly-quiz-hint">每週五自動出 10 題回顧本週學習</p>
           </div>
         </div>
         <p className="weekly-quiz-empty">
-          週測會依雲端船籍的答題紀錄自動出題，請先
+          週測會依雲端船籍的答題紀錄自動出題、回顧本週重點。在那之前，你也可以先在本機練一輪：
+        </p>
+        <div className="weekly-quiz-local-actions">
+          <button type="button" className="weekly-quiz-local-primary" onClick={() => setLocation("/practice")}>
+            <BookOpenCheck size={17} aria-hidden="true" />
+            先用本地題庫練一輪
+          </button>
           <button type="button" className="weekly-quiz-link" onClick={() => setLocation("/settings")}>
             開啟雲端船籍
           </button>
-          再回來挑戰。
-        </p>
+        </div>
       </section>
     );
   } else if (query.isLoading) {
     body = (
       <section className="weekly-quiz-card" aria-label="AI 自動週測">
         <div className="weekly-quiz-head">
-          <span className="weekly-quiz-emoji" aria-hidden="true">🗓️</span>
+          <span className="weekly-quiz-emoji" aria-hidden="true"><CalendarDays size={22} /></span>
           <div>
             <h2 className="weekly-quiz-title">AI 自動週測</h2>
             <p className="weekly-quiz-hint">載入中…</p>
@@ -223,7 +228,7 @@ export function WeeklyQuizCard() {
     body = (
       <section className="weekly-quiz-card" aria-label="AI 自動週測">
         <div className="weekly-quiz-head">
-          <span className="weekly-quiz-emoji" aria-hidden="true">🗓️</span>
+          <span className="weekly-quiz-emoji" aria-hidden="true"><CalendarDays size={22} /></span>
           <div>
             <h2 className="weekly-quiz-title">AI 自動週測</h2>
             <p className="weekly-quiz-hint">10 題回顧本週學習</p>
@@ -239,7 +244,7 @@ export function WeeklyQuizCard() {
     body = (
       <section className="weekly-quiz-card" aria-label="AI 自動週測">
         <div className="weekly-quiz-head">
-          <span className="weekly-quiz-emoji" aria-hidden="true">🗓️</span>
+          <span className="weekly-quiz-emoji" aria-hidden="true"><CalendarDays size={22} /></span>
           <div>
             <h2 className="weekly-quiz-title">AI 自動週測</h2>
             <p className="weekly-quiz-hint">本週回顧已完成</p>
@@ -259,7 +264,7 @@ export function WeeklyQuizCard() {
     body = (
       <section className="weekly-quiz-card" aria-label="AI 自動週測">
         <div className="weekly-quiz-head">
-          <span className="weekly-quiz-emoji" aria-hidden="true">🗓️</span>
+          <span className="weekly-quiz-emoji" aria-hidden="true"><CalendarDays size={22} /></span>
           <div>
             <h2 className="weekly-quiz-title">本週週測</h2>
             <p className="weekly-quiz-hint">依本週答題表現挑的 10 題回顧</p>
@@ -368,7 +373,7 @@ export function WeeklyQuizCard() {
             <button type="button" className="weekly-quiz-modal-close" aria-label="關閉成就畫面" onClick={closeCelebration}>
               <X size={18} aria-hidden="true" />
             </button>
-            <p className="weekly-quiz-modal-emoji" aria-hidden="true">🎉</p>
+            <p className="weekly-quiz-modal-emoji" aria-hidden="true"><Sparkles size={34} /></p>
             <h3 className="weekly-quiz-modal-title">本週週測完成！</h3>
             <div className="weekly-quiz-modal-score">
               <strong>
@@ -385,7 +390,7 @@ export function WeeklyQuizCard() {
               </span>
             </div>
             <div className="weekly-quiz-modal-badge">
-              <span className="weekly-quiz-modal-badge-icon" aria-hidden="true">🗓️</span>
+              <span className="weekly-quiz-modal-badge-icon" aria-hidden="true"><CalendarDays size={20} /></span>
               <div>
                 <small>成就解鎖</small>
                 <strong>每週遠征家</strong>

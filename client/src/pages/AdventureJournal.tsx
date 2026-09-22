@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { ArrowLeft, BookOpenText, Volume2 } from "lucide-react";
+import { ArrowLeft, BookOpenText, Compass, Swords, Volume2 } from "lucide-react";
 import { useLocation } from "wouter";
 import { getJournalEntries, type JournalEntry } from "@/game/adventureJournal";
 import { createSpeechController, type SpeechStatus } from "@/lib/speechSynthesis";
@@ -39,7 +39,7 @@ export default function AdventureJournal() {
           <ol>
             {entries.map((entry) => (
               <li key={entry.id}>
-                <span className="adventure-journal-dot" aria-hidden="true">{entry.sessionType === "battle" ? "⚔️" : "🧭"}</span>
+                <span className="adventure-journal-dot" aria-hidden="true">{entry.sessionType === "battle" ? <Swords size={15} /> : <Compass size={15} />}</span>
                 <article>
                   <div className="adventure-journal-entry-heading">
                     <time dateTime={new Date(entry.date).toISOString()}>{formatJournalTime(entry.date)}</time>
@@ -54,7 +54,7 @@ export default function AdventureJournal() {
           </ol>
         ) : (
           <div className="adventure-journal-empty" role="status">
-            <span aria-hidden="true">🧭</span>
+            <span aria-hidden="true"><Compass size={44} /></span>
             <h2>下一段航線正等著你</h2>
             <p>尚未找到可驗證的完成紀錄。完成一份試卷或一場學習對戰後，這裡會留下真實的探索回顧。</p>
             <button type="button" onClick={() => setLocation("/")}>開始今日試卷</button>

@@ -1,4 +1,5 @@
 import React from "react";
+import { CalendarDays } from "lucide-react";
 import { WeeklyQuizCard } from "@/components/WeeklyQuizCard";
 import "./HubPages.css";
 import "@/components/WeeklyQuizCard.css";
@@ -12,7 +13,7 @@ export default function WeeklyQuizPage() {
     <main className="hub-page weekly-quiz-page" aria-labelledby="weekly-quiz-page-title">
       <header className="hub-header">
         <p className="hub-eyebrow">WEEKLY QUIZ</p>
-        <h1 className="hub-title" id="weekly-quiz-page-title">🗓️ 本週週測</h1>
+        <h1 className="hub-title" id="weekly-quiz-page-title"><CalendarDays size={28} aria-hidden="true" /> 本週週測</h1>
         <p className="hub-sub">每週五自動出 10 題，回顧本週學過的重點；週日 23:59 前都可以作答。</p>
       </header>
       <div className="weekly-quiz-page-body">

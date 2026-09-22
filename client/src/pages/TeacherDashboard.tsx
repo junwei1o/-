@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useLocation } from "wouter";
 import { ClipboardList, Copy, Download, Lightbulb, School, Sparkles, Target, Trash2, UserRound, Users } from "lucide-react";
 import { trpc } from "@/lib/trpc";
+import { getCloudMode } from "@/game/cloudSync";
 import { TeacherLineSection } from "@/components/TeacherLineSection";
 import { MIN_GRADE, MAX_GRADE } from "@/game/adaptiveLearning";
 import "@/pages/TeacherDashboard.css";
@@ -131,6 +132,8 @@ function StudentCard({
  */
 export default function TeacherDashboard() {
   const [, setLocation] = useLocation();
+  // local-first 未開雲端船籍時沒有後端；AI 用量等雲端專區整段不渲染、也不發請求。
+  const isCloud = getCloudMode().mode === "cloud";
   const [code, setCode] = useState<string>(() => localStorage.getItem(TEACHER_CODE_KEY) ?? "");
   const [codeInput, setCodeInput] = useState("");
   const [className, setClassName] = useState("");
@@ -151,7 +154,7 @@ export default function TeacherDashboard() {
   const trimmedCode = code.trim().toUpperCase();
 
   /** AI 伴讀用量（全站）：供應商實際回傳的 token，未回傳時為 0。 */
-  const aiUsageQuery = trpc.aiTutor.tokenUsage.useQuery({}, { retry: false, staleTime: 60_000 });
+  const aiUsageQuery = trpc.aiTutor.tokenUsage.useQuery({}, { enabled: isCloud, retry: false, staleTime: 60_000 });
 
   const classQuery = trpc.teacher.getClass.useQuery(
     { code: trimmedCode },
@@ -559,6 +562,7 @@ export default function TeacherDashboard() {
           </>
         )}
 
+        {isCloud && (
         <section className="teacher-card" aria-labelledby="ai-usage-title">
           <div className="teacher-card-title">
             <Sparkles size={19} aria-hidden="true" />
@@ -596,6 +600,7 @@ export default function TeacherDashboard() {
             </>
           ) : null}
         </section>
+        )}
       </div>
     </main>
   );

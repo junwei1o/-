@@ -56,7 +56,12 @@ const FeaturesDirectory = React.lazy(() => import("@/pages/FeaturesDirectory"));
 function PageLoader() {
   return (
     <div className="app-page-loader" role="status" aria-live="polite">
-      <span className="app-page-loader-ship" aria-hidden="true">⛵️</span>
+      <svg className="app-page-loader-ship" viewBox="0 0 48 48" width="32" height="32" aria-hidden="true">
+        <path d="M23.2 5 L23.2 30.5 L25 30.5 L25 5 Z" fill="var(--tidal-deep)" />
+        <path d="M25 7 L25 29 L38.5 29 Z" fill="var(--white)" />
+        <path d="M23 9.5 L23 29 L11.5 29 Z" fill="color-mix(in srgb, var(--tidal) 72%, var(--white))" />
+        <path d="M9.5 31 Q16.5 37 24 33.5 Q31.5 37 38.5 31 L35.5 38 Q24 42.5 12.5 38 Z" fill="var(--coral)" />
+      </svg>
       <span className="app-page-loader-spinner" aria-hidden="true" />
       <span>載入中…</span>
     </div>

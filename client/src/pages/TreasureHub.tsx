@@ -1,6 +1,6 @@
 import React from "react";
 import { useLocation } from "wouter";
-import { MapPin, Medal, Sparkles, Telescope } from "lucide-react";
+import { Compass, MapPin, Medal, Sparkles, Telescope } from "lucide-react";
 import "./HubPages.css";
 
 /**
@@ -10,9 +10,9 @@ export default function TreasureHub() {
   const [, setLocation] = useLocation();
 
   const treasures = [
-    { id: "badges", label: "🏅 徽章", desc: "收集探險徽章，點亮成就。", href: "/badges", icon: Medal },
-    { id: "items", label: "🧺 特產", desc: "答題與探索累積的特產，在首頁背包查看。", href: "/", icon: MapPin },
-    { id: "gallery", label: "🔭 知識展廳", desc: "天文、科學原理、生活安全等專題展區。", href: "/gallery", icon: Telescope },
+    { id: "badges", label: "徽章", desc: "收集探險徽章，點亮成就。", href: "/badges", icon: Medal },
+    { id: "items", label: "特產", desc: "答題與探索累積的特產，在首頁背包查看。", href: "/", icon: MapPin },
+    { id: "gallery", label: "知識展廳", desc: "天文、科學原理、生活安全等專題展區。", href: "/gallery", icon: Telescope },
   ];
 
   return (
@@ -20,7 +20,7 @@ export default function TreasureHub() {
       <header className="illustration-hero" style={{ "--hero": "url(/assets/illustration/island-overview.webp)" } as React.CSSProperties}>
         <div className="illustration-hero-copy">
           <p className="hub-eyebrow">TREASURE MAP</p>
-          <h1 className="hub-title" id="treasure-title">🧭 藏寶圖</h1>
+          <h1 className="hub-title" id="treasure-title"><Compass size={28} aria-hidden="true" /> 藏寶圖</h1>
           <p className="hub-sub">徽章、特產與知識展廳，收集與探索的入口都在這。</p>
         </div>
       </header>

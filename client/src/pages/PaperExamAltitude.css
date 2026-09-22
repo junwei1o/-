@@ -18,11 +18,11 @@
   align-items: center;
   min-width: 13.5rem;
   padding: 0.62rem 0.7rem;
-  border: 1px solid rgba(46, 90, 76, 0.25);
+  border: 1px solid var(--line);
   border-radius:var(--radius-lg);
   color: #1b4b45;
   background: color-mix(in srgb, var(--paper) 82%, transparent);
-  box-shadow: 0 6px 14px rgba(39, 80, 72, 0.1), inset 0 1px 0 color-mix(in srgb, var(--white) 72%, transparent);
+  box-shadow: 0 6px 14px rgba(31, 48, 49, 0.1), inset 0 1px 0 color-mix(in srgb, var(--white) 72%, transparent);
 }
 
 .paper-altitude-meter {
@@ -91,17 +91,17 @@
   align-items: center;
   margin: 1rem 0;
   padding: 0.85rem 0.95rem;
-  border: 1px solid rgba(46, 90, 76, 0.28);
+  border: 1px solid var(--line);
   border-radius:var(--radius-lg);
   color: #284f44;
   background: linear-gradient(135deg, rgba(239, 249, 243, 0.94), color-mix(in srgb, var(--paper) 90%, transparent));
-  box-shadow: 0 8px 18px rgba(39, 80, 72, 0.1), inset 0 1px 0 color-mix(in srgb, var(--white) 84%, transparent);
+  box-shadow: 0 8px 18px rgba(31, 48, 49, 0.1), inset 0 1px 0 color-mix(in srgb, var(--white) 84%, transparent);
 }
 
 .paper-next-group-tip > svg {
   align-self: start;
   margin-top: 0.08rem;
-  color: #39735a;
+  color: var(--tidal);
 }
 
 .paper-next-group-tip-copy {
@@ -136,7 +136,7 @@
 }
 
 .paper-next-group-tip-copy span {
-  color: #5a7064;
+  color: var(--muted);
   font-size: 0.75rem;
   line-height: 1.38;
 }
@@ -174,7 +174,7 @@
 
 .paper-next-group-tip-sound-toggle:hover {
   background: color-mix(in srgb, var(--white) 92%, transparent);
-  box-shadow: 0 4px 10px rgba(39, 80, 72, 0.12);
+  box-shadow: 0 4px 10px rgba(31, 48, 49, 0.12);
 }
 
 .paper-next-group-tip-sound-toggle:active {
@@ -484,14 +484,14 @@
 
 .paper-error-classification { display: grid; gap: 0.45rem; margin-top: 0.75rem; padding: 0.7rem; border: 1px solid rgba(255, 107, 53, 0.22); border-radius:var(--radius-md); background: rgba(255, 248, 238, 0.68); color: #6f4d35; font-size: 0.82rem; }
 .paper-error-classification-actions { display: flex; flex-wrap: wrap; gap: 0.45rem; }
-.paper-error-classification-actions button, .paper-explanation-toggle, .paper-doubt-button { display: inline-flex; align-items: center; justify-content: center; gap: 0.3rem; min-height: 2.35rem; padding: 0.45rem 0.72rem; border: 1px solid rgba(46, 90, 76, 0.28); border-radius:var(--radius-pill); color: #315f4e; background: color-mix(in srgb, var(--white) 72%, transparent); font: inherit; font-size: 0.78rem; font-weight: 800; cursor: pointer; transition: transform 160ms var(--ease-out), box-shadow 160ms var(--ease-out), background-color 160ms var(--ease-out); }
-.paper-error-classification-actions button:hover, .paper-explanation-toggle:hover, .paper-doubt-button:hover { background: var(--white); box-shadow: 0 4px 10px rgba(39, 80, 72, 0.12); }
+.paper-error-classification-actions button, .paper-explanation-toggle, .paper-doubt-button { display: inline-flex; align-items: center; justify-content: center; gap: 0.3rem; min-height: 2.35rem; padding: 0.45rem 0.72rem; border: 1px solid var(--line); border-radius:var(--radius-pill); color: #315f4e; background: color-mix(in srgb, var(--white) 72%, transparent); font: inherit; font-size: 0.78rem; font-weight: 800; cursor: pointer; transition: transform 160ms var(--ease-out), box-shadow 160ms var(--ease-out), background-color 160ms var(--ease-out); }
+.paper-error-classification-actions button:hover, .paper-explanation-toggle:hover, .paper-doubt-button:hover { background: var(--white); box-shadow: 0 4px 10px rgba(31, 48, 49, 0.12); }
 .paper-error-classification-actions button:active, .paper-explanation-toggle:active, .paper-doubt-button:active { transform: scale(0.97); }
 .paper-error-classification-actions button.is-selected { border-color: #ff8a5c; color: #8a4a2a; background: #fff0e5; }
 .paper-error-classification small { color: #7c674f; font-weight: 700; }
 .paper-explanation-stages { display: grid; gap: 0.25rem; margin-top: 0.8rem; }
 .paper-explanation-stage-label { margin: 0.45rem 0 0; color: #567163; font-size: 0.72rem; font-weight: 900; letter-spacing: 0.04em; }
-.paper-explanation-detail { padding-top: 0.45rem; border-top: 1px dashed rgba(46, 90, 76, 0.2); }
+.paper-explanation-detail { padding-top: 0.45rem; border-top: 1px dashed var(--line); }
 .paper-explanation-actions { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-top: 0.8rem; }
 .paper-doubt-button.is-flagged { border-color: #c0872f; color: #7e5a20; background: #fff5d8; }
 .paper-explanation-toggle:focus-visible, .paper-doubt-button:focus-visible, .paper-error-classification-actions button:focus-visible { outline: 3px solid rgba(33, 110, 147, 0.72); outline-offset: 2px; }
@@ -525,11 +525,11 @@
   gap: 0.35rem;
   min-height: 5.5rem;
   padding: 1rem 0.75rem;
-  border: 2px solid rgba(46, 90, 76, 0.18);
+  border: 2px solid var(--line);
   border-radius:var(--radius-lg);
-  color: #2d5a4e;
+  color: var(--ink);
   background: linear-gradient(135deg, color-mix(in srgb, var(--white) 92%, transparent), color-mix(in srgb, var(--paper) 88%, transparent));
-  box-shadow: 0 4px 12px rgba(39, 80, 72, 0.08), inset 0 1px 0 color-mix(in srgb, var(--white) 80%, transparent);
+  box-shadow: 0 4px 12px rgba(31, 48, 49, 0.08), inset 0 1px 0 color-mix(in srgb, var(--white) 80%, transparent);
   font: inherit;
   cursor: pointer;
   transition: transform 180ms cubic-bezier(0.23, 1, 0.32, 1), box-shadow 180ms cubic-bezier(0.23, 1, 0.32, 1), border-color 180ms ease, background-color 180ms ease;
@@ -537,7 +537,7 @@
 
 .paper-scope-button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(39, 80, 72, 0.14), inset 0 1px 0 color-mix(in srgb, var(--white) 90%, transparent);
+  box-shadow: 0 8px 20px rgba(31, 48, 49, 0.14), inset 0 1px 0 color-mix(in srgb, var(--white) 90%, transparent);
 }
 
 .paper-scope-button:active {
@@ -545,9 +545,9 @@
 }
 
 .paper-scope-button.is-selected {
-  border-color: #10b981;
-  background: linear-gradient(135deg, rgba(225, 244, 232, 0.95), rgba(209, 250, 229, 0.9));
-  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.2), inset 0 1px 0 color-mix(in srgb, var(--white) 90%, transparent);
+  border-color: var(--tidal);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--tidal) 12%, var(--white)), color-mix(in srgb, var(--tidal) 8%, var(--paper)));
+  box-shadow: 0 6px 16px rgba(11, 110, 142, 0.2), inset 0 1px 0 color-mix(in srgb, var(--white) 90%, transparent);
 }
 
 .paper-scope-button strong {
@@ -557,13 +557,13 @@
 }
 
 .paper-scope-button small {
-  color: #5a7064;
+  color: var(--muted);
   font-size: 0.75rem;
   line-height: 1.35;
 }
 
 .paper-scope-button.is-selected small {
-  color: #047857;
+  color: var(--tidal-deep);
 }
 
 /* 答案選項網格 */
@@ -603,18 +603,18 @@
   gap: 0.85rem;
   min-height: 3.5rem;
   padding: 0.85rem 1rem;
-  border: 2px solid rgba(46, 90, 76, 0.16);
+  border: 2px solid var(--line);
   border-radius:var(--radius-lg);
-  color: #2d5a4e;
+  color: var(--ink);
   background: linear-gradient(135deg, color-mix(in srgb, var(--white) 94%, transparent), color-mix(in srgb, var(--paper) 90%, transparent));
-  box-shadow: 0 3px 10px rgba(39, 80, 72, 0.06), inset 0 1px 0 color-mix(in srgb, var(--white) 80%, transparent);
+  box-shadow: 0 3px 10px rgba(31, 48, 49, 0.06), inset 0 1px 0 color-mix(in srgb, var(--white) 80%, transparent);
   cursor: pointer;
   transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1), box-shadow 160ms cubic-bezier(0.23, 1, 0.32, 1), border-color 160ms ease, background-color 160ms ease;
 }
 
 .paper-option:hover {
   transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(39, 80, 72, 0.12), inset 0 1px 0 color-mix(in srgb, var(--white) 90%, transparent);
+  box-shadow: 0 6px 16px rgba(31, 48, 49, 0.12), inset 0 1px 0 color-mix(in srgb, var(--white) 90%, transparent);
 }
 
 .paper-option:active {
@@ -635,7 +635,7 @@
   height: 2rem;
   border-radius:var(--radius-pill);
   color: var(--white);
-  background: #39735a;
+  background: var(--tidal-deep);
   font-size: 0.85rem;
   font-weight: 800;
   flex-shrink: 0;
@@ -649,33 +649,33 @@
 
 /* 選中狀態 */
 .paper-option.is-selected {
-  border-color: #10b981;
-  background: linear-gradient(135deg, rgba(225, 244, 232, 0.95), rgba(209, 250, 229, 0.9));
-  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.18), inset 0 1px 0 color-mix(in srgb, var(--white) 90%, transparent);
+  border-color: var(--tidal);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--tidal) 12%, var(--white)), color-mix(in srgb, var(--tidal) 8%, var(--paper)));
+  box-shadow: 0 4px 14px rgba(11, 110, 142, 0.18), inset 0 1px 0 color-mix(in srgb, var(--white) 90%, transparent);
 }
 
 .paper-option.is-selected > span:first-of-type {
-  background: #10b981;
+  background: var(--tidal);
 }
 
 /* 答對狀態 */
 .paper-option.is-correct {
-  border-color: #10b981;
-  background: linear-gradient(135deg, rgba(209, 250, 229, 0.95), rgba(167, 243, 208, 0.9));
+  border-color: var(--moss);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--moss) 16%, var(--white)), color-mix(in srgb, var(--moss) 10%, var(--paper)));
 }
 
 .paper-option.is-correct > span:first-of-type {
-  background: #059669;
+  background: var(--moss);
 }
 
 /* 答錯狀態 */
 .paper-option.is-wrong {
-  border-color: #f87171;
-  background: linear-gradient(135deg, rgba(254, 226, 226, 0.95), rgba(254, 202, 202, 0.9));
+  border-color: var(--coral);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--coral) 16%, var(--white)), color-mix(in srgb, var(--coral) 10%, var(--paper)));
 }
 
 .paper-option.is-wrong > span:first-of-type {
-  background: #dc2626;
+  background: var(--coral-deep);
 }
 
 /* 手機版微調 */
@@ -730,11 +730,11 @@
   gap: 0.85rem;
   min-height: 4rem;
   padding: 1rem 1.25rem;
-  border: 2px solid rgba(46, 90, 76, 0.18);
+  border: 2px solid var(--line);
   border-radius:var(--radius-lg);
-  color: #2d5a4e;
+  color: var(--ink);
   background: linear-gradient(135deg, color-mix(in srgb, var(--white) 94%, transparent), color-mix(in srgb, var(--paper) 90%, transparent));
-  box-shadow: 0 4px 12px rgba(39, 80, 72, 0.08), inset 0 1px 0 color-mix(in srgb, var(--white) 80%, transparent);
+  box-shadow: 0 4px 12px rgba(31, 48, 49, 0.07), inset 0 1px 0 color-mix(in srgb, var(--white) 80%, transparent);
   font: inherit;
   text-align: left;
   cursor: pointer;
@@ -742,9 +742,10 @@
 }
 
 .paper-home-primary {
-  border-color: #10b981;
-  background: linear-gradient(135deg, rgba(225, 244, 232, 0.95), rgba(209, 250, 229, 0.9));
-  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.18), inset 0 1px 0 color-mix(in srgb, var(--white) 90%, transparent);
+  border-color: transparent;
+  color: var(--white);
+  background: linear-gradient(135deg, var(--tidal), var(--tidal-deep));
+  box-shadow: 0 6px 16px rgba(11, 110, 142, 0.22), inset 0 1px 0 color-mix(in srgb, var(--white) 22%, transparent);
 }
 
 .paper-home-primary strong,
@@ -758,16 +759,20 @@
 .paper-home-primary small,
 .paper-home-secondary small {
   display: block;
-  color: #5a7064;
+  color: var(--muted);
   font-size: 0.8rem;
   line-height: 1.35;
   margin-top: 0.15rem;
 }
 
+.paper-home-primary small {
+  color: rgba(255, 255, 255, 0.86);
+}
+
 .paper-home-primary:hover,
 .paper-home-secondary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(39, 80, 72, 0.14), inset 0 1px 0 color-mix(in srgb, var(--white) 90%, transparent);
+  box-shadow: 0 8px 20px rgba(31, 48, 49, 0.13), inset 0 1px 0 color-mix(in srgb, var(--white) 90%, transparent);
 }
 
 .paper-home-primary:active,
@@ -796,13 +801,13 @@
 
 .paper-primary-button {
   color: var(--white);
-  background: linear-gradient(135deg, #10b981, #059669);
-  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.28), inset 0 1px 0 color-mix(in srgb, var(--white) 20%, transparent);
+  background: linear-gradient(135deg, var(--tidal), var(--tidal-deep));
+  box-shadow: 0 4px 14px rgba(11, 110, 142, 0.28), inset 0 1px 0 color-mix(in srgb, var(--white) 20%, transparent);
 }
 
 .paper-primary-button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 22px rgba(16, 185, 129, 0.35);
+  box-shadow: 0 8px 22px rgba(11, 110, 142, 0.35);
 }
 
 .paper-primary-button:active {
@@ -810,16 +815,16 @@
 }
 
 .paper-secondary-button {
-  color: #2d5a4e;
+  color: var(--ink);
   background: linear-gradient(135deg, color-mix(in srgb, var(--white) 95%, transparent), color-mix(in srgb, var(--paper) 90%, transparent));
-  border-color: rgba(46, 90, 76, 0.2);
-  box-shadow: 0 3px 10px rgba(39, 80, 72, 0.08), inset 0 1px 0 color-mix(in srgb, var(--white) 80%, transparent);
+  border-color: var(--line);
+  box-shadow: 0 3px 10px rgba(31, 48, 49, 0.07), inset 0 1px 0 color-mix(in srgb, var(--white) 80%, transparent);
 }
 
 .paper-secondary-button:hover {
   transform: translateY(-1px);
-  border-color: rgba(46, 90, 76, 0.35);
-  box-shadow: 0 6px 16px rgba(39, 80, 72, 0.14);
+  border-color: color-mix(in srgb, var(--tidal) 40%, var(--line));
+  box-shadow: 0 6px 16px rgba(31, 48, 49, 0.12);
 }
 
 .paper-secondary-button:active {
@@ -828,13 +833,13 @@
 
 .paper-retry-unmastered-button {
   color: var(--white);
-  background: linear-gradient(135deg, #f59e0b, #d97706);
-  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.28), inset 0 1px 0 color-mix(in srgb, var(--white) 20%, transparent);
+  background: linear-gradient(135deg, var(--coral), var(--coral-deep));
+  box-shadow: 0 4px 14px rgba(232, 117, 74, 0.28), inset 0 1px 0 color-mix(in srgb, var(--white) 20%, transparent);
 }
 
 .paper-retry-unmastered-button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 22px rgba(245, 158, 11, 0.35);
+  box-shadow: 0 8px 22px rgba(232, 117, 74, 0.35);
 }
 
 .paper-retry-unmastered-button:active {
@@ -855,15 +860,15 @@
 /* 3. 錯題解析卡片 */
 .paper-wrong-card {
   padding: 1rem;
-  border: 2px solid rgba(46, 90, 76, 0.15);
+  border: 2px solid var(--line);
   border-radius:var(--radius-lg);
   background: linear-gradient(135deg, color-mix(in srgb, var(--white) 94%, transparent), color-mix(in srgb, var(--paper) 90%, transparent));
-  box-shadow: 0 4px 12px rgba(39, 80, 72, 0.08), inset 0 1px 0 color-mix(in srgb, var(--white) 80%, transparent);
+  box-shadow: 0 4px 12px rgba(31, 48, 49, 0.08), inset 0 1px 0 color-mix(in srgb, var(--white) 80%, transparent);
   margin-bottom: 0.75rem;
 }
 
 .paper-wrong-card .paper-question-meta {
-  color: #5a7064;
+  color: var(--muted);
   font-size: 0.8rem;
   font-weight: 700;
   margin-bottom: 0.5rem;
@@ -892,7 +897,7 @@
 }
 
 .paper-wrong-answer-grid span {
-  color: #5a7064;
+  color: var(--muted);
   font-size: 0.75rem;
   font-weight: 700;
 }
@@ -910,7 +915,7 @@
 }
 
 .paper-wrong-filters span {
-  color: #5a7064;
+  color: var(--muted);
   font-size: 0.8rem;
   font-weight: 700;
 }
@@ -918,7 +923,7 @@
 .paper-wrong-filters select {
   min-height: 2.75rem;
   padding: 0.5rem 0.75rem;
-  border: 2px solid rgba(46, 90, 76, 0.2);
+  border: 2px solid var(--line);
   border-radius:var(--radius-md);
   background: color-mix(in srgb, var(--white) 90%, transparent);
   font: inherit;
@@ -928,22 +933,22 @@
 }
 
 .paper-wrong-filters select:hover {
-  border-color: rgba(46, 90, 76, 0.35);
+  border-color: var(--line);
 }
 
 .paper-wrong-filters select:focus {
   outline: none;
-  border-color: #10b981;
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+  border-color: var(--tidal);
+  box-shadow: 0 0 0 3px rgba(11, 110, 142, 0.2);
 }
 
 .paper-filter-reset {
   min-height: 2.5rem;
   padding: 0.5rem 1rem;
-  border: 2px solid rgba(245, 158, 11, 0.3);
+  border: 2px solid var(--line);
   border-radius:var(--radius-md);
-  color: #d97706;
-  background: rgba(255, 251, 235, 0.8);
+  color: var(--ink);
+  background: color-mix(in srgb, var(--white) 92%, transparent);
   font: inherit;
   font-size: 0.85rem;
   font-weight: 700;
@@ -953,7 +958,7 @@
 
 .paper-filter-reset:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 10px rgba(245, 158, 11, 0.2);
+  box-shadow: 0 4px 10px rgba(31, 48, 49, 0.12);
 }
 
 .paper-filter-reset:active {
@@ -975,21 +980,21 @@
   justify-content: center;
   gap: 0.35rem;
   padding: 1rem 0.75rem;
-  border: 2px solid rgba(46, 90, 76, 0.15);
+  border: 2px solid var(--line);
   border-radius:var(--radius-lg);
   background: linear-gradient(135deg, color-mix(in srgb, var(--white) 94%, transparent), color-mix(in srgb, var(--paper) 90%, transparent));
-  box-shadow: 0 4px 12px rgba(39, 80, 72, 0.08), inset 0 1px 0 color-mix(in srgb, var(--white) 80%, transparent);
+  box-shadow: 0 4px 12px rgba(31, 48, 49, 0.08), inset 0 1px 0 color-mix(in srgb, var(--white) 80%, transparent);
 }
 
 .paper-summary-stats strong {
   font-size: 1.5rem;
   font-weight: 800;
-  color: #10b981;
+  color: var(--tidal);
   line-height: 1.2;
 }
 
 .paper-summary-stats span {
-  color: #5a7064;
+  color: var(--muted);
   font-size: 0.8rem;
   font-weight: 700;
 }
@@ -997,10 +1002,10 @@
 /* 6. 掌握度比較卡片 */
 .mastery-comparison-card {
   padding: 1.25rem;
-  border: 2px solid rgba(46, 90, 76, 0.15);
+  border: 2px solid var(--line);
   border-radius:var(--radius-lg);
   background: linear-gradient(135deg, color-mix(in srgb, var(--white) 94%, transparent), color-mix(in srgb, var(--paper) 90%, transparent));
-  box-shadow: 0 4px 12px rgba(39, 80, 72, 0.08), inset 0 1px 0 color-mix(in srgb, var(--white) 80%, transparent);
+  box-shadow: 0 4px 12px rgba(31, 48, 49, 0.08), inset 0 1px 0 color-mix(in srgb, var(--white) 80%, transparent);
   margin: 1.25rem 0;
 }
 
@@ -1020,7 +1025,7 @@
 }
 
 .mastery-comparison-label span {
-  color: #5a7064;
+  color: var(--muted);
   font-size: 0.8rem;
   font-weight: 700;
 }
@@ -1028,7 +1033,7 @@
 .mastery-comparison-label strong {
   font-size: 1.1rem;
   font-weight: 800;
-  color: #2d5a4e;
+  color: var(--ink);
 }
 
 .mastery-comparison-label small {
@@ -1039,7 +1044,7 @@
 .mastery-comparison-track {
   height: 1.5rem;
   border-radius:var(--radius-pill);
-  background: rgba(46, 90, 76, 0.1);
+  background: var(--line);
   overflow: hidden;
 }
 
@@ -1052,11 +1057,11 @@
 }
 
 .mastery-bar-before {
-  background: linear-gradient(90deg, #94a3b8, #64748b);
+  background: linear-gradient(90deg, var(--line), var(--muted));
 }
 
 .mastery-bar-after {
-  background: linear-gradient(90deg, #10b981, #059669);
+  background: linear-gradient(90deg, color-mix(in srgb, var(--moss) 68%, var(--white)), var(--moss));
 }
 
 /* 7. 知識點標籤 */
@@ -1070,13 +1075,13 @@
 .paper-wrong-practice-topic-list span {
   display: inline-block;
   padding: 0.4rem 0.85rem;
-  border: 2px solid rgba(46, 90, 76, 0.2);
+  border: 2px solid var(--line);
   border-radius:var(--radius-pill);
-  color: #2d5a4e;
+  color: var(--ink);
   background: color-mix(in srgb, var(--white) 80%, transparent);
   font-size: 0.85rem;
   font-weight: 700;
-  box-shadow: 0 2px 6px rgba(39, 80, 72, 0.06);
+  box-shadow: 0 2px 6px rgba(31, 48, 49, 0.06);
 }
 
 /* 8. 手機版滿版按鈕 */
@@ -1157,8 +1162,8 @@
 .paper-review-confirmation-actions .paper-primary-button,
 .paper-next-group-tip-actions .paper-primary-button {
   color: var(--white) !important;
-  background: linear-gradient(135deg, #10b981, #059669) !important;
-  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.28), inset 0 1px 0 color-mix(in srgb, var(--white) 20%, transparent) !important;
+  background: linear-gradient(135deg, var(--tidal), var(--tidal-deep)) !important;
+  box-shadow: 0 4px 14px rgba(11, 110, 142, 0.28), inset 0 1px 0 color-mix(in srgb, var(--white) 20%, transparent) !important;
 }
 
 .paper-question-actions .paper-primary-button:hover,
@@ -1166,7 +1171,7 @@
 .paper-review-confirmation-actions .paper-primary-button:hover,
 .paper-next-group-tip-actions .paper-primary-button:hover {
   transform: translateY(-2px) !important;
-  box-shadow: 0 8px 22px rgba(16, 185, 129, 0.35) !important;
+  box-shadow: 0 8px 22px rgba(11, 110, 142, 0.35) !important;
 }
 
 .paper-question-actions .paper-primary-button:active,
@@ -1180,10 +1185,10 @@
 .paper-summary-actions .paper-secondary-button,
 .paper-review-confirmation-actions .paper-secondary-button,
 .paper-next-group-tip-actions .paper-secondary-button {
-  color: #2d5a4e !important;
+  color: var(--ink) !important;
   background: linear-gradient(135deg, color-mix(in srgb, var(--white) 95%, transparent), color-mix(in srgb, var(--paper) 90%, transparent)) !important;
-  border-color: rgba(46, 90, 76, 0.2) !important;
-  box-shadow: 0 3px 10px rgba(39, 80, 72, 0.08), inset 0 1px 0 color-mix(in srgb, var(--white) 80%, transparent) !important;
+  border-color: var(--line) !important;
+  box-shadow: 0 3px 10px rgba(31, 48, 49, 0.08), inset 0 1px 0 color-mix(in srgb, var(--white) 80%, transparent) !important;
 }
 
 .paper-question-actions .paper-secondary-button:hover,
@@ -1191,8 +1196,8 @@
 .paper-review-confirmation-actions .paper-secondary-button:hover,
 .paper-next-group-tip-actions .paper-secondary-button:hover {
   transform: translateY(-1px) !important;
-  border-color: rgba(46, 90, 76, 0.35) !important;
-  box-shadow: 0 6px 16px rgba(39, 80, 72, 0.14) !important;
+  border-color: var(--line) !important;
+  box-shadow: 0 6px 16px rgba(31, 48, 49, 0.14) !important;
 }
 
 .paper-question-actions .paper-secondary-button:active,
@@ -1231,430 +1236,4 @@
     min-height: 3.2rem !important;
     font-size: 1rem !important;
   }
-}
-/* ========== 護眼模式：低藍光琥珀色系 ========== */
-
-:root {
-  --eye-care-primary: #d97706;      /* 琥珀橙（主色） */
-  --eye-care-primary-dark: #b45309; /* 深琥珀 */
-  --eye-care-bg: #fef3c7;           /* 暖米黃（背景） */
-  --eye-care-bg-light: #fffbeb;     /* 淡米黃 */
-  --eye-care-text: #78350f;         /* 深褐（文字） */
-  --eye-care-text-muted: #92400e;   /* 中褐 */
-  --eye-care-border: rgba(180, 83, 9, 0.2); /* 暖邊框 */
-  --eye-care-shadow: rgba(180, 83, 9, 0.12); /* 暖陰影 */
-}
-
-/* 1. 試卷範圍卡片 → 護眼版 */
-.paper-scope-button {
-  border-color: var(--eye-care-border) !important;
-  color: var(--eye-care-text) !important;
-  background: linear-gradient(135deg, color-mix(in srgb, var(--white) 95%, transparent), var(--eye-care-bg-light)) !important;
-  box-shadow: 0 4px 12px var(--eye-care-shadow), inset 0 1px 0 color-mix(in srgb, var(--white) 80%, transparent) !important;
-}
-
-.paper-scope-button.is-selected {
-  border-color: var(--eye-care-primary) !important;
-  background: linear-gradient(135deg, var(--eye-care-bg), #fde68a) !important;
-  box-shadow: 0 6px 16px rgba(217, 119, 6, 0.25), inset 0 1px 0 color-mix(in srgb, var(--white) 90%, transparent) !important;
-}
-
-.paper-scope-button small {
-  color: var(--eye-care-text-muted) !important;
-}
-
-.paper-scope-button.is-selected small {
-  color: var(--eye-care-primary-dark) !important;
-}
-
-/* 2. 答案選項 → 護眼版 */
-.paper-option {
-  border-color: var(--eye-care-border) !important;
-  color: var(--eye-care-text) !important;
-  background: linear-gradient(135deg, color-mix(in srgb, var(--white) 96%, transparent), var(--eye-care-bg-light)) !important;
-  box-shadow: 0 3px 10px var(--eye-care-shadow), inset 0 1px 0 color-mix(in srgb, var(--white) 80%, transparent) !important;
-}
-
-.paper-option > span:first-of-type {
-  background: var(--eye-care-primary) !important;
-}
-
-.paper-option.is-selected {
-  border-color: var(--eye-care-primary) !important;
-  background: linear-gradient(135deg, var(--eye-care-bg), #fde68a) !important;
-  box-shadow: 0 4px 14px rgba(217, 119, 6, 0.22), inset 0 1px 0 color-mix(in srgb, var(--white) 90%, transparent) !important;
-}
-
-.paper-option.is-correct {
-  border-color: #059669 !important; /* 答對保留綠色（正面反饋） */
-  background: linear-gradient(135deg, #d1fae5, #a7f3d0) !important;
-}
-
-.paper-option.is-correct > span:first-of-type {
-  background: #059669 !important;
-}
-
-.paper-option.is-wrong {
-  border-color: #dc2626 !important; /* 答錯保留紅色（警示） */
-  background: linear-gradient(135deg, #fee2e2, #fecaca) !important;
-}
-
-.paper-option.is-wrong > span:first-of-type {
-  background: #dc2626 !important;
-}
-
-/* 3. 主要按鈕 → 護眼版 */
-.paper-primary-button,
-.paper-home-primary,
-.paper-question-actions .paper-primary-button,
-.paper-summary-actions .paper-primary-button,
-.paper-review-confirmation-actions .paper-primary-button,
-.paper-next-group-tip-actions .paper-primary-button {
-  color: var(--white) !important;
-  background: linear-gradient(135deg, var(--eye-care-primary), var(--eye-care-primary-dark)) !important;
-  box-shadow: 0 4px 14px rgba(217, 119, 6, 0.3), inset 0 1px 0 color-mix(in srgb, var(--white) 20%, transparent) !important;
-}
-
-.paper-secondary-button,
-.paper-home-secondary,
-.paper-question-actions .paper-secondary-button,
-.paper-summary-actions .paper-secondary-button,
-.paper-review-confirmation-actions .paper-secondary-button,
-.paper-next-group-tip-actions .paper-secondary-button {
-  color: var(--eye-care-text) !important;
-  background: linear-gradient(135deg, color-mix(in srgb, var(--white) 96%, transparent), var(--eye-care-bg-light)) !important;
-  border-color: var(--eye-care-border) !important;
-  box-shadow: 0 3px 10px var(--eye-care-shadow), inset 0 1px 0 color-mix(in srgb, var(--white) 80%, transparent) !important;
-}
-
-.paper-retry-unmastered-button {
-  color: var(--white) !important;
-  background: linear-gradient(135deg, #ea580c, #c2410c) !important; /* 深橘強調 */
-  box-shadow: 0 4px 14px rgba(234, 88, 12, 0.3), inset 0 1px 0 color-mix(in srgb, var(--white) 20%, transparent) !important;
-}
-
-/* 4. 玉山高度計 → 護眼版 */
-.paper-altitude-card {
-  border-color: rgba(180, 83, 9, 0.25) !important;
-  color: var(--eye-care-text) !important;
-  background: rgba(254, 243, 199, 0.85) !important;
-  box-shadow: 0 6px 14px var(--eye-care-shadow), inset 0 1px 0 color-mix(in srgb, var(--white) 72%, transparent) !important;
-}
-
-.paper-altitude-copy p,
-.paper-altitude-copy small {
-  color: var(--eye-care-text-muted) !important;
-}
-
-.paper-altitude-copy strong {
-  color: var(--eye-care-text) !important;
-}
-
-.paper-altitude-meter {
-  border-color: rgba(180, 83, 9, 0.4) !important;
-  background: linear-gradient(180deg, #fffdf4 0%, #fde68a 42%, #fbbf24 100%) !important;
-}
-
-.paper-altitude-meter-fill {
-  background: linear-gradient(0deg, #d97706 0%, #fbbf24 46%, color-mix(in srgb, var(--white) 94%, transparent) 100%) !important;
-}
-
-/* 5. 下一組提示卡 → 護眼版 */
-.paper-next-group-tip {
-  border-color: rgba(180, 83, 9, 0.28) !important;
-  color: var(--eye-care-text) !important;
-  background: linear-gradient(135deg, rgba(254, 243, 199, 0.94), rgba(255, 251, 235, 0.9)) !important;
-  box-shadow: 0 8px 18px var(--eye-care-shadow), inset 0 1px 0 color-mix(in srgb, var(--white) 84%, transparent) !important;
-}
-
-.paper-next-group-tip > svg {
-  color: var(--eye-care-primary) !important;
-}
-
-.paper-next-group-tip-copy p {
-  color: var(--eye-care-text-muted) !important;
-}
-
-.paper-next-group-tip-copy h2,
-.paper-next-group-tip-copy strong {
-  color: var(--eye-care-text) !important;
-}
-
-.paper-next-group-tip-copy span {
-  color: var(--eye-care-text-muted) !important;
-}
-
-.paper-next-group-tip-sound-toggle {
-  border-color: rgba(180, 83, 9, 0.34) !important;
-  color: var(--eye-care-text) !important;
-  background: color-mix(in srgb, var(--white) 62%, transparent) !important;
-}
-
-/* 6. 登頂鼓勵卡 → 護眼版（本來就是暖色，微調） */
-.paper-summit-encouragement {
-  border-color: rgba(180, 83, 9, 0.34) !important;
-  background: linear-gradient(135deg, rgba(255, 253, 244, 0.94), rgba(253, 230, 138, 0.82)) !important;
-  box-shadow: 0 8px 18px rgba(180, 83, 9, 0.15), inset 0 1px 0 color-mix(in srgb, var(--white) 80%, transparent) !important;
-}
-
-.paper-summit-encouragement > svg {
-  color: var(--eye-care-primary) !important;
-}
-
-.paper-summit-encouragement-copy p {
-  color: var(--eye-care-primary-dark) !important;
-}
-
-.paper-summit-encouragement-copy strong {
-  color: var(--eye-care-text) !important;
-}
-
-.paper-summit-encouragement-copy span {
-  color: var(--eye-care-text-muted) !important;
-}
-
-/* 7. 錯題解析卡 → 護眼版 */
-.paper-wrong-card {
-  border-color: var(--eye-care-border) !important;
-  background: linear-gradient(135deg, color-mix(in srgb, var(--white) 96%, transparent), var(--eye-care-bg-light)) !important;
-  box-shadow: 0 4px 12px var(--eye-care-shadow), inset 0 1px 0 color-mix(in srgb, var(--white) 80%, transparent) !important;
-}
-
-.paper-wrong-card .paper-question-meta {
-  color: var(--eye-care-text-muted) !important;
-}
-
-.paper-wrong-answer-grid p {
-  background: rgba(254, 243, 199, 0.6) !important;
-}
-
-.paper-wrong-answer-grid span {
-  color: var(--eye-care-text-muted) !important;
-}
-
-/* 8. 統計數據卡 → 護眼版 */
-.paper-summary-stats > div {
-  border-color: var(--eye-care-border) !important;
-  background: linear-gradient(135deg, color-mix(in srgb, var(--white) 96%, transparent), var(--eye-care-bg-light)) !important;
-  box-shadow: 0 4px 12px var(--eye-care-shadow), inset 0 1px 0 color-mix(in srgb, var(--white) 80%, transparent) !important;
-}
-
-.paper-summary-stats strong {
-  color: var(--eye-care-primary) !important;
-}
-
-.paper-summary-stats span {
-  color: var(--eye-care-text-muted) !important;
-}
-
-/* 9. 掌握度比較條 → 護眼版 */
-.mastery-comparison-card {
-  border-color: var(--eye-care-border) !important;
-  background: linear-gradient(135deg, color-mix(in srgb, var(--white) 96%, transparent), var(--eye-care-bg-light)) !important;
-  box-shadow: 0 4px 12px var(--eye-care-shadow), inset 0 1px 0 color-mix(in srgb, var(--white) 80%, transparent) !important;
-}
-
-.mastery-comparison-label span {
-  color: var(--eye-care-text-muted) !important;
-}
-
-.mastery-comparison-label strong {
-  color: var(--eye-care-text) !important;
-}
-
-.mastery-comparison-track {
-  background: rgba(180, 83, 9, 0.1) !important;
-}
-
-.mastery-bar-after {
-  background: linear-gradient(90deg, var(--eye-care-primary), var(--eye-care-primary-dark)) !important;
-}
-
-/* 10. 知識點標籤 → 護眼版 */
-.paper-wrong-practice-topic-list span {
-  border-color: var(--eye-care-border) !important;
-  color: var(--eye-care-text) !important;
-  background: color-mix(in srgb, var(--white) 80%, transparent) !important;
-  box-shadow: 0 2px 6px var(--eye-care-shadow) !important;
-}
-
-/* 11. 篩選下拉/清除按鈕 → 護眼版 */
-.paper-wrong-filters select {
-  border-color: var(--eye-care-border) !important;
-  background: color-mix(in srgb, var(--white) 90%, transparent) !important;
-}
-
-.paper-wrong-filters select:focus {
-  border-color: var(--eye-care-primary) !important;
-  box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.2) !important;
-}
-
-.paper-filter-reset {
-  border-color: rgba(234, 88, 12, 0.3) !important;
-  color: #ea580c !important;
-  background: rgba(255, 247, 237, 0.8) !important;
-}
-
-/* 12. 錯誤分類按鈕 → 護眼版 */
-.paper-error-classification {
-  border-color: rgba(234, 88, 12, 0.22) !important;
-  background: rgba(255, 247, 237, 0.68) !important;
-  color: var(--eye-care-text) !important;
-}
-
-.paper-error-classification-actions button,
-.paper-explanation-toggle,
-.paper-doubt-button {
-  border-color: var(--eye-care-border) !important;
-  color: var(--eye-care-text) !important;
-  background: color-mix(in srgb, var(--white) 72%, transparent) !important;
-}
-
-.paper-error-classification-actions button.is-selected {
-  border-color: #ea580c !important;
-  color: #9a3412 !important;
-  background: #ffedd5 !important;
-}
-
-.paper-doubt-button.is-flagged {
-  border-color: #d97706 !important;
-  color: #92400e !important;
-  background: #fef3c7 !important;
-}
-
-/* 13. 頁面背景 → 護眼暖色 */
-.paper-exam-page {
-  background: linear-gradient(180deg, #fffbeb 0%, #fef3c7 100%) !important;
-  min-height: 100vh;
-}
-
-.paper-exam-hero,
-.paper-exam-panel,
-.paper-question-panel,
-.paper-summary-panel {
-  background: color-mix(in srgb, var(--white) 60%, transparent) !important;
-  border-radius:var(--radius-xl);
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
-  box-shadow: 0 4px 12px var(--eye-care-shadow);
-}
-
-/* 14. 文字顏色統一 → 護眼深褐 */
-.paper-exam-kicker,
-.paper-exam-eyebrow,
-.paper-question-meta,
-.paper-explanation-stage-label,
-.paper-challenge-prompt {
-  color: var(--eye-care-text-muted) !important;
-}
-
-h1, h2, h3,
-.paper-question-prompt,
-.paper-wrong-prompt,
-.paper-explanation,
-.paper-completion-note {
-  color: var(--eye-care-text) !important;
-}
-
-/* 15. 朗讀按鈕 → 護眼版 */
-.speech-read-control {
-  border-color: var(--eye-care-border) !important;
-  color: var(--eye-care-text) !important;
-  background: color-mix(in srgb, var(--white) 70%, transparent) !important;
-}
-
-.speech-read-control:hover {
-  background: color-mix(in srgb, var(--white) 90%, transparent) !important;
-  box-shadow: 0 4px 10px var(--eye-care-shadow) !important;
-}
-
-/* 16. 結果頁備考小提醒（讀書技巧卡片） */
-.paper-summary-tips {
-  margin: 0 0 1.75rem;
-  padding: 1.1rem 1.2rem 1.25rem;
-  border: 1px solid rgba(217, 160, 45, 0.35);
-  border-left: 4px solid var(--yellow);
-  border-radius:var(--radius-lg);
-  background: linear-gradient(135deg, rgba(255, 250, 235, 0.96) 0%, color-mix(in srgb, var(--white) 94%, transparent) 100%);
-  box-shadow: 0 4px 12px rgba(39, 80, 72, 0.06);
-}
-
-.paper-summary-tips-heading {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-bottom: 0.85rem;
-}
-
-.paper-summary-tips-title {
-  display: flex;
-  align-items: center;
-  gap: 0.45rem;
-  margin: 0;
-  font-size: 1.02rem;
-  font-weight: 800;
-  color: var(--eye-care-text);
-}
-
-.paper-summary-tips-title svg {
-  color: #c28a12;
-  flex-shrink: 0;
-}
-
-.paper-summary-tips-link {
-  border: none;
-  background: none;
-  padding: 0;
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: #b07d10;
-  cursor: pointer;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
-.paper-summary-tips-link:hover {
-  color: #8a6108;
-}
-
-.paper-summary-tips-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 0.5rem 1.5rem;
-}
-
-.paper-summary-tips-subject {
-  margin: 0 0 0.4rem;
-  font-size: 0.95rem;
-  font-weight: 800;
-  color: var(--eye-care-text);
-}
-
-.paper-summary-tips-group ul {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  display: grid;
-  gap: 0.45rem;
-}
-
-.paper-summary-tips-group li {
-  position: relative;
-  padding-left: 1rem;
-  font-size: 0.88rem;
-  line-height: 1.6;
-  color: var(--eye-care-text-muted);
-}
-
-.paper-summary-tips-group li::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 0.68em;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #d9a02d;
 }

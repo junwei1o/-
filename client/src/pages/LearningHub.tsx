@@ -39,7 +39,7 @@ export default function LearningHub() {
     <main className="hub-page" aria-labelledby="learning-title">
       <header className="hub-header">
         <p className="hub-eyebrow">LEARNING LOG</p>
-        <h1 className="hub-title" id="learning-title">📊 學習歷程</h1>
+        <h1 className="hub-title" id="learning-title"><BarChart3 size={28} aria-hidden="true" /> 學習歷程</h1>
         <p className="hub-sub">同一筆資料，三個視角：學生、錯題、家長。</p>
       </header>
       <div className="hub-tabs" role="tablist" aria-label="學習歷程視角">

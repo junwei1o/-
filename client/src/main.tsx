@@ -36,9 +36,19 @@ initAnalytics();
 
 const queryClient = new QueryClient();
 
+// local-first、未接後端時，部分查詢會被 SPA fallback 回 index.html 或直接網路失敗，
+// 屬於預期性降級（元件皆有本地兜底），不該印成紅字污染 console；只記錄非預期的真實錯誤。
+function isExpectedOfflineError(err: unknown): boolean {
+  const msg = err instanceof Error ? err.message : String(err);
+  return /Unexpected token|Failed to fetch|fetch failed|Network ?Error|not valid JSON|Load failed/i.test(msg);
+}
+
 queryClient.getQueryCache().subscribe(event => {
   if (event.type === "updated" && event.action.type === "error") {
-    console.error("[API Query Error]", event.query.state.error);
+    const err = event.query.state.error;
+    if (!isExpectedOfflineError(err)) {
+      console.error("[API Query Error]", err);
+    }
   }
 });
 

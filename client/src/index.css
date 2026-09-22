@@ -2399,9 +2399,9 @@ nav { display:grid; gap:7px; }
 .settings-clear-confirm p { margin: .4rem 0 0; color: var(--muted-foreground); }
 .settings-audio-card { margin: 1rem 0; padding: 1.1rem; border: 1px solid var(--border); border-radius:var(--radius-lg); background: color-mix(in srgb, var(--card) 92%, transparent); box-shadow: 0 12px 28px color-mix(in srgb, var(--foreground) 5%, transparent); }
 .settings-learning-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .8rem; margin-top: .8rem; }
-.settings-learning-item { display: grid; gap: .35rem; padding: .7rem .8rem; border: 1px solid var(--border); border-radius:var(--radius-md); background: color-mix(in srgb, var(--muted) 22%, transparent); }
+.settings-learning-item { display: grid; gap: .35rem; padding: .7rem .8rem; border: 1px solid var(--line); border-radius:var(--radius-md); background: var(--paper-deep); }
 .settings-learning-item span { font-size: .82rem; font-weight: 700; color: var(--muted-foreground); }
-.settings-learning-item select { font: inherit; padding: .55rem .7rem; border: 1px solid var(--border); border-radius:var(--radius-sm); background: var(--card); color: var(--foreground); }
+.settings-learning-item select { font: inherit; padding: .55rem .7rem; border: 1px solid var(--line); border-radius:var(--radius-sm); background: var(--white); color: var(--foreground); }
 @media (max-width: 520px) {
   .settings-learning-grid { grid-template-columns: 1fr; }
 }
