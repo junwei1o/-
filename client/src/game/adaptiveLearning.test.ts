@@ -64,6 +64,26 @@ describe("adaptive learning model", () => {
     expect(report.difficultyStats.find((item) => item.difficulty === "標準")?.attempts).toBe(3);
   });
 
+  it("does not collapse attempts to zero while the async question bank gating set is empty", () => {
+    // 回歸：LearningInsights 在題庫非同步載入期間 questionIds 為空 Set。
+    // 頁面 gating 與 ErrorTypeStatistics 一致：空 Set → 視為不依題庫過濾（傳 undefined）。
+    // 此時報表／熱力圖／趨勢都必須保留真實 attempts，不能因 .has(id) 全 false 而歸零。
+    let profile = defaultAdaptiveProfile;
+    for (let i = 0; i < 3; i += 1) {
+      profile = recordAdaptiveAttempt(profile, { questionId: `bank-not-loaded-${i}`, curriculumDomain: "數學領域", knowledge: ["分數與比例"], difficulty: "標準", correct: i !== 2, responseMs: 10_000, timeLimitMs: 25_000 });
+    }
+    const emptyBankIds = new Set<string>();
+    // 頁面 gating：空 Set 視為「不依題庫過濾」。
+    const visibleIds = emptyBankIds.size ? emptyBankIds : undefined;
+
+    expect(calculateAdaptiveReport(profile, visibleIds).attempts).toBe(3);
+    expect(calculateKnowledgeHeatmap(profile, visibleIds).some((cell) => cell.tag === "分數與比例")).toBe(true);
+    expect(calculateLearningTrendReport(profile, visibleIds).helpHabit.length).toBeGreaterThan(0);
+
+    // 對照：題庫真的載入後若帶有「不含本次作答」的非空 id 集合，才依集合過濾。
+    expect(calculateAdaptiveReport(profile, new Set(["some-other-id"])).attempts).toBe(0);
+  });
+
   it("prioritizes a weak knowledge point without removing other subjects", () => {
     let profile = defaultAdaptiveProfile;
     for (let i = 0; i < 2; i += 1) profile = recordAdaptiveAttempt(profile, { questionId: "b", curriculumDomain: "數學領域", knowledge: ["分數"], difficulty: "標準", correct: false, responseMs: 25_000, timeLimitMs: 25_000 });

@@ -87,9 +87,11 @@ export default function LearningInsights() {
   );
   const [profile] = useState(() => loadAdaptiveProfile());
   const questionIds = useMemo(() => new Set((questionBankRows as QuestionIdentity[]).map((question) => question.id)), [questionBankRows]);
-  const report = useMemo(() => calculateAdaptiveReport(profile, questionIds), [profile, questionIds]);
-  const heatmap = useMemo(() => calculateKnowledgeHeatmap(profile, questionIds), [profile, questionIds]);
-  const trends = useMemo(() => calculateLearningTrendReport(profile, questionIds), [profile, questionIds]);
+  // 題庫非同步載入：未載完（空 Set）時視為「不依題庫過濾」，避免載入窗口內把 attempts 全數誤判為 0、和錯誤線索圖譜兩頁數字打架；與 ErrorTypeStatistics 同條件。
+  const visibleQuestionIds = useMemo(() => (questionIds.size ? questionIds : undefined), [questionIds]);
+  const report = useMemo(() => calculateAdaptiveReport(profile, visibleQuestionIds), [profile, visibleQuestionIds]);
+  const heatmap = useMemo(() => calculateKnowledgeHeatmap(profile, visibleQuestionIds), [profile, visibleQuestionIds]);
+  const trends = useMemo(() => calculateLearningTrendReport(profile, visibleQuestionIds), [profile, visibleQuestionIds]);
   const summaryPayload = useMemo(() => buildSummaryPayload(trends), [trends]);
   const fallbackSummary = useMemo(() => createDeterministicSummary(summaryPayload), [summaryPayload]);
   const summaryTopics = useMemo(() => {

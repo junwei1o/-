@@ -347,7 +347,7 @@ export default function Home() {
               <p className="home-dashboard-eyebrow">EXPEDITION MODES</p>
               <h2 id="home-mode-hub-title">選擇下一段學習航線</h2>
             </div>
-            <p>四種單機模式都會保留在你的本機學習軌跡中。</p>
+            <p>三種單機模式都會保留在你的本機學習軌跡中。</p>
           </div>
           <div className="home-mode-grid">
             <button type="button" className="home-mode-card is-wrong-answer" onClick={() => setLocation("/wrong-answers")}>

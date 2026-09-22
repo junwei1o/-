@@ -850,7 +850,13 @@ export function generateMathCombo(rng, collector, target, opts = {}) {
     // 交給 buildChoice 洗牌會讓詳解的編號和選項對不起來。
     const entries = shuffle(rng, picked);
     const options = entries.map((e) => e.prompt);
-    const answer = entries.findIndex((e) => e.value === best);
+    // 重算驗證閘門：展開選項後重算每個選項的實際數值，
+    // 確認 answer 唯一指向真正的 min／max；指標錯位或重複（≥2 個並列）就丟棄重生，避免生成指標錯誤的比較題。
+    const entryValues = entries.map((e) => e.value);
+    const expectedBest = wantMax ? Math.max(...entryValues) : Math.min(...entryValues);
+    const bestIndexes = entryValues.map((v, i) => (v === expectedBest ? i : -1)).filter((i) => i >= 0);
+    if (bestIndexes.length !== 1) continue;
+    const answer = bestIndexes[0];
     const question = makeQuestion({
       subject: "數學",
       grade,
