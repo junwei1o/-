@@ -15,12 +15,19 @@
  * 星級標準與其他玩法一致（gradeOnionLesson），成績一樣回寫教室最佳紀錄。
  */
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { Home, Star, Clapperboard, ChevronRight, RotateCcw, Settings2, Lightbulb, Map, BookOpenCheck } from "lucide-react";
+import { useLocation } from "wouter";
+import { Home, Star, Clapperboard, ChevronRight, RotateCcw, Settings2, Lightbulb, Map, BookOpenCheck, BookX } from "lucide-react";
 import { gradeOnionLesson, type OnionResult } from "@/game/onionAcademyLessons";
 import { OnionMascot } from "@/components/classroom/OnionAcademyScenes";
 import { buildTheaterDeck, type ClassroomChoice } from "@/lib/classroomBank";
 import { loadLocalBank, LOCAL_QUESTION_BANK } from "@/lib/questionBank";
 import { loadStudentGradePreference } from "@/lib/studentGradePreference";
+import {
+  loadAdaptiveProfile,
+  recordAdaptiveAttempt,
+  saveAdaptiveProfile,
+  type AdaptiveDifficulty,
+} from "@/game/adaptiveLearning";
 import "@/components/classroom/classroom.css";
 
 type Phase = "start" | "loading" | "briefing" | "quiz" | "result";
@@ -74,6 +81,7 @@ const DIFFICULTY_LABEL: Record<string, string> = {
 };
 
 export default function OnionBankTheater({ bestStars, onBest, onExit }: Props) {
+  const [, setLocation] = useLocation();
   const [phase, setPhase] = useState<Phase>("start");
   const [subject, setSubject] = useState<(typeof SUBJECT_OPTIONS)[number]>("全部");
   const [count, setCount] = useState<(typeof COUNT_OPTIONS)[number]>(10);
@@ -99,6 +107,30 @@ export default function OnionBankTheater({ bestStars, onBest, onExit }: Props) {
   const grade = typeof window === "undefined" ? null : loadStudentGradePreference();
   const q = deck[qIdx];
   const scopeKey = subject === "全部" ? "綜合" : subject;
+
+  /**
+   * 把一題的最終結果寫入自適應檔案（與試卷系統同一個資料源）：
+   * 連錯三次、由系統公布答案的題 correct:false，會自動收進「錯題本」供日後重練；
+   * 自己答對的題 correct:true，並記錄用了幾次提示。
+   */
+  const recordAttempt = (item: ClassroomChoice, correct: boolean, hintsUsed: number) => {
+    const difficulty: AdaptiveDifficulty =
+      item.difficulty === "挑戰" ? "挑戰" : item.difficulty === "標準" ? "標準" : "基礎";
+    let profile = loadAdaptiveProfile();
+    profile = recordAdaptiveAttempt(profile, {
+      questionId: item.id,
+      curriculumDomain: item.subject,
+      knowledge: item.knowledge?.length ? item.knowledge : [item.learningTopic],
+      difficulty,
+      correct,
+      responseMs: 25_000,
+      timeLimitMs: 25_000,
+      hintsUsed,
+      flagged: false,
+      ...(correct ? {} : { errorType: "concept" as const }),
+    });
+    saveAdaptiveProfile(profile);
+  };
 
   /** 本場學習地圖：把抽到的題按學習主題去重，做為開演前的學習目標。 */
   const briefingTopics = useMemo(() => {
@@ -142,6 +174,8 @@ export default function OnionBankTheater({ bestStars, onBest, onExit }: Props) {
       setAnswered(true);
       setRevealed(false);
       setCorrectCount((c) => c + 1);
+      // 自己答對（含前面錯過、最後答對）：記一題 correct，並帶上用了幾次提示。
+      recordAttempt(q, true, wrongPicks.length);
     } else {
       const nextWrong = [...wrongPicks, i];
       setWrongPicks(nextWrong);
@@ -151,6 +185,8 @@ export default function OnionBankTheater({ bestStars, onBest, onExit }: Props) {
         setAnswered(true);
         setRevealed(true);
         setReview((list) => [...list, { q }]);
+        // 連錯三次公布答案：記一題 wrong，自動收進錯題本。
+        recordAttempt(q, false, REVEAL_AT_WRONG);
       }
     }
   };
@@ -399,13 +435,24 @@ export default function OnionBankTheater({ bestStars, onBest, onExit }: Props) {
                   <p className="ob-review-a">
                     正解：{item.q.options[item.q.answer]}
                     {item.q.knowledge && item.q.knowledge.length > 0 && (
-                      <span className="ob-review-k"> · {item.q.knowledge.join("、")}</span>
+                      <span className="ob-review-k"> · {item.q.knowledge.join("、")}
+                    </span>
                     )}
                   </p>
                   <p className="ob-review-e">{item.q.explanation}</p>
                 </li>
               ))}
             </ol>
+            <div className="ob-review-saved">
+              <p className="ob-review-saved-txt"><BookX size={14} /> 這 {review.length} 題已自動收進「錯題本」，日後可到錯題重練再考一次。</p>
+              <button
+                type="button"
+                className="ol-btn ol-btn--ghost ob-review-gobtn"
+                onClick={() => setLocation("/wrong-answers")}
+              >
+                <BookX size={14} /> 前往錯題本
+              </button>
+            </div>
           </div>
         ) : (
           <p className="ob-review-allok"><BookOpenCheck size={14} /> 全部自己答對，沒有錯題，太厲害了！</p>

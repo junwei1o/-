@@ -268,9 +268,9 @@ export function buildChoiceDeck(
 
 /**
  * 題庫劇場專用：難度梯度組卷。
- * 與 buildChoiceDeck 的純隨機不同，這裡先按「基礎→標準→挑戰」約 3:4:3 配題，
- * 再由淺到深排序，讓每一場都像動畫課一樣循序漸進；
- * 也順道化解國中題庫挑戰題占比過高（約八成五）造成的連續卡關。
+ * 與 buildChoiceDeck 的純隨機不同，這裡先按「基礎→標準→挑戰」約 4:4:2 配題，
+ * 暖身基礎題占比提高（40%），讓學生先建立信心再往上加，再由淺到深排序，
+ * 每一場都像動畫課一樣循序漸進；也順道化解國中題庫挑戰題占比過高（約八成五）造成的連續卡關。
  * 某一難度題數不足時，依標準→基礎→挑戰順序從其他難度補足，絕不開天窗。
  */
 export function buildTheaterDeck(
@@ -295,8 +295,8 @@ export function buildTheaterDeck(
   for (const d of order) buckets[d] = shuffleArray(buckets[d], random);
 
   const total = Math.max(1, Math.min(count, source.length));
-  const nBasic = Math.round(total * 0.3);
-  const nChallenge = Math.round(total * 0.3);
+  const nBasic = Math.round(total * 0.4);
+  const nChallenge = Math.round(total * 0.2);
   const quotas: Record<string, number> = {
     基礎: nBasic,
     標準: total - nBasic - nChallenge,

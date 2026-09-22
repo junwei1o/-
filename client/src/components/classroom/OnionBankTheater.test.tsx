@@ -5,6 +5,7 @@ import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/re
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import OnionBankTheater from "./OnionBankTheater";
 import { loadLocalBank } from "@/lib/questionBank";
+import { loadAdaptiveProfile } from "@/game/adaptiveLearning";
 
 // 預設沿用真實的 buildTheaterDeck（難度梯度測試照常用）；
 // 「連錯三次」測試再以 mockReturnValueOnce 注入正解固定在最後的題目，確保可重現。
@@ -180,6 +181,16 @@ describe("洋蔥題庫劇場 OnionBankTheater", () => {
     await waitFor(() => expect(document.querySelector(".ob-review")).not.toBeNull(), { timeout: 3000 });
     expect(document.querySelectorAll(".ob-review-item").length).toBe(5);
     expect(onBest).toHaveBeenCalledWith(expect.objectContaining({ correct: 0, total: 5 }));
+
+    // 每題公布答案時都寫入一筆 correct:false 的紀錄：錯題自動收進錯題本。
+    const wrongAttempts = loadAdaptiveProfile().attempts.filter((a) => !a.correct);
+    expect(wrongAttempts).toHaveLength(5);
+    expect(wrongAttempts.every((a) => a.curriculumDomain === "數學")).toBe(true);
+    expect(wrongAttempts.every((a) => a.hintsUsed === 3)).toBe(true);
+    expect(wrongAttempts.every((a) => a.errorType === "concept")).toBe(true);
+    // 結算頁提示錯題已收進錯題本，並提供前往鈕。
+    expect(screen.getByText(/已自動收進「錯題本」/)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /前往錯題本/ })).toBeInTheDocument();
   }, 30000);
 
   it("抽到的題目確實來自內建題庫（庫存互相利用）", async () => {
@@ -213,5 +224,15 @@ describe("buildTheaterDeck 難度梯度組卷", () => {
     const deck = buildTheaterDeck(10, "數學");
     expect(deck).toHaveLength(10);
     expect(deck.every((q) => q.subject === "數學")).toBe(true);
+  });
+
+  it("暖身基礎題配比提高到約四成（4:4:2）", async () => {
+    await loadLocalBank();
+    const deck = buildTheaterDeck(15, "綜合");
+    const nBasic = deck.filter((q) => q.difficulty === "基礎").length;
+    const nChallenge = deck.filter((q) => q.difficulty === "挑戰").length;
+    // 15 題 × 40% 基礎 ≈ 6 題、× 20% 挑戰 ≈ 3 題（題庫充足，容許補位誤差）。
+    expect(nBasic).toBeGreaterThanOrEqual(5);
+    expect(nChallenge).toBeLessThanOrEqual(4);
   });
 });
