@@ -719,7 +719,14 @@ function pickPoolWithCooldown(nextScope: PaperScope): PaperQuestion[] {
         setTimeLeft(0);
         return;
       }
-      const left = Math.max(0, Math.round((deadlineRef.current[question.id] - Date.now()) / 1000));
+      // 自愈：deck effect（依 [deck] 重置）可能在本 effect 未重跑（current?.id 未變）時清空 deadline，
+      // 這裡若發現截止時間遺失就立即補算，避免倒數顯示 NaN。
+      let deadline = deadlineRef.current[question.id];
+      if (!Number.isFinite(deadline)) {
+        deadline = Date.now() + PAPER_QUESTION_TIME_LIMIT_MS;
+        deadlineRef.current[question.id] = deadline;
+      }
+      const left = Math.max(0, Math.round((deadline - Date.now()) / 1000));
       setTimeLeft(left);
       if (left <= 0) handleTimeout(question);
     };
