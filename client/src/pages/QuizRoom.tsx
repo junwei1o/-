@@ -33,7 +33,7 @@ import "@/components/classroom/classroom.css";
 type SkinId = "concise" | "memphis" | "classic";
 const SKIN_STORAGE_KEY = "xue-classroom-skin-v1";
 const SKINS: Array<{ id: SkinId; label: string; hint: string; dot: string }> = [
-  { id: "concise", label: "極簡海", hint: "扁平漸層，安靜專注", dot: "#0B6E8E" },
+  { id: "concise", label: "極簡紫", hint: "紫調扁平漸層，安靜專注", dot: "#7C3AED" },
   { id: "memphis", label: "孟菲斯", hint: "高飽和幾何，玩心最重", dot: "#ff5d8f" },
   { id: "classic", label: "經典海報", hint: "暖木彩帶，手作教室", dot: "#e8843a" },
 ];
@@ -69,7 +69,7 @@ function loadSkin(): SkinId {
  * 我的教室（原答題室）：
  * 上區是七種自由玩法（選擇題變體，成績留在自己裝置）；
  * 下區保留原本的經典答題模式（自由練習、錯題、週測等）。
- * 教室皮膚可切換：極簡海／孟菲斯／經典海報，偏好存本機。
+ * 教室皮膚可切換：極簡紫／孟菲斯／經典海報，偏好存本機。
  */
 export default function QuizRoom() {
   const [, setLocation] = useLocation();
@@ -192,6 +192,9 @@ export default function QuizRoom() {
           <span className="mm-shape mm-tri" />
           <span className="mm-shape mm-plus" />
           <span className="mm-shape mm-zig" />
+          <span className="mm-shape mm-arch" />
+          <span className="mm-shape mm-sq" />
+          <span className="mm-shape mm-squiggle" />
           <span className="mm-shape mm-dot mm-dot-2" />
           <span className="mm-shape mm-ring mm-ring-2" />
           <span className="mm-shape mm-tri mm-tri-2" />
@@ -271,13 +274,16 @@ export default function QuizRoom() {
         )}
       </header>
 
-      {/* 極簡海皮專屬：鼓勵彈幕跑馬燈 */}
+      {/* 極簡紫皮專屬：即時彈幕區（LIVE 標籤＋鼓勵跑馬燈） */}
       {skin === "concise" && (
-        <div className="cs-bullets" aria-hidden="true">
-          <div className="cs-bullets-track">
-            {[...CHEER_TICKER, ...CHEER_TICKER].map((text, i) => (
-              <span className="cs-bullet" key={i}>{text}</span>
-            ))}
+        <div className="cs-bullets-wrap" aria-hidden="true">
+          <span className="cs-live"><i /> LIVE</span>
+          <div className="cs-bullets">
+            <div className="cs-bullets-track">
+              {[...CHEER_TICKER, ...CHEER_TICKER].map((text, i) => (
+                <span className="cs-bullet" key={i}>{text}</span>
+              ))}
+            </div>
           </div>
         </div>
       )}

@@ -61,7 +61,7 @@ describe("QuizRoom 我的教室", () => {
     }
   });
 
-  it("預設為極簡海皮，具備進度條、鼓勵彈幕與領航員悄悄話", () => {
+  it("預設為極簡紫皮，具備進度條、即時彈幕與領航員悄悄話", () => {
     render(<QuizRoom />);
     expect(document.querySelector(".mc-page")).toHaveAttribute("data-skin", "concise");
     expect(screen.getByRole("group", { name: "教室佈置切換" })).toBeInTheDocument();
