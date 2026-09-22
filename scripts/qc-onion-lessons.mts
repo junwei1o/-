@@ -243,10 +243,10 @@ function checkLesson(lesson: OnionLesson) {
   lesson.frames.forEach((_, i) => checkFrame(lesson, i));
 
   const asks = lesson.frames.filter((f) => f.ask).length;
-  if (asks < 2) add(label, "整堂", `中途提問只有 ${asks} 次（至少 2 次）`);
+  if (asks < 3) add(label, "整堂", `中途提問只有 ${asks} 次（至少 3 次）`);
 
-  if (!lesson.takeaways || lesson.takeaways.length < 3) add(label, "整堂", "重點整理少於 3 條");
-  if (lesson.questions.length !== 5) add(label, "整堂", `闖關題數不是 5：${lesson.questions.length}`);
+  if (!lesson.takeaways || lesson.takeaways.length < 4) add(label, "整堂", "重點整理少於 4 條");
+  if (lesson.questions.length < 5 || lesson.questions.length > 7) add(label, "整堂", `闖關題數不在 5-7 區間：${lesson.questions.length}`);
   if (lesson.stages.length !== 1) add(label, "整堂", `stages 不是單一學段：${lesson.stages.join("、")}`);
 
   lesson.questions.forEach((q, i) => {

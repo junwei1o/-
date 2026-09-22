@@ -1,8 +1,8 @@
 /**
  * 高中英文補充課程（洋蔥學院 200 堂擴充計畫：三、高中新增 65 堂／英文 4 堂）。
  *
- * 內容依 docs/onion-200-plan.md 的課表撰寫；每一堂都是 7 幀步驟分鏡
- * （字幕用中文講解、英文例句內嵌）＋ 至少 2 次中途提問 ＋ 5 題闖關 ＋ 3 條 takeaways。
+ * 內容依 docs/onion-200-plan.md 的課表撰寫；每一堂都是 9 幀步驟分鏡
+ * （字幕用中文講解、英文例句內嵌）＋ 至少 3 次中途提問 ＋ 7 題闖關 ＋ 4 條 takeaways。
  * 教具以 text（句型公式與例句）與 flow（時態軸線、寫作步驟）為主。
  */
 import type { OnionLesson } from "@/game/onionAcademyLessons";
@@ -22,15 +22,18 @@ const SH_ENG_TENSES: OnionLesson = {
     "12 時態 = 時間（過去/現在/未來）× 看法（簡單/進行/完成/完成進行）",
     "簡單式講事實與習慣；進行式講正在發生；完成式強調到目前的經驗或結果",
     "現在完成式（have + p.p.）講到目前的經驗，過去簡單式只講過去某一時點，兩者不同",
+    "時間副詞是判斷線索：already/yet/since 配現在完成式；yesterday/last week 配過去簡單式；every day 配現在簡單式",
   ],
   frames: [
     { step: "步驟 1：看見十二時態", id: 1, caption: "嗨！英文有 12 個時態。時間分過去、現在、未來三條線，每條線又有四種看法，三乘四就是十二。", action: "wave", prop: { kind: "text", text: "12 時態 = 時間 × 看法", sub: "過去/現在/未來 × 簡單/進行/完成/完成進行", tone: "ok" }, duration: 3400 },
     { step: "步驟 2：時間分三線", id: 2, caption: "先記時間三線：過去是已經發生，現在是說話當下，未來是還沒發生。動詞會隨時間改樣子。", action: "point", prop: { kind: "flow", steps: ["過去 Past：已發生", "現在 Now：當下", "未來 Future：還沒"], active: 1 }, duration: 3600 },
     { step: "步驟 3：簡單式例句", id: 3, caption: "簡單式講事實或習慣。每天吃：I eat.；昨天吃：I ate.；明天會吃：I will eat.", action: "think", prop: { kind: "text", text: "簡單式：事實、習慣", sub: "I eat. / I ate. / I will eat.", tone: "ok" }, duration: 3600 },
-    { step: "步驟 4：進行式例句", id: 4, caption: "進行式強調動作正在發生。正在吃：I am eating.；那時在吃：I was eating.；將在吃：I will be eating.", ask: { prompt: "「Look! He ___ dinner now.」空格要用？", options: ["cooks", "is cooking", "cooked", "will cook"], answer: 1, hint: "now 與 Look! 提示正在發生，用 be 動詞 + V-ing。" }, action: "point", prop: { kind: "text", text: "進行式：正在發生", sub: "I am eating. / I was eating. / I will be eating.", tone: "ok" }, duration: 3800 },
-    { step: "步驟 5：完成式例句", id: 5, caption: "完成式強調到目前的經驗或結果：I have eaten（已經吃了）講經驗，和過去式 I ate（昨天吃了）只講過去時點不同。", ask: { prompt: "「我已經看過這部電影」要用哪個時態？", options: ["I saw the movie.", "I have seen the movie.", "I see the movie.", "I will see it."], answer: 1, hint: "「已經看過」強調到目前的經驗，用 have + seen。" }, action: "walk", prop: { kind: "text", text: "完成式：經驗、結果", sub: "I have eaten. / I had eaten. / I will have eaten.", tone: "ok" }, duration: 4000 },
-    { step: "步驟 6：完成進行式例句", id: 6, caption: "完成進行式強調動作從過去持續到某個時間點：I have been eating.、I had been eating.、I will have been eating.", action: "think", prop: { kind: "text", text: "完成進行式：持續動作", sub: "I have been eating. / I had been eating. / I will have been eating.", tone: "ok" }, duration: 3800 },
-    { step: "步驟 7：記住十二時態", id: 7, caption: "口訣：時間三線乘四種看法等於十二時態。先看時間，再想強調什麼，準備闖關！", action: "cheer", prop: { kind: "text", text: "時間 × 看法 = 12 時態", sub: "過去/現在/未來 × 簡單/進行/完成/完成進行", tone: "ok" }, duration: 3000 },
+    { step: "步驟 4：習慣與正在做的分別", id: 4, caption: "現在簡單式講長期習慣：I drink milk every day.；現在進行式講此刻正在做：I am drinking milk now.，看到 every day 與 now 就知道用哪個。", action: "point", prop: { kind: "text", text: "現在簡單：習慣／現在進行：此刻", sub: "every day → drink；now → am drinking", tone: "ok" }, duration: 3400 },
+    { step: "步驟 5：進行式例句", id: 5, caption: "進行式強調動作正在發生。正在吃：I am eating.；那時在吃：I was eating.；將在吃：I will be eating.", ask: { prompt: "「Look! He ___ dinner now.」空格要用？", options: ["cooks", "is cooking", "cooked", "will cook"], answer: 1, hint: "now 與 Look! 提示正在發生，用 be 動詞 + V-ing。" }, action: "point", prop: { kind: "text", text: "進行式：正在發生", sub: "I am eating. / I was eating. / I will be eating.", tone: "ok" }, duration: 3800 },
+    { step: "步驟 6：完成式例句", id: 6, caption: "完成式強調到目前的經驗或結果：I have eaten（已經吃了）講經驗，和過去式 I ate（昨天吃了）只講過去時點不同。", ask: { prompt: "「我已經看過這部電影」要用哪個時態？", options: ["I saw the movie.", "I have seen the movie.", "I see the movie.", "I will see it."], answer: 1, hint: "「已經看過」強調到目前的經驗，用 have + seen。" }, action: "walk", prop: { kind: "text", text: "完成式：經驗、結果", sub: "I have eaten. / I had eaten. / I will have eaten.", tone: "ok" }, duration: 4000 },
+    { step: "步驟 7：看時間副詞判斷時態", id: 7, caption: "時間副詞是時態線索：already、yet、just 常配現在完成式；yesterday、last week 配過去簡單式，看到它們就知道動詞怎麼變。", ask: { prompt: "「I ___ him last week.」（last week）空格用？", options: ["met", "have met", "meet", "am meeting"], answer: 0, hint: "last week 是明確過去時點，用過去式 met。" }, action: "think", prop: { kind: "text", text: "時間副詞線索", sub: "already/yet→完成式；yesterday→過去式", tone: "ok" }, duration: 3600 },
+    { step: "步驟 8：完成進行式例句", id: 8, caption: "完成進行式強調動作從過去持續到某個時間點：I have been eating.、I had been eating.、I will have been eating.", action: "think", prop: { kind: "text", text: "完成進行式：持續動作", sub: "I have been eating. / I had been eating. / I will have been eating.", tone: "ok" }, duration: 3800 },
+    { step: "步驟 9：記住十二時態", id: 9, caption: "口訣：時間三線乘四種看法等於十二時態。先看時間，再想強調什麼，準備闖關！", action: "cheer", prop: { kind: "text", text: "時間 × 看法 = 12 時態", sub: "過去/現在/未來 × 簡單/進行/完成/完成進行", tone: "ok" }, duration: 3000 },
   ],
   questions: [
     { id: "sh-eng-tenses-1", prompt: "英文一共有幾個時態？", options: ["4", "8", "12", "16"], answer: 2, hints: ["時間有 3 條線", "每條線 4 種看法，3 × 4 = ?"], explanation: "時間（過去/現在/未來）三線，乘上四種看法（簡單/進行/完成/完成進行），共 12 個時態。" },
@@ -38,6 +41,8 @@ const SH_ENG_TENSES: OnionLesson = {
     { id: "sh-eng-tenses-3", prompt: "「Look! It is raining.」用了什麼結構？", options: ["be 動詞 + V-ing", "have + p.p.", "will + 原形", "動詞原形"], answer: 0, hints: ["Look! 表示正在發生", "進行式 = be + V-ing"], explanation: "is raining 是 be 動詞 + V-ing，配合 Look! 表示此刻正在下雨，是現在進行式。" },
     { id: "sh-eng-tenses-4", prompt: "「I have finished my homework.」強調什麼？", options: ["過去某時點發生", "到目前為止已經完成", "未來才要做", "動作正在進行"], answer: 1, hints: ["have + p.p. 是完成式", "強調對現在的影響或結果"], explanation: "have finished 是現在完成式，強調到目前為止已經完成的經驗或結果。" },
     { id: "sh-eng-tenses-5", prompt: "下列哪一組比較正確？「我已經看過」對比「我昨天看過」", options: ["兩者都用 I saw", "前者 I have seen、後者 I saw", "兩者都用 I have seen", "前者 I see、後者 I saw"], answer: 1, hints: ["「已經」用完成式", "「昨天」用過去式"], explanation: "「已經看過」強調經驗用 I have seen；「昨天看過」指過去某一時點用 I saw，兩者不能混用。" },
+    { id: "sh-eng-tenses-6", prompt: "「She ___ in Taipei since 2020.」空格用？", options: ["has lived", "lived", "lives", "is living"], answer: 0, hints: ["since 2020 表持續到現在", "用 have/has + p.p."], explanation: "since 2020 表示從過去持續到現在，要用現在完成式 has lived。" },
+    { id: "sh-eng-tenses-7", prompt: "「every morning」這個時間副詞片語，通常提示哪個時態？", options: ["現在簡單式", "現在進行式", "未來式", "過去式"], answer: 0, hints: ["every morning 是規律習慣", "習慣用現在簡單式"], explanation: "every morning 表示每天固定的習慣，屬於現在簡單式的時間線索。" },
   ],
 };
 
@@ -56,15 +61,18 @@ const SH_ENG_SUBJUNCTIVE: OnionLesson = {
     "與現在事實相反：if + 過去式, 主句 would + 原形（If I were you, I would take the job.）",
     "與過去事實相反：if + 過去完成式, 主句 would have + p.p.（If I had studied harder, I would have passed.）",
     "未來有可能：if + 現在式, 主句 will + 原形（If it rains, we will stay home.）",
+    "假設句可省略 if 並倒裝動詞（Were I you / Had I known）；與過去相反退兩層（had + p.p.）",
   ],
   frames: [
     { step: "步驟 1：什麼是假設語氣", id: 1, caption: "嗨！當我們想像「如果怎樣，就會怎樣」，而且和事實相反時，就要用假設語氣。先看和現在相反。", action: "wave", prop: { kind: "text", text: "假設語氣：說「如果…就…」", sub: "談論與事實相反或假想的情況", tone: "ok" }, duration: 3400 },
     { step: "步驟 2：與現在相反結構", id: 2, caption: "與現在事實相反：if 子句用過去式，主句用 would 加原形動詞，表示這件事現在並非如此。", action: "point", prop: { kind: "flow", steps: ["if 子句：與事實相反", "動詞用過去式", "主句用 would + 原形"], active: 1 }, duration: 3800 },
     { step: "步驟 3：記住 be 用 were", id: 3, caption: "注意 be 動詞要用 were（不分人稱）：If I were you, I would take the job. 表示與現在事實相反。", ask: { prompt: "與現在事實相反時，if 子句的 be 動詞要用？", options: ["am / is / are", "was / were（都用 were）", "will be", "be 原形"], answer: 1, hint: "假設語氣中 be 不分人稱，一律用 were。" }, action: "think", prop: { kind: "text", text: "If I were you, I would take the job.", sub: "與現在相反：if + 過去式, would + 原形", tone: "ok" }, duration: 3800 },
-    { step: "步驟 4：與過去相反結構", id: 4, caption: "與過去事實相反，要往回退一層：if 子句用過去完成式 had + p.p.，主句用 would have + p.p.", action: "point", prop: { kind: "flow", steps: ["if + 過去完成式 (had + p.p.)", "主句 would have + p.p.", "表示與過去事實相反"], active: 2 }, duration: 3800 },
-    { step: "步驟 5：過去相反例句", id: 5, caption: "例如考試沒過，你後悔說：If I had studied harder, I would have passed.（要是我那時更用功，就考過了。）", action: "walk", prop: { kind: "text", text: "If I had studied harder, I would have passed.", sub: "與過去相反：if + had+p.p., would have+p.p.", tone: "ok" }, duration: 3800 },
-    { step: "步驟 6：未來可能不相反", id: 6, caption: "未來真有可能發生，就不是相反：if 子句用現在式，主句用 will 加原形。If it rains, we will stay home.", ask: { prompt: "「If it ___, we will stay home.」空格要用？", options: ["will rain", "rains", "rained", "would rain"], answer: 1, hint: "未來有可能，if 子句用現在式 rains，主句才用 will。" }, action: "think", prop: { kind: "text", text: "If it rains, we will stay home.", sub: "未來可能：if + 現在式, will + 原形", tone: "ok" }, duration: 3800 },
-    { step: "步驟 7：三種假設口訣", id: 7, caption: "口訣：與現在相反用 were，與過去相反用 had been，未來可能用現在式。記住動詞要退一層，準備闖關！", action: "cheer", prop: { kind: "text", text: "三種假設語氣", sub: "現在 were / 過去 had been / 未來 will", tone: "ok" }, duration: 3000 },
+    { step: "步驟 4：省略 if 的倒裝", id: 4, caption: "假設句有時把 if 省掉、動詞往前移：Were I you（＝If I were you）、Had I known（＝If I had known），口語和書寫都常見。", action: "point", prop: { kind: "text", text: "省略 if：Were I you / Had I known", sub: "＝ If I were you / If I had known", tone: "ok" }, duration: 3400 },
+    { step: "步驟 5：與過去相反結構", id: 5, caption: "與過去事實相反，要往回退一層：if 子句用過去完成式 had + p.p.，主句用 would have + p.p.", action: "point", prop: { kind: "flow", steps: ["if + 過去完成式 (had + p.p.)", "主句 would have + p.p.", "表示與過去事實相反"], active: 2 }, duration: 3800 },
+    { step: "步驟 6：過去相反例句", id: 6, caption: "例如考試沒過，你後悔說：If I had studied harder, I would have passed.（要是我那時更用功，就考過了。）", action: "walk", prop: { kind: "text", text: "If I had studied harder, I would have passed.", sub: "與過去相反：if + had+p.p., would have+p.p.", tone: "ok" }, duration: 3800 },
+    { step: "步驟 7：未來可能不相反", id: 7, caption: "未來真有可能發生，就不是相反：if 子句用現在式，主句用 will 加原形。If it rains, we will stay home.", ask: { prompt: "「If it ___, we will stay home.」空格要用？", options: ["will rain", "rains", "rained", "would rain"], answer: 1, hint: "未來有可能，if 子句用現在式 rains，主句才用 will。" }, action: "think", prop: { kind: "text", text: "If it rains, we will stay home.", sub: "未來可能：if + 現在式, will + 原形", tone: "ok" }, duration: 3800 },
+    { step: "步驟 8：三種時間表一次對照", id: 8, caption: "把三種並排看：與現在相反 If + 過去/would V；與過去相反 If + had p.p./would have p.p.；未來可能 If + 現在/will V。", ask: { prompt: "「與現在事實相反」時，主句動詞用？", options: ["would + 原形", "will + 原形", "would have + p.p.", "現在式"], answer: 0, hint: "現在相反退一層，主句用 would + 原形。" }, action: "think", prop: { kind: "flow", steps: ["現在：if+過去, would V", "過去：if+had p.p., would have p.p.", "未來可能：if+現在, will V"], active: 0 }, duration: 3600 },
+    { step: "步驟 9：三種假設口訣", id: 9, caption: "口訣：與現在相反用 were，與過去相反用 had been，未來可能用現在式。記住動詞要退一層，準備闖關！", action: "cheer", prop: { kind: "text", text: "三種假設語氣", sub: "現在 were / 過去 had been / 未來 will", tone: "ok" }, duration: 3000 },
   ],
   questions: [
     { id: "sh-eng-subjunctive-1", prompt: "與現在事實相反的假設語氣，正確結構是？", options: ["if + 現在式, will + 原形", "if + 過去式, would + 原形", "if + 過去完成式, would have + p.p.", "if + will, would"], answer: 1, hints: ["與現在相反", "if 用過去式、主句用 would"], explanation: "與現在事實相反：if 子句用過去式，主句用 would + 原形動詞。" },
@@ -72,6 +80,8 @@ const SH_ENG_SUBJUNCTIVE: OnionLesson = {
     { id: "sh-eng-subjunctive-3", prompt: "「If I had known it, I ___ .」空格要用？", options: ["will tell", "would tell", "would have told", "told"], answer: 2, hints: ["had known 是過去完成式", "主句用 would have + p.p."], explanation: "if 子句 had known 是過去完成式，主句要用 would have + p.p.，即 would have told。" },
     { id: "sh-eng-subjunctive-4", prompt: "「If it rains tomorrow, we ___ stay home.」空格要用？", options: ["would", "will", "would have", "had"], answer: 1, hints: ["未來真有可能發生", "主句用 will"], explanation: "這是未來有可能發生的真實條件句，if 子句用現在式 rains，主句用 will stay home。" },
     { id: "sh-eng-subjunctive-5", prompt: "下列哪一句是與過去事實相反？", options: ["If I were rich, I would travel.", "If I had been rich, I would have traveled.", "If it rains, I will stay.", "If I am you, I help."], answer: 1, hints: ["had been / would have 是退一層", "那是往回退一層的過去相反"], explanation: "If I had been rich, I would have traveled. 用 had been 與 would have traveled，表示與過去事實相反。" },
+    { id: "sh-eng-subjunctive-6", prompt: "「___ you, I would tell her the truth.」省略 if 時開頭用？", options: ["Were", "Do", "Are", "Would"], answer: 0, hints: ["省略 if 要倒裝", "Were I you = If I were you"], explanation: "省略 if 時動詞往前移，Were you（＝If I were you）是與現在事實相反的倒裝寫法。" },
+    { id: "sh-eng-subjunctive-7", prompt: "「If she ___ harder last year, she would have passed.」空格用？", options: ["had studied", "studies", "studied", "study"], answer: 0, hints: ["last year 是過去", "過去相反用 had + p.p."], explanation: "與過去事實相反，if 子句用過去完成式 had studied，主句用 would have passed。" },
   ],
 };
 
@@ -90,15 +100,18 @@ const SH_ENG_PARTICIPLE: OnionLesson = {
     "現在分詞（V-ing）：表示主動、進行，可當形容詞或進入分詞構句",
     "過去分詞（p.p.）：表示被動、完成，可當形容詞或進入分詞構句",
     "分詞構句 = 簡化副詞子句，主詞須與主句一致，否則會形成懸垂分詞",
+    "主動用 V-ing、被動用 p.p.；分詞可還原為形容詞子句（the crying baby = the baby who is crying）",
   ],
   frames: [
     { step: "步驟 1：兩種分詞", id: 1, caption: "嗨！分詞可以當形容詞，也能把副詞子句變短。先認識現在分詞和過去分詞的差別。", action: "wave", prop: { kind: "text", text: "分詞有兩種：現在與過去", sub: "present participle (V-ing) / past participle (p.p.)", tone: "ok" }, duration: 3400 },
     { step: "步驟 2：現在分詞", id: 2, caption: "現在分詞是動詞加 -ing，表示「主動」或「正在進行」：The crying baby is hungry.（正在哭的寶寶餓了。）", action: "point", prop: { kind: "flow", steps: ["現在分詞 V-ing", "表主動、進行", "The crying baby..."], active: 1 }, duration: 3800 },
     { step: "步驟 3：過去分詞", id: 3, caption: "過去分詞就是 p.p.，表示「被動」或「已經完成」：The broken window was fixed.（被打破的窗戶已修好。）", action: "think", prop: { kind: "text", text: "The broken window was fixed.", sub: "過去分詞 p.p. 表被動、完成", tone: "ok" }, duration: 3800 },
-    { step: "步驟 4：分詞構句由來", id: 4, caption: "分詞構句是把副詞子句簡化：When I was walking home, I saw a dog. 可寫成 Walking home, I saw a dog.", ask: { prompt: "「___ home, I saw a dog.」開頭要用？", options: ["Walk", "Walking", "Walked", "To walk"], answer: 1, hint: "主詞 I 是「走」的主動者，用現在分詞 Walking。" }, action: "point", prop: { kind: "flow", steps: ["副詞子句 When I was walking home", "簡化成 Walking home", "主詞必須一致"], active: 1 }, duration: 4000 },
-    { step: "步驟 5：主詞要一致", id: 5, caption: "分詞構句的主詞要和主句主詞相同：這裡 I 既在走又在看狗，所以可以用 Walking home 開頭。", action: "walk", prop: { kind: "text", text: "Walking home, I saw a dog.", sub: "＝ When I was walking home, I saw a dog.", tone: "ok" }, duration: 3800 },
-    { step: "步驟 6：當心懸垂分詞", id: 6, caption: "小心懸垂分詞！若寫 Walking home, a dog bit me.，會變成狗在走回家，這就叫主詞不一致。", ask: { prompt: "為什麼「Walking home, a dog bit me.」是錯的？", options: ["dog 不該用 a", "主詞 a dog 不是走的人，形成懸垂分詞", "walking 拼錯", "bit 時態錯"], answer: 1, hint: "分詞的主詞必須與主句主詞一致。" }, action: "think", prop: { kind: "text", text: "懸垂分詞：a dog 沒在走", sub: "分詞的主詞要和主句主詞一致", tone: "warn" }, duration: 3800 },
-    { step: "步驟 7：分詞構句口訣", id: 7, caption: "口訣：分詞構句先找副詞子句，主詞要和主句一樣，才不會寫出懸垂分詞。準備闖關！", action: "cheer", prop: { kind: "text", text: "分詞構句三步", sub: "簡化副詞子句 → 主詞一致 → 不懸垂", tone: "ok" }, duration: 3000 },
+    { step: "步驟 4：分詞可還原成形容詞子句", id: 4, caption: "分詞常是形容詞子句的縮寫：the crying baby ＝ the baby who is crying；the broken window ＝ the window which was broken，主動用 V-ing、被動用 p.p.。", action: "point", prop: { kind: "text", text: "crying baby ＝ baby who is crying", sub: "broken window ＝ window which was broken", tone: "ok" }, duration: 3400 },
+    { step: "步驟 5：分詞構句由來", id: 5, caption: "分詞構句是把副詞子句簡化：When I was walking home, I saw a dog. 可寫成 Walking home, I saw a dog.", ask: { prompt: "「___ home, I saw a dog.」開頭要用？", options: ["Walk", "Walking", "Walked", "To walk"], answer: 1, hint: "主詞 I 是「走」的主動者，用現在分詞 Walking。" }, action: "point", prop: { kind: "flow", steps: ["副詞子句 When I was walking home", "簡化成 Walking home", "主詞必須一致"], active: 1 }, duration: 4000 },
+    { step: "步驟 6：主詞要一致", id: 6, caption: "分詞構句的主詞要和主句主詞相同：這裡 I 既在走又在看狗，所以可以用 Walking home 開頭。", action: "walk", prop: { kind: "text", text: "Walking home, I saw a dog.", sub: "＝ When I was walking home, I saw a dog.", tone: "ok" }, duration: 3800 },
+    { step: "步驟 7：主動用 V-ing、被動用 p.p.", id: 7, caption: "分詞構句選哪種，看主詞和動作的關係：主詞「做」這個動作就用 V-ing；主詞「被」這個動作就用 p.p.。", ask: { prompt: "「___ from the hill, the city looks small.」（city 被看）用？", options: ["Seen", "Seeing", "See", "To see"], answer: 0, hint: "city 是「被看」，用過去分詞 Seen。" }, action: "think", prop: { kind: "flow", steps: ["主動：主詞做 → V-ing", "被動：主詞被 → p.p.", "Walking... / Seen..."], active: 1 }, duration: 3600 },
+    { step: "步驟 8：當心懸垂分詞", id: 8, caption: "小心懸垂分詞！若寫 Walking home, a dog bit me.，會變成狗在走回家，這就叫主詞不一致。", ask: { prompt: "為什麼「Walking home, a dog bit me.」是錯的？", options: ["dog 不該用 a", "主詞 a dog 不是走的人，形成懸垂分詞", "walking 拼錯", "bit 時態錯"], answer: 1, hint: "分詞的主詞必須與主句主詞一致。" }, action: "think", prop: { kind: "text", text: "懸垂分詞：a dog 沒在走", sub: "分詞的主詞要和主句主詞一致", tone: "warn" }, duration: 3800 },
+    { step: "步驟 9：分詞構句口訣", id: 9, caption: "口訣：分詞構句先找副詞子句，主詞要和主句一樣，才不會寫出懸垂分詞。準備闖關！", action: "cheer", prop: { kind: "text", text: "分詞構句三步", sub: "簡化副詞子句 → 主詞一致 → 不懸垂", tone: "ok" }, duration: 3000 },
   ],
   questions: [
     { id: "sh-eng-participle-1", prompt: "「The ___ boy is my brother.」空格要用？", options: ["smile", "smiling", "smiled", "to smile"], answer: 1, hints: ["主動、進行用 V-ing", "正在笑的男孩"], explanation: "smiling 是現在分詞，表示主動、正在笑的男孩，作形容詞修飾 boy。" },
@@ -106,6 +119,8 @@ const SH_ENG_PARTICIPLE: OnionLesson = {
     { id: "sh-eng-participle-3", prompt: "「When I heard the news, I cried.」可簡化為？", options: ["Hearing the news, I cried.", "Heard the news, I cried.", "Hear the news, I cried.", "To hear the news, I cried."], answer: 0, hints: ["I 是 hear 的主動者", "用現在分詞 Hearing"], explanation: "I 是 hear 的主動者，副詞子句可簡化為 Hearing the news, I cried." },
     { id: "sh-eng-participle-4", prompt: "「Seen from the hill, ___ .」主詞應該是？", options: ["the city looks beautiful.", "I saw a car.", "a dog ran.", "we go home."], answer: 0, hints: ["seen 是被動，主詞要能被看", "the city 被看"], explanation: "Seen from the hill 是被動分詞構句，主詞必須是「被看」的事物，故用 the city looks beautiful." },
     { id: "sh-eng-participle-5", prompt: "下列哪一句有懸垂分詞的錯誤？", options: ["Walking in the park, I saw a flower.", "Born in Taipei, she speaks Taiwanese.", "Reading the book, a phone rang.", "Tired, he went to bed."], answer: 2, hints: ["a phone 不是讀書的人", "主詞不一致"], explanation: "Reading the book, a phone rang. 中 phone 不會讀書，形成懸垂分詞；應改為 Reading the book, I heard a phone ring." },
+    { id: "sh-eng-participle-6", prompt: "「The ___ cup on the floor is hers.」（杯子被打破）用？", options: ["broken", "breaking", "break", "broke"], answer: 0, hints: ["杯子被打破", "被動用 p.p."], explanation: "broken 是 break 的過去分詞，表被動、完成，意思是「被打破的杯子」。" },
+    { id: "sh-eng-participle-7", prompt: "「___ the door, he walked in.」（他主動開門）用？", options: ["Opening", "Opened", "Open", "Opens"], answer: 0, hints: ["he 是「開門」的主動者", "主動用 V-ing"], explanation: "he 是開門這個動作的主動者，副詞子句可簡化為 Opening the door, he walked in." },
   ],
 };
 
@@ -124,15 +139,18 @@ const SH_ENG_READING_WRITING: OnionLesson = {
     "閱讀：先找主題句（常在段首），再抓關鍵字與轉折詞（however/therefore/in addition）",
     "寫作：段落 = 主題句 → supporting details → concluding sentence；摘要留主張與結論、刪例子",
     "轉述要改寫句型與詞彙，避免照抄原句",
+    "主題句不一定在段首；判斷主旨要連接各段主題句，並排除過窄（只講例子）與過寬（超出範圍）的選項",
   ],
   frames: [
     { step: "步驟 1：讀寫是一家", id: 1, caption: "嗨！高三我們把閱讀和寫作整合：會讀文章才能寫文章。先學怎麼快速抓一篇文章的重點。", action: "wave", prop: { kind: "text", text: "閱讀與寫作是一家", sub: "讀得懂，才寫得出", tone: "ok" }, duration: 3400 },
     { step: "步驟 2：找主題句", id: 2, caption: "閱讀第一步找主題句，它通常在段落開頭，點出這段在講什麼；剩下的句子都在支持它。", action: "point", prop: { kind: "flow", steps: ["找主題句 (常在段首)", "抓關鍵字", "注意轉折詞 however/therefore"], active: 0 }, duration: 3800 },
-    { step: "步驟 3：抓轉折詞", id: 3, caption: "接著抓關鍵字和轉折詞：however 是轉折、therefore 是因果、in addition 是補充，它們決定句子間邏輯。", action: "think", prop: { kind: "text", text: "however 表轉折 / therefore 表因果 / in addition 表補充", sub: "轉折詞告訴你邏輯方向", tone: "ok" }, duration: 3800 },
-    { step: "步驟 4：段落寫作結構", id: 4, caption: "段落寫作有固定結構：先用主題句點題，再給 supporting details，最後用結論句收尾。", ask: { prompt: "一個標準段落的順序是？", options: ["細節→主題→結論", "主題句→細節→結論句", "結論→細節→主題", "細節→結論→主題"], answer: 1, hint: "先點題，再支持，最後收尾。" }, action: "point", prop: { kind: "flow", steps: ["topic sentence 主題句", "supporting details 細節", "concluding sentence 結論"], active: 0 }, duration: 4000 },
-    { step: "步驟 5：寫摘要", id: 5, caption: "寫摘要時保留作者的主張和結論，把舉的例子和細節刪掉，用自己的話濃縮成幾句話。", action: "walk", prop: { kind: "text", text: "摘要：留主張與結論，刪例子", sub: "Summarize: keep claim & conclusion", tone: "ok" }, duration: 3800 },
-    { step: "步驟 6：學會轉述", id: 6, caption: "轉述（paraphrase）要避免照抄原句，改寫句型與替換詞彙，但意思要完全一樣，這才不算抄襲。", ask: { prompt: "轉述（paraphrase）最重要的是？", options: ["照抄原句最安全", "改寫句型與詞彙但意思相同", "只用同義詞替換", "句子越長越好"], answer: 1, hint: "不能照抄，要改寫但保持原意。" }, action: "think", prop: { kind: "text", text: "轉述：改寫句型與詞彙，不照抄", sub: "Paraphrase: change wording & structure", tone: "ok" }, duration: 3800 },
-    { step: "步驟 7：讀寫整合口訣", id: 7, caption: "口訣：讀文章先抓主題句與轉折詞，寫段落照主題→細節→結論，轉述要改寫不照抄。準備闖關！", action: "cheer", prop: { kind: "text", text: "讀寫整合三步", sub: "抓重點 → 列結構 → 轉述摘要", tone: "ok" }, duration: 3000 },
+    { step: "步驟 3：主題句不一定在段首", id: 3, caption: "主題句常在段首，但也可能在段中或段尾；找不著時看全段在反覆講什麼，那句就是段旨。", action: "point", prop: { kind: "text", text: "主題句：段首／段中／段尾", sub: "找不著就看全段反覆講什麼", tone: "ok" }, duration: 3400 },
+    { step: "步驟 4：抓轉折詞", id: 4, caption: "接著抓關鍵字和轉折詞：however 是轉折、therefore 是因果、in addition 是補充，它們決定句子間邏輯。", action: "think", prop: { kind: "text", text: "however 表轉折 / therefore 表因果 / in addition 表補充", sub: "轉折詞告訴你邏輯方向", tone: "ok" }, duration: 3800 },
+    { step: "步驟 5：段落寫作結構", id: 5, caption: "段落寫作有固定結構：先用主題句點題，再給 supporting details，最後用結論句收尾。", ask: { prompt: "一個標準段落的順序是？", options: ["細節→主題→結論", "主題句→細節→結論句", "結論→細節→主題", "細節→結論→主題"], answer: 1, hint: "先點題，再支持，最後收尾。" }, action: "point", prop: { kind: "flow", steps: ["topic sentence 主題句", "supporting details 細節", "concluding sentence 結論"], active: 0 }, duration: 4000 },
+    { step: "步驟 6：寫摘要", id: 6, caption: "寫摘要時保留作者的主張和結論，把舉的例子和細節刪掉，用自己的話濃縮成幾句話。", action: "walk", prop: { kind: "text", text: "摘要：留主張與結論，刪例子", sub: "Summarize: keep claim & conclusion", tone: "ok" }, duration: 3800 },
+    { step: "步驟 7：學會轉述", id: 7, caption: "轉述（paraphrase）要避免照抄原句，改寫句型與替換詞彙，但意思要完全一樣，這才不算抄襲。", ask: { prompt: "轉述（paraphrase）最重要的是？", options: ["照抄原句最安全", "改寫句型與詞彙但意思相同", "只用同義詞替換", "句子越長越好"], answer: 1, hint: "不能照抄，要改寫但保持原意。" }, action: "think", prop: { kind: "text", text: "轉述：改寫句型與詞彙，不照抄", sub: "Paraphrase: change wording & structure", tone: "ok" }, duration: 3800 },
+    { step: "步驟 8：如何判斷文章主旨", id: 8, caption: "判斷主旨時，把各段主題句連起來看，再對照標題；太窄的（只講例子）與太寬的（超出範圍）都要刪掉。", ask: { prompt: "下列哪個最適合作「主旨」？", options: ["涵蓋全文主要論點的一句", "只描述某個例子", "作者的籍貫", "最長的那一句"], answer: 0, hint: "主旨要能涵蓋各段重點，不能只抓例子。" }, action: "think", prop: { kind: "flow", steps: ["連接各段主題句", "對照標題", "刪太窄太寬"], active: 0 }, duration: 3600 },
+    { step: "步驟 9：讀寫整合口訣", id: 9, caption: "口訣：讀文章先抓主題句與轉折詞，寫段落照主題→細節→結論，轉述要改寫不照抄。準備闖關！", action: "cheer", prop: { kind: "text", text: "讀寫整合三步", sub: "抓重點 → 列結構 → 轉述摘要", tone: "ok" }, duration: 3000 },
   ],
   questions: [
     { id: "sh-eng-reading-writing-1", prompt: "文章的主題句（topic sentence）通常出現在？", options: ["段尾", "段首", "段落中間隨機", "只在標題"], answer: 1, hints: ["主題句點出重點", "常在段落開頭"], explanation: "主題句通常放在段落開頭，先點出這一段的核心觀點。" },
@@ -140,6 +158,8 @@ const SH_ENG_READING_WRITING: OnionLesson = {
     { id: "sh-eng-reading-writing-3", prompt: "寫一個段落時，正確的結構是？", options: ["主題句→細節→結論句", "細節→結論→主題句", "結論→主題→細節", "細節→主題→結論"], answer: 0, hints: ["先點題", "再支持、最後收尾"], explanation: "標準段落為：主題句開頭點題，supporting details 提供支持，concluding sentence 收尾。" },
     { id: "sh-eng-reading-writing-4", prompt: "寫摘要時應該？", options: ["保留所有例子", "留主張與結論、刪例子", "照抄第一段", "越長越好"], answer: 1, hints: ["摘要要濃縮", "保留主張和結論"], explanation: "摘要只保留作者主張與結論，刪去例子和細節，濃縮成簡短幾句。" },
     { id: "sh-eng-reading-writing-5", prompt: "下列哪個做法符合正確的轉述？", options: ["直接複製原句", "只改幾個字但結構相同", "改寫句型與詞彙、意思不變", "翻譯成中文再翻回英文"], answer: 2, hints: ["轉述要改寫", "意思必須相同"], explanation: "正確轉述要改寫句型並替換詞彙，但意思保持不變，以避免抄襲之嫌。" },
+    { id: "sh-eng-reading-writing-6", prompt: "若主題句不在段首，要怎麼找段旨？", options: ["看全段反覆強調的概念", "數句子長短", "只看標點符號", "看最後一個字"], answer: 0, hints: ["反覆出現的就是重點", "把它濃縮成一句"], explanation: "主題句常點出全段核心概念，找不著時就看全段反覆強調的那句，即為段旨。" },
+    { id: "sh-eng-reading-writing-7", prompt: "判斷文章主旨時，哪種選項要先刪掉？", options: ["只涵蓋單一例子的過窄選項", "能涵蓋各段論點的選項", "與標題呼應的選項", "作者的核心主張"], answer: 0, hints: ["太窄＝只抓到例子", "主旨要涵蓋全文"], explanation: "判斷主旨時，只涵蓋單一例子的選項太窄、超出全文範圍的選項太寬，都應刪除。" },
   ],
 };
 

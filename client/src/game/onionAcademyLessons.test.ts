@@ -48,10 +48,13 @@ describe("onion lesson grading", () => {
 function lessonIntegrity(lesson: typeof FRACTION_LESSON) {
   const validActions: OnionAction[] = ["wave", "walk", "point", "jump", "think", "cheer"];
 
-  it(`${lesson.id}: 有 5-10 幀分鏡與 5 題闖關`, () => {
-    expect(lesson.frames.length).toBeGreaterThanOrEqual(5);
-    expect(lesson.frames.length).toBeLessThanOrEqual(10);
-    expect(lesson.questions).toHaveLength(5);
+  it(`${lesson.id}: 有 7-12 幀分鏡、5-7 題闖關、至少 3 次提問、4 條重點`, () => {
+    expect(lesson.frames.length).toBeGreaterThanOrEqual(7);
+    expect(lesson.frames.length).toBeLessThanOrEqual(12);
+    expect(lesson.questions.length).toBeGreaterThanOrEqual(5);
+    expect(lesson.questions.length).toBeLessThanOrEqual(7);
+    expect(lesson.frames.filter((f) => f.ask).length).toBeGreaterThanOrEqual(3);
+    expect(lesson.takeaways?.length ?? 0).toBeGreaterThanOrEqual(4);
   });
 
   it(`${lesson.id}: 每幀有合法動作、正時長、非空字幕`, () => {
@@ -125,10 +128,10 @@ function lessonIntegrity(lesson: typeof FRACTION_LESSON) {
     if (hasElementary) expect(lesson.stages).toContain("國小");
   });
 
-  it(`${lesson.id}: 有小結重點 3 條、每題有 2 個提示`, () => {
-    expect(lesson.takeaways).toHaveLength(3);
+  it(`${lesson.id}: 有小結重點 4 條、每題至少 2 個提示`, () => {
+    expect(lesson.takeaways).toHaveLength(4);
     for (const q of lesson.questions) {
-      expect(q.hints).toHaveLength(2);
+      expect(q.hints?.length ?? 0).toBeGreaterThanOrEqual(2);
       for (const h of q.hints ?? []) expect(h.length).toBeGreaterThan(0);
     }
   });
@@ -210,9 +213,10 @@ describe("registry & lookup", () => {
 describe("fraction lesson data integrity", () => {
   lessonIntegrity(FRACTION_LESSON);
 
-  it("teaches same-denominator addition (all answers are fractions)", () => {
-    for (const q of FRACTION_LESSON.questions) {
-      expect(q.options[q.answer]).toMatch(/^\d+\/\d+$/);
+  it("teaches same-denominator addition (calc answers are fractions)", () => {
+    // 前 6 題是計算題，答案應為分數；第 7 題是易錯觀念題（答案為文字）
+    for (const q of FRACTION_LESSON.questions.slice(0, 6)) {
+      expect(q.options[q.answer]).toMatch(/^\d+\/\d+/);
     }
   });
 });
@@ -247,9 +251,9 @@ describe("triangle area lesson data integrity", () => {
   });
 
   it("teaches base×height÷2 (calc answers are numeric)", () => {
-    // 第 1 題問公式（含 ÷），第 2-5 題是計算題，答案應為純數字
+    // 第 1 題問公式（含 ÷），其餘是計算題，答案應為純數字
     const calcQs = TRIANGLE_AREA_LESSON.questions.slice(1);
-    expect(calcQs).toHaveLength(4);
+    expect(calcQs.length).toBeGreaterThanOrEqual(4);
     for (const q of calcQs) {
       expect(q.options[q.answer]).toMatch(/^\d+$/);
     }
@@ -259,8 +263,8 @@ describe("triangle area lesson data integrity", () => {
 describe("photosynthesis lesson data integrity", () => {
   lessonIntegrity(PHOTOSYNTHESIS_LESSON);
 
-  it("uses 10 frames for the fine-grained factory tour", () => {
-    expect(PHOTOSYNTHESIS_LESSON.frames).toHaveLength(10);
+  it("uses 12 frames for the fine-grained factory tour", () => {
+    expect(PHOTOSYNTHESIS_LESSON.frames).toHaveLength(12);
   });
 
   it("covers raw materials, chloroplast, glucose and oxygen in captions", () => {
@@ -275,8 +279,8 @@ describe("photosynthesis lesson data integrity", () => {
 describe("negative number lesson data integrity", () => {
   lessonIntegrity(NEGATIVE_NUMBER_LESSON);
 
-  it("uses 10 frames and teaches number line, ordering and opposites", () => {
-    expect(NEGATIVE_NUMBER_LESSON.frames).toHaveLength(10);
+  it("uses 12 frames and teaches number line, ordering and opposites", () => {
+    expect(NEGATIVE_NUMBER_LESSON.frames).toHaveLength(12);
     const all = NEGATIVE_NUMBER_LESSON.frames.map((f) => f.caption).join("");
     expect(all).toContain("數線");
     expect(all).toContain("相反數");
@@ -286,8 +290,8 @@ describe("negative number lesson data integrity", () => {
 describe("linear equation lesson data integrity", () => {
   lessonIntegrity(LINEAR_EQUATION_LESSON);
 
-  it("uses 10 frames and teaches balance, solving and 移項", () => {
-    expect(LINEAR_EQUATION_LESSON.frames).toHaveLength(10);
+  it("uses 12 frames and teaches balance, solving and 移項", () => {
+    expect(LINEAR_EQUATION_LESSON.frames).toHaveLength(12);
     const all = LINEAR_EQUATION_LESSON.frames.map((f) => f.caption).join("");
     expect(all).toContain("天平");
     expect(all).toContain("移項");
@@ -304,8 +308,8 @@ describe("linear equation lesson data integrity", () => {
 describe("onion cell lesson data integrity", () => {
   lessonIntegrity(ONION_CELL_LESSON);
 
-  it("uses 10 frames and covers wall, membrane, nucleus, vacuole", () => {
-    expect(ONION_CELL_LESSON.frames).toHaveLength(10);
+  it("uses 12 frames and covers wall, membrane, nucleus, vacuole", () => {
+    expect(ONION_CELL_LESSON.frames).toHaveLength(12);
     const all = ONION_CELL_LESSON.frames.map((f) => f.caption).join("");
     expect(all).toContain("細胞壁");
     expect(all).toContain("細胞膜");
