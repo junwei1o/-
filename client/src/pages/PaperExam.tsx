@@ -156,7 +156,8 @@ export default function PaperExam() {
   }, [location]);
   const reviewTopicLaunchRef = useRef("");
   const subjectScopeLaunchRef = useRef("");
-  const wrongOnlyLaunchRef = useRef("");
+  /** 錯題重練防重：以 questions 引用為準，題庫從「部分（後端先到）」補齊為完整本地庫時要能重新組卷。 */
+  const wrongOnlyLaunchRef = useRef<{ questions: readonly PaperQuestion[]; key: string } | null>(null);
   const randomAdventureLaunchRef = useRef("");
   const reviewDueLaunchRef = useRef(false);
   const [wrongSubjectFilter, setWrongSubjectFilter] = useState<PaperQuestion["subject"] | "全部">("全部");
@@ -504,8 +505,14 @@ export default function PaperExam() {
 
   useEffect(() => {
     const wrongOnlyLaunchKey = `${subjectScope ?? ""}:${wrongOnly ? "wrong-only" : ""}`;
-    if (!wrongOnly || !subjectScope || !questions.length || wrongOnlyLaunchRef.current === wrongOnlyLaunchKey) return;
-    wrongOnlyLaunchRef.current = wrongOnlyLaunchKey;
+    // 同一組 questions 引用才跳過；題庫補齊（questions 換新引用）時允許重新組卷，
+    // 避免「後端題先到、本地完整庫後到」時，先用不完整題庫組出空卷後就不再重跑。
+    const previousLaunch = wrongOnlyLaunchRef.current;
+    if (
+      !wrongOnly || !subjectScope || !questions.length ||
+      (previousLaunch && previousLaunch.key === wrongOnlyLaunchKey && previousLaunch.questions === questions)
+    ) return;
+    wrongOnlyLaunchRef.current = { questions, key: wrongOnlyLaunchKey };
     subjectScopeLaunchRef.current = subjectScope;
     const nextDeck = buildSubjectWrongReviewDeck(questions, loadAdaptiveProfile().attempts, subjectScope);
     setScope(subjectScope);

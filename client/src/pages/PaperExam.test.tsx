@@ -22,6 +22,9 @@ const mockQuestion = vi.hoisted(() => ({
   explanation: "先找出全文反覆支持的核心意思，再判斷主旨。",
 }));
 
+/** 可控題庫：預設只有 mockQuestion；錯題重練時序測試會把 questions 分兩階段替換，模擬「後端先到、本地完整庫後到」。 */
+const bankState = vi.hoisted(() => ({ questions: [mockQuestion] as unknown[] }));
+
 vi.mock("wouter", () => ({
   useLocation: () => [typeof window === "undefined" ? "/" : `${window.location.pathname}${window.location.search}`, setLocation],
 }));
@@ -51,8 +54,8 @@ vi.mock("@/lib/questionBank", () => ({
   LOCAL_QUESTION_BANK: [],
   LOCAL_ENGLISH_BANK: [],
   useQuestionBank: () => ({
-    questions: [mockQuestion],
-    total: 1,
+    questions: bankState.questions,
+    total: bankState.questions.length,
     isLoading: false,
     error: null,
     refetch: vi.fn(),
@@ -79,6 +82,7 @@ describe("PaperExam mobile-first launchpad and result summary", () => {
     cleanup();
     window.history.replaceState({}, "", "/");
     window.localStorage.removeItem(ADAPTIVE_STORAGE_KEY);
+    bankState.questions = [mockQuestion];
     setLocation.mockReset();
     playPaperStrategyCue.mockReset();
     savePaperStrategyCueEnabled.mockReset();
@@ -102,6 +106,55 @@ describe("PaperExam mobile-first launchpad and result summary", () => {
     expect(setLocation).toHaveBeenLastCalledWith("/map");
     fireEvent.click(screen.getByRole("button", { name: /探索天文館/ }));
     expect(setLocation).toHaveBeenLastCalledWith("/astronomy");
+  });
+
+  it("錯題重練：題庫分階段補齊後，會重新組卷把錯題找出來", async () => {
+    const wrongMath = {
+      id: "staged-wrong-math",
+      grade: 7,
+      subject: "數學" as const,
+      difficulty: "基礎",
+      learningTopic: "負數比較",
+      prompt: "下列哪一個大小關係正確？",
+      options: ["-10 ＞ -7", "-7 ＝ -10", "-7 ＞ -10", "7 ＜ -10"],
+      answer: 2,
+      explanation: "負數絕對值越小者越大，所以 -7 ＞ -10。",
+    };
+    // 先在錯題本資料源留下一題數學錯題（連錯三次、系統公布答案）。
+    window.localStorage.setItem(
+      ADAPTIVE_STORAGE_KEY,
+      JSON.stringify({
+        version: 2,
+        attempts: [
+          {
+            questionId: "staged-wrong-math",
+            curriculumDomain: "數學",
+            knowledge: ["負數比較"],
+            difficulty: "基礎",
+            correct: false,
+            responseMs: 25000,
+            timeLimitMs: 25000,
+            hintsUsed: 3,
+            timestamp: Date.now(),
+            flagged: false,
+            errorType: "concept",
+            nextReviewDate: null,
+          },
+        ],
+        spacedReviews: [],
+      }),
+    );
+    window.history.replaceState({}, "", "/practice?subject=%E6%95%B8%E5%AD%B8&wrongOnly=1&source=wrong-answers");
+
+    // 第一階段：只有「後端先到」的國語題，不含數學錯題 → 先組出空卷。
+    bankState.questions = [mockQuestion];
+    const { rerender } = render(<PaperExam />);
+    await waitFor(() => expect(screen.getByText(/目前沒有數學的近期錯題/)).toBeInTheDocument());
+
+    // 第二階段：本地完整題庫到達，補上數學錯題 → 應重新組卷找出 1 題。
+    bankState.questions = [mockQuestion, wrongMath];
+    rerender(<PaperExam />);
+    await waitFor(() => expect(screen.getByText(/已從數學知識島準備 1 題錯題重練/)).toBeInTheDocument());
   });
 
   it("opens a knowledge-topic review deck from the report link", () => {
