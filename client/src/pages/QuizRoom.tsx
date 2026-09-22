@@ -33,9 +33,9 @@ import "@/components/classroom/classroom.css";
 type SkinId = "concise" | "memphis" | "classic";
 const SKIN_STORAGE_KEY = "xue-classroom-skin-v1";
 const SKINS: Array<{ id: SkinId; label: string; hint: string; dot: string }> = [
-  { id: "concise", label: "極簡紫", hint: "紫調扁平漸層，安靜專注", dot: "#7C3AED" },
-  { id: "memphis", label: "孟菲斯", hint: "高飽和幾何，玩心最重", dot: "#ff5d8f" },
-  { id: "classic", label: "經典海報", hint: "暖木彩帶，手作教室", dot: "#e8843a" },
+  { id: "concise", label: "潮境", hint: "潮藍海圖，安靜專注", dot: "#0B6E8E" },
+  { id: "memphis", label: "彩旗", hint: "營地彩旗，熱鬧玩心", dot: "#E8754A" },
+  { id: "classic", label: "藏書票", hint: "手作藏書票，慢慢來", dot: "#3F5143" },
 ];
 
 const CHEER_TICKER = [
@@ -69,7 +69,7 @@ function loadSkin(): SkinId {
  * 我的教室（原答題室）：
  * 上區是七種自由玩法（選擇題變體，成績留在自己裝置）；
  * 下區保留原本的經典答題模式（自由練習、錯題、週測等）。
- * 教室皮膚可切換：極簡紫／孟菲斯／經典海報，偏好存本機。
+ * 教室皮膚可切換：潮境／彩旗／藏書票，偏好存本機。
  */
 export default function QuizRoom() {
   const [, setLocation] = useLocation();
@@ -130,7 +130,7 @@ export default function QuizRoom() {
       desc: "先答選擇題取得線索，再解鎖一盤迷你配對，連過三關。",
       href: "/classroom/relay",
       icon: Link2,
-      color: "#7c6bb5",
+      color: "#6C8460",
       tilt: "mc-tilt-l",
       best: starLabel(best.relay?.stars),
     },
@@ -160,7 +160,7 @@ export default function QuizRoom() {
       desc: "因數探險 ＋ 長方形拼拼樂接續：同一個數先點因數、再拼長方形，雙重玩法互相印證。",
       href: "/classroom/duo",
       icon: LayoutGrid,
-      color: "#d5699e",
+      color: "#E8754A",
       tilt: "mc-tilt-r",
       best: starLabel(best.duo?.stars),
     },
@@ -184,7 +184,7 @@ export default function QuizRoom() {
   return (
     <main className="mc-page" data-skin={skin} aria-labelledby="my-classroom-title">
       <div className="mc-skin-bg" aria-hidden="true" />
-      {/* 孟菲斯皮專屬：散落的幾何裝飾 */}
+      {/* 彩旗皮專屬：散落的幾何裝飾 */}
       {skin === "memphis" && (
         <div className="mm-decor" aria-hidden="true">
           <span className="mm-shape mm-dot" />
@@ -201,7 +201,7 @@ export default function QuizRoom() {
         </div>
       )}
 
-      {/* 經典海報皮專屬：天花板彩帶 */}
+      {/* 藏書票皮專屬：天花板繩結彩旗 */}
       {skin === "classic" && (
         <div className="mc-garland" aria-hidden="true">
           {Array.from({ length: 18 }, (_, i) => <i key={i} />)}
@@ -230,6 +230,11 @@ export default function QuizRoom() {
 
       <header className="mc-hero">
         {skin === "memphis" && <span className="mm-hero-tag" aria-hidden="true">FREE PLAY</span>}
+        {skin === "classic" && (
+          <span className="mc-exlibris" aria-hidden="true" title="EX LIBRIS">
+            <Compass size={24} />
+          </span>
+        )}
         {skin === "concise" && (
           <div className="cs-helper">
             <button
@@ -274,7 +279,7 @@ export default function QuizRoom() {
         )}
       </header>
 
-      {/* 極簡紫皮專屬：即時彈幕區（LIVE 標籤＋鼓勵跑馬燈） */}
+      {/* 潮境皮專屬：即時彈幕區（LIVE 標籤＋鼓勵跑馬燈） */}
       {skin === "concise" && (
         <div className="cs-bullets-wrap" aria-hidden="true">
           <span className="cs-live"><i /> LIVE</span>

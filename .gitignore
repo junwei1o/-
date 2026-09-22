@@ -121,3 +121,6 @@ server/_core/public/
 
 # 本機 Playwright / 測試日誌與截圖
 .testlogs/
+
+# UI 設計技能運行目錄（原型/截圖，不進 repo）
+ui-design-runs/
