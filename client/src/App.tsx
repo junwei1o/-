@@ -13,7 +13,6 @@ import { initGameData } from "@/utils/storage";
 // 5000 題內建題庫合計約 2.7MB：不在開站關鍵路徑 static 載入，改於下方 useEffect
 // 在瀏覽器閒置時才動態 import 預載，避免與首屏搶頻寬。
 import { OfflineBanner } from "@/components/OfflineBanner";
-import MobileBottomNav from "@/components/MobileBottomNav";
 
 // 路由懶加載：首頁與導覽保持直接載入（首屏最快），其餘頁面進入時才下載。
 const PaperExam = React.lazy(() => import("./pages/PaperExam"));
@@ -161,7 +160,6 @@ function App() {
             <TopNavigation />
             <Router />
           </div>
-          <MobileBottomNav />
         </TooltipProvider>
       </ThemeProvider>
     </ErrorBoundary>

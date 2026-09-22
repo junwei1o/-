@@ -2270,6 +2270,7 @@ nav { display:grid; gap:7px; }
     padding:7px 8px max(7px,env(safe-area-inset-bottom));
   }
   .app-shell { padding-bottom:calc(76px + env(safe-area-inset-bottom)); }
+  .app-route-shell { padding-bottom:calc(72px + env(safe-area-inset-bottom)); }
   .main-canvas { padding-top:8px; }
 }
 

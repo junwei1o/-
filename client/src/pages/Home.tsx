@@ -395,6 +395,8 @@ export default function Home() {
                 className={showQuickFloatBtn ? "home-quick-fab" : "home-quick-edge"}
                 aria-controls="home-dashboard-actions-panel"
                 aria-expanded={false}
+                aria-label="開啟快速行動"
+                title="開啟快速行動"
                 onClick={() => setIsActionsOpen(true)}
               >
                 <Zap size={18} aria-hidden="true" />

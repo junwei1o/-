@@ -4,11 +4,11 @@ import { BxToastHost, bxToast } from "./bxRewards";
 import PrivacyBanner from "./PrivacyBanner";
 import OnboardingTour from "./OnboardingTour";
 import GlobalErrorGuard from "./GlobalErrorGuard";
-import BxMobileNav from "./BxMobileNav";
 
 /**
- * BX 強化層全站掛載點：Toast/慶祝宿主、隱私橫幅、新手導覽、視窗錯誤守衛、手機底部導航，
+ * BX 強化層全站掛載點：Toast/慶祝宿主、隱私橫幅、新手導覽、視窗錯誤守衛，
  * 以及答題里程碑的備份提醒。只掛一次（建議置於 App 根）。
+ * 手機底部導航統一由 TopNavigation 的 global-mobile-priority-nav 負責，此處不重複掛載。
  */
 export default function BxEnhance() {
   useEffect(() => {
@@ -27,7 +27,6 @@ export default function BxEnhance() {
       <PrivacyBanner />
       <OnboardingTour />
       <GlobalErrorGuard />
-      <BxMobileNav />
     </>
   );
 }

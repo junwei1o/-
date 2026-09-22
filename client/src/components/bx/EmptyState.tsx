@@ -112,7 +112,7 @@ export function BxEmptyState({ slot, filled }: { slot: BxSlotKey; filled?: React
       <div className="bx-empty">
         <div className="bx-empty__art-row">
           <Art art={row.art} />
-          <img className="bx-empty__pipi" src="/pipi/idle/frame-01.webp" alt="" aria-hidden="true" draggable={false} loading="lazy" decoding="async" />
+          <img className="bx-empty__pipi" src="/pipi/outfits/explorer-happy.webp" alt="" aria-hidden="true" draggable={false} loading="lazy" decoding="async" onError={(e) => { e.currentTarget.style.display = "none"; }} />
         </div>
         <h4 className="bx-empty__title">{row.title}</h4>
         <p className="bx-empty__body">{body}</p>

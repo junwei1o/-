@@ -79,6 +79,7 @@ export default function TopNavigation() {
   }
 
   return (
+    <>
     <header className="global-top-nav">
       <div className="global-top-nav-inner">
         <button type="button" className="global-top-brand" aria-label="寶島探險家：回首頁" onClick={() => go("/")}>
@@ -127,23 +128,6 @@ export default function TopNavigation() {
         >
           <Menu size={22} aria-hidden="true" />
         </button>
-        <nav className="global-mobile-priority-nav" aria-label="手機版核心入口">
-          {MOBILE_PRIORITY_ITEMS.map(({ id, label, icon: Icon, href }) => {
-            const active = activeItem?.id === id;
-            return (
-              <button
-                key={id}
-                type="button"
-                className={`global-mobile-priority-item ${active ? "is-active" : ""}`}
-                aria-current={active ? "page" : undefined}
-                onClick={() => go(href)}
-              >
-                <Icon size={18} strokeWidth={active ? 2.5 : 1.9} aria-hidden="true" />
-                <span>{label}</span>
-              </button>
-            );
-          })}
-        </nav>
       </div>
       <Dialog open={searchOpen} onOpenChange={setSearchOpen}>
         <DialogContent className="global-feature-search-dialog p-0 sm:max-w-[580px]">
@@ -224,5 +208,24 @@ export default function TopNavigation() {
         </DialogContent>
       </Dialog>
     </header>
+
+    <nav className="global-mobile-priority-nav" aria-label="手機版核心入口">
+      {MOBILE_PRIORITY_ITEMS.map(({ id, label, icon: Icon, href }) => {
+        const active = activeItem?.id === id;
+        return (
+          <button
+            key={id}
+            type="button"
+            className={`global-mobile-priority-item ${active ? "is-active" : ""}`}
+            aria-current={active ? "page" : undefined}
+            onClick={() => go(href)}
+          >
+            <Icon size={20} strokeWidth={active ? 2.5 : 1.9} aria-hidden="true" />
+            <span>{label}</span>
+          </button>
+        );
+      })}
+    </nav>
+    </>
   );
 }
