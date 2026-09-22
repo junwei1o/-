@@ -59,6 +59,8 @@ export type ClassroomChoice = {
   options: string[];
   answer: number;
   explanation: string;
+  /** 本題考的知識點（題庫劇場用於答錯分層提示與重點標註）；舊題庫可能沒有。 */
+  knowledge?: string[];
   /** 跨學科結合題的科目組合（三科／五科）；單科題為 undefined。 */
   subjectCombination?: string[];
 };
@@ -200,6 +202,7 @@ function rowToChoice(row: CurriculumQuestionRow, random: () => number = Math.ran
     options: [...row.options],
     answer: row.answer,
     explanation: row.explanation,
+    ...(Array.isArray(row.knowledge) && row.knowledge.length > 0 ? { knowledge: [...row.knowledge] } : {}),
     ...(row.subjectCombination ? { subjectCombination: row.subjectCombination } : {}),
   };
   return shuffleQuestionOptions({ ...base, questionType: row.questionType }, random);
@@ -261,6 +264,68 @@ export function buildChoiceDeck(
   // 該學科在年級附近不夠題時，先放寬學科（留在同溫層年級），再退回全部選擇題
   const source = bySubject.length >= count ? bySubject : scoped.length >= count ? scoped : base;
   return pickRows(source, count, random);
+}
+
+/**
+ * 題庫劇場專用：難度梯度組卷。
+ * 與 buildChoiceDeck 的純隨機不同，這裡先按「基礎→標準→挑戰」約 3:4:3 配題，
+ * 再由淺到深排序，讓每一場都像動畫課一樣循序漸進；
+ * 也順道化解國中題庫挑戰題占比過高（約八成五）造成的連續卡關。
+ * 某一難度題數不足時，依標準→基礎→挑戰順序從其他難度補足，絕不開天窗。
+ */
+export function buildTheaterDeck(
+  count = 10,
+  subject?: PaperSubject | "綜合",
+  random: () => number = Math.random,
+  grade?: number | null,
+): ClassroomChoice[] {
+  const wanted = resolveGrade(grade);
+  const base = allChoiceRows().filter((row) => row.questionType === "選擇題");
+  const scoped = scopeRowsByGrade(base, wanted, count);
+  const bySubject = scoped.filter(
+    (row) => !subject || subject === "綜合" || row.subject === subject,
+  );
+  const source = bySubject.length >= count ? bySubject : scoped.length >= count ? scoped : base;
+
+  const order = ["基礎", "標準", "挑戰"] as const;
+  const buckets: Record<string, CurriculumQuestionRow[]> = { 基礎: [], 標準: [], 挑戰: [] };
+  for (const row of source) {
+    (buckets[row.difficulty] ?? buckets["標準"]).push(row);
+  }
+  for (const d of order) buckets[d] = shuffleArray(buckets[d], random);
+
+  const total = Math.max(1, Math.min(count, source.length));
+  const nBasic = Math.round(total * 0.3);
+  const nChallenge = Math.round(total * 0.3);
+  const quotas: Record<string, number> = {
+    基礎: nBasic,
+    標準: total - nBasic - nChallenge,
+    挑戰: nChallenge,
+  };
+
+  const picked: Record<string, ClassroomChoice[]> = { 基礎: [], 標準: [], 挑戰: [] };
+  for (const d of order) {
+    picked[d] = buckets[d].splice(0, quotas[d]).map((row) => rowToChoice(row, random));
+  }
+  // 配額後仍有缺口（某難度題庫不足）時，依標準→基礎→挑戰順序補足。
+  let missing = total - order.reduce((sum, d) => sum + picked[d].length, 0);
+  const fillOrder = ["標準", "基礎", "挑戰"];
+  while (missing > 0) {
+    let progressed = false;
+    for (const d of fillOrder) {
+      if (missing <= 0) break;
+      const row = buckets[d].shift();
+      if (row) {
+        picked[d].push(rowToChoice(row, random));
+        missing -= 1;
+        progressed = true;
+      }
+    }
+    if (!progressed) break;
+  }
+
+  // 由淺到深出題：基礎段 → 標準段 → 挑戰段（段內已隨機）。
+  return order.flatMap((d) => picked[d]);
 }
 
 /** 是非閃電用：是非題（選項固定為「正確／錯誤」）；題庫不足時補充自製是非題。 */

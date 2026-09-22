@@ -114,20 +114,28 @@ describe("洋蔥動畫講解 OnionAcademyGame", () => {
     fireEvent.click(olBtn("跳過動畫，直接闖關"));
     for (let j = 0; j < lesson.questions.length; j++) {
       const q = lesson.questions[j];
-      if (j < 2) {
+      if (j < lesson.questions.length - 1) {
+        // 前面的題都首次答對
         fireEvent.click(opt(q.options[q.answer]));
       } else {
-        // 先答錯：應出現提示，且該選項被停用
+        // 最後一題先答錯：應出現提示，且該選項被停用
         const wrong = q.options.find((o) => o !== q.options[q.answer]) as string;
         fireEvent.click(opt(wrong));
         expect(screen.getByText(/提示（第 1 次）/)).toBeInTheDocument();
-        // 再答對：仍可繼續（但不計入首次答對）
+        // 再答對：仍可繼續，但這題不計入「首次答對」
         fireEvent.click(opt(q.options[q.answer]));
       }
       fireEvent.click(olBtn(j < lesson.questions.length - 1 ? "下一題" : "查看結果"));
     }
-    expect(onBest).toHaveBeenCalledWith({ stars: 1, correct: 2, total: lesson.questions.length });
-    expect(gradeOnionLesson(2, lesson.questions.length).stars).toBe(1);
+    const correct = lesson.questions.length - 1;
+    const expected = gradeOnionLesson(correct, lesson.questions.length);
+    expect(onBest).toHaveBeenCalledWith({
+      stars: expected.stars,
+      correct,
+      total: lesson.questions.length,
+    });
+    // 只錯一題（首次答對）仍有高分，但拿不到滿分三顆星
+    expect(expected.stars).toBe(2);
   });
 
   it("動畫中途會停下來提問，略過後繼續播放", () => {

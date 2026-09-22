@@ -2,22 +2,28 @@
  * 洋蔥題庫劇場：五千題內建題庫 × 洋蔥動畫演出。
  *
  * 這是洋蔥學院的第三種學習形式——動畫課與分數工坊的題目都是寫死的內容，
- * 題庫劇場則是「庫存互相利用」：每次開演都從 5000 題的內建題庫抽一組題
- * （依學生的年級偏好與選定的科目），洋蔥吉祥物全程演出：
- * 出題時指著題目（point）、答對跳起來欢呼（cheer）、答錯歪頭想（think），
- * 並在每一題後演出「為什麼」——把詳解用字幕播出去。
+ * 題庫劇場則是「庫存互相利用」：每次開演都從 5000 題的內建題庫依「基礎→標準→挑戰」
+ * 難度梯度抽一組題（配合學生的年級偏好與選定的科目），洋蔥吉祥物全程演出：
+ * 出題時指著題目（point）、答對跳起來歡呼（cheer）、答錯歪頭想（think）。
+ *
+ * 教學加深（與動畫課／分數工坊對齊）：
+ *  - 開演前先給「本場學習地圖」：這一場會練到哪些知識點、難度如何遞進。
+ *  - 答錯採三級提示：第一次給知識點方向、第二次給更具體的線索、第三次才公布答案並講解，
+ *    不再只說「再想一想」。
+ *  - 每題標示難度與知識點；答完一題把「為什麼」用字幕播出去。
+ *  - 謝幕時做「錯題回顧」：把本場沒能自己答對的題連正解、知識點、詳解列出來複習。
  * 星級標準與其他玩法一致（gradeOnionLesson），成績一樣回寫教室最佳紀錄。
  */
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { Home, Star, Clapperboard, ChevronRight, RotateCcw, Settings2, Lightbulb } from "lucide-react";
+import { Home, Star, Clapperboard, ChevronRight, RotateCcw, Settings2, Lightbulb, Map, BookOpenCheck } from "lucide-react";
 import { gradeOnionLesson, type OnionResult } from "@/game/onionAcademyLessons";
 import { OnionMascot } from "@/components/classroom/OnionAcademyScenes";
-import { buildChoiceDeck, type ClassroomChoice } from "@/lib/classroomBank";
+import { buildTheaterDeck, type ClassroomChoice } from "@/lib/classroomBank";
 import { loadLocalBank, LOCAL_QUESTION_BANK } from "@/lib/questionBank";
 import { loadStudentGradePreference } from "@/lib/studentGradePreference";
 import "@/components/classroom/classroom.css";
 
-type Phase = "start" | "loading" | "quiz" | "result";
+type Phase = "start" | "loading" | "briefing" | "quiz" | "result";
 
 type Props = {
   bestStars?: number;
@@ -25,9 +31,15 @@ type Props = {
   onExit: () => void;
 };
 
+/** 答錯第三次公布答案的門檻（前兩次給提示、第三次公布）。 */
+const REVEAL_AT_WRONG = 3;
+
 /** 每個科目「看過的最佳紀錄」（只往上寫，與動畫課的 lessonBest 同做法）。 */
 const THEATER_BEST_KEY = "hdmx_onion_theater_best_v1";
 type TheaterBest = { stars: number; correct: number; total: number; at: number };
+
+/** 錯題回顧列：記錄本場沒能自己答對、最後由系統公布答案的題。 */
+type ReviewItem = { q: ClassroomChoice };
 
 function loadTheaterBest(): Record<string, TheaterBest> {
   if (typeof window === "undefined") return {};
@@ -55,6 +67,12 @@ function saveTheaterBest(scope: string, best: TheaterBest) {
 const SUBJECT_OPTIONS = ["全部", "數學", "自然", "社會", "國語", "英語"] as const;
 const COUNT_OPTIONS = [5, 10, 15] as const;
 
+const DIFFICULTY_LABEL: Record<string, string> = {
+  基礎: "基礎",
+  標準: "標準",
+  挑戰: "挑戰",
+};
+
 export default function OnionBankTheater({ bestStars, onBest, onExit }: Props) {
   const [phase, setPhase] = useState<Phase>("start");
   const [subject, setSubject] = useState<(typeof SUBJECT_OPTIONS)[number]>("全部");
@@ -63,13 +81,16 @@ export default function OnionBankTheater({ bestStars, onBest, onExit }: Props) {
   const [qIdx, setQIdx] = useState(0);
   const [selected, setSelected] = useState<number | null>(null);
   const [answered, setAnswered] = useState(false);
+  /** 本題是否因連錯三次而由系統公布答案（沒有自己答對）。 */
+  const [revealed, setRevealed] = useState(false);
   const [wrongPicks, setWrongPicks] = useState<number[]>([]);
   const [correctCount, setCorrectCount] = useState(0);
+  const [review, setReview] = useState<ReviewItem[]>([]);
   const [result, setResult] = useState<OnionResult>({ stars: 0, correct: 0, total: 0, coins: 0 });
   const [theaterBest, setTheaterBest] = useState<Record<string, TheaterBest>>(() => loadTheaterBest());
 
   /** 吉祥物的動作：出題時指題目、答對歡呼、答錯歪頭想。 */
-  const mascotAction = answered ? (selected === deck[qIdx]?.answer ? "cheer" : "think") : "point";
+  const mascotAction = answered ? (revealed ? "think" : "cheer") : "point";
   const mascotTick = useRef(0);
   useEffect(() => {
     mascotTick.current += 1;
@@ -79,20 +100,37 @@ export default function OnionBankTheater({ bestStars, onBest, onExit }: Props) {
   const q = deck[qIdx];
   const scopeKey = subject === "全部" ? "綜合" : subject;
 
+  /** 本場學習地圖：把抽到的題按學習主題去重，做為開演前的學習目標。 */
+  const briefingTopics = useMemo(() => {
+    const seen = new Set<string>();
+    const topics: string[] = [];
+    for (const item of deck) {
+      const t = item.learningTopic?.trim();
+      if (t && !seen.has(t)) {
+        seen.add(t);
+        topics.push(t);
+      }
+    }
+    return topics.slice(0, 8);
+  }, [deck]);
+
   const startShow = async () => {
     setPhase("loading");
     // 題庫是動態載入的活陣列：第一次開演前確保 5000 題都讀進來了。
     if (LOCAL_QUESTION_BANK.length === 0) {
       await loadLocalBank();
     }
-    const picked = buildChoiceDeck(count, subject === "全部" ? "綜合" : subject);
+    // 難度梯度組卷：基礎→標準→挑戰，由淺到深。
+    const picked = buildTheaterDeck(count, subject === "全部" ? "綜合" : subject);
     setDeck(picked);
     setQIdx(0);
     setSelected(null);
     setAnswered(false);
+    setRevealed(false);
     setWrongPicks([]);
     setCorrectCount(0);
-    setPhase("quiz");
+    setReview([]);
+    setPhase("briefing");
   };
 
   const choose = (i: number) => {
@@ -102,10 +140,18 @@ export default function OnionBankTheater({ bestStars, onBest, onExit }: Props) {
     if (isRight) {
       setSelected(i);
       setAnswered(true);
+      setRevealed(false);
       setCorrectCount((c) => c + 1);
     } else {
-      // 答錯可以先再試一次（與動畫課闖關同款），第二次答對仍計分。
-      setWrongPicks((w) => [...w, i]);
+      const nextWrong = [...wrongPicks, i];
+      setWrongPicks(nextWrong);
+      // 前兩次答錯給分層提示、可再試；第三次仍錯就公布正解、帶入錯題回顧（不計分）。
+      if (nextWrong.length >= REVEAL_AT_WRONG) {
+        setSelected(q.answer);
+        setAnswered(true);
+        setRevealed(true);
+        setReview((list) => [...list, { q }]);
+      }
     }
   };
 
@@ -122,6 +168,7 @@ export default function OnionBankTheater({ bestStars, onBest, onExit }: Props) {
     setQIdx((i) => i + 1);
     setSelected(null);
     setAnswered(false);
+    setRevealed(false);
     setWrongPicks([]);
   };
 
@@ -149,9 +196,9 @@ export default function OnionBankTheater({ bestStars, onBest, onExit }: Props) {
           <span className="ol-tag"><Clapperboard size={14} /> 題庫劇場</span>
           <h2>五千題庫存，每次開演都不同</h2>
           <p className="ob-intro">
-            這裡的題目不是寫死的——每一場都從全站 5000 題的題庫抽出來，
-            {grade ? `並且配合你的年級（${grade} 年級）選題。` : "答錯沒關係，洋蔥會演出為什麼。"}
-            答完每一題，洋蔥都會把「為什麼」演給你看。
+            這裡的題目不是寫死的——每一場都從全站 5000 題的題庫，按「基礎→標準→挑戰」循序抽出來，
+            {grade ? `並且配合你的年級（${grade} 年級）選題。` : "難度會一題題往上加。"}
+            答錯有兩次提示引導，答完每一題，洋蔥都會把「為什麼」演給你看。
           </p>
           <div className="ob-settings" role="group" aria-label="選擇科目">
             {subjectChips.map((s) => (
@@ -198,9 +245,60 @@ export default function OnionBankTheater({ bestStars, onBest, onExit }: Props) {
     );
   }
 
+  /* ---------------- 開演前：本場學習地圖 ---------------- */
+  if (phase === "briefing") {
+    return (
+      <div className="ol-page">
+        <div className="ol-top">
+          <button type="button" className="ol-exit" onClick={onExit}><Home size={15} /> 回我的教室</button>
+        </div>
+        <div className="ol-summary">
+          <div className="ol-summary-mascot" aria-hidden="true">
+            <OnionMascot action="point" frame={4} size={78} />
+          </div>
+          <span className="ol-tag"><Map size={14} /> 本場學習地圖</span>
+          <h2>{scopeKey} · {deck.length} 題，由淺到深</h2>
+          <p className="ob-intro">
+            這一場會從「基礎」暖身，進到「標準」熟練，再用「挑戰」題驗收。先看看等等會練到哪些重點：
+          </p>
+          <div className="ob-brief-topics" role="list">
+            {briefingTopics.map((t) => (
+              <span key={t} className="ob-brief-topic" role="listitem">{t}</span>
+            ))}
+          </div>
+          <ul className="ob-brief-flow">
+            <li><b>基礎題</b>先建立觀念</li>
+            <li><b>標準題</b>熟練作法</li>
+            <li><b>挑戰題</b>活用與跨單元</li>
+          </ul>
+          <p className="ob-brief-tip">
+            <Lightbulb size={13} /> 答錯別緊張：洋蔥會先提示兩次，真的不會再公布答案，結束還能複習錯題。
+          </p>
+          <div className="ol-start-btns">
+            <button type="button" className="ol-btn ol-btn--primary" onClick={() => setPhase("quiz")}>
+              開始答題 <ChevronRight size={15} />
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   /* ---------------- 演出中：逐題問答 ---------------- */
   if (phase === "quiz" && q) {
-    const isRight = answered && selected === q.answer;
+    const isRight = answered && !revealed;
+    const hintLevel = wrongPicks.length;
+    const hintText = !answered
+      ? hintLevel === 1
+        ? q.knowledge?.[0]
+          ? `提示一：這題考的是「${q.knowledge[0]}」，先從這個方向想一想。`
+          : `提示一：先回到「${q.learningTopic}」的基本觀念，再比對選項。`
+        : hintLevel === 2
+          ? q.knowledge?.[1]
+            ? `提示二：再注意「${q.knowledge[1]}」這個關鍵，錯誤選項常在這裡設陷阱。`
+            : `提示二：把題目條件逐項套入「${q.learningTopic}」的作法，刪掉明顯不符的選項。`
+          : null
+      : null;
     return (
       <div className="ol-page">
         <header className="ol-bar">
@@ -215,7 +313,13 @@ export default function OnionBankTheater({ bestStars, onBest, onExit }: Props) {
           <div className="ob-meta">
             <span className="ob-meta-chip">{q.subject}</span>
             <span className="ob-meta-chip">{q.grade} 年級</span>
+            <span className={`ob-meta-chip ob-diff ob-diff--${q.difficulty}`}>
+              {DIFFICULTY_LABEL[q.difficulty] ?? q.difficulty}
+            </span>
             <span className="ob-meta-chip">{q.learningTopic}</span>
+            {q.knowledge?.map((k) => (
+              <span key={k} className="ob-meta-chip ob-knowledge">{k}</span>
+            ))}
             {q.subjectCombination && (
               <span className="ob-meta-chip ob-meta-chip--cross">
                 跨科：{q.subjectCombination.join("．")}
@@ -223,9 +327,9 @@ export default function OnionBankTheater({ bestStars, onBest, onExit }: Props) {
             )}
           </div>
           <p className="ol-q-prompt" aria-live="polite">{q.prompt}</p>
-          {!answered && wrongPicks.length > 0 && (
-            <div className="ol-hint" role="status">
-              <Lightbulb size={13} /> 這個不對，再想一想！（答錯不扣分）
+          {!answered && hintText && (
+            <div className={`ol-hint ob-hint ob-hint--l${hintLevel}`} role="status">
+              <Lightbulb size={13} /> {hintText}
             </div>
           )}
           <div className="ol-q-options">
@@ -250,8 +354,13 @@ export default function OnionBankTheater({ bestStars, onBest, onExit }: Props) {
           {answered && (
             <div className="ob-explain" role="status" aria-live="polite">
               <p className={`ob-explain-head ${isRight ? "is-ok" : "is-warn"}`}>
-                {isRight ? "答對了！洋蔥給你拍拍手" : "沒關係，記住這個就好"}
+                {isRight ? "答對了！洋蔥給你拍拍手" : "別灰心，洋蔥把這題演給你看"}
               </p>
+              {q.knowledge && q.knowledge.length > 0 && (
+                <p className="ob-explain-knowledge">
+                  <BookOpenCheck size={13} /> 知識點：{q.knowledge.join("、")}
+                </p>
+              )}
               <p className="ob-explain-body">{q.explanation}</p>
               <button type="button" className="ol-btn ol-btn--primary" onClick={next}>
                 {qIdx >= deck.length - 1 ? "看結果" : "下一題"} <ChevronRight size={15} />
@@ -263,7 +372,7 @@ export default function OnionBankTheater({ bestStars, onBest, onExit }: Props) {
     );
   }
 
-  /* ---------------- 謝幕：結算獎勵 ---------------- */
+  /* ---------------- 謝幕：結算獎勵＋錯題回顧 ---------------- */
   return (
     <div className="ol-page">
       <div className="ol-top">
@@ -279,6 +388,29 @@ export default function OnionBankTheater({ bestStars, onBest, onExit }: Props) {
           {"★".repeat(result.stars)}{"☆".repeat(3 - result.stars)}
         </p>
         <p className="ob-result-coins">獲得 {result.coins} 金幣</p>
+
+        {review.length > 0 ? (
+          <div className="ob-review" aria-label="錯題回顧">
+            <p className="ob-review-head"><BookOpenCheck size={14} /> 錯題回顧（{review.length} 題，建議再讀一次詳解）</p>
+            <ol className="ob-review-list">
+              {review.map((item, idx) => (
+                <li key={`${item.q.id}-${idx}`} className="ob-review-item">
+                  <p className="ob-review-q">{idx + 1}. {item.q.prompt}</p>
+                  <p className="ob-review-a">
+                    正解：{item.q.options[item.q.answer]}
+                    {item.q.knowledge && item.q.knowledge.length > 0 && (
+                      <span className="ob-review-k"> · {item.q.knowledge.join("、")}</span>
+                    )}
+                  </p>
+                  <p className="ob-review-e">{item.q.explanation}</p>
+                </li>
+              ))}
+            </ol>
+          </div>
+        ) : (
+          <p className="ob-review-allok"><BookOpenCheck size={14} /> 全部自己答對，沒有錯題，太厲害了！</p>
+        )}
+
         <div className="ol-start-btns">
           <button type="button" className="ol-btn ol-btn--primary" onClick={() => void startShow()}>
             <RotateCcw size={14} /> 再來一場（新題目）

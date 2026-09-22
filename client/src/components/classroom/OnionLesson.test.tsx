@@ -93,9 +93,10 @@ describe("洋蔥式動畫微課 OnionLesson", () => {
     expect(screen.getAllByText(/分數小達人/).length).toBeGreaterThanOrEqual(1);
     expect(onBest).toHaveBeenCalledTimes(1);
     const record = onBest.mock.calls[0][0];
+    const totalQuestions = FRACTION_COURSE.layers.reduce((sum, layer) => sum + layer.quiz.length, 0);
     expect(record.stars).toBe(3); // 全程零失誤
-    expect(record.total).toBe(8); // 4 層 × 2 題
-    expect(record.correct).toBe(8);
+    expect(record.total).toBe(totalQuestions); // 各層題數加總（加深後每層 3 題）
+    expect(record.correct).toBe(totalQuestions);
   });
 
   it("完成後重新進入會顯示解鎖進度（local-first）", () => {
