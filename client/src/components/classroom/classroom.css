@@ -1110,7 +1110,7 @@
     radial-gradient(circle at 20% 30%, rgba(74, 58, 38, 0.05) 0 1px, transparent 2px),
     radial-gradient(circle at 70% 60%, rgba(74, 58, 38, 0.045) 0 1px, transparent 2px),
     radial-gradient(circle at 42% 82%, rgba(63, 81, 67, 0.05) 0 1px, transparent 2px),
-    linear-gradient(180deg, #efe6d7 0%, #ece1cd 100%);
+    linear-gradient(180deg, var(--paper-deep) 0%, #ece1cd 100%);
   background-size: 26px 26px, 34px 34px, 42px 42px, 100% 100%;
 }
 .mc-page > *:not(.mc-skin-bg):not(.mm-decor) { position: relative; z-index: 1; }
@@ -1177,7 +1177,7 @@
   color: #f3fafb;
   background:
     repeating-radial-gradient(circle at 88% 6%, rgba(255, 255, 255, 0.10) 0 2px, transparent 2px 26px),
-    linear-gradient(158deg, #0e7a9c 0%, #0b6e8e 46%, #07516a 100%);
+    linear-gradient(158deg, #0e7a9c 0%, var(--tidal) 46%, var(--tidal-deep) 100%);
   box-shadow: 0 16px 34px -14px rgba(7, 81, 106, 0.6);
 }
 .mc-page[data-skin="concise"] .mc-hero::after { display: none; }
@@ -1216,7 +1216,7 @@
   color: var(--white);
   background:
     repeating-conic-gradient(from 0deg, rgba(255, 255, 255, 0.32) 0deg 5deg, transparent 5deg 45deg),
-    radial-gradient(circle at 32% 28%, #7fd0e2, #0e7a9c 70%, #07516a);
+    radial-gradient(circle at 32% 28%, #7fd0e2, #0e7a9c 70%, var(--tidal-deep));
   box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.16), 0 6px 14px rgba(4, 40, 52, 0.4);
   cursor: pointer;
   animation: cs-pulse 2.8s ease-in-out infinite;
@@ -1406,12 +1406,12 @@
 /* ---------------- 彩旗皮 memphis（營地信號旗，墨描邊＋品牌色幾何） ---------------- */
 .mc-page[data-skin="memphis"] .mc-skin-options {
   background: var(--white);
-  border: 2.5px solid #1f3031;
+  border: 2.5px solid var(--ink);
   border-radius: var(--radius-lg);
-  box-shadow: 3px 3px 0 #1f3031;
+  box-shadow: 3px 3px 0 var(--ink);
 }
-.mc-page[data-skin="memphis"] .mc-skin-label { color: #1f3031; }
-.mc-page[data-skin="memphis"] .mc-skin-btn.is-active { background: #1f3031; color: var(--yellow); }
+.mc-page[data-skin="memphis"] .mc-skin-label { color: var(--ink); }
+.mc-page[data-skin="memphis"] .mc-skin-btn.is-active { background: var(--ink); color: var(--yellow); }
 
 .mm-decor { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
 .mm-shape { position: absolute; display: block; }
@@ -1423,7 +1423,7 @@
 }
 .mm-ring-2 {
   width: 24px; height: 24px; border-radius: 50%;
-  border: 4px solid var(--yellow); outline: 3px solid #1f3031;
+  border: 4px solid var(--yellow); outline: 3px solid var(--ink);
   top: 80%; left: 6%;
 }
 .mm-tri {
@@ -1431,13 +1431,13 @@
   border-left: 17px solid transparent;
   border-right: 17px solid transparent;
   border-bottom: 30px solid var(--yellow);
-  filter: drop-shadow(2.5px 2.5px 0 #1f3031);
+  filter: drop-shadow(2.5px 2.5px 0 var(--ink));
   top: 42%; left: 2.5%;
 }
 .mm-tri-2 { border-bottom-color: var(--coral); top: 90%; right: 3%; left: auto; }
 .mm-plus { width: 26px; height: 26px; top: 33%; right: 3.5%; }
 .mm-plus::before, .mm-plus::after {
-  content: ""; position: absolute; background: #1f3031; border-radius: 2px;
+  content: ""; position: absolute; background: var(--ink); border-radius: 2px;
 }
 .mm-plus::before { left: 50%; top: 0; bottom: 0; width: 5px; transform: translateX(-50%); }
 .mm-plus::after { top: 50%; left: 0; right: 0; height: 5px; transform: translateY(-50%); }
@@ -1450,46 +1450,46 @@
 /* 新增幾何：拱形／方塊／波浪（彩旗元素補強，品牌四色） */
 .mm-arch {
   width: 42px; height: 21px;
-  border: 3px solid #1f3031;
+  border: 3px solid var(--ink);
   border-bottom: none;
   border-radius: 42px 42px 0 0;
   background: var(--coral);
-  box-shadow: 3px 3px 0 #1f3031;
+  box-shadow: 3px 3px 0 var(--ink);
   top: 72%; right: 13%; left: auto;
 }
 .mm-sq {
   width: 20px; height: 20px;
   background: var(--moss);
-  border: 3px solid #1f3031;
-  box-shadow: 3px 3px 0 #1f3031;
+  border: 3px solid var(--ink);
+  box-shadow: 3px 3px 0 var(--ink);
   transform: rotate(14deg);
   top: 11%; right: 17%; left: auto;
 }
 .mm-squiggle {
   top: 46%; right: 7%; left: auto;
   width: 54px; height: 16px;
-  background: repeating-linear-gradient(45deg, #1f3031 0 6px, transparent 6px 12px);
+  background: repeating-linear-gradient(45deg, var(--ink) 0 6px, transparent 6px 12px);
   border-radius: 50%;
 }
 
 .mc-page[data-skin="memphis"] .mc-hero {
-  border: 3px solid #1f3031;
+  border: 3px solid var(--ink);
   border-radius: var(--radius-xl);
   padding: 24px 22px 21px;
-  background: repeating-linear-gradient(135deg, #fffdf8 0 26px, #fbf4e4 26px 52px);
-  box-shadow: 5px 5px 0 #1f3031;
+  background: repeating-linear-gradient(135deg, var(--white) 0 26px, #fbf4e4 26px 52px);
+  box-shadow: 5px 5px 0 var(--ink);
   transform: none;
 }
 .mc-page[data-skin="memphis"] .mc-hero::after { display: none; }
 .mc-page[data-skin="memphis"] .mc-hero-eyebrow {
   display: inline-block;
   color: var(--white);
-  background: #1f3031;
+  background: var(--ink);
   border-radius: var(--radius-sm);
   padding: 4px 11px;
   letter-spacing: 0.18em;
 }
-.mc-page[data-skin="memphis"] .mc-hero h1 { color: #1f3031; font-weight: 900 !important; }
+.mc-page[data-skin="memphis"] .mc-hero h1 { color: var(--ink); font-weight: 900 !important; }
 .mc-page[data-skin="memphis"] .mc-hero h1 u {
   text-decoration-color: var(--coral);
   text-decoration-thickness: 5px;
@@ -1499,11 +1499,11 @@
 .mc-page[data-skin="memphis"] .mc-hero p.mc-sub { color: #46504c; }
 .mc-page[data-skin="memphis"] .mc-sticker {
   background: var(--white);
-  color: #1f3031;
+  color: var(--ink);
   border-width: 2.5px;
-  border-color: #1f3031;
+  border-color: var(--ink);
   border-radius: var(--radius-pill);
-  box-shadow: 2.5px 2.5px 0 #1f3031;
+  box-shadow: 2.5px 2.5px 0 var(--ink);
   transform: none;
 }
 .mc-page[data-skin="memphis"] .mc-sticker:nth-child(even) { transform: none; }
@@ -1518,13 +1518,13 @@
   font-weight: 900;
   letter-spacing: 0.14em;
   padding: 6px 12px;
-  border: 2.5px solid #1f3031;
+  border: 2.5px solid var(--ink);
   border-radius: var(--radius-sm);
   transform: rotate(5deg);
-  box-shadow: 3px 3px 0 #1f3031;
+  box-shadow: 3px 3px 0 var(--ink);
 }
 
-.mc-page[data-skin="memphis"] .mc-section-title { color: #1f3031; font-weight: 900 !important; }
+.mc-page[data-skin="memphis"] .mc-section-title { color: var(--ink); font-weight: 900 !important; }
 .mc-page[data-skin="memphis"] .mc-section-title::after {
   height: 7px;
   border-radius: 4px;
@@ -1532,20 +1532,20 @@
 }
 .mc-page[data-skin="memphis"] .mc-doodle {
   background: var(--yellow);
-  color: #1f3031;
-  border: 2.5px solid #1f3031;
+  color: var(--ink);
+  border: 2.5px solid var(--ink);
   border-radius: 9px;
 }
 .mc-page[data-skin="memphis"] .mc-play-card {
-  border: 2.5px solid #1f3031;
+  border: 2.5px solid var(--ink);
   border-radius: 14px;
   background: var(--white);
-  box-shadow: 4px 4px 0 #1f3031;
+  box-shadow: 4px 4px 0 var(--ink);
 }
 .mc-page[data-skin="memphis"] .mc-play-card:hover,
 .mc-page[data-skin="memphis"] .mc-play-card:focus-visible {
   transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0 #1f3031;
+  box-shadow: 6px 6px 0 var(--ink);
 }
 .mc-page[data-skin="memphis"] .mc-tilt-l { transform: rotate(-1.1deg); }
 .mc-page[data-skin="memphis"] .mc-tilt-r { transform: rotate(1.1deg); }
@@ -1554,64 +1554,64 @@
 .mc-page[data-skin="memphis"] .mc-tilt-l:focus-visible,
 .mc-page[data-skin="memphis"] .mc-tilt-r:focus-visible { transform: translate(-2px, -2px) rotate(0deg); }
 .mc-page[data-skin="memphis"] .mc-play-icon {
-  border: 2.5px solid #1f3031;
+  border: 2.5px solid var(--ink);
   border-radius: 11px;
-  box-shadow: 2.5px 2.5px 0 #1f3031;
+  box-shadow: 2.5px 2.5px 0 var(--ink);
 }
 .mc-page[data-skin="memphis"] .mc-play-card h3 { font-weight: 900 !important; }
-.mc-page[data-skin="memphis"] .mc-play-go { color: #1f3031; }
+.mc-page[data-skin="memphis"] .mc-play-go { color: var(--ink); }
 .mc-page[data-skin="memphis"] .mc-play-best {
   background: var(--yellow);
-  border: 2px solid #1f3031;
-  color: #1f3031;
+  border: 2px solid var(--ink);
+  color: var(--ink);
   border-radius: var(--radius-sm);
 }
 .mc-page[data-skin="memphis"] .mc-mode-card {
-  border: 2.5px solid #1f3031;
+  border: 2.5px solid var(--ink);
   border-radius: var(--radius-md);
   background: var(--white);
-  box-shadow: 4px 4px 0 #1f3031;
+  box-shadow: 4px 4px 0 var(--ink);
 }
 .mc-page[data-skin="memphis"] .mc-mode-card:hover,
 .mc-page[data-skin="memphis"] .mc-mode-card:focus-visible {
-  border-color: #1f3031;
+  border-color: var(--ink);
   transform: translate(-1px, -2px);
-  box-shadow: 6px 6px 0 #1f3031;
+  box-shadow: 6px 6px 0 var(--ink);
 }
 .mc-page[data-skin="memphis"] .mc-mode-card .mc-mode-icon {
   background: var(--paper);
-  color: #1f3031;
-  border: 2.5px solid #1f3031;
+  color: var(--ink);
+  border: 2.5px solid var(--ink);
   border-radius: 9px;
 }
 
 /* 動畫微課橫幅：彩旗＝白卡墨邊硬投影（不再滿版黃底） */
 .mc-page[data-skin="memphis"] .mc-lesson-card {
-  border: 3px solid #1f3031;
+  border: 3px solid var(--ink);
   background: var(--white);
-  box-shadow: 5px 5px 0 #1f3031;
+  box-shadow: 5px 5px 0 var(--ink);
 }
 .mc-page[data-skin="memphis"] .mc-lesson-card:hover,
 .mc-page[data-skin="memphis"] .mc-lesson-card:focus-visible {
   transform: translate(-2px, -2px);
-  box-shadow: 8px 8px 0 #1f3031;
+  box-shadow: 8px 8px 0 var(--ink);
 }
 .mc-page[data-skin="memphis"] .mc-lesson-icon {
   background: linear-gradient(135deg, var(--tidal), var(--tidal-deep));
-  border: 2.5px solid #1f3031;
+  border: 2.5px solid var(--ink);
   border-radius: var(--radius-md);
-  box-shadow: 2.5px 2.5px 0 #1f3031;
+  box-shadow: 2.5px 2.5px 0 var(--ink);
 }
 .mc-page[data-skin="memphis"] .mc-lesson-badge {
   background: var(--yellow);
-  border: 2px solid #1f3031;
-  color: #1f3031;
+  border: 2px solid var(--ink);
+  color: var(--ink);
 }
 .mc-page[data-skin="memphis"] .mc-lesson-body p { color: #46504c; }
-.mc-page[data-skin="memphis"] .mc-lesson-meta { color: #1f3031; }
+.mc-page[data-skin="memphis"] .mc-lesson-meta { color: var(--ink); }
 .mc-page[data-skin="memphis"] .mc-lesson-go {
-  background: #1f3031;
-  border: 2px solid #1f3031;
+  background: var(--ink);
+  border: 2px solid var(--ink);
   color: var(--yellow);
 }
 
@@ -2041,7 +2041,7 @@
 .rg-brick-1 { background: linear-gradient(160deg, #f09c5a, #e8843a 60%, #c9661f); }
 .rg-brick-2 { background: linear-gradient(160deg, #74a864, #5b8a4b 60%, #4a723d); }
 .rg-brick-3 { background: linear-gradient(160deg, #a48cc9, #8a6bb5 60%, #735997); }
-.rg-brick-4 { background: linear-gradient(160deg, #d4705a, #c8553d 60%, #a84530); }
+.rg-brick-4 { background: linear-gradient(160deg, #d4705a, var(--red) 60%, #a84530); }
 .rg-brick-5 { background: linear-gradient(160deg, #4a99ad, #2f7d8f 60%, #266674); }
 @keyframes rg-brick-in {
   from { transform: scale(0.5); opacity: 0.4; }
