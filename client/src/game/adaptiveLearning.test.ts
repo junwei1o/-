@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { calculateAdaptiveReport, calculateKnowledgeHeatmap, filterQuestionsByGrade, loadUserPreferences, saveUserPreferences, calculateLearningTrendReport, defaultAdaptiveProfile, getAdaptiveBand, getDueReviewQuestionIds, getMemoryAlarmCount, getSpacedReviewSummary, isInWrongBook, getActiveWrongQuestionIds, getCorrectStreak, getRemainingToGraduate, WRONG_GRADUATION_STREAK, loadAdaptiveProfile, recordAdaptiveAttempt, selectAdaptiveQuestions, selectSpacedReviewQuestion, SPACED_REVIEW_INTERVALS_MS } from "./adaptiveLearning";
+import { calculateAdaptiveReport, calculateKnowledgeHeatmap, filterQuestionsByGrade, loadUserPreferences, saveUserPreferences, calculateLearningTrendReport, defaultAdaptiveProfile, getAdaptiveBand, getDueReviewQuestionIds, getMemoryAlarmCount, getSpacedReviewSummary, isInWrongBook, getActiveWrongQuestionIds, getCorrectStreak, getRemainingToGraduate, isGraduated, getGraduationDate, getGraduatedQuestionIds, WRONG_GRADUATION_STREAK, loadAdaptiveProfile, recordAdaptiveAttempt, selectAdaptiveQuestions, selectSpacedReviewQuestion, SPACED_REVIEW_INTERVALS_MS } from "./adaptiveLearning";
 
 type StorageMock = Storage;
 function storageWith(value: string | null): StorageMock {
@@ -343,5 +343,29 @@ describe("錯題本：連續答對兩次才自動移出", () => {
     // 連續兩對 → streak 2，剩餘 0（已畢業）。
     expect(getCorrectStreak([att("q", false), att("q", true), att("q", true)], "q")).toBe(2);
     expect(getRemainingToGraduate([att("q", false), att("q", true), att("q", true)], "q")).toBe(0);
+  });
+
+  it("畢業判定：曾錯且連續兩次對才算畢業，並標註畢業日期", () => {
+    // 從未錯（一直對）→ 不算「從錯題本畢業」。
+    expect(isGraduated([att("q", true), att("q", true)], "q")).toBe(false);
+    // 錯→對（只一次）→ 尚未畢業。
+    expect(isGraduated([att("q", false), att("q", true)], "q")).toBe(false);
+    const dated = [
+      { questionId: "q", correct: false, timestamp: 100 },
+      { questionId: "q", correct: true, timestamp: 300 },
+      { questionId: "q", correct: true, timestamp: 500 },
+    ];
+    // 錯→對→對（連續兩次）→ 畢業，畢業日期為達標那場（最新一筆）。
+    expect(isGraduated(dated, "q")).toBe(true);
+    expect(getGraduationDate(dated, "q")).toBe(500);
+    // 批次：a 已連續兩對（畢業）、b 只對一次（未畢業）。
+    const mixed = [
+      { questionId: "a", correct: false, timestamp: 1 },
+      { questionId: "a", correct: true, timestamp: 2 },
+      { questionId: "a", correct: true, timestamp: 3 },
+      { questionId: "b", correct: false, timestamp: 1 },
+      { questionId: "b", correct: true, timestamp: 2 },
+    ];
+    expect(Array.from(getGraduatedQuestionIds(mixed))).toEqual(["a"]);
   });
 });

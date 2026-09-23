@@ -211,6 +211,41 @@ export function getRemainingToGraduate(attempts: readonly WrongBookAttempt[], qu
   return Math.max(0, WRONG_GRADUATION_STREAK - getCorrectStreak(attempts, questionId));
 }
 
+/** 帶時間的錯題紀錄（用於標註畢業日期）；完整 AdaptiveAttempt 適用。 */
+export type DatedWrongBookAttempt = WrongBookAttempt & { timestamp?: number };
+
+/**
+ * 判斷一題是否已從錯題本「畢業」：
+ *  - 曾經至少答錯一次（有進過錯題本），且
+ *  - 目前已連續答對達門檻次數（連續兩次對）。
+ * 從未答錯、一直都對的題不算畢業（它沒有需要克服的錯誤）。
+ */
+export function isGraduated(attempts: readonly WrongBookAttempt[], questionId: string): boolean {
+  const mine = attempts.filter((attempt) => attempt.questionId === questionId);
+  if (mine.length === 0) return false;
+  if (!mine.some((attempt) => !attempt.correct)) return false;
+  return getCorrectStreak(attempts, questionId) >= WRONG_GRADUATION_STREAK;
+}
+
+/** 取得該題的畢業日期（達標那場、即最新一筆連續答對的時間）；未畢業傳回 null。 */
+export function getGraduationDate(
+  attempts: readonly DatedWrongBookAttempt[],
+  questionId: string,
+): number | null {
+  if (!isGraduated(attempts, questionId)) return null;
+  const mine = attempts.filter((attempt) => attempt.questionId === questionId);
+  return mine[mine.length - 1]?.timestamp ?? null;
+}
+
+/** 批次取得所有已畢業題目的 id。 */
+export function getGraduatedQuestionIds(attempts: readonly WrongBookAttempt[]): Set<string> {
+  const ids = new Set<string>();
+  attempts.forEach((attempt) => {
+    if (isGraduated(attempts, attempt.questionId)) ids.add(attempt.questionId);
+  });
+  return ids;
+}
+
 export function updateLatestAdaptiveAttempt(profile: AdaptiveProfile, questionId: string, patch: Partial<Pick<AdaptiveAttempt, "flagged" | "errorType">>): AdaptiveProfile {
   const index = profile.attempts.map((attempt) => attempt.questionId).lastIndexOf(questionId);
   if (index < 0) return profile;
