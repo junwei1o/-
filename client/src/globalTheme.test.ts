@@ -5,11 +5,13 @@ import { describe, expect, it } from "vitest";
 const projectFile = (relativePath: string) =>
   readFileSync(resolve(process.cwd(), relativePath), "utf8");
 
-describe("全站宣紙主題", () => {
-  it("uses the requested warm parchment foundation and Traditional Chinese font stack", () => {
+describe("全站主題與字體", () => {
+  it("keeps the parchment theme definition and Traditional Chinese font stack", () => {
     const styles = projectFile("client/src/index.css");
 
-    expect(styles).toContain("--paper: #F9F3E8");
+    // 四主題切換系統（ee1208f）後，宣紙主題改為可切換主題之一（保留暖色底紙定義），預設為潮境染紙。
+    expect(styles).toContain("--paper:#F9F3E8");
+    expect(styles).toContain("--paper: #EAF1F2");
     expect(styles).toContain("html { background:var(--paper); }");
     expect(styles).toContain("body { margin:0; min-width:320px; background:var(--paper);");
     // 繁中本地系統字體堆疊：系統有 Noto Sans TC 就用，否則依序降級 PingFang／JhengHei。
