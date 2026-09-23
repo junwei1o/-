@@ -802,3 +802,125 @@
   cursor: pointer;
   text-decoration: underline;
 }
+
+/* ===== 錯題本：逐題畢業進度 ===== */
+.wrong-answers-page .wrong-book-summary {
+  margin-top: 12px;
+  font-size: 15px;
+  color: #35506b;
+}
+.wrong-answers-page .wrong-book-summary strong { color: #d9742f; font-size: 18px; }
+
+.wrong-answers-page .wrong-book-group {
+  gap: 12px;
+  padding: 18px;
+}
+.wrong-book-group-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.wrong-book-group-head h2 {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 800;
+  color: #24415e;
+}
+.wrong-book-count {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #2f7d6d;
+  background: #e3f3ee;
+}
+.wrong-book-start {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 16px;
+  border: none;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 800;
+  color: #fff;
+  background: linear-gradient(135deg, #e8893f, #d9702f);
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(217, 112, 47, 0.25);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.wrong-book-start:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(217, 112, 47, 0.32); }
+
+.wrong-book-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 14px 16px;
+  border: 1px solid #e7edf2;
+  border-radius: 14px;
+  background: #fbfdfe;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.wrong-book-item:hover { border-color: #cfe0ec; box-shadow: 0 4px 14px rgba(47, 116, 158, 0.08); }
+.wrong-book-item-main { flex: 1 1 320px; min-width: 0; }
+.wrong-book-prompt {
+  margin: 0 0 8px;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.5;
+  color: #2a3f54;
+}
+.wrong-book-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.wrong-book-tag {
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #3a6b8f;
+  background: #eaf3f9;
+}
+
+.wrong-book-progress {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  min-width: 190px;
+}
+.wrong-book-dots { display: flex; gap: 7px; }
+.wrong-book-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid #c6d2dc;
+  background: #eef2f5;
+  transition: all 0.2s ease;
+}
+.wrong-book-dot.is-done {
+  border-color: #e8893f;
+  background: linear-gradient(135deg, #f0a45f, #e07a34);
+  box-shadow: 0 2px 6px rgba(224, 122, 52, 0.4);
+}
+.wrong-book-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin: 0;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #6b7d8d;
+  text-align: right;
+}
+.wrong-book-status.is-close { color: #d9702f; font-weight: 800; }
+
+@media (max-width: 640px) {
+  .wrong-book-progress { align-items: flex-start; }
+  .wrong-book-status { text-align: left; }
+}

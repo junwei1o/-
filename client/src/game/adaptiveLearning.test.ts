@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { calculateAdaptiveReport, calculateKnowledgeHeatmap, filterQuestionsByGrade, loadUserPreferences, saveUserPreferences, calculateLearningTrendReport, defaultAdaptiveProfile, getAdaptiveBand, getDueReviewQuestionIds, getMemoryAlarmCount, getSpacedReviewSummary, isInWrongBook, getActiveWrongQuestionIds, loadAdaptiveProfile, recordAdaptiveAttempt, selectAdaptiveQuestions, selectSpacedReviewQuestion, SPACED_REVIEW_INTERVALS_MS } from "./adaptiveLearning";
+import { calculateAdaptiveReport, calculateKnowledgeHeatmap, filterQuestionsByGrade, loadUserPreferences, saveUserPreferences, calculateLearningTrendReport, defaultAdaptiveProfile, getAdaptiveBand, getDueReviewQuestionIds, getMemoryAlarmCount, getSpacedReviewSummary, isInWrongBook, getActiveWrongQuestionIds, getCorrectStreak, getRemainingToGraduate, WRONG_GRADUATION_STREAK, loadAdaptiveProfile, recordAdaptiveAttempt, selectAdaptiveQuestions, selectSpacedReviewQuestion, SPACED_REVIEW_INTERVALS_MS } from "./adaptiveLearning";
 
 type StorageMock = Storage;
 function storageWith(value: string | null): StorageMock {
@@ -331,5 +331,17 @@ describe("錯題本：連續答對兩次才自動移出", () => {
       att("c", false),                                // c 錯 → 留
     ];
     expect(Array.from(getActiveWrongQuestionIds(attempts)).sort()).toEqual(["b", "c"]);
+  });
+
+  it("已連續答對次數與「再答對幾題畢業」", () => {
+    // 最新錯 → streak 0，還要連續對 2 題。
+    expect(getCorrectStreak([att("q", false), att("q", true), att("q", false)], "q")).toBe(0);
+    expect(getRemainingToGraduate([att("q", false), att("q", true), att("q", false)], "q")).toBe(WRONG_GRADUATION_STREAK);
+    // 錯→對（一次）→ streak 1，再對 1 題就畢業。
+    expect(getCorrectStreak([att("q", false), att("q", true)], "q")).toBe(1);
+    expect(getRemainingToGraduate([att("q", false), att("q", true)], "q")).toBe(1);
+    // 連續兩對 → streak 2，剩餘 0（已畢業）。
+    expect(getCorrectStreak([att("q", false), att("q", true), att("q", true)], "q")).toBe(2);
+    expect(getRemainingToGraduate([att("q", false), att("q", true), att("q", true)], "q")).toBe(0);
   });
 });

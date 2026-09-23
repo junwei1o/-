@@ -186,6 +186,31 @@ export function getActiveWrongQuestionIds(attempts: readonly WrongBookAttempt[])
   return ids;
 }
 
+/** 錯題「畢業」門檻：連續答對這麼多次，代表確實掌握、自動移出錯題本。 */
+export const WRONG_GRADUATION_STREAK = 2;
+
+/**
+ * 取得一題「目前已連續答對幾次」（從最新一筆往前連續為對的數量）：
+ *  - 最新一筆是錯 → 0。
+ *  - 最新一筆對、前一筆錯 → 1（再答對 1 題就畢業）。
+ *  - 連續兩次對 → 2（此題已移出錯題本）。
+ * 用來在錯題本顯示「已連續答對 X 次／再答對幾題就畢業」的進度。
+ */
+export function getCorrectStreak(attempts: readonly WrongBookAttempt[], questionId: string): number {
+  const mine = attempts.filter((attempt) => attempt.questionId === questionId);
+  let streak = 0;
+  for (let index = mine.length - 1; index >= 0; index -= 1) {
+    if (mine[index]?.correct) streak += 1;
+    else break;
+  }
+  return streak;
+}
+
+/** 傳回該題距離畢業「還要再連續答對幾題」（門檻 − 目前連續對次數，最低 0）。 */
+export function getRemainingToGraduate(attempts: readonly WrongBookAttempt[], questionId: string): number {
+  return Math.max(0, WRONG_GRADUATION_STREAK - getCorrectStreak(attempts, questionId));
+}
+
 export function updateLatestAdaptiveAttempt(profile: AdaptiveProfile, questionId: string, patch: Partial<Pick<AdaptiveAttempt, "flagged" | "errorType">>): AdaptiveProfile {
   const index = profile.attempts.map((attempt) => attempt.questionId).lastIndexOf(questionId);
   if (index < 0) return profile;
