@@ -1,4 +1,4 @@
-import { loadUserPreferences, getTargetDifficultiesFromPrefs, filterQuestionsByGrade, targetDifficulties, type AdaptiveProfile } from "@/game/adaptiveLearning";
+import { loadUserPreferences, getTargetDifficultiesFromPrefs, filterQuestionsByGrade, targetDifficulties, isInWrongBook, type AdaptiveProfile } from "@/game/adaptiveLearning";
 import { shuffleQuestionOptions } from "./optionRandomizer";
 import { MATCHING_SETS, shuffleArray, sliceMatchingSet, type MatchingSet } from "./matchingBank";
 import { FILL_QUESTIONS, ORDER_QUESTIONS, fillToPaper, orderToPaper } from "./classroomBank";
@@ -200,10 +200,11 @@ export function buildSubjectWrongReviewDeck(
     }
   });
 
-  return Array.from(latestAttemptByQuestion.values())
-    .filter((attempt) => !attempt.correct)
-    .sort((left, right) => right.timestamp - left.timestamp)
-    .map((attempt) => questionById.get(attempt.questionId))
+  return Array.from(latestAttemptByQuestion.keys())
+    // 連續兩次答對才視為掌握、移出錯題本；只答對一次（前一筆仍是錯）會留在卷中再確認。
+    .filter((questionId) => isInWrongBook(attempts, questionId))
+    .sort((left, right) => (latestAttemptByQuestion.get(right)?.timestamp ?? 0) - (latestAttemptByQuestion.get(left)?.timestamp ?? 0))
+    .map((questionId) => questionById.get(questionId))
     .filter((question): question is PaperQuestion => Boolean(question))
     .slice(0, size)
     .map((question) => shuffleQuestionOptions(question));

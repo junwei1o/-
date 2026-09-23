@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { ArrowLeft, RotateCcw } from "lucide-react";
 import { useLocation } from "wouter";
-import { loadAdaptiveProfile } from "@/game/adaptiveLearning";
+import { loadAdaptiveProfile, isInWrongBook } from "@/game/adaptiveLearning";
 import type { KnowledgeIslandSubject } from "@/lib/studentKnowledgeIslands";
 import "./HomeDashboard.css";
 
@@ -10,8 +10,13 @@ const SUBJECTS: KnowledgeIslandSubject[] = ["國語", "數學", "社會", "自�
 export default function WrongAnswers() {
   const [, setLocation] = useLocation();
   const subjectsWithAttempts = useMemo(() => {
-    const attempts = loadAdaptiveProfile().attempts.filter((attempt) => !attempt.correct);
-    return SUBJECTS.filter((subject) => attempts.some((attempt) => attempt.curriculumDomain === subject));
+    const profile = loadAdaptiveProfile();
+    // 連續兩次答對的題已自動移出錯題本，只保留仍需複習的題所屬科目。
+    return SUBJECTS.filter((subject) =>
+      profile.attempts.some(
+        (attempt) => attempt.curriculumDomain === subject && isInWrongBook(profile.attempts, attempt.questionId),
+      ),
+    );
   }, []);
 
   return (

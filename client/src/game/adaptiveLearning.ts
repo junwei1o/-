@@ -157,6 +157,35 @@ export function getLatestAdaptiveAttempt(profile: AdaptiveProfile, questionId: s
   return null;
 }
 
+/** 錯題判定只需要「題目 id＋該次對錯」（完整 AdaptiveAttempt 或精簡作答紀錄皆可）。 */
+export type WrongBookAttempt = { questionId: string; correct: boolean };
+
+/**
+ * 判斷一題目前是否仍在「錯題本」：
+ *  - 最新一筆是錯 → 仍在錯題本。
+ *  - 最新一筆對、但前一筆是錯（或沒有前一筆）→ 仍在（只對一次可能是運氣，需要再確認）。
+ *  - 最近兩筆「連續答對」→ 已確實掌握，自動移出錯題本。
+ * 題庫劇場與試卷的錯題重練、錯題本頁面都用同一判定，口徑一致。
+ */
+export function isInWrongBook(attempts: readonly WrongBookAttempt[], questionId: string): boolean {
+  const mine = attempts.filter((attempt) => attempt.questionId === questionId);
+  if (mine.length === 0) return false;
+  const latest = mine[mine.length - 1];
+  if (!latest?.correct) return true;
+  const previous = mine[mine.length - 2];
+  // 最新對、且前一筆也對（連續兩次）→ 移出；否則還需要再答對一次。
+  return previous?.correct !== true;
+}
+
+/** 批次取得目前仍在錯題本的所有題目 id（連續兩次答對的題不會出現）。 */
+export function getActiveWrongQuestionIds(attempts: readonly WrongBookAttempt[]): Set<string> {
+  const ids = new Set<string>();
+  attempts.forEach((attempt) => {
+    if (isInWrongBook(attempts, attempt.questionId)) ids.add(attempt.questionId);
+  });
+  return ids;
+}
+
 export function updateLatestAdaptiveAttempt(profile: AdaptiveProfile, questionId: string, patch: Partial<Pick<AdaptiveAttempt, "flagged" | "errorType">>): AdaptiveProfile {
   const index = profile.attempts.map((attempt) => attempt.questionId).lastIndexOf(questionId);
   if (index < 0) return profile;

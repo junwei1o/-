@@ -23,16 +23,17 @@ describe("paper exam deck", () => {
     vi.restoreAllMocks();
   });
 
-  it("錯題重練只帶入同科最後一次仍未答對的真實紀錄，並以最近紀錄優先", () => {
+  it("錯題重練只帶入同科仍在錯題本的紀錄：連續兩次答對才移出，並以最近紀錄優先", () => {
     const deck = buildSubjectWrongReviewDeck(questions, [
       { questionId: "m", correct: false, timestamp: 100 },
-      { questionId: "m", correct: true, timestamp: 200 },
-      { questionId: "m2", correct: false, timestamp: 300 },
-      { questionId: "s", correct: false, timestamp: 400 },
+      { questionId: "m", correct: true, timestamp: 200 },   // 只連續答對一次（前一筆仍是錯）→ 留在錯題本再確認
+      { questionId: "m2", correct: false, timestamp: 300 },  // 最新一題是錯 → 留
+      { questionId: "s", correct: false, timestamp: 400 },   // 社會科，數學卷排除
       { questionId: "not-in-bank", correct: false, timestamp: 500 },
     ], "數學");
 
-    expect(deck.map((question) => question.id)).toEqual(["m2"]);
+    // m2（t300）最近、m（t200）次之；m 尚未連續兩次答對，故仍在卷中。
+    expect(deck.map((question) => question.id)).toEqual(["m2", "m"]);
     expect(deck.every((question) => question.subject === "數學")).toBe(true);
   });
 

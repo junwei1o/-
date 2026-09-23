@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { calculateAdaptiveReport, calculateKnowledgeHeatmap, filterQuestionsByGrade, loadUserPreferences, saveUserPreferences, calculateLearningTrendReport, defaultAdaptiveProfile, getAdaptiveBand, getDueReviewQuestionIds, getMemoryAlarmCount, getSpacedReviewSummary, loadAdaptiveProfile, recordAdaptiveAttempt, selectAdaptiveQuestions, selectSpacedReviewQuestion, SPACED_REVIEW_INTERVALS_MS } from "./adaptiveLearning";
+import { calculateAdaptiveReport, calculateKnowledgeHeatmap, filterQuestionsByGrade, loadUserPreferences, saveUserPreferences, calculateLearningTrendReport, defaultAdaptiveProfile, getAdaptiveBand, getDueReviewQuestionIds, getMemoryAlarmCount, getSpacedReviewSummary, isInWrongBook, getActiveWrongQuestionIds, loadAdaptiveProfile, recordAdaptiveAttempt, selectAdaptiveQuestions, selectSpacedReviewQuestion, SPACED_REVIEW_INTERVALS_MS } from "./adaptiveLearning";
 
 type StorageMock = Storage;
 function storageWith(value: string | null): StorageMock {
@@ -295,5 +295,41 @@ describe("使用者偏好：預設最高難度（F5）", () => {
     saveUserPreferences(defaultUserPreferences, storage);
     const loaded = loadUserPreferences(storage);
     expect(loaded.difficultyPreference).toBe("挑戰優先");
+  });
+});
+
+describe("錯題本：連續答對兩次才自動移出", () => {
+  const att = (questionId: string, correct: boolean) => ({ questionId, correct });
+
+  it("最新一題是錯 → 留在錯題本", () => {
+    const attempts = [att("q", false), att("q", true), att("q", false)];
+    expect(isInWrongBook(attempts, "q")).toBe(true);
+  });
+
+  it("只答對一次（前一筆仍是錯）→ 仍留在錯題本，需要再確認", () => {
+    const attempts = [att("q", false), att("q", true)];
+    expect(isInWrongBook(attempts, "q")).toBe(true);
+  });
+
+  it("連續兩次答對 → 自動移出錯題本", () => {
+    const attempts = [att("q", false), att("q", true), att("q", true)];
+    expect(isInWrongBook(attempts, "q")).toBe(false);
+  });
+
+  it("中途答錯會重新計算：連對中又錯一次，之後需再連續兩次對才移出", () => {
+    // 錯→對→對（原本已可移出），但又錯→對，此時只連續對一次，仍留在錯題本。
+    const attempts = [att("q", false), att("q", true), att("q", true), att("q", false), att("q", true)];
+    expect(isInWrongBook(attempts, "q")).toBe(true);
+    // 再答對一次（連續兩次）才移出。
+    expect(isInWrongBook([...attempts, att("q", true)], "q")).toBe(false);
+  });
+
+  it("批次取得仍在錯題本的題目 id", () => {
+    const attempts = [
+      att("a", false), att("a", true), att("a", true), // a 連兩對 → 移出
+      att("b", false), att("b", true),                // b 只對一次 → 留
+      att("c", false),                                // c 錯 → 留
+    ];
+    expect(Array.from(getActiveWrongQuestionIds(attempts)).sort()).toEqual(["b", "c"]);
   });
 });
