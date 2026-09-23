@@ -1,15 +1,15 @@
 import React, { useState } from "react";
 import { useLocation } from "wouter";
-import { Clapperboard, Dices, LifeBuoy, Lightbulb, Orbit, Sparkles } from "lucide-react";
+import { BookOpen, Clapperboard, Dices, FlaskConical, LifeBuoy, Lightbulb, Orbit, Sparkles, Telescope, type LucideIcon } from "lucide-react";
 import "./HubPages.css";
 
 type TabId = "story" | "astro" | "science" | "safety";
 
-const TABS: Array<{ id: TabId; label: string }> = [
-  { id: "story", label: "📖 文學故事" },
-  { id: "astro", label: "🔭 天文" },
-  { id: "science", label: "🔬 科學原理" },
-  { id: "safety", label: "🛟 生活安全" },
+const TABS: Array<{ id: TabId; label: string; icon: LucideIcon }> = [
+  { id: "story", label: "文學故事", icon: BookOpen },
+  { id: "astro", label: "天文", icon: Telescope },
+  { id: "science", label: "科學原理", icon: FlaskConical },
+  { id: "safety", label: "生活安全", icon: LifeBuoy },
 ];
 
 /**
@@ -41,11 +41,11 @@ export default function Gallery() {
     <main className="hub-page" aria-labelledby="gallery-title">
       <header className="hub-header">
         <p className="hub-eyebrow">KNOWLEDGE GALLERY</p>
-        <h1 className="hub-title" id="gallery-title">🗺️ 知識展廳</h1>
+        <h1 className="hub-title" id="gallery-title">知識展廳</h1>
         <p className="hub-sub">故事、天文、科學原理、生活安全，同一個展廳換分類標籤。</p>
       </header>
       <div className="hub-tabs" role="tablist" aria-label="知識展廳分類">
-        {TABS.map(({ id, label }) => (
+        {TABS.map(({ id, label, icon: TabIcon }) => (
           <button
             key={id}
             type="button"
@@ -54,6 +54,7 @@ export default function Gallery() {
             className={`hub-tab ${tab === id ? "on" : ""}`}
             onClick={() => setTab(id)}
           >
+            <TabIcon size={16} aria-hidden="true" />
             {label}
           </button>
         ))}

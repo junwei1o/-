@@ -18,12 +18,17 @@
   display: inline-flex;
   align-items: center;
   gap: 7px;
+  min-height: 40px;
+  padding: 9px 10px;
+  margin-left: -10px;
+  border-radius: 8px;
   color: var(--tidal);
   font-size: 12px;
   font-weight: 800;
   text-decoration: none;
 }
 .safety-back:hover { color: var(--coral); }
+.safety-back:focus-visible { outline: 3px solid color-mix(in srgb, var(--coral) 50%, transparent); outline-offset: 2px; }
 .safety-code { color: var(--muted); font-size: 9px; font-weight: 800; letter-spacing: .16em; white-space: nowrap; }
 
 /* ---------- 首頁 ---------- */

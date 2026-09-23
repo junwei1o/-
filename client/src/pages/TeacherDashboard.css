@@ -15,6 +15,12 @@
   gap: 18px;
 }
 
+/* 空態（如學生尚未開雲端船籍）：垂直置中，避免大片留白 */
+.teacher-page--empty { display: flex; align-items: center; }
+.teacher-page--empty .teacher-inner { width: 100%; max-width: 520px; margin: auto; }
+.empty-badge { display: grid; place-items: center; width: 58px; height: 58px; margin-bottom: 14px; border-radius: 50%; background: color-mix(in srgb, var(--tidal) 12%, var(--white)); color: var(--tidal); border: 1px solid color-mix(in srgb, var(--tidal) 22%, transparent); }
+.teacher-card .empty-cta { width: 100%; margin-top: 8px; }
+
 .teacher-header {
   display: flex;
   align-items: flex-start;

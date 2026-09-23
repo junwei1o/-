@@ -40,16 +40,20 @@ export default function StudentClass() {
 
   if (cloudName.length < 2) {
     return (
-      <main className="teacher-page" aria-labelledby="student-class-title">
+      <main className="teacher-page teacher-page--empty" aria-labelledby="student-class-title">
         <div className="teacher-inner">
           <button type="button" className="settings-back-button" onClick={() => setLocation("/settings")}>
             ← 返回設定
           </button>
           <section className="teacher-card">
+            <span className="empty-badge"><School size={26} aria-hidden="true" /></span>
             <h1 id="student-class-title">我的教室</h1>
             <p className="teacher-hint">
               加入班級需要先有船名（雲端船籍的名字）。請先到設定頁開啟雲端船籍、取一個名字，再回來加入班級。
             </p>
+            <button type="button" className="settings-primary-button empty-cta" onClick={() => setLocation("/settings")}>
+              前往設定，開啟雲端船籍
+            </button>
           </section>
         </div>
       </main>
