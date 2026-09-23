@@ -164,6 +164,11 @@ export default function PaperExam() {
   const [wrongReasonFilter, setWrongReasonFilter] = useState<PaperMistakeReason | "全部">("全部");
   const recordedIdsRef = useRef(new Set<string>());
   const startedAtRef = useRef(Date.now());
+  /** 這一場答題的真正開始時間（不隨換題重置），用於答題榜計算「用了多久」。 */
+  const examStartedAtRef = useRef(Date.now());
+  useEffect(() => {
+    examStartedAtRef.current = Date.now();
+  }, [deck]);
   const completedJournalSessionRef = useRef<string | null>(null);
   /** 每題倒數截止時間（只算第一次進入該題的 30 秒，回看不會重計）。 */
   const deadlineRef = useRef<Record<string, number>>({});
@@ -349,6 +354,7 @@ export default function PaperExam() {
         // 帶上同一份試卷的識別碼：學生答完最後一題才回頭補選原因時會再報一次，
         // 沒有這個 key 雲端會多存一筆沒有歸因的紀錄，老師端反而看不到。
         sessionKey,
+        durationSec: Math.max(1, Math.round((Date.now() - examStartedAtRef.current) / 1000)),
         detail: {
           scope,
           islandId: journalBase.islandId,
@@ -400,6 +406,7 @@ export default function PaperExam() {
       totalQuestions: choiceDeck.length,
       correctCount: result.correct,
       sessionKey,
+      durationSec: Math.max(1, Math.round((Date.now() - examStartedAtRef.current) / 1000)),
       detail: {
         scope,
         islandId: subjectScope ?? null,

@@ -28,6 +28,7 @@ import {
   saveAdaptiveProfile,
   type AdaptiveDifficulty,
 } from "@/game/adaptiveLearning";
+import { recordExamCloud } from "@/game/cloudSync";
 import "@/components/classroom/classroom.css";
 
 type Phase = "start" | "loading" | "briefing" | "quiz" | "result";
@@ -96,6 +97,12 @@ export default function OnionBankTheater({ bestStars, onBest, onExit }: Props) {
   const [review, setReview] = useState<ReviewItem[]>([]);
   const [result, setResult] = useState<OnionResult>({ stars: 0, correct: 0, total: 0, coins: 0 });
   const [theaterBest, setTheaterBest] = useState<Record<string, TheaterBest>>(() => loadTheaterBest());
+
+  /** 這一場題庫劇場的開始時間（進入 quiz 時記一次），用於答題榜「用了多久」。 */
+  const quizStartedAtRef = useRef(Date.now());
+  useEffect(() => {
+    if (phase === "quiz") quizStartedAtRef.current = Date.now();
+  }, [phase]);
 
   /** 吉祥物的動作：出題時指題目、答對歡呼、答錯歪頭想。 */
   const mascotAction = answered ? (revealed ? "think" : "cheer") : "point";
@@ -198,6 +205,19 @@ export default function OnionBankTheater({ bestStars, onBest, onExit }: Props) {
       saveTheaterBest(scopeKey, { stars: r.stars, correct: r.correct, total: r.total, at: Date.now() });
       setTheaterBest(loadTheaterBest());
       onBest({ stars: r.stars, correct: r.correct, total: r.total });
+      // 答題榜：完成一場劇場即記一筆（雲端船籍與遊客都會上報），含實際花費時間。
+      try {
+        recordExamCloud({
+          subject: subject === "全部" ? "題庫劇場" : subject,
+          grade: deck[0]?.grade,
+          totalQuestions: deck.length,
+          correctCount: r.correct,
+          durationSec: Math.max(1, Math.round((Date.now() - quizStartedAtRef.current) / 1000)),
+          detail: { scope: "題庫劇場", chosenSubject: subject, count },
+        });
+      } catch {
+        // 雲端記錄失敗不影響結算。
+      }
       setPhase("result");
       return;
     }

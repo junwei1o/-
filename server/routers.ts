@@ -42,6 +42,7 @@ import {
   listClassMembers,
   listClassesOfStudent,
   listExamRecords,
+  listRecentExamRecords,
   listSubmissions,
   deleteAnnouncement,
   listWeeklyLeaderboard,
@@ -590,6 +591,8 @@ export const appRouter = router({
         detail: z.unknown().optional(),
         /** 同一份試卷的識別碼：帶了就是覆蓋更新（學生補標錯誤原因時會再報一次）。 */
         sessionKey: z.string().trim().min(1).max(160).optional(),
+        /** 完成這場答題實際花費的秒數（答題榜「用了多久」）。 */
+        durationSec: z.number().int().min(0).max(86_400).optional(),
       }).refine((v) => v.correctCount <= v.totalQuestions, { message: "correctCount exceeds totalQuestions" }))
       .mutation(async ({ input }) => {
         await insertExamRecord({
@@ -599,6 +602,7 @@ export const appRouter = router({
           difficulty: input.difficulty ?? null,
           totalQuestions: input.totalQuestions,
           correctCount: input.correctCount,
+          durationSec: input.durationSec ?? null,
           detail: input.detail ?? null,
           sessionKey: input.sessionKey ?? null,
         });
@@ -624,6 +628,25 @@ export const appRouter = router({
             difficulty: row.difficulty,
             totalQuestions: row.totalQuestions,
             correctCount: row.correctCount,
+            createdAt: row.createdAt instanceof Date ? row.createdAt.getTime() : Date.now(),
+          })),
+        };
+      }),
+    /** 答題榜：跨所有作答者（含遊客）取最近完成的場次，最新的在前。 */
+    examLeaderboard: publicProcedure
+      .input(z.object({ limit: z.number().int().min(1).max(100).optional() }).optional())
+      .query(async ({ input }) => {
+        const rows = await listRecentExamRecords(input?.limit ?? 50);
+        return {
+          records: rows.map((row) => ({
+            id: row.id,
+            name: row.name,
+            subject: row.subject,
+            grade: row.grade,
+            difficulty: row.difficulty,
+            totalQuestions: row.totalQuestions,
+            correctCount: row.correctCount,
+            durationSec: row.durationSec,
             createdAt: row.createdAt instanceof Date ? row.createdAt.getTime() : Date.now(),
           })),
         };

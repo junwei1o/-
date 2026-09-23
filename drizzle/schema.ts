@@ -87,6 +87,8 @@ export const examRecords = mysqlTable("exam_records", {
    * 學生常常答完最後一題才回頭標錯誤原因，那時需要再上報一次。
    */
   sessionKey: varchar("sessionKey", { length: 160 }),
+  /** 完成這場答題實際花費的時間（秒），用於答題榜的「用了多久」。舊紀錄可能為空。 */
+  durationSec: int("durationSec"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 }, (table) => ({
   nameIdx: index("exam_records_name_idx").on(table.name),

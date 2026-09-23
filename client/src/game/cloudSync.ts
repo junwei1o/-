@@ -1,6 +1,7 @@
 import { createTRPCClient, httpBatchLink } from "@trpc/client";
 import superjson from "superjson";
 import type { AppRouter } from "../../../server/routers";
+import { getPlayerName } from "./identity";
 
 /**
  * 雲端船籍同步層（免註冊，名字即身分）。
@@ -59,9 +60,10 @@ export const cloudApi = {
   register: (input: { name: string; payload: CloudPayload; metrics: CloudMetrics }) => getClient().cloud.register.mutate(input),
   load: (input: { name: string }) => getClient().cloud.load.query(input),
   save: (input: { name: string; payload: CloudPayload; metrics: CloudMetrics }) => getClient().cloud.save.mutate(input),
-  recordExam: (input: { name: string; subject: string; grade?: number; difficulty?: string; totalQuestions: number; correctCount: number; detail?: unknown }) =>
+  recordExam: (input: { name: string; subject: string; grade?: number; difficulty?: string; totalQuestions: number; correctCount: number; detail?: unknown; sessionKey?: string; durationSec?: number }) =>
     getClient().cloud.recordExam.mutate(input),
   listExams: (input: { name: string; limit?: number }) => getClient().cloud.listExams.query(input),
+  examLeaderboard: (input?: { limit?: number }) => getClient().cloud.examLeaderboard.query(input),
 };
 
 /* ---------- 模式儲存 ---------- */
@@ -250,15 +252,20 @@ export interface CloudExamInput {
    * 沒有這個 key 就會變成兩筆紀錄（後一筆沒有原因），老師端反而看不到歸因。
    */
   sessionKey?: string;
+  /** 完成這場答題實際花費的秒數（答題榜「用了多久」）。 */
+  durationSec?: number;
 }
 
-/** 試卷完成即時記錄一筆（fire-and-forget，失敗不影響作答流程），並觸發整包進度同步。 */
+/**
+ * 完成一場答題即記一筆（fire-and-forget，失敗不影響作答流程）。
+ * 雲端船籍與「遊客」都會上報，名字統一由 getPlayerName 取得（雲端名或遊客編號），
+ * 因此即使不註冊，遊客的作答時間、花費時間也會進入答題榜。
+ */
 export function recordExamCloud(input: CloudExamInput) {
-  const mode = getCloudMode();
-  if (mode.mode !== "cloud" || !mode.name) return;
+  const name = getPlayerName();
   markDirty();
   void cloudApi
-    .recordExam({ name: mode.name, ...input })
+    .recordExam({ name, ...input })
     .catch(() => {
       // 斷線靜默：整包進度仍會由 markDirty 補上傳。
     });

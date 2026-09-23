@@ -39,6 +39,7 @@ const DailyCamp = React.lazy(() => import("@/pages/DailyCamp"));
 const Badges = React.lazy(() => import("@/pages/Badges"));
 const WrongAnswers = React.lazy(() => import("@/pages/WrongAnswers"));
 const GraduationHall = React.lazy(() => import("@/pages/GraduationHall"));
+const AnswerLeaderboard = React.lazy(() => import("@/pages/AnswerLeaderboard"));
 const ReviewHub = React.lazy(() => import("@/pages/ReviewHub"));
 const Settings = React.lazy(() => import("@/pages/Settings"));
 const StudyTips = React.lazy(() => import("@/pages/StudyTips"));
@@ -91,6 +92,7 @@ function Router() {
         <Route path={"/matching"} component={MatchingPage} />
         <Route path={"/wrong-answers"} component={WrongAnswers} />
         <Route path={"/graduation"} component={GraduationHall} />
+        <Route path={"/answer-board"} component={AnswerLeaderboard} />
         <Route path={"/review-hub"} component={ReviewHub} />
         <Route path={"/regions/:regionKey"} component={RegionDetail} />
         <Route path={"/observatory"} component={MediaObservatory} />

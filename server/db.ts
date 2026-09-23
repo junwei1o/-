@@ -224,6 +224,7 @@ const ENSURE_TABLE_STATEMENTS = [
     \`correctCount\` int NOT NULL,
     \`detail\` json,
     \`sessionKey\` varchar(160),
+    \`durationSec\` int,
     \`createdAt\` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (\`id\`),
     KEY \`exam_records_name_idx\` (\`name\`)
@@ -356,6 +357,8 @@ const ENSURE_COLUMN_STATEMENTS = [
   "ALTER TABLE `assignments` ADD COLUMN `studentName` varchar(24)",
   // 對應遷移：試卷補報用。同一份卷子重複上報時覆蓋，不新增重複紀錄。
   "ALTER TABLE `exam_records` ADD COLUMN `sessionKey` varchar(160)",
+  // 對應遷移：答題榜記錄每場實際花費時間（舊庫冪等補欄）。
+  "ALTER TABLE `exam_records` ADD COLUMN `durationSec` int",
   // 對應遷移：AI 深度反思 token 用量統計三欄（老庫冪等補欄）。
   "ALTER TABLE `ai_usage` ADD COLUMN `promptTokens` int NOT NULL DEFAULT 0",
   "ALTER TABLE `ai_usage` ADD COLUMN `completionTokens` int NOT NULL DEFAULT 0",
@@ -524,6 +527,7 @@ export async function insertExamRecord(row: InsertExamRecord) {
           difficulty: row.difficulty ?? null,
           totalQuestions: row.totalQuestions,
           correctCount: row.correctCount,
+          durationSec: row.durationSec ?? null,
           detail: row.detail ?? null,
         })
         .where(eq(examRecords.id, existing[0].id));
@@ -545,6 +549,17 @@ export async function listExamRecords(name: string, limit = 10) {
     .where(eq(examRecords.name, name))
     .orderBy(desc(examRecords.id))
     .limit(Math.min(Math.max(limit, 1), 50));
+}
+
+/** 答題榜：跨所有名字（含遊客）取最近 N 筆，最新完成的在前。 */
+export async function listRecentExamRecords(limit = 50) {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  return db
+    .select()
+    .from(examRecords)
+    .orderBy(desc(examRecords.createdAt), desc(examRecords.id))
+    .limit(Math.min(Math.max(limit, 1), 100));
 }
 
 /* ---------- 教師端：班級與作業 ---------- */
