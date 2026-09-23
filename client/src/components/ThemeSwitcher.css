@@ -1,0 +1,70 @@
+/* 全站外觀主題切換器（ThemeSwitcher） */
+.theme-switcher { border: 0; padding: 0; margin: 0 0 4px; }
+.theme-switcher-label {
+  padding: 0;
+  margin-bottom: 10px;
+  font-size: .95rem;
+  font-weight: 800;
+  color: var(--ink);
+}
+.theme-switcher-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 11px;
+}
+.theme-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 12px;
+  text-align: left;
+  cursor: pointer;
+  background: var(--white);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-lg);
+  font: inherit;
+  color: var(--ink);
+  transition: transform var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+}
+.theme-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+.theme-card:focus-visible { outline: var(--focus-ring); outline-offset: 2px; }
+.theme-card.is-active {
+  border-color: var(--tidal);
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--tidal) 22%, transparent);
+}
+.theme-card-preview {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 38px;
+  margin-bottom: 7px;
+  padding: 0 9px;
+  border-radius: var(--radius-md);
+  border: 1px solid color-mix(in srgb, var(--ink) 10%, transparent);
+  background: var(--tc-paper);
+}
+.theme-card-dot { border-radius: 50%; }
+.theme-card-dot--main { width: 17px; height: 17px; background: var(--tc-tidal); }
+.theme-card-dot--accent { width: 10px; height: 10px; background: var(--tc-coral); }
+.theme-card-name { font-size: .92rem; font-weight: 800; }
+.theme-card-hint { font-size: .74rem; color: var(--muted); line-height: 1.4; }
+.theme-card-check {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--tidal);
+  color: var(--white);
+  border: 2px solid var(--white);
+  box-shadow: var(--shadow-sm);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-card { transition: none; }
+  .theme-card:hover { transform: none; }
+}

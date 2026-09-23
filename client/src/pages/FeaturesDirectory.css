@@ -91,6 +91,7 @@
 .features-search:focus-within { border-color: var(--tidal); }
 .features-search input {
   flex: 1;
+  min-height: 36px;
   border: none;
   outline: none;
   background: transparent;

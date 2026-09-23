@@ -50,6 +50,18 @@
 
     <!-- 字型改用全本地系統字體堆疊（見 index.css），不再外部載入 Google Fonts：
          離線可用、不發第三方請求、避免 render-blocking 與 FOUT。 -->
+
+    <!-- 掛載前即套用儲存的外觀主題，避免首屏色調閃爍（tidal 潮境為預設，不設屬性） -->
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem("xue-theme-v1");
+          if (t === "festival" || t === "exlibris" || t === "sunny") {
+            document.documentElement.setAttribute("data-theme", t);
+          }
+        } catch (e) {}
+      })();
+    </script>
   </head>
 
   <body>

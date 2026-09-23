@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { loadClassroomBest, type ClassroomBestMap } from "@/lib/classroomBank";
 import { ONION_LESSONS } from "@/game/onionAcademyLessons";
+import { readStoredTheme, type ThemeId } from "@/lib/useTheme";
 import {
   FRACTION_COURSE,
   completedLayerCount,
@@ -55,14 +56,20 @@ const HELPER_TIPS = [
   "休息也是學習的一部分喔。",
 ];
 
+function skinFromTheme(theme: ThemeId): SkinId {
+  if (theme === "festival") return "memphis";
+  if (theme === "exlibris") return "classic";
+  return "concise"; // tidal、sunny 無專屬教室皮，用潮境
+}
+
 function loadSkin(): SkinId {
   try {
     const saved = localStorage.getItem(SKIN_STORAGE_KEY);
     if (saved === "concise" || saved === "memphis" || saved === "classic") return saved;
   } catch {
-    // 隱私模式或無 localStorage 時退回預設皮
+    // 隱私模式或無 localStorage 時 fall through 到全站主題
   }
-  return "concise";
+  return skinFromTheme(readStoredTheme());
 }
 
 /**

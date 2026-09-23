@@ -29,6 +29,7 @@ import { getJournalEntries } from "@/game/adventureJournal";
 import ParentLearningView from "@/components/ParentLearningView";
 import { PinCloudSyncPanel } from "@/components/PinCloudSyncPanel";
 import { ReadingScaleControl } from "@/components/ReadingScaleControl";
+import ThemeSwitcher from "@/components/ThemeSwitcher";
 import BackupPanel from "@/components/bx/BackupPanel";
 import { CloudSyncSettings } from "@/components/CloudModePrompt";
 import PrefsPanel from "@/components/bx/PrefsPanel";
@@ -614,6 +615,10 @@ export default function Settings() {
           </div>
           <p>查看本機儲存遇到的問題。這些紀錄只保存在目前裝置，不會上傳到伺服器。</p>
         </header>
+
+        <section className="settings-audio-card settings-appearance-card" aria-label="外觀主題">
+          <ThemeSwitcher />
+        </section>
 
         <LearningSettingsSection />
 

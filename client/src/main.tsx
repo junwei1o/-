@@ -5,11 +5,14 @@ import { createRoot } from "react-dom/client";
 import superjson from "superjson";
 import App from "./App";
 import { initReadingScale } from "@/game/readingScale";
+import { initTheme } from "@/lib/useTheme";
 import "./index.css";
 
 // 在 React 掛載前套用儲存的閱讀字號，避免大字級使用者看到字級閃爍。
 // 注意：只切換 <html> 的 data-reading-scale 屬性，不動 root font-size。
 initReadingScale();
+// 同樣在掛載前套用儲存的外觀主題（data-theme），避免首屏色調閃爍。
+initTheme();
 
 // 僅在正式配置 umami 網站分析端點（VITE_ANALYTICS_ENDPOINT 為完整 http(s) 網址、
 // 並提供 VITE_ANALYTICS_WEBSITE_ID）時才動態載入分析腳本；未配置的本機／local-first

@@ -950,13 +950,13 @@
 .graduation-hero {
   padding: 26px 28px;
   border-radius: 20px;
-  color: #4a3a1f;
-  background: linear-gradient(135deg, #fdf3e0, #f7e6c4);
-  border: 1px solid #f0dcb4;
+  color: var(--ink);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--tidal) 9%, var(--white)), var(--white) 72%);
+  border: 1px solid var(--line);
 }
-.graduation-hero .paper-exam-kicker { color: #b07a2c; font-weight: 800; }
-.graduation-hero h1 { margin: 6px 0 10px; font-size: 30px; font-weight: 900; color: #5a4420; }
-.graduation-hero p { margin: 0; font-size: 15px; line-height: 1.7; color: #6b5636; }
+.graduation-hero .paper-exam-kicker { color: var(--tidal); font-weight: 800; }
+.graduation-hero h1 { margin: 6px 0 10px; font-size: 30px; font-weight: 900; color: var(--ink); }
+.graduation-hero p { margin: 0; font-size: 15px; line-height: 1.7; color: var(--muted); }
 
 .graduation-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
 .graduation-stat-card {
@@ -965,40 +965,40 @@
   gap: 4px;
   padding: 18px;
   border-radius: 16px;
-  background: #fff;
-  border: 1px solid #e7edf2;
+  background: var(--white);
+  border: 1px solid var(--line);
   box-shadow: 0 3px 10px rgba(47, 80, 107, 0.05);
-  color: #8a97a3;
+  color: var(--muted);
 }
 .grad-stat-total {
   color: #fff;
-  background: linear-gradient(135deg, #f0b350, #e0912f);
+  background: linear-gradient(135deg, var(--tidal), var(--tidal-deep));
   border: none;
 }
 .grad-stat-total .grad-stat-label { color: rgba(255,255,255,0.9); }
 .grad-stat-number { margin: 2px 0; font-size: 34px; font-weight: 900; line-height: 1; }
-.grad-stat-text { margin: 2px 0; font-size: 19px; font-weight: 800; color: #2a3f54; }
-.grad-stat-label { margin: 0; font-size: 13px; font-weight: 700; color: #6b7d8d; }
-.grad-milestone-bar { margin-top: 8px; height: 8px; border-radius: 999px; background: #eef2f5; overflow: hidden; }
-.grad-milestone-bar span { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, #f0b350, #e0912f); transition: width 0.3s ease; }
+.grad-stat-text { margin: 2px 0; font-size: 19px; font-weight: 800; color: var(--ink); }
+.grad-stat-label { margin: 0; font-size: 13px; font-weight: 700; color: var(--muted); }
+.grad-milestone-bar { margin-top: 8px; height: 8px; border-radius: 999px; background: var(--paper-deep); overflow: hidden; }
+.grad-milestone-bar span { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--tidal), var(--tidal-deep)); transition: width 0.3s ease; }
 
-.graduation-medals h2 { display: flex; align-items: center; gap: 7px; margin: 0 0 14px; font-size: 18px; font-weight: 800; color: #24415e; }
+.graduation-medals h2 { display: flex; align-items: center; gap: 7px; margin: 0 0 14px; font-size: 18px; font-weight: 800; color: var(--ink); }
 .grad-medal-row { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; }
-.grad-medal { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 14px 8px; border-radius: 14px; background: #f4f7f9; text-align: center; }
+.grad-medal { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 14px 8px; border-radius: 14px; background: color-mix(in srgb, var(--tidal) 5%, var(--white)); text-align: center; }
 .grad-medal-icon {
   display: inline-flex; align-items: center; justify-content: center;
   width: 42px; height: 42px; border-radius: 50%;
-  color: #aeb9c3; background: #e6ecf0;
+  color: var(--muted); background: var(--paper-deep);
 }
-.grad-medal.is-unlocked { background: #fdf4e2; }
+.grad-medal.is-unlocked { background: color-mix(in srgb, var(--yellow) 16%, var(--white)); }
 .grad-medal.is-unlocked .grad-medal-icon {
-  color: #fff; background: linear-gradient(135deg, #f0b350, #e0912f);
-  box-shadow: 0 3px 8px rgba(224, 145, 47, 0.4);
+  color: #fff; background: linear-gradient(135deg, var(--tidal), var(--tidal-deep));
+  box-shadow: 0 3px 8px color-mix(in srgb, var(--tidal) 38%, transparent);
 }
-.grad-medal-number { margin: 2px 0 0; font-size: 14px; font-weight: 800; color: #5a6b7a; }
-.grad-medal-state { margin: 0; font-size: 12px; font-weight: 700; color: #9aa7b2; }
-.grad-medal.is-unlocked .grad-medal-number { color: #b07a2c; }
-.grad-medal.is-unlocked .grad-medal-state { color: #d99a3a; }
+.grad-medal-number { margin: 2px 0 0; font-size: 14px; font-weight: 800; color: var(--muted); }
+.grad-medal-state { margin: 0; font-size: 12px; font-weight: 700; color: var(--muted); }
+.grad-medal.is-unlocked .grad-medal-number { color: var(--tidal-deep); }
+.grad-medal.is-unlocked .grad-medal-state { color: var(--tidal); }
 
 .graduation-group { gap: 12px; padding: 18px; }
 .graduation-item {
@@ -1006,19 +1006,19 @@
   align-items: center;
   gap: 14px;
   padding: 14px 16px;
-  border: 1px solid #f0e3cb;
+  border: 1px solid var(--line);
   border-radius: 14px;
-  background: linear-gradient(135deg, #fffdf8, #fdf6e9);
+  background: var(--white);
 }
 .graduation-cap-icon {
   flex: 0 0 auto;
   display: inline-flex; align-items: center; justify-content: center;
   width: 40px; height: 40px; border-radius: 50%;
-  color: #fff; background: linear-gradient(135deg, #f0b350, #e0912f);
-  box-shadow: 0 3px 8px rgba(224, 145, 47, 0.35);
+  color: #fff; background: linear-gradient(135deg, var(--tidal), var(--tidal-deep));
+  box-shadow: 0 3px 8px color-mix(in srgb, var(--tidal) 34%, transparent);
 }
 .graduation-item-main { flex: 1 1 auto; min-width: 0; }
-.graduation-date { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 5px; margin: 0; font-size: 12.5px; font-weight: 800; color: #b07a2c; }
+.graduation-date { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 5px; margin: 0; font-size: 12.5px; font-weight: 800; color: var(--tidal); }
 
 @media (max-width: 760px) {
   .graduation-stats { grid-template-columns: 1fr; }
@@ -1029,60 +1029,60 @@
 
 /* ---------- 答題榜 ---------- */
 .answer-board-page { display: flex; flex-direction: column; gap: 18px; max-width: 1080px; margin: 0 auto; padding: 20px 16px 48px; }
-.answer-board-hero .paper-exam-kicker { color: #b07a2c; font-weight: 800; }
-.answer-board-hero h1 { margin: 6px 0 10px; font-size: 30px; font-weight: 900; color: #5a4420; }
-.answer-board-hero p { margin: 0; font-size: 15px; line-height: 1.7; color: #6b5636; }
+.answer-board-hero .paper-exam-kicker { color: var(--tidal); font-weight: 800; }
+.answer-board-hero h1 { margin: 6px 0 10px; font-size: 30px; font-weight: 900; color: var(--ink); }
+.answer-board-hero p { margin: 0; font-size: 15px; line-height: 1.7; color: var(--muted); }
 
 .answer-board-identity { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-.answer-board-id-icon { display: inline-flex; color: #b07a2c; }
-.answer-board-id-text { margin: 0; font-size: 14px; color: #5a4420; display: inline-flex; align-items: center; gap: 6px; flex: 1 1 auto; }
-.answer-board-id-text strong { color: #b07a2c; }
+.answer-board-id-icon { display: inline-flex; color: var(--tidal); }
+.answer-board-id-text { margin: 0; font-size: 14px; color: var(--ink); display: inline-flex; align-items: center; gap: 6px; flex: 1 1 auto; }
+.answer-board-id-text strong { color: var(--tidal); }
 .answer-board-guest-tag, .answer-board-named-tag, .answer-board-me-tag {
   font-size: 11px; font-weight: 800; padding: 2px 7px; border-radius: 999px; white-space: nowrap;
 }
-.answer-board-guest-tag { background: #efe7d8; color: #8a6d3b; border: 1px solid #e0d3bb; }
-.answer-board-named-tag { background: #e3f0e6; color: #2f7d4f; border: 1px solid #cfe3d6; }
-.answer-board-me-tag { background: #fdeecf; color: #b07a2c; border: 1px solid #f3dca9; }
+.answer-board-guest-tag { background: var(--paper-deep); color: var(--muted); border: 1px solid var(--line); }
+.answer-board-named-tag { background: color-mix(in srgb, var(--moss) 15%, var(--white)); color: var(--moss); border: 1px solid color-mix(in srgb, var(--moss) 30%, var(--line)); }
+.answer-board-me-tag { background: color-mix(in srgb, var(--tidal) 12%, var(--white)); color: var(--tidal-deep); border: 1px solid color-mix(in srgb, var(--tidal) 30%, var(--line)); }
 .answer-board-name-btn {
   display: inline-flex; align-items: center; gap: 5px; border: none; cursor: pointer;
-  background: linear-gradient(135deg, #f2b544, #e0932f); color: #fff; font-weight: 800;
+  background: linear-gradient(135deg, var(--tidal), var(--tidal-deep)); color: #fff; font-weight: 800;
   font-size: 13px; padding: 7px 13px; border-radius: 999px;
 }
-.answer-board-refresh { display: inline-flex; border: 1px solid #e0d3bb; background: #fbf6ec; color: #8a6d3b; border-radius: 50%; width: 32px; height: 32px; align-items: center; justify-content: center; cursor: pointer; }
+.answer-board-refresh { display: inline-flex; border: 1px solid var(--line); background: var(--white); color: var(--muted); border-radius: 50%; width: 36px; height: 36px; align-items: center; justify-content: center; cursor: pointer; }
 
 .answer-board-panel { padding: 16px 18px; }
 .answer-board-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
 .answer-board-tab {
   display: inline-flex; align-items: center; gap: 6px; cursor: pointer;
-  border: 1px solid #e3d8c4; background: #fbf6ec; color: #7a6344; font-weight: 700;
+  border: 1px solid var(--line); background: var(--white); color: var(--muted); font-weight: 700;
   font-size: 13.5px; padding: 8px 14px; border-radius: 999px;
 }
-.answer-board-tab.is-active { background: linear-gradient(135deg, #f2b544, #e0932f); color: #fff; border-color: transparent; }
-.answer-board-note { margin: 10px 0 0; font-size: 12px; color: #9a8259; }
-.answer-board-message { margin: 22px 4px; color: #8a7350; font-size: 14px; }
+.answer-board-tab.is-active { background: linear-gradient(135deg, var(--tidal), var(--tidal-deep)); color: #fff; border-color: transparent; }
+.answer-board-note { margin: 10px 0 0; font-size: 12px; color: var(--muted); }
+.answer-board-message { margin: 22px 4px; color: var(--muted); font-size: 14px; }
 
 .answer-board-table-wrap { margin-top: 14px; overflow-x: auto; }
 .answer-board-table { width: 100%; border-collapse: collapse; font-size: 13.5px; min-width: 720px; }
 .answer-board-table th {
-  text-align: left; font-size: 12px; color: #9a8259; font-weight: 800;
-  padding: 8px 10px; border-bottom: 2px solid #ecdfc8; white-space: nowrap;
+  text-align: left; font-size: 12px; color: var(--muted); font-weight: 800;
+  padding: 8px 10px; border-bottom: 2px solid var(--line); white-space: nowrap;
 }
-.answer-board-table td { padding: 10px; border-bottom: 1px solid #f0e7d6; color: #5a4a30; vertical-align: middle; }
-.answer-board-table tbody tr:hover { background: #fbf5ea; }
-.answer-board-table tbody tr.is-me { background: #fdf3df; }
-.answer-board-table tbody tr.is-me:hover { background: #fbeecd; }
+.answer-board-table td { padding: 10px; border-bottom: 1px solid var(--line); color: var(--ink); vertical-align: middle; }
+.answer-board-table tbody tr:hover { background: color-mix(in srgb, var(--tidal) 6%, var(--white)); }
+.answer-board-table tbody tr.is-me { background: color-mix(in srgb, var(--tidal) 10%, var(--white)); }
+.answer-board-table tbody tr.is-me:hover { background: color-mix(in srgb, var(--tidal) 14%, var(--white)); }
 
-.answer-board-rank-badge { display: inline-flex; align-items: center; gap: 3px; font-weight: 800; font-size: 13px; color: #8a7350; }
-.answer-board-rank-badge.rank-1 { color: #d9951f; }
-.answer-board-rank-badge.rank-2 { color: #8f9aa6; }
-.answer-board-rank-badge.rank-3 { color: #c27b3f; }
-.answer-board-name { font-weight: 800; color: #5a4420; white-space: nowrap; }
+.answer-board-rank-badge { display: inline-flex; align-items: center; gap: 3px; font-weight: 800; font-size: 13px; color: var(--muted); }
+.answer-board-rank-badge.rank-1 { color: var(--yellow); }
+.answer-board-rank-badge.rank-2 { color: var(--muted); }
+.answer-board-rank-badge.rank-3 { color: var(--coral); }
+.answer-board-name { font-weight: 800; color: var(--ink); white-space: nowrap; }
 .answer-board-name .answer-board-guest-tag, .answer-board-name .answer-board-me-tag { margin-left: 5px; }
 .answer-board-rate { font-weight: 800; }
-.answer-board-rate.rate-high { color: #2f8a52; }
-.answer-board-rate.rate-mid { color: #c08a2d; }
-.answer-board-rate.rate-low { color: #c25b4a; }
-.answer-board-duration, .answer-board-time { white-space: nowrap; color: #6f5a3a; }
+.answer-board-rate.rate-high { color: var(--moss); }
+.answer-board-rate.rate-mid { color: var(--yellow); }
+.answer-board-rate.rate-low { color: var(--coral-deep); }
+.answer-board-duration, .answer-board-time { white-space: nowrap; color: var(--muted); }
 .answer-board-back { align-self: flex-start; }
 
 @media (max-width: 760px) {
