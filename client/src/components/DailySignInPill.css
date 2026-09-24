@@ -14,6 +14,10 @@
   --pill-collapsed-h: 52px;
 
   width: 100%;
+  /* 側邊欄裡會等於欄寬；若渲染在首頁主區（側邊欄被關閉時）則限制寬度並置中，
+     避免膠囊被拉成一條過寬的扁帶。 */
+  max-width: 420px;
+  margin-inline: auto;
   max-height: var(--pill-collapsed-h);
   overflow: hidden;
 

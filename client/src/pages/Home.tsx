@@ -209,7 +209,12 @@ export default function Home() {
 
   function handleDailySignIn() {
     // 簽到只有一條路徑（dailySignIn.ts）：首頁的其他簽到卡不再自己領取，
-    // 而是展開「快速行動」側邊欄裡的簽到膠囊，避免兩個連續天數各自累加、互相矛盾。
+    // 而是展開同一個簽到膠囊，避免兩個連續天數各自累加、互相矛盾。
+    if (!enableQuickSidebar) {
+      // 側邊欄被關閉時，膠囊改渲染在首頁主區，直接請它展開即可。
+      requestOpenSignInPill();
+      return;
+    }
     setIsActionsOpen(true);
     // 側邊欄本輪才展開，膠囊要等下一個渲染週期掛載後才收得到展開事件。
     window.setTimeout(() => requestOpenSignInPill(), 0);
@@ -364,6 +369,9 @@ export default function Home() {
               {dailySignIn.streak >= 7 ? <Crosshair size={15} className="home-mode-card-badge" aria-label="已達成一週探險家" /> : null}
             </button>
           </div>
+          {/* 使用者若關閉「快速行動」側邊欄，簽到膠囊就改在首頁主區渲染，
+              避免簽到入口整個消失（側邊欄開啟時由側邊欄那份負責）。 */}
+          {!enableQuickSidebar ? <DailySignInPill /> : null}
         </section>
         <section className="home-feature-directory-entry" aria-labelledby="home-feature-directory-entry-title">
           {totalFeatureDirectoryCount ? (
