@@ -1270,6 +1270,247 @@ function ShapeView({
   );
 }
 
+/* ── 函數坐標圖：以內建範本＋係數取樣，不做字串求值（安全、確定）── */
+function evalCurveFn(
+  type: "linear" | "quadratic" | "cubic" | "sine" | "exp" | "log",
+  coef: number[] | undefined,
+  x: number,
+): number {
+  const c = coef ?? [];
+  switch (type) {
+    case "linear": return (c[0] ?? 1) * x + (c[1] ?? 0);
+    case "quadratic": return (c[0] ?? 1) * x * x + (c[1] ?? 0) * x + (c[2] ?? 0);
+    case "cubic": return (c[0] ?? 1) * x ** 3 + (c[1] ?? 0) * x * x + (c[2] ?? 0) * x + (c[3] ?? 0);
+    case "sine": return (c[0] ?? 1) * Math.sin((c[1] ?? 1) * x + (c[2] ?? 0)) + (c[3] ?? 0);
+    case "exp": return (c[0] ?? 1) * Math.exp((c[1] ?? 1) * x) + (c[2] ?? 0);
+    case "log": return (c[0] ?? 1) * Math.log((c[1] ?? 1) * x + (c[2] ?? 1)) + (c[3] ?? 0);
+  }
+}
+
+function FunctionPlotView({
+  xRange, yRange, curves, points,
+}: {
+  xRange: [number, number];
+  yRange: [number, number];
+  curves: Array<{ type: "linear" | "quadratic" | "cubic" | "sine" | "exp" | "log"; coef?: number[]; label?: string; tone?: "primary" | "accent" }>;
+  points?: Array<{ x: number; y: number; label?: string }>;
+}) {
+  const W = 240, H = 180, P = 26;
+  const [x0, x1] = xRange, [y0, y1] = yRange;
+  const sx = (x: number) => P + ((x - x0) / ((x1 - x0) || 1)) * (W - 2 * P);
+  const sy = (y: number) => H - P - ((y - y0) / ((y1 - y0) || 1)) * (H - 2 * P);
+  const N = 72;
+  const pathFor = (type: "linear" | "quadratic" | "cubic" | "sine" | "exp" | "log", coef?: number[]) => {
+    let d = "", pen = false;
+    for (let i = 0; i <= N; i += 1) {
+      const x = x0 + (x1 - x0) * (i / N);
+      const y = evalCurveFn(type, coef, x);
+      const ok = Number.isFinite(y) && y >= y0 && y <= y1;
+      const px = sx(x).toFixed(1), py = sy(y).toFixed(1);
+      if (ok) { d += pen ? `L${px} ${py}` : `M${px} ${py}`; pen = true; } else { pen = false; }
+    }
+    return d;
+  };
+  const zeroY = y0 <= 0 && y1 >= 0 ? sy(0) : null;
+  const zeroX = x0 <= 0 && x1 >= 0 ? sx(0) : null;
+  return (
+    <div className="gp-plot">
+      <svg viewBox={`0 0 ${W} ${H}`} className="gp-plot-svg" role="img" aria-label="函數坐標圖">
+        {Array.from({ length: 9 }, (_, i) => { const gx = P + ((W - 2 * P) * i) / 8; return <line key={`gx${i}`} x1={gx} y1={P} x2={gx} y2={H - P} className="gp-plot-grid" />; })}
+        {Array.from({ length: 7 }, (_, i) => { const gy = P + ((H - 2 * P) * i) / 6; return <line key={`gy${i}`} x1={P} y1={gy} x2={W - P} y2={gy} className="gp-plot-grid" />; })}
+        <line x1={P} y1={zeroY ?? H - P} x2={W - P} y2={zeroY ?? H - P} className="gp-plot-axis" />
+        <line x1={zeroX ?? P} y1={P} x2={zeroX ?? P} y2={H - P} className="gp-plot-axis" />
+        <text x={W - P + 3} y={(zeroY ?? H - P) + 3} className="gp-plot-axislabel">x</text>
+        <text x={(zeroX ?? P) - 3} y={P - 5} className="gp-plot-axislabel">y</text>
+        {curves.map((cv, i) => (
+          <path key={`cv${i}`} d={pathFor(cv.type, cv.coef)} pathLength={1} className={`gp-plot-curve ${cv.tone === "accent" ? "is-accent" : "is-primary"}`} />
+        ))}
+        {(points ?? []).map((pt, i) => (
+          <g key={`pt${i}`}>
+            <circle cx={sx(pt.x)} cy={sy(pt.y)} r="3" className="gp-plot-point" />
+            {pt.label ? <text x={sx(pt.x) + 5} y={sy(pt.y) - 4} className="gp-plot-pointlabel">{pt.label}</text> : null}
+          </g>
+        ))}
+      </svg>
+      {curves.some((c) => c.label) ? (
+        <div className="gp-plot-legend">
+          {curves.filter((c) => c.label).map((c, i) => (
+            <span key={i} className={`gp-plot-key ${c.tone === "accent" ? "is-accent" : "is-primary"}`}>{c.label}</span>
+          ))}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+/* ── 分子模型：CPK 配色原子球＋單/雙/三鍵，可並排反應前後，自動 fit ── */
+const CPK: Record<string, string> = {
+  H: "#FFFFFF", He: "#D9FFFF", C: "#3B3B3B", N: "#2E4BD8", O: "#E4392E",
+  F: "#9BE86B", Cl: "#27C13F", Br: "#A44A2F", I: "#8B36E8", S: "#E8D83B",
+  P: "#FF9F1C", Si: "#BFA6A6", Na: "#AB5CF2", Mg: "#8AFF00", K: "#8F4040",
+  Ca: "#3DFF00", Fe: "#B5745E", Cu: "#C88022",
+};
+function atomTextColor(el: string) {
+  return ["C", "N", "O", "Cl", "Br", "I", "P", "Fe", "Cu", "Si"].includes(el) ? "#FFFFFF" : "#26323A";
+}
+type MolAtom = { id: string; el: string; x: number; y: number };
+type MolBond = { a: string; b: string; order?: 1 | 2 | 3 };
+
+function MoleculeFigure({ atoms, bonds, box }: { atoms: MolAtom[]; bonds: MolBond[]; box: { x: number; y: number; w: number; h: number } }) {
+  const byId = new Map(atoms.map((a) => [a.id, a]));
+  const xs = atoms.map((a) => a.x), ys = atoms.map((a) => a.y);
+  const minx = Math.min(...xs), maxx = Math.max(...xs), miny = Math.min(...ys), maxy = Math.max(...ys);
+  const R = 12;
+  const spanX = Math.max(maxx - minx, 0.001), spanY = Math.max(maxy - miny, 0.001);
+  const scale = Math.min((box.w - 2 * R) / spanX, (box.h - 2 * R) / spanY, 26);
+  const ccx = (minx + maxx) / 2, ccy = (miny + maxy) / 2;
+  const px = (v: number) => box.x + box.w / 2 + (v - ccx) * scale;
+  const py = (v: number) => box.y + box.h / 2 - (v - ccy) * scale;
+  return (
+    <g>
+      {bonds.map((bd, i) => {
+        const A = byId.get(bd.a), B = byId.get(bd.b);
+        if (!A || !B) return null;
+        const ax = px(A.x), ay = py(A.y), bx = px(B.x), by = py(B.y);
+        const L = Math.hypot(bx - ax, by - ay) || 1, nx = -(by - ay) / L, ny = (bx - ax) / L;
+        const order = bd.order ?? 1, off = 4.2;
+        const offsets = order === 1 ? [0] : order === 2 ? [-off, off] : [-off, 0, off];
+        return (
+          <g key={`b${i}`}>
+            {offsets.map((o, k) => (
+              <line key={k} x1={ax + nx * o} y1={ay + ny * o} x2={bx + nx * o} y2={by + ny * o} className="gp-mol-bond" />
+            ))}
+          </g>
+        );
+      })}
+      {atoms.map((a) => (
+        <g key={a.id}>
+          <circle cx={px(a.x)} cy={py(a.y)} r={R} fill={CPK[a.el] ?? "#B7C4C8"} className="gp-mol-atom" />
+          <text x={px(a.x)} y={py(a.y)} textAnchor="middle" dominantBaseline="central" className="gp-mol-symbol" fill={atomTextColor(a.el)}>{a.el}</text>
+        </g>
+      ))}
+    </g>
+  );
+}
+
+function MoleculeView({ atoms, bonds, product, label }: {
+  atoms: MolAtom[]; bonds: MolBond[];
+  product?: { atoms: MolAtom[]; bonds: MolBond[] };
+  label?: string;
+}) {
+  return (
+    <div className="gp-mol">
+      <svg viewBox="0 0 240 170" className="gp-mol-svg" role="img" aria-label="分子模型">
+        {product ? (
+          <>
+            <MoleculeFigure atoms={atoms} bonds={bonds} box={{ x: 0, y: 8, w: 108, h: 140 }} />
+            <g className="gp-mol-arrow">
+              <line x1="112" y1="88" x2="127" y2="88" />
+              <path d="M127 83 l7 5 l-7 5" />
+            </g>
+            <MoleculeFigure atoms={product.atoms} bonds={product.bonds} box={{ x: 132, y: 8, w: 108, h: 140 }} />
+          </>
+        ) : (
+          <MoleculeFigure atoms={atoms} bonds={bonds} box={{ x: 0, y: 8, w: 240, h: 140 }} />
+        )}
+      </svg>
+      {label ? <p className="gp-mol-label">{label}</p> : null}
+    </div>
+  );
+}
+
+/* ── 力與運動：物體（含斜面）＋力向量箭頭（自由力圖）── */
+function ForceDiagramView({ body, forces, note }: {
+  body: "box" | "ball" | "cart" | "incline";
+  forces: Array<{ label: string; dir: number; mag: number; tone?: "primary" | "accent" | "muted" }>;
+  note?: string;
+}) {
+  const incline = body === "incline";
+  const O = incline ? { x: 96, y: 92 } : { x: 120, y: 108 };
+  const ground = 140;
+  return (
+    <div className="gp-forcewrap">
+      <svg viewBox="0 0 240 170" className="gp-force-svg" role="img" aria-label="力與運動示意圖">
+        {incline ? (
+          <g className="gp-force-bg">
+            <polygon points={`28,${ground} 152,60 152,${ground}`} className="gp-force-incline" />
+            <line x1="20" y1={ground} x2="222" y2={ground} className="gp-force-ground" />
+          </g>
+        ) : (
+          <line x1="20" y1={ground} x2="222" y2={ground} className="gp-force-ground" />
+        )}
+        {body === "box" || body === "incline" ? (
+          <rect x={O.x - 19} y={O.y - 19} width="38" height="38" rx="4" className="gp-force-body" />
+        ) : null}
+        {body === "ball" ? <circle cx={O.x} cy={O.y} r="19" className="gp-force-body" /> : null}
+        {body === "cart" ? (
+          <g className="gp-force-body">
+            <rect x={O.x - 22} y={O.y - 16} width="44" height="26" rx="5" />
+            <circle cx={O.x - 13} cy={O.y + 15} r="6" className="gp-force-wheel" />
+            <circle cx={O.x + 13} cy={O.y + 15} r="6" className="gp-force-wheel" />
+          </g>
+        ) : null}
+        {forces.map((f, i) => {
+          const rad = (f.dir * Math.PI) / 180;
+          const L = Math.min(f.mag * 30, 50);
+          const ex = O.x + L * Math.cos(rad), ey = O.y - L * Math.sin(rad);
+          const tip = 7;
+          const p1x = ex - tip * Math.cos(rad - 0.42), p1y = ey + tip * Math.sin(rad - 0.42);
+          const p2x = ex - tip * Math.cos(rad + 0.42), p2y = ey + tip * Math.sin(rad + 0.42);
+          const absC = Math.abs(Math.cos(rad));
+          let anchor: "start" | "end" | "middle" = "middle", lx = ex, ly = ey;
+          if (absC > 0.55) {
+            if (Math.cos(rad) > 0) { anchor = "start"; lx = ex + 5; } else { anchor = "end"; lx = ex - 5; }
+            ly = ey;
+          } else {
+            ly = ey + (Math.sin(rad) > 0 ? -12 : 12);
+          }
+          return (
+            <g key={`f${i}`} className={`gp-force is-${f.tone ?? "primary"}`}>
+              <line x1={O.x} y1={O.y} x2={ex} y2={ey} className="gp-force-line" />
+              <polygon points={`${ex},${ey} ${p1x},${p1y} ${p2x},${p2y}`} className="gp-force-head" />
+              <text x={lx} y={ly} textAnchor={anchor} dominantBaseline="central" className="gp-force-label">{f.label}</text>
+            </g>
+          );
+        })}
+      </svg>
+      {note ? <p className="gp-force-note">{note}</p> : null}
+    </div>
+  );
+}
+
+/* ── 時間軸：橫向紀年軸＋事件節點（年代上下交錯，避免擁擠）── */
+function TimelineView({ events, active, era }: {
+  events: Array<{ when: string; title: string }>;
+  active?: number;
+  era?: string;
+}) {
+  const n = events.length;
+  const x = (i: number) => (n <= 1 ? 120 : 26 + ((214 - 26) * i) / (n - 1));
+  const axisY = 92;
+  return (
+    <div className="gp-tl">
+      {era ? <span className="gp-tl-era">{era}</span> : null}
+      <svg viewBox="0 0 240 170" className="gp-tl-svg" role="img" aria-label="歷史時間軸">
+        <line x1="22" y1={axisY} x2="218" y2={axisY} className="gp-tl-axis" />
+        {events.map((e, i) => {
+          const cx = x(i), up = i % 2 === 0;
+          const labelY = up ? axisY - 30 : axisY + 30;
+          const titleY = up ? axisY - 48 : axisY + 48;
+          return (
+            <g key={`e${i}`} className={`gp-tl-event ${active === i ? "is-active" : ""}`}>
+              <line x1={cx} y1={axisY} x2={cx} y2={labelY + (up ? 7 : -7)} className="gp-tl-connect" />
+              <circle cx={cx} cy={axisY} r={active === i ? 6 : 4.5} className="gp-tl-node" />
+              <text x={cx} y={labelY} textAnchor="middle" className="gp-tl-when">{e.when}</text>
+              <text x={cx} y={titleY} textAnchor="middle" className="gp-tl-title">{e.title}</text>
+            </g>
+          );
+        })}
+      </svg>
+    </div>
+  );
+}
+
 /** 依 frame.prop 渲染舞台；新增課程只要給資料，不必寫動畫元件。 */
 export function PropScene({ prop, action, frame }: { prop: OnionProp } & SceneProps) {
   let body: React.ReactNode = null;
@@ -1312,6 +1553,18 @@ export function PropScene({ prop, action, frame }: { prop: OnionProp } & ScenePr
       break;
     case "shape":
       body = <ShapeView shape={prop.shape} base={prop.base} height={prop.height} label={prop.label} />;
+      break;
+    case "functionPlot":
+      body = <FunctionPlotView xRange={prop.xRange} yRange={prop.yRange} curves={prop.curves} points={prop.points} />;
+      break;
+    case "molecule":
+      body = <MoleculeView atoms={prop.atoms} bonds={prop.bonds} product={prop.product} label={prop.label} />;
+      break;
+    case "forceDiagram":
+      body = <ForceDiagramView body={prop.body} forces={prop.forces} note={prop.note} />;
+      break;
+    case "timeline":
+      body = <TimelineView events={prop.events} active={prop.active} era={prop.era} />;
       break;
     default:
       body = <div className="gp-empty" aria-hidden="true" />;

@@ -216,7 +216,19 @@ const SH_HIST_TAIWAN_MODERN: OnionLesson = {
       step: "步驟 1：看臺灣三段統治",
       caption: "近兩百多年，臺灣經歷清領、日治、戰後三個階段，社會與制度不斷改變。",
       action: "wave",
-      prop: { kind: "text", text: "臺灣近現代", sub: "清領 → 日治 → 戰後" },
+      prop: {
+        kind: "timeline",
+        era: "臺灣近現代",
+        active: 0,
+        events: [
+          { when: "1683", title: "清領納臺" },
+          { when: "1885", title: "建省" },
+          { when: "1895", title: "日治" },
+          { when: "1945", title: "戰後接收" },
+          { when: "1949", title: "政府遷臺" },
+          { when: "1987", title: "解嚴" },
+        ],
+      },
       duration: 3200,
     },
     {

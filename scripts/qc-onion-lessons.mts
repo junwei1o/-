@@ -72,6 +72,10 @@ const APPROVED_PROPS = new Set([
   "pie",
   "pies",
   "shape",
+  "functionPlot",
+  "molecule",
+  "forceDiagram",
+  "timeline",
 ]);
 
 function checkFrame(lesson: OnionLesson, frameIndex: number) {

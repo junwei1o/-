@@ -3164,6 +3164,87 @@
   .gp-bar-fill { transition: none; }
 }
 
+/* ─────────────── 函數坐標圖 ─────────────── */
+.gp-plot { width: 100%; }
+.gp-plot-svg { width: 100%; max-height: 190px; display: block; }
+.gp-plot-grid { stroke: var(--line); stroke-width: 0.6; opacity: 0.7; }
+.gp-plot-axis { stroke: var(--ink); stroke-width: 1.3; }
+.gp-plot-axislabel { font-size: 10px; font-weight: 700; fill: var(--ink); }
+.gp-plot-curve {
+  fill: none; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round;
+  stroke-dasharray: 1; stroke-dashoffset: 1; animation: gp-curve-draw 1.1s ease forwards;
+}
+.gp-plot-curve.is-primary { stroke: var(--tidal); }
+.gp-plot-curve.is-accent { stroke: var(--coral); }
+.gp-plot-point {
+  fill: var(--yellow); stroke: var(--ink); stroke-width: 1;
+  transform-box: fill-box; transform-origin: center; animation: gp-pop 0.4s ease 0.85s both;
+}
+.gp-plot-pointlabel { font-size: 9px; font-weight: 700; fill: var(--ink); }
+.gp-plot-legend { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 4px; }
+.gp-plot-key { font-size: 11px; font-weight: 700; padding: 2px 9px; border-radius: var(--radius-pill); }
+.gp-plot-key.is-primary { color: var(--tidal); background: color-mix(in srgb, var(--tidal) 12%, transparent); }
+.gp-plot-key.is-accent { color: var(--coral-deep); background: color-mix(in srgb, var(--coral) 16%, transparent); }
+@keyframes gp-curve-draw { to { stroke-dashoffset: 0; } }
+@keyframes gp-pop { from { transform: scale(0); } to { transform: scale(1); } }
+
+/* ─────────────── 分子模型 ─────────────── */
+.gp-mol { width: 100%; text-align: center; }
+.gp-mol-svg { width: 100%; max-height: 180px; }
+.gp-mol-bond { stroke: var(--muted); stroke-width: 2.4; stroke-linecap: round; }
+.gp-mol-atom {
+  stroke: var(--line); stroke-width: 1.2; transform-box: fill-box;
+  transform-origin: center; animation: gp-pop 0.45s ease both;
+}
+.gp-mol-symbol { font-size: 10px; font-weight: 800; }
+.gp-mol-arrow line { stroke: var(--muted); stroke-width: 2; }
+.gp-mol-arrow path { fill: none; stroke: var(--muted); stroke-width: 2; stroke-linejoin: round; }
+.gp-mol-label { margin: 2px 0 0; font-size: 12px; font-weight: 700; color: var(--ink); }
+
+/* ─────────────── 力與運動 ─────────────── */
+.gp-forcewrap { width: 100%; }
+.gp-force-svg { width: 100%; max-height: 180px; }
+.gp-force-ground { stroke: var(--muted); stroke-width: 2; }
+.gp-force-incline { fill: var(--paper-deep); stroke: var(--muted); stroke-width: 1.5; }
+.gp-force-body { fill: color-mix(in srgb, var(--tidal) 18%, var(--white)); stroke: var(--tidal); stroke-width: 2; }
+.gp-force-wheel { fill: var(--white); stroke: var(--tidal); stroke-width: 2; }
+.gp-force-line { stroke-width: 2.6; stroke-linecap: round; stroke-dasharray: 60; stroke-dashoffset: 60; animation: gp-arrow-grow 0.6s ease forwards; }
+.gp-force-head { opacity: 0; transform-box: fill-box; transform-origin: center; animation: gp-head-in 0.3s ease 0.5s forwards; }
+.gp-force-label { font-size: 11px; font-weight: 800; }
+.gp-force.is-primary .gp-force-line, .gp-force.is-primary .gp-force-head { stroke: var(--tidal); fill: var(--tidal); }
+.gp-force.is-accent .gp-force-line, .gp-force.is-accent .gp-force-head { stroke: var(--coral); fill: var(--coral); }
+.gp-force.is-muted .gp-force-line, .gp-force.is-muted .gp-force-head { stroke: var(--muted); fill: var(--muted); }
+.gp-force.is-primary .gp-force-label { fill: var(--tidal-deep); }
+.gp-force.is-accent .gp-force-label { fill: var(--coral-deep); }
+.gp-force.is-muted .gp-force-label { fill: var(--muted); }
+.gp-force-note { margin: 2px 0 0; font-size: 12px; font-weight: 700; color: var(--ink); text-align: center; }
+@keyframes gp-arrow-grow { to { stroke-dashoffset: 0; } }
+@keyframes gp-head-in { from { opacity: 0; transform: scale(0.4); } to { opacity: 1; transform: scale(1); } }
+
+/* ─────────────── 時間軸 ─────────────── */
+.gp-tl { width: 100%; position: relative; }
+.gp-tl-era {
+  position: absolute; top: 2px; right: 4px; z-index: 1; font-size: 10px; font-weight: 700;
+  color: var(--tidal); background: color-mix(in srgb, var(--tidal) 12%, transparent);
+  padding: 2px 9px; border-radius: var(--radius-pill);
+}
+.gp-tl-svg { width: 100%; max-height: 180px; }
+.gp-tl-axis { stroke: var(--muted); stroke-width: 2; }
+.gp-tl-connect { stroke: var(--line); stroke-width: 1.2; }
+.gp-tl-node { fill: var(--white); stroke: var(--muted); stroke-width: 1.6; }
+.gp-tl-event.is-active .gp-tl-node { fill: var(--coral); stroke: var(--coral-deep); }
+.gp-tl-event.is-active .gp-tl-connect { stroke: var(--coral); }
+.gp-tl-when { font-size: 10px; font-weight: 800; fill: var(--ink); }
+.gp-tl-title { font-size: 9px; font-weight: 600; fill: var(--muted); }
+.gp-tl-event.is-active .gp-tl-when { fill: var(--coral-deep); }
+
+@media (prefers-reduced-motion: reduce) {
+  .gp-plot-curve, .gp-plot-point, .gp-mol-atom, .gp-force-line, .gp-force-head { animation: none !important; }
+  .gp-plot-curve { stroke-dashoffset: 0; }
+  .gp-force-line { stroke-dashoffset: 0; }
+  .gp-force-head { opacity: 1; }
+}
+
 /* ===================== 洋蔥學院單一入口的分頁切換 ===================== */
 .onion-hub-tabs {
   display: flex;

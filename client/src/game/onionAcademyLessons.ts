@@ -56,7 +56,45 @@ export type OnionProp =
       cursor?: number;
     }
   /** 天平：等式兩邊的平衡（方程式、化學反應式配平）。 */
-  | { kind: "balance"; left: string; right: string; tip?: string };
+  | { kind: "balance"; left: string; right: string; tip?: string }
+  /** 函數坐標圖：x-y 座標＋內建範本曲線（以型別＋係數描述，不做字串求值），可標關鍵點。 */
+  | {
+      kind: "functionPlot";
+      xRange: [number, number];
+      yRange: [number, number];
+      curves: Array<{
+        type: "linear" | "quadratic" | "cubic" | "sine" | "exp" | "log";
+        coef?: number[];
+        label?: string;
+        tone?: "primary" | "accent";
+      }>;
+      points?: Array<{ x: number; y: number; label?: string }>;
+    }
+  /** 分子模型：原子（el 元素符號依 CPK 配色）＋鍵（order 單/雙/三鍵）；product 為反應後並排。 */
+  | {
+      kind: "molecule";
+      atoms: Array<{ id: string; el: string; x: number; y: number }>;
+      bonds: Array<{ a: string; b: string; order?: 1 | 2 | 3 }>;
+      product?: {
+        atoms: Array<{ id: string; el: string; x: number; y: number }>;
+        bonds: Array<{ a: string; b: string; order?: 1 | 2 | 3 }>;
+      };
+      label?: string;
+    }
+  /** 力與運動：物體（含斜面）＋力向量（dir 角度、mag 相對長度、標籤）。 */
+  | {
+      kind: "forceDiagram";
+      body: "box" | "ball" | "cart" | "incline";
+      forces: Array<{ label: string; dir: number; mag: number; tone?: "primary" | "accent" | "muted" }>;
+      note?: string;
+    }
+  /** 時間軸：橫向紀年軸＋事件節點（when 年代、title），active 標記當前，era 標示時期。 */
+  | {
+      kind: "timeline";
+      events: Array<{ when: string; title: string }>;
+      active?: number;
+      era?: string;
+    };
 
 /** 分鏡停下來問學生的小問題（洋蔥式「先猜再學」）。答錯不扣分，只給提示。 */
 export type OnionAsk = {
