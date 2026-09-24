@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { ArrowLeft, RotateCcw, Flame, Play, GraduationCap, Trophy } from "lucide-react";
+import { ArrowLeft, RotateCcw, Flame, Play, GraduationCap } from "lucide-react";
 import { useLocation } from "wouter";
 import {
   loadAdaptiveProfile,
@@ -158,9 +158,6 @@ export default function WrongAnswers() {
       <section className="paper-exam-panel" aria-label="返回">
         <button className="grad-link" type="button" onClick={() => setLocation("/graduation")}>
           <GraduationCap size={16} aria-hidden="true" /> 參觀畢業紀念榜，看看已破解多少題
-        </button>
-        <button className="grad-link" type="button" onClick={() => setLocation("/answer-board")}>
-          <Trophy size={16} aria-hidden="true" /> 前往答題榜，和大家比時間、比正確率
         </button>
         <button className="home-dashboard-action" type="button" onClick={() => setLocation("/")}>
           <ArrowLeft size={16} aria-hidden="true" /> 返回航海儀表板

@@ -656,10 +656,11 @@ export default function Settings() {
 
         <section className="settings-audio-card settings-report-link-card" aria-labelledby="classroom-link-title">
           <div className="settings-audio-heading"><span className="settings-page-icon" aria-hidden="true"><School size={20} /></span><div><p className="settings-eyebrow">班級</p><h2 id="classroom-link-title">教室</h2></div></div>
-          <p className="settings-log-description">老師可建立班級、指派作業並查看班級報表；學生用班級碼加入並完成作業。</p>
+          <p className="settings-log-description">老師可建立班級、指派作業並查看班級報表；學生用班級碼加入並完成作業。答題榜則記錄每場答題的時間、花費時間與作答者（含遊客）。</p>
           <div className="settings-cloud-actions">
             <button type="button" className="settings-primary-button" onClick={() => setLocation("/class")}>我的教室（學生）</button>
             <button type="button" className="settings-secondary-button" onClick={() => setLocation("/teacher")}>班級教室（老師）</button>
+            <button type="button" className="settings-secondary-button" onClick={() => setLocation("/answer-board")}>答題榜（含遊客）</button>
           </div>
         </section>
 

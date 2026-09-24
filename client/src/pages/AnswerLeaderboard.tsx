@@ -200,8 +200,8 @@ export default function AnswerLeaderboard() {
         )}
       </section>
 
-      <button className="home-dashboard-action answer-board-back" type="button" onClick={() => setLocation("/")}>
-        <ArrowLeft size={16} aria-hidden="true" /> 返回航海儀表板
+      <button className="home-dashboard-action answer-board-back" type="button" onClick={() => setLocation("/settings")}>
+        <ArrowLeft size={16} aria-hidden="true" /> 返回設定
       </button>
     </main>
   );
