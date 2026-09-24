@@ -2,6 +2,7 @@ import React, { useMemo, useState } from "react";
 import { ArrowLeft, CheckCircle2, RotateCcw, Sparkles } from "lucide-react";
 import { SpeechReadableText } from "@/components/SpeechReadableText";
 import { QuestionTransition } from "@/components/QuestionTransition";
+import { Button } from "@/components/ui/button";
 import {
   getAnimeWorldviewQuestions,
   getAnimeWorldviewResultMessage,
@@ -65,8 +66,8 @@ export default function AnimeWorldviewQuiz({ entryKey, title, onBack, onComplete
         <p className="anime-quiz-score"><strong>{result.correct}</strong><span>／{result.total} 題答對</span></p>
         <p className="anime-quiz-result-message">{getAnimeWorldviewResultMessage(result.correct, result.total)}</p>
         <div className="anime-quiz-result-actions">
-          <button type="button" className="btn primary" onClick={restart}><RotateCcw size={16} /> 再挑戰一次</button>
-          <button type="button" className="btn secondary" onClick={onBack}><ArrowLeft size={16} /> 返回觀測卡</button>
+          <Button type="button" onClick={restart}><RotateCcw size={16} /> 再挑戰一次</Button>
+          <Button type="button" onClick={onBack}><ArrowLeft size={16} /> 返回觀測卡</Button>
         </div>
       </section>
     );
@@ -110,8 +111,8 @@ export default function AnimeWorldviewQuiz({ entryKey, title, onBack, onComplete
       </div>
       {submitted && <div className={`anime-quiz-explanation ${currentAnswer === question.answer ? "is-correct" : "is-wrong"}`} role="status"><strong>{currentAnswer === question.answer ? "答對了！" : "先記住這個線索"}</strong><SpeechReadableText text={question.explanation} label="朗讀題目解析" className="anime-quiz-explanation-text" buttonClassName="anime-quiz-speech" /></div>}
       <div className="anime-quiz-actions">
-        {!submitted ? <button type="button" className="btn primary" disabled={selected === null} onClick={confirmAnswer}>確認答案</button> : <button type="button" className="btn primary" onClick={nextQuestion}>{questionIndex === questions.length - 1 ? "查看結果" : "下一題"}</button>}
-        <button type="button" className="btn secondary" onClick={onBack}>返回觀測卡</button>
+        {!submitted ? <Button type="button" disabled={selected === null} onClick={confirmAnswer}>確認答案</Button> : <Button type="button" onClick={nextQuestion}>{questionIndex === questions.length - 1 ? "查看結果" : "下一題"}</Button>}
+        <Button type="button" onClick={onBack}>返回觀測卡</Button>
       </div>
       </QuestionTransition>
     </section>

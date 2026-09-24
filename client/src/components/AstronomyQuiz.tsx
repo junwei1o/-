@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { ArrowLeft, Check, ChevronRight, Orbit, RadioTower, Rocket, RotateCcw, Telescope, X } from "lucide-react";
 import { QuestionTransition } from "@/components/QuestionTransition";
+import { Button } from "@/components/ui/button";
 import {
   ASTRONOMY_QUIZ_TIERS,
   createAstronomyQuizDeck,
@@ -82,7 +83,7 @@ export default function AstronomyQuiz({ onExit }: AstronomyQuizProps) {
   if (finished) {
     return <section className="astronomy-quiz-shell" aria-labelledby="astronomy-result-title">
       <div className="astronomy-quiz-topbar"><button type="button" className="text-btn" onClick={onExit} onKeyDown={(event) => keyActivate(event, onExit)}><ArrowLeft size={16} /> 返回天文館</button><span>OBSERVATORY / RESULT</span></div>
-      <div className="astronomy-quiz-result"><Telescope size={30} /><p className="eyebrow accent">{tierInfo?.level}／天文觀測完成</p><h1 id="astronomy-result-title">{tierInfo?.name}：答對 <i>{score} / {deck.length}</i> 題</h1><p>這份紀錄只屬於 {tierInfo?.name} 天文問答，不會混入一般課綱挑戰或休閒觀測題庫。</p><div><button type="button" className="btn primary" onClick={reset} onKeyDown={(event) => keyActivate(event, reset)}><RotateCcw size={16} /> 再觀測一次</button><button type="button" className="text-btn" onClick={onExit} onKeyDown={(event) => keyActivate(event, onExit)}>回到天文館 <ChevronRight size={16} /></button></div></div>
+      <div className="astronomy-quiz-result"><Telescope size={30} /><p className="eyebrow accent">{tierInfo?.level}／天文觀測完成</p><h1 id="astronomy-result-title">{tierInfo?.name}：答對 <i>{score} / {deck.length}</i> 題</h1><p>這份紀錄只屬於 {tierInfo?.name} 天文問答，不會混入一般課綱挑戰或休閒觀測題庫。</p><div><Button type="button" onClick={reset} onKeyDown={(event) => keyActivate(event, reset)}><RotateCcw size={16} /> 再觀測一次</Button><button type="button" className="text-btn" onClick={onExit} onKeyDown={(event) => keyActivate(event, onExit)}>回到天文館 <ChevronRight size={16} /></button></div></div>
     </section>;
   }
 

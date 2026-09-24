@@ -2,6 +2,7 @@ import React, { useMemo, useState } from "react";
 import { ArrowRight, BookOpen, Bookmark, BookmarkCheck, Check, ChevronDown, CircleAlert, CircleDot, CircleHelp, Lightbulb, ListTree, MapPinned, Orbit, RotateCcw, ScanSearch, ShieldCheck, Tags } from "lucide-react";
 import { QuestionTransition } from "@/components/QuestionTransition";
 import { SpeechReadButton } from "@/components/SpeechReadButton";
+import { Button } from "@/components/ui/button";
 import {
   createWormholeGuideSession,
   getWorldPrinciple,
@@ -401,7 +402,7 @@ export default function PrincipleGuideQuiz() {
             <small>{strategyRecap.nextStep} 這張卡只回顧你剛才的思考過程，不會依答對或答錯評分。</small>
           </section>
           </>}
-          <button type="button" className="btn primary principle-guide-next" onClick={nextQuestion}>{questionIndex === session.length - 1 ? <><RotateCcw size={16} /> 重新校準本層</> : <>下一題 <ArrowRight size={16} /></>}</button>
+          <Button type="button" className="principle-guide-next" onClick={nextQuestion}>{questionIndex === session.length - 1 ? <><RotateCcw size={16} /> 重新校準本層</> : <>下一題 <ArrowRight size={16} /></>}</Button>
         </div>}
       </div>
       </QuestionTransition>
