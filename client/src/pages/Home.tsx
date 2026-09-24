@@ -10,8 +10,7 @@ import { getJournalEntries } from "@/game/adventureJournal";
 import { generateDailyAdventureSummary } from "@/game/academyExpansion";
 import { QuizModal } from "@/components/QuizModal";
 import { consumeStorageNotice, getDailySignIn, getLearningRecord, getPlayerData, getPlayerName, getSelectedTitle, hasSignedInToday, type LearningRecord } from "@/utils/storage";
-import { loadSignInState, hasSignedInToday as hasGoldSignedInToday } from "@/game/dailySignIn";
-import { DailySignInModal } from "@/components/DailySignInModal";
+import { DailySignInPill, requestOpenSignInPill } from "@/components/DailySignInPill";
 import { HomeContactCard } from "@/components/HomeContactCard";
 import { buildKnowledgeIslandSnapshots, type KnowledgeIslandSubject } from "@/lib/studentKnowledgeIslands";
 import { ONION_ACADEMY_ROUTE, pickRecommendedLesson, weakestSubjectThisWeek } from "@/lib/recommendedLesson";
@@ -78,7 +77,6 @@ export default function Home() {
   useBxVersion();
   const enableQuickSidebar = bxStore.get<boolean>("prefs.enableQuickSidebar", true) ?? true;
   const showQuickFloatBtn = bxStore.get<boolean>("prefs.showQuickFloatBtn", true) ?? true;
-  const [showGoldSignIn, setShowGoldSignIn] = useState(false);
   const actionsToggleRef = useRef<HTMLButtonElement>(null);
   const firstActionRef = useRef<HTMLButtonElement>(null);
   const islands = useMemo(() => buildKnowledgeIslandSnapshots(profile), [profile]);
@@ -110,17 +108,6 @@ export default function Home() {
     const stage = "國小";
     return pickRecommendedLesson({ stage, weakSubject: weakestSubjectThisWeek(learningRecords)?.subject ?? null });
   }, [learningRecords]);
-
-  useEffect(() => {
-    // 進站延遲約 1 秒自動彈出簽到（金幣），避免干擾首屏；今天已簽到則不彈。
-    // 新手導覽期間不彈（導覽自己就有簽到步驟），否則兩個彈窗會疊在一起。
-    if (hasGoldSignedInToday(loadSignInState())) return;
-    const timer = window.setTimeout(() => {
-      if (document.body.classList.contains("bx-tour-open")) return;
-      setShowGoldSignIn(true);
-    }, 1000);
-    return () => window.clearTimeout(timer);
-  }, []);
 
   useEffect(() => {
     if (!isActionsOpen) return;
@@ -160,6 +147,14 @@ export default function Home() {
     const notice = consumeStorageNotice();
     if (notice) toast.warning(notice.message);
   }, []);
+
+  // 簽到不再於進站時自動彈出，入口改放在「快速行動」側邊欄的膠囊（DailySignInPill）。
+  // 這裡只負責在膠囊完成簽到後同步首頁的金幣與簽到卡，避免兩邊數字互相矛盾。
+  useEffect(() => {
+    const handleClaimed = () => refreshLearningData();
+    window.addEventListener("xue-signin-claimed", handleClaimed);
+    return () => window.removeEventListener("xue-signin-claimed", handleClaimed);
+  }, [refreshLearningData]);
 
   useEffect(() => {
     const nextGold = playerData.gold;
@@ -213,9 +208,11 @@ export default function Home() {
   }
 
   function handleDailySignIn() {
-    // 簽到只有一條路徑（dailySignIn.ts）：首頁卡片改成開啟同一個彈窗，
-    // 不再自己呼叫一次領取，避免兩個連續天數各自累加、互相矛盾。
-    setShowGoldSignIn(true);
+    // 簽到只有一條路徑（dailySignIn.ts）：首頁的其他簽到卡不再自己領取，
+    // 而是展開「快速行動」側邊欄裡的簽到膠囊，避免兩個連續天數各自累加、互相矛盾。
+    setIsActionsOpen(true);
+    // 側邊欄本輪才展開，膠囊要等下一個渲染週期掛載後才收得到展開事件。
+    window.setTimeout(() => requestOpenSignInPill(), 0);
   }
 
   function handleFinishSetup() {
@@ -419,6 +416,7 @@ export default function Home() {
                 <button tabIndex={isActionsOpen ? 0 : -1} type="button" className="home-dashboard-action" onClick={() => setLocation("/wrong-answers")}><RotateCcw size={18} aria-hidden="true" /> 錯題重練<small>整理真實作答線索</small></button>
                 <button tabIndex={isActionsOpen ? 0 : -1} type="button" className={`home-dashboard-action home-dashboard-memory-alarm ${memoryAlarmCount > 0 ? "has-due" : ""}`} onClick={() => setLocation("/review-hub")} aria-label={memoryAlarmCount > 0 ? `記憶警報，今日有 ${memoryAlarmCount} 題到期複習` : "記憶警報，目前沒有到期複習"}><AlarmClock size={18} aria-hidden="true" /> 記憶警報<small>{memoryAlarmCount > 0 ? `今日有 ${memoryAlarmCount} 題線索回來了` : "目前沒有到期題目"}</small>{memoryAlarmCount > 0 && <strong aria-hidden="true">{memoryAlarmCount}</strong>}</button>
                 <button tabIndex={isActionsOpen ? 0 : -1} type="button" className="home-dashboard-action" disabled={questions.length === 0} onClick={startRandomAdventure}><Dices size={18} aria-hidden="true" /> 隨機冒險<small>答對可獲雙倍金幣</small></button>
+                <DailySignInPill tabbable={isActionsOpen} />
               </nav>
               <HomeContactCard />
             </aside>
@@ -429,16 +427,6 @@ export default function Home() {
         const question = questions.find((item) => item.subject === quizSubject);
         return question ? <QuizModal question={question} subject={quizSubject} onClose={() => setQuizSubject(null)} onCompleted={refreshLearningData} /> : null;
       })() : null}
-      <DailySignInModal
-        open={showGoldSignIn}
-        onClose={() => {
-          setShowGoldSignIn(false);
-          // 簽到在彈窗裡完成，首頁的金幣與簽到卡要跟著更新，
-          // 否則卡片會停在「今天回來留下足跡 · 0 天」，和彈窗的連續天數互相矛盾。
-          setPlayerData(getPlayerData());
-          setDailySignIn(getDailySignIn());
-        }}
-      />
     </main>
   );
 }

@@ -1,0 +1,269 @@
+/* 每日簽到膠囊：內嵌於首頁「快速行動」側邊欄的動作清單。
+   視覺基準對齊 .home-dashboard-action（同一個清單裡的其他動作），
+   只把圓角做成膠囊、把內容改成可就地展開，讓它像一個「小區塊」而非一整張卡。
+
+   與舊版 DailySignInModal 的差異：無背景遮罩、不用 aria-modal、不攔截點擊、
+   預設收合，因此完全不會中斷使用者原本的操作。
+
+   註：原需求提到的行動端頂部安全區（safe area）在本版已不需要特別處理——
+   膠囊位於頁面內的側邊欄清單中，頂部間距由側邊欄容器負責；
+   若日後要把它改回「頂部懸浮」的動態島樣式，再於 .signin-pill 加上
+   position:fixed / top:calc(env(safe-area-inset-top,0px) + 10px) / z-index:90 即可。 */
+
+.signin-pill {
+  --pill-collapsed-h: 52px;
+
+  width: 100%;
+  max-height: var(--pill-collapsed-h);
+  overflow: hidden;
+
+  border: 1px solid rgba(70, 91, 80, 0.14);
+  border-radius: var(--radius-pill, 999px);
+  background: color-mix(in srgb, var(--white) 76%, transparent);
+
+  transition:
+    max-height 0.34s cubic-bezier(0.32, 0.72, 0, 1),
+    border-radius 0.34s cubic-bezier(0.32, 0.72, 0, 1),
+    box-shadow 0.2s ease;
+}
+
+.signin-pill.is-open {
+  max-height: 460px;
+  border-radius: var(--radius-lg);
+}
+
+.signin-pill:hover {
+  box-shadow: 0 10px 20px rgba(46, 90, 76, 0.16);
+}
+
+/* ── 收合列：點擊整條可展開／收合 ───────────────────────── */
+.signin-pill-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: var(--pill-collapsed-h);
+  padding: 8px 16px;
+  background: none;
+  border: 0;
+  color: #29463c;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.signin-pill-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  color: var(--tidal);
+}
+
+.signin-pill-text {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.signin-pill-title {
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.signin-pill-sub {
+  display: block;
+  margin-top: 2px;
+  font-size: 11.5px;
+  font-weight: 600;
+  opacity: 0.84;
+}
+
+/* 未簽到時的小提示點：唯一被允許的「吸引注意」元素，且極小。 */
+.signin-pill-dot {
+  flex: none;
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--coral);
+  animation: signin-pill-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes signin-pill-pulse {
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.25);
+  }
+}
+
+/* ── 展開面板 ──────────────────────────────────────────── */
+.signin-pill-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 0 16px 14px;
+  animation: signin-pill-fade 0.24s ease both;
+}
+
+@keyframes signin-pill-fade {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.signin-pill-stats {
+  display: flex;
+  gap: 8px;
+}
+
+.signin-pill-stats span {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  padding: 7px 4px;
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--paper-deep) 70%, transparent);
+}
+
+.signin-pill-stats strong {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--tidal-deep);
+}
+
+.signin-pill-stats small {
+  font-size: 10.5px;
+  color: var(--muted);
+}
+
+/* 七天獎勵軌道 */
+.signin-pill-track {
+  display: flex;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.signin-pill-day {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 7px 2px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line);
+  background: var(--white);
+}
+
+.signin-pill-day.is-claimed {
+  border-color: color-mix(in srgb, var(--moss) 45%, transparent);
+  background: color-mix(in srgb, var(--moss) 12%, transparent);
+}
+
+.signin-pill-day.is-today {
+  border-color: var(--coral);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--coral) 22%, transparent);
+}
+
+.signin-pill-day-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.signin-pill-day.is-claimed .signin-pill-day-mark {
+  color: var(--moss);
+}
+
+.signin-pill-day-gold {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 10px;
+  color: var(--muted);
+}
+
+/* 狀態回饋：簽到成功／已簽到／一般提示共用同一區塊，避免版面跳動。 */
+.signin-pill-feedback {
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  line-height: 1.5;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.signin-pill-feedback .is-success {
+  color: var(--moss);
+}
+
+.signin-pill-claim {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: var(--coral);
+  color: var(--white);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.16s ease, transform 0.16s ease;
+}
+
+.signin-pill-claim:hover:not(:disabled) {
+  background: var(--coral-deep);
+}
+
+.signin-pill-claim:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.signin-pill-claim:disabled {
+  background: color-mix(in srgb, var(--line) 70%, transparent);
+  color: var(--muted);
+  cursor: default;
+}
+
+/* ── 尊重系統的減少動態偏好 ───────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .signin-pill {
+    transition: none;
+  }
+  .signin-pill-panel {
+    animation: none;
+  }
+  .signin-pill-dot {
+    animation: none;
+    opacity: 0.9;
+  }
+  .signin-pill-claim:active:not(:disabled) {
+    transform: none;
+  }
+}

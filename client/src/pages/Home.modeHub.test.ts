@@ -5,16 +5,19 @@ const source = readFileSync(new URL("./Home.tsx", import.meta.url), "utf8");
 const css = readFileSync(new URL("./HomeDashboard.css", import.meta.url), "utf8");
 
 describe("首頁遊戲模式入口", () => {
-  it("提供三個真實單機入口（燈塔指航中心已下架），簽到一律走統一的彈窗", () => {
+  it("提供三個真實單機入口（燈塔指航中心已下架），簽到一律走快速行動裡的簽到膠囊", () => {
     expect(source).not.toContain("燈塔指航中心");
     expect(source).not.toContain('setLocation("/tavern")');
     expect(source).toContain("錯題魔王");
     expect(source).toContain("限時挑戰");
     expect(source).toContain("每日簽到");
     expect(source).toContain('setLocation("/community?mode=timed")');
-    // 簽到只有一條路徑：首頁卡片開啟統一彈窗（dailySignIn.ts），
-    // 自己再領一次會讓兩份連續天數各自累加。
-    expect(source).toContain("setShowGoldSignIn(true)");
+    // 簽到只有一條路徑（dailySignIn.ts）：首頁卡片改為展開「快速行動」側邊欄裡的
+    // 簽到膠囊（DailySignInPill），自己再領一次會讓兩份連續天數各自累加。
+    // 膠囊不再自動彈出，因此首頁不應殘留任何自動開啟簽到的計時器。
+    expect(source).toContain("requestOpenSignInPill()");
+    expect(source).toContain("<DailySignInPill");
+    expect(source).not.toContain("setShowGoldSignIn");
     expect(source).not.toMatch(/claimDailySignIn\s*\(/);
     expect(source).not.toContain("localStorage.getItem('xueSignIn')");
   });
