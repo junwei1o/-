@@ -46,6 +46,7 @@ import {
 } from "@/game/companionBrain";
 import { getSession } from "@/game/session";
 import { LogoutButton } from "@/components/AuthGate";
+import BackupButton from "@/components/BackupButton";
 import "./SettingsDiagnostics.css";
 
 const RARE_CODEX = (["chinese", "math", "english", "science"] as const).flatMap((subject) => getRareMonsters(subject));
@@ -883,6 +884,18 @@ export default function Settings() {
             <LogoutButton className="settings-secondary-button">
               登出並切換帳號
             </LogoutButton>
+          </div>
+        </section>
+
+        {/* 一鍵備份 */}
+        <section className="settings-audio-card settings-backup-card" aria-labelledby="backup-title">
+          <h2 id="backup-title"><Download size={18} aria-hidden="true" /> 一鍵備份全站</h2>
+          <p>
+            下載完整原始碼 ZIP 到本機，解壓後依 README 步驟即可離線架站。
+            包含前端、後端、題庫、遷移腳本與所有設定檔，不含 node_modules。
+          </p>
+          <div className="cloud-actions cloud-actions-left">
+            <BackupButton className="settings-secondary-button" />
           </div>
         </section>
       </div>
