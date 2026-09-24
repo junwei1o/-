@@ -2877,3 +2877,40 @@ html[data-reading-scale="xlarge"] .paper-wrong-answer-grid p { font-size: 0.75em
 .bx-empty__art-row .bx-empty__art { margin-bottom: 0; }
 .bx-empty__pipi { position: absolute; right: -36px; bottom: -2px; width: 58px; height: 58px; object-fit: contain; filter: drop-shadow(0 5px 10px rgba(23, 65, 80, 0.28)); animation: bxFloat 3.4s ease-in-out infinite; pointer-events: none; }
 @media (prefers-reduced-motion: reduce) { .bx-empty__pipi { animation: none; } }
+
+/* ─────────────────────────────────────────────
+   視覺深化：路由過渡 · 海面波浪 · 按壓回饋
+   ───────────────────────────────────────────── */
+/* 路由切換入場：淡入＋輕微上移，全頁「翻頁／航行」手感 */
+@keyframes routeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+#main-content.route-entering { animation: routeIn 0.36s cubic-bezier(0.22, 0.8, 0.32, 1) both; }
+
+/* 海面波浪：兩條錯相位輕微起伏 */
+@keyframes bxWave {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-2.6px); }
+}
+.bx-wave { animation: bxWave 4.6s ease-in-out infinite; }
+.bx-wave--b { animation-duration: 5.8s; animation-delay: -1.6s; }
+
+/* 按壓回饋：可點元素按下輕微回彈，放開復位（不覆蓋元件原有的 transition） */
+button:not(:disabled):active,
+[role="button"]:not([aria-disabled="true"]):active { transform: scale(0.97); }
+.home-mode-card:active,
+.home-focus-lesson:active,
+.home-feature-directory-cta:active,
+.home-grade-chip:active { transform: scale(0.96); }
+
+@media (prefers-reduced-motion: reduce) {
+  #main-content.route-entering { animation: none; }
+  .bx-wave { animation: none; }
+  button:not(:disabled):active,
+  [role="button"]:active,
+  .home-mode-card:active,
+  .home-focus-lesson:active,
+  .home-feature-directory-cta:active,
+  .home-grade-chip:active { transform: none; }
+}

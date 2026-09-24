@@ -1,8 +1,8 @@
-import React, { Suspense, useEffect } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/NotFound";
-import { Route, Switch } from "wouter";
+import { Route, Switch, useLocation } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import TopNavigation from "@/components/TopNavigation";
@@ -71,9 +71,16 @@ function PageLoader() {
 }
 
 function Router() {
-  // make sure to consider if you need authentication for certain routes
+  const [location] = useLocation();
+  const [routeEntering, setRouteEntering] = useState(false);
+  // 路由切換時播放一次克制的入場動畫（淡入＋輕微上移），讓全頁有「翻頁／航行」手感。
+  useEffect(() => {
+    setRouteEntering(true);
+    const timer = window.setTimeout(() => setRouteEntering(false), 380);
+    return () => window.clearTimeout(timer);
+  }, [location]);
   return (
-    <main id="main-content">
+    <main id="main-content" className={routeEntering ? "route-entering" : undefined}>
       <Suspense fallback={<PageLoader />}>
         <Switch>
         <Route path={"/map"} component={StudentMap} />

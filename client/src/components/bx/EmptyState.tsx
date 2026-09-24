@@ -58,8 +58,8 @@ function Art({ art }: { art: BxEmptyArtKey }) {
       <svg {...common}>
         <defs><linearGradient id="bxg1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#BFE3F5" /><stop offset="1" stopColor="#5FA8D3" /></linearGradient></defs>
         <circle cx="60" cy="60" r="52" fill="url(#bxg1)" opacity=".22" />
-        <path d="M12 76 Q30 68 48 76 T84 76 T120 76" stroke="#5FA8D3" strokeWidth="3" fill="none" strokeLinecap="round" />
-        <path d="M12 90 Q30 82 48 90 T84 90 T120 90" stroke="#5FA8D3" strokeWidth="3" fill="none" opacity=".55" strokeLinecap="round" />
+        <path className="bx-wave bx-wave--a" d="M12 76 Q30 68 48 76 T84 76 T120 76" stroke="#5FA8D3" strokeWidth="3" fill="none" strokeLinecap="round" />
+        <path className="bx-wave bx-wave--b" d="M12 90 Q30 82 48 90 T84 90 T120 90" stroke="#5FA8D3" strokeWidth="3" fill="none" opacity=".55" strokeLinecap="round" />
         <g className="bx-float"><path d="M60 38 L60 62 M48 62 L72 62 L67 72 L53 72 Z" stroke="#2C3E50" strokeWidth="2.5" fill="#F5A623" strokeLinejoin="round" /><path d="M62 40 L80 54 L62 56 Z" fill="#FFF" stroke="#2C3E50" strokeWidth="2" strokeLinejoin="round" /></g>
       </svg>
     );
