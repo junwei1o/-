@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { Flame, Sparkles, Star, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 type StreakCelebrationProps = {
   streak: number;
@@ -83,7 +84,7 @@ export default function StreakCelebration({ streak, onClose }: StreakCelebration
         <h2 id="streak-title">{titleFor(streak)}</h2>
         <p id="streak-description" className="streak-count"><strong>{streak}</strong> 題連續答對</p>
         <p className="streak-message">保持節奏，下一個觀測線索正在發光。</p>
-        <button type="button" className="btn primary streak-continue" onClick={onClose}>繼續挑戰</button>
+        <Button className="streak-continue" onClick={onClose}>繼續挑戰</Button>
       </section>
     </div>
   );

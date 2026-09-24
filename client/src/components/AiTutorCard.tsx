@@ -1,5 +1,6 @@
 import { ChevronDown, Lightbulb, RotateCcw, Sparkles } from "lucide-react";
 import { SpeechReadableText } from "@/components/SpeechReadableText";
+import { Button } from "@/components/ui/button";
 import React, { useEffect, useState } from "react";
 
 type AiTutorResult = {
@@ -39,7 +40,7 @@ export function AiTutorCard({ isPending, error, data, onRetry }: AiTutorCardProp
       {isPending ? (
         <p className="ai-tutor-status">正在根據這道題的課綱內容整理提示……</p>
       ) : error ? (
-        <div className="ai-tutor-error"><p>AI 解析暫時沒有回來，先參考上方課綱解析。</p><button className="text-btn" onClick={handleRetry}>重新取得 AI 解析 <RotateCcw size={14} /></button></div>
+        <div className="ai-tutor-error"><p>AI 解析暫時沒有回來，先參考上方課綱解析。</p><Button variant="ghost" size="sm" onClick={handleRetry}>重新取得 AI 解析 <RotateCcw size={14} /></Button></div>
       ) : data ? (
         <div className="ai-tutor-content">
           <div className="ai-hint">
@@ -47,14 +48,14 @@ export function AiTutorCard({ isPending, error, data, onRetry }: AiTutorCardProp
             <div className="ai-tutor-readable"><SpeechReadableText as="p" text={data.initialHint} label="初步提示" compact /></div>
           </div>
           {revealStage === "initial" ? (
-            <button className="btn primary small" onClick={() => setRevealStage("advanced")}>還需要一點幫助：顯示進階提示 <ChevronDown size={15} /></button>
+            <Button size="sm" onClick={() => setRevealStage("advanced")}>還需要一點幫助：顯示進階提示 <ChevronDown size={15} /></Button>
           ) : (
             <div className="ai-hint ai-hint-advanced">
               <strong><Lightbulb size={15} /> 進階提示</strong>
               <div className="ai-tutor-readable"><SpeechReadableText as="p" text={data.advancedHint} label="進階提示" compact /></div>
             </div>
           )}
-          {revealStage === "advanced" ? <button className="btn primary small" onClick={() => setRevealStage("full")}>我想過了，查看完整解答 <ChevronDown size={15} /></button> : null}
+          {revealStage === "advanced" ? <Button size="sm" onClick={() => setRevealStage("full")}>我想過了，查看完整解答 <ChevronDown size={15} /></Button> : null}
           {revealStage === "full" ? (
             <>
               <div>
@@ -70,12 +71,12 @@ export function AiTutorCard({ isPending, error, data, onRetry }: AiTutorCardProp
                 <SpeechReadableText as="p" text={data.misconception} label="容易混淆的地方" compact />
               </div>
               <div className="ai-tutor-readable"><SpeechReadableText as="p" text={data.encouragement} label="鼓勵訊息" className="ai-encouragement" compact /></div>
-              <button className="text-btn" onClick={() => setRevealStage("advanced")}>收起完整解答 <ChevronDown size={14} /></button>
+              <Button variant="ghost" size="sm" onClick={() => setRevealStage("advanced")}>收起完整解答 <ChevronDown size={14} /></Button>
             </>
           ) : null}
         </div>
       ) : (
-        <div className="ai-tutor-error"><p>這題需要一點額外線索嗎？</p><button className="text-btn" onClick={handleRetry}>取得 AI 提示 <Sparkles size={14} /></button></div>
+        <div className="ai-tutor-error"><p>這題需要一點額外線索嗎？</p><Button variant="ghost" size="sm" onClick={handleRetry}>取得 AI 提示 <Sparkles size={14} /></Button></div>
       )}
     </div>
   );

@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Volume2, VolumeX, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { getAnswerBroadcast, type AnswerBroadcast } from "@/lib/answerBroadcasts";
 import { createSpeechController, type SpeechStatus } from "@/lib/speechSynthesis";
 import type { SpeechPreferences } from "@/lib/speechPreferences";
@@ -55,20 +56,20 @@ export default function AnswerBroadcast({ answerCount, soundEnabled, speechPrefe
       <p id="answer-broadcast-text" className="answer-broadcast-text">「{item.text}」</p>
       <p className="answer-broadcast-kind">每答對五題，收聽一則學習彩蛋。</p>
       <div className="answer-broadcast-actions" aria-live="polite">
-        <button type="button" className="btn primary small" onClick={() => speak(item)} disabled={muted || !soundEnabled || unsupported}>
+        <Button size="sm" onClick={() => speak(item)} disabled={muted || !soundEnabled || unsupported}>
           {muted || !soundEnabled || unsupported ? <VolumeX size={16} /> : <Volume2 size={16} />}
           {unsupported ? "瀏覽器不支援語音" : speechStatus === "speaking" ? "正在播報" : speechStatus === "paused" ? "從頭播報" : "再播一次"}
-        </button>
-        {(speechStatus === "speaking" || speechStatus === "paused") && <button type="button" className="text-btn" onClick={() => {
+        </Button>
+        {(speechStatus === "speaking" || speechStatus === "paused") && <Button variant="ghost" size="sm" onClick={() => {
           if (speechStatus === "speaking") controllerRef.current?.pause(setSpeechStatus);
           else controllerRef.current?.resume(setSpeechStatus);
         }}>
           {speechStatus === "speaking" ? "暫停朗讀" : "繼續朗讀"}
-        </button>}
-        <button type="button" className="text-btn" onClick={() => setMuted((value) => !value)} aria-pressed={muted}>
+        </Button>}
+        <Button variant="ghost" size="sm" onClick={() => setMuted((value) => !value)} aria-pressed={muted}>
           {muted ? "開啟本次語音" : "靜音本次彩蛋"}
-        </button>
-        <button type="button" className="text-btn" onClick={onClose}>繼續答題</button>
+        </Button>
+        <Button variant="ghost" size="sm" onClick={onClose}>繼續答題</Button>
       </div>
     </section>
   </div>;

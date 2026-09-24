@@ -1,6 +1,7 @@
 import { ChevronDown, RotateCcw, Sparkles } from "lucide-react";
 import type { KnowledgeMasterySummary } from "@/lib/paperExam";
 import { SpeechReadableText } from "@/components/SpeechReadableText";
+import { Button } from "@/components/ui/button";
 import React, { useEffect, useState } from "react";
 
 export type AiReviewPlan = {
@@ -62,7 +63,7 @@ export function AiReviewPlanCard({ isPending, error, data, filteredCount, knowle
       ) : error ? (
         <div className="ai-review-plan-error">
           <p>AI 複習建議暫時沒有回來，錯題解析仍可照常使用。</p>
-          <button type="button" className="text-btn" onClick={handleRetry}>重新整理複習建議 <RotateCcw size={14} /></button>
+          <Button variant="ghost" size="sm" onClick={handleRetry}>重新整理複習建議 <RotateCcw size={14} /></Button>
         </div>
       ) : data ? (
         <div className="ai-review-plan-content">
@@ -90,7 +91,7 @@ export function AiReviewPlanCard({ isPending, error, data, filteredCount, knowle
             })}
           </div>
           {revealStage < stageOrder.length - 1 ? (
-            <button type="button" className="btn primary small" onClick={() => setRevealStage((stage) => Math.min(stage + 1, stageOrder.length - 1))}>看下一小步 <ChevronDown size={15} /></button>
+            <Button size="sm" onClick={() => setRevealStage((stage) => Math.min(stage + 1, stageOrder.length - 1))}>看下一小步 <ChevronDown size={15} /></Button>
           ) : (
             <>
               <SpeechReadableText as="p" text={data.encouragement} label="AI 複習鼓勵" className="ai-review-plan-encouragement" compact={false} />
@@ -112,9 +113,9 @@ export function AiReviewPlanCard({ isPending, error, data, filteredCount, knowle
                       </div>
                     ))}
                     {revealedHintCount < data.selfCheck.hints.length && (
-                      <button type="button" className="text-btn ai-review-self-check-hint-button" onClick={() => setRevealedHintCount((count) => Math.min(count + 1, data.selfCheck.hints.length))}>
+                      <Button variant="ghost" size="sm" className="ai-review-self-check-hint-button" onClick={() => setRevealedHintCount((count) => Math.min(count + 1, data.selfCheck.hints.length))}>
                         {revealedHintCount === 0 ? "需要時查看提示" : "再看一個提示"} <ChevronDown size={14} />
-                      </button>
+                      </Button>
                     )}
                   </div>
                 )}
@@ -138,7 +139,7 @@ export function AiReviewPlanCard({ isPending, error, data, filteredCount, knowle
           )}
         </div>
       ) : (
-        <div className="ai-review-plan-error"><p>先選好想複習的錯題範圍，AI Tutor 會整理一條短路線。</p><button type="button" className="text-btn" onClick={onRetry}>產生複習建議 <Sparkles size={14} /></button></div>
+        <div className="ai-review-plan-error"><p>先選好想複習的錯題範圍，AI Tutor 會整理一條短路線。</p><Button variant="ghost" size="sm" onClick={onRetry}>產生複習建議 <Sparkles size={14} /></Button></div>
       )}
     </aside>
   );
