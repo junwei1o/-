@@ -1,0 +1,60 @@
+# Render Infrastructure-as-Code
+# https://render.com/docs/blueprint-spec
+#
+# 加了這個檔後，在 Render Dashboard → Service → Settings →
+# 「Connect Repository」連接 GitHub repo，以後每次 git push 自動觸發部署。
+# 環境變數的實際值（key/secret）不在這裡硬編，由 Render Dashboard 的
+# Environment 頁面管理；這裡只列出需要存在的 key，防止遺漏。
+
+services:
+  - type: web
+    name: xue-adventure
+    runtime: node
+    plan: free
+    region: oregon
+    buildCommand: pnpm install --frozen-lockfile && pnpm build
+    startCommand: pnpm start
+    healthCheckPath: /
+    autoDeploy: true
+    envVars:
+      # ─── 必須設定（Dashboard 裡填實際值）───
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false  # TiDB Cloud 連線字串，在 Dashboard 設定
+      # ─── 認證 ───
+      - key: JWT_SECRET
+        sync: false
+      - key: VITE_APP_ID
+        sync: false
+      - key: OAUTH_SERVER_URL
+        sync: false
+      - key: OWNER_OPEN_ID
+        sync: false
+      # ─── LLM 路由（按優先序）───
+      - key: GROQ_API_KEY
+        sync: false
+      - key: CEREBRAS_API_KEY
+        sync: false
+      - key: QWEN_API_KEY
+        sync: false
+      - key: DEEPSEEK_API_KEY
+        sync: false
+      - key: BUILT_IN_FORGE_API_URL
+        sync: false
+      - key: BUILT_IN_FORGE_API_KEY
+        sync: false
+      # ─── LINE Messaging API ───
+      - key: LINE_CHANNEL_SECRET
+        sync: false
+      - key: LINE_CHANNEL_ACCESS_TOKEN
+        sync: false
+      # ─── AWS S3（頭像上傳 proxy）───
+      - key: AWS_ACCESS_KEY_ID
+        sync: false
+      - key: AWS_SECRET_ACCESS_KEY
+        sync: false
+      - key: AWS_REGION
+        sync: false
+      - key: AWS_S3_BUCKET
+        sync: false
