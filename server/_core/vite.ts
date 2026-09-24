@@ -58,10 +58,27 @@ export function serveStatic(app: Express) {
     );
   }
 
-  app.use(express.static(distPath));
+  // 快取策略：Vite 會為建置產物加上內容雜湊（如 index-BBWc1o5M.js），
+  // 檔名即版本，可安全地永久快取；HTML 則必須每次重新驗證，
+  // 否則改版後使用者會一直拿到舊的 index.html、指向已不存在的資源。
+  app.use(
+    express.static(distPath, {
+      setHeaders(res, filePath) {
+        // 帶雜湊的建置產物：一年 immutable
+        if (filePath.includes(`${path.sep}assets${path.sep}`)) {
+          res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+          return;
+        }
+        // index.html 與其他檔案（favicon、manifest、og-image…）：短快取，
+        // 改版後最多一小時內生效，且不會卡住舊版本。
+        res.setHeader("Cache-Control", "public, max-age=3600, must-revalidate");
+      },
+    }),
+  );
 
   // fall through to index.html if the file doesn't exist
   app.use("*", (_req, res) => {
+    res.setHeader("Cache-Control", "public, max-age=0, must-revalidate");
     res.sendFile(path.resolve(distPath, "index.html"));
   });
 }
