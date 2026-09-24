@@ -82,7 +82,7 @@ export function getCloudMode(storage: Pick<Storage, "getItem"> = localStorage): 
   }
 }
 
-function setCloudMode(state: CloudModeState, storage: Pick<Storage, "setItem"> = localStorage) {
+export function setCloudMode(state: CloudModeState, storage: Pick<Storage, "setItem"> = localStorage) {
   storage.setItem(CLOUD_MODE_KEY, JSON.stringify(state));
 }
 

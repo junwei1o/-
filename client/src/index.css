@@ -1689,6 +1689,13 @@ nav { display:grid; gap:7px; }
 .global-top-nav-more-item.is-active { background:color-mix(in srgb, var(--tidal) 14%, transparent); color:var(--tidal-deep); box-shadow:inset 0 -2px var(--coral); }
 .global-top-nav-more-item:focus-visible { outline:3px solid var(--env-focus,#F6CD6D); outline-offset:1px; }
 .global-mobile-menu-trigger { display:none; }
+.global-account-trigger { display:inline-flex; align-items:center; gap:5px; flex:none; padding:7px 10px; border:1px solid color-mix(in srgb, var(--tidal) 20%, transparent); border-radius:var(--radius-md); background:color-mix(in srgb, var(--white) 82%, transparent); color:var(--tidal-deep); font:inherit; font-size:11px; font-weight:800; cursor:pointer; transition:transform .16s var(--ease),background .16s var(--ease),box-shadow .16s var(--ease); }
+.global-account-trigger:hover,.global-account-trigger:focus-visible { background:var(--white); box-shadow:0 5px 12px color-mix(in srgb, var(--coral) 13%, transparent); }
+.global-account-trigger:focus-visible { outline:3px solid var(--env-focus,#F6CD6D); outline-offset:2px; }
+.global-account-trigger:active { transform:scale(.97); }
+.global-account-name { max-width:72px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.settings-account-card { margin-top:1rem; }
+.settings-account-hint { font-size:.85rem; color:var(--muted,#6b7280); }
 .global-mobile-menu-dialog { position:fixed; top:12px; bottom:auto; left:12px; right:12px; width:auto; max-width:480px; margin:0 auto; max-height:86vh; overflow:auto; padding:18px; border-radius:var(--radius-lg); gap:10px; translate:none; }
 .global-mobile-menu-close { position:absolute; top:10px; right:10px; display:grid; place-items:center; width:36px; height:36px; border:1px solid rgba(18,62,74,.16); border-radius:var(--radius-md); background:color-mix(in srgb, var(--white) 90%, transparent); color:var(--tidal-deep); cursor:pointer; }
 .global-mobile-menu-close:focus-visible { outline:3px solid var(--env-focus,#F6CD6D); outline-offset:2px; }

@@ -1,0 +1,160 @@
+/* 登入閘道頁面樣式 */
+
+.login-gate {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(circle at 20% 80%, var(--tidal, #5b8def) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, var(--coral, #ff7a59) 0%, transparent 40%),
+    var(--tidal-deep, #1a3a5f);
+  padding: max(1.5rem, env(safe-area-inset-top)) 1.5rem max(1.5rem, env(safe-area-inset-bottom));
+}
+
+.login-gate-card {
+  width: 100%;
+  max-width: 400px;
+  background: var(--white, #fff);
+  border-radius: 20px;
+  padding: 2.5rem 2rem 2rem;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  text-align: center;
+}
+
+.login-gate-brand {
+  margin-bottom: 2rem;
+}
+
+.login-gate-brand-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--tidal, #5b8def), var(--coral, #ff7a59));
+  color: var(--white, #fff);
+  margin-bottom: 0.75rem;
+}
+
+.login-gate-brand h1 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--tidal-deep, #1a3a5f);
+  margin: 0 0 0.25rem;
+}
+
+.login-gate-brand p {
+  font-size: 0.85rem;
+  color: var(--muted, #6b7280);
+  margin: 0;
+}
+
+.login-gate-form {
+  text-align: left;
+  margin-bottom: 1.5rem;
+}
+
+.login-gate-label {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--tidal-deep, #1a3a5f);
+  margin-bottom: 0.5rem;
+}
+
+.login-gate-hint {
+  font-size: 0.8rem;
+  color: var(--muted, #6b7280);
+  line-height: 1.5;
+  margin: 0 0 1rem;
+}
+
+.login-gate-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-size: 1.1rem;
+  border: 2px solid var(--border, #e5e7eb);
+  border-radius: 12px;
+  background: var(--bg-subtle, #f9fafb);
+  color: var(--text, #1f2937);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-sizing: border-box;
+}
+
+.login-gate-input:focus {
+  outline: none;
+  border-color: var(--tidal, #5b8def);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--tidal, #5b8def) 20%, transparent);
+  background: var(--white, #fff);
+}
+
+.login-gate-input:disabled {
+  opacity: 0.6;
+}
+
+.login-gate-error {
+  font-size: 0.85rem;
+  color: var(--danger, #ef4444);
+  margin: 0.5rem 0 0;
+  padding: 0.5rem 0.75rem;
+  background: color-mix(in srgb, var(--danger, #ef4444) 8%, transparent);
+  border-radius: 8px;
+}
+
+.login-gate-submit {
+  width: 100%;
+  margin-top: 1.25rem;
+  padding: 0.875rem 1.5rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--white, #fff);
+  background: linear-gradient(135deg, var(--tidal, #5b8def), var(--coral, #ff7a59));
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+}
+
+.login-gate-submit:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px color-mix(in srgb, var(--tidal, #5b8def) 40%, transparent);
+}
+
+.login-gate-submit:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.login-gate-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.login-gate-footer {
+  padding-top: 1rem;
+  border-top: 1px solid var(--border, #e5e7eb);
+}
+
+.login-gate-footer p {
+  font-size: 0.78rem;
+  color: var(--muted, #6b7280);
+  line-height: 1.6;
+  margin: 0;
+}
+
+@media (max-width: 480px) {
+  .login-gate-card {
+    padding: 2rem 1.25rem 1.5rem;
+    border-radius: 16px;
+  }
+
+  .login-gate-brand h1 {
+    font-size: 1.4rem;
+  }
+}

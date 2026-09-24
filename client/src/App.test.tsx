@@ -9,6 +9,8 @@ vi.mock("@/components/ui/sonner", () => ({ Toaster: () => null }));
 vi.mock("@/components/ui/tooltip", () => ({ TooltipProvider: ({ children }: { children: React.ReactNode }) => <>{children}</> }));
 vi.mock("./components/ErrorBoundary", () => ({ default: ({ children }: { children: React.ReactNode }) => <>{children}</> }));
 vi.mock("./contexts/ThemeContext", () => ({ ThemeProvider: ({ children }: { children: React.ReactNode }) => <>{children}</> }));
+vi.mock("@/components/AuthGate", () => ({ default: ({ children }: { children: React.ReactNode }) => <>{children}</> }));
+vi.mock("@/components/CloudModePrompt", () => ({ default: () => null }));
 vi.mock("@/pages/PaperExam", () => ({ default: () => <main>試卷頁</main> }));
 vi.mock("@/pages/RegionDetail", () => ({ default: () => <main>區域頁</main> }));
 vi.mock("@/pages/MediaObservatory", () => ({ default: () => <main>觀測站</main> }));

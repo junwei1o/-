@@ -44,6 +44,8 @@ import {
   loadCompanionConfig,
   saveCompanionConfig,
 } from "@/game/companionBrain";
+import { getSession } from "@/game/session";
+import { LogoutButton } from "@/components/AuthGate";
 import "./SettingsDiagnostics.css";
 
 const RARE_CODEX = (["chinese", "math", "english", "science"] as const).flatMap((subject) => getRareMonsters(subject));
@@ -865,6 +867,23 @@ export default function Settings() {
           )}
           </>
           )}
+        </section>
+
+        {/* 帳號管理 */}
+        <section className="settings-audio-card settings-account-card" aria-labelledby="account-title">
+          <h2 id="account-title"><UserRound size={18} aria-hidden="true" /> 帳號</h2>
+          <p>
+            目前登入：<strong>{getSession()?.name ?? "未登入"}</strong>
+            {getSession()?.role === "teacher" ? "（老師）" : ""}
+          </p>
+          <p className="settings-account-hint">
+            登出後會回到登入頁。本機學習進度會保留，下次登入同名帳號即可接回。
+          </p>
+          <div className="cloud-actions cloud-actions-left">
+            <LogoutButton className="settings-secondary-button">
+              登出並切換帳號
+            </LogoutButton>
+          </div>
         </section>
       </div>
     </main>

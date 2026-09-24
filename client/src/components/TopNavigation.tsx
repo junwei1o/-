@@ -1,9 +1,11 @@
 import * as React from "react";
-import { BarChart3, BookOpenCheck, Compass, Map as MapIcon, Menu, Search, Settings, X, type LucideIcon } from "lucide-react";
+import { BarChart3, BookOpenCheck, Compass, LogOut, Map as MapIcon, Menu, Search, Settings, X, type LucideIcon } from "lucide-react";
 import { useLocation } from "wouter";
 import { Command, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { findFeatureSearchResults } from "@/lib/featureSearch";
+import { getSession } from "@/game/session";
+import { logout } from "@/game/session";
 
 type NavItem = {
   id: string;
@@ -52,6 +54,7 @@ export default function TopNavigation() {
   const [location, setLocation] = useLocation();
   const pathname = location.split("?")[0];
   const activeItem = findActiveItem(pathname);
+  const session = getSession();
   const [searchOpen, setSearchOpen] = React.useState(false);
   const [searchQuery, setSearchQuery] = React.useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
@@ -118,6 +121,20 @@ export default function TopNavigation() {
         >
           <Search size={17} aria-hidden="true" />
           <span>搜尋功能</span>
+        </button>
+        <button
+          type="button"
+          className="global-account-trigger"
+          aria-label={`帳號：${session?.name ?? "未登入"}，點擊登出`}
+          title={`帳號：${session?.name ?? "未登入"}`}
+          onClick={() => {
+            logout();
+            setLocation("/");
+            window.location.reload();
+          }}
+        >
+          <span className="global-account-name">{session?.name ?? "未登入"}</span>
+          <LogOut size={14} aria-hidden="true" />
         </button>
         <button
           type="button"

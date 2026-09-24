@@ -8,6 +8,7 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import TopNavigation from "@/components/TopNavigation";
 import BxEnhance from "@/components/bx/BxEnhance";
 import CloudModePrompt from "@/components/CloudModePrompt";
+import AuthGate from "@/components/AuthGate";
 import Home from "@/pages/Home";
 import { initGameData } from "@/utils/storage";
 // 5000 題內建題庫合計約 2.7MB：不在開站關鍵路徑 static 載入，改於下方 useEffect
@@ -166,17 +167,19 @@ function App() {
         defaultTheme="light"
         // switchable
       >
-        <TooltipProvider>
-          <Toaster />
-          <OfflineBanner />
-          <BxEnhance />
-          <CloudModePrompt />
-          <a className="skip-link" href="#main-content">跳到主要內容</a>
-          <div className="app-route-shell">
-            <TopNavigation />
-            <Router />
-          </div>
-        </TooltipProvider>
+        <AuthGate>
+          <TooltipProvider>
+            <Toaster />
+            <OfflineBanner />
+            <BxEnhance />
+            <CloudModePrompt />
+            <a className="skip-link" href="#main-content">跳到主要內容</a>
+            <div className="app-route-shell">
+              <TopNavigation />
+              <Router />
+            </div>
+          </TooltipProvider>
+        </AuthGate>
       </ThemeProvider>
     </ErrorBoundary>
   );
