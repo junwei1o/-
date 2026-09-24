@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { ArrowLeft, BookOpen, ExternalLink, Filter, PlayCircle, Radio, ShieldCheck, Sparkles } from "lucide-react";
 import { Link, useLocation } from "wouter";
+import { Button } from "@/components/ui/button";
 import { OBSERVATORY_CATEGORIES, OBSERVATORY_ENTRIES, type ObservatoryCategory } from "@/lib/mediaObservatory";
 
 export default function MediaObservatory() {
@@ -26,7 +27,7 @@ export default function MediaObservatory() {
       <section className="observatory-content" aria-labelledby="observatory-list-title">
         <div className="observatory-heading"><div><p className="eyebrow">SIGNAL INDEX / 分類索引</p><h2 id="observatory-list-title">選一個觀測頻道</h2></div><span className="observatory-count">{entries.length} 個結果</span></div>
         <div className="observatory-filters" role="group" aria-label="觀測站分類篩選">{OBSERVATORY_CATEGORIES.map((item) => <button key={item} type="button" className={category === item ? "active" : ""} aria-pressed={category === item} onClick={() => setCategory(item)}><Filter size={13} /> {item}</button>)}</div>
-        <div className="observatory-grid">{entries.map((entry, index) => <article className={`observatory-card palette-${entry.palette}`} key={entry.key}><div className="observatory-card-visual" aria-hidden="true"><span className="signal-orbit" /><span className="signal-core">{String(index + 1).padStart(2, "0")}</span><small>{entry.category}</small></div><div className="observatory-card-body"><div className="observatory-card-title"><div><p className="eyebrow">{entry.era}</p><h3>{entry.title}</h3></div><Sparkles size={17} /></div><p>{entry.shortDescription}</p><div className="observatory-observe"><strong>觀測提示</strong><span>{entry.observation}</span></div><div className="observatory-learning"><BookOpen size={14} /><span>{entry.learning}</span></div><button className="text-btn" onClick={() => setLocation(`/observatory/${entry.key}`)}>開啟觀測卡 <ExternalLink size={14} /></button></div></article>)}</div>
+        <div className="observatory-grid">{entries.map((entry, index) => <article className={`observatory-card palette-${entry.palette}`} key={entry.key}><div className="observatory-card-visual" aria-hidden="true"><span className="signal-orbit" /><span className="signal-core">{String(index + 1).padStart(2, "0")}</span><small>{entry.category}</small></div><div className="observatory-card-body"><div className="observatory-card-title"><div><p className="eyebrow">{entry.era}</p><h3>{entry.title}</h3></div><Sparkles size={17} /></div><p>{entry.shortDescription}</p><div className="observatory-observe"><strong>觀測提示</strong><span>{entry.observation}</span></div><div className="observatory-learning"><BookOpen size={14} /><span>{entry.learning}</span></div><Button variant="ghost" className="mt-auto" onClick={() => setLocation(`/observatory/${entry.key}`)}>開啟觀測卡 <ExternalLink size={14} /></Button></div></article>)}</div>
         <div className="observatory-note"><ShieldCheck size={17} /><div><strong>版權與來源說明</strong><p>本頁使用作品名稱作為索引，卡片內容為寶島探險家製作的原創觀測摘要與學習提示；未收錄劇照、影片、台詞或未授權媒體。點選作品後可查看觀測主題，官方資訊請以權利人公開頁面為準。</p></div></div>
       </section>
     </main>
