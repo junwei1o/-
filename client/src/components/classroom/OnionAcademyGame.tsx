@@ -82,6 +82,15 @@ export default function OnionLessonGame({ bestStars, muted = false, onBest, onEx
       (stage === "全部" || l.stages.includes(stage)) &&
       (subjectFilter === "全部" || l.subject === subjectFilter),
   );
+  /** 學科篩選按鈕：依目前學段可得的學科動態產生，新學科（如思辨）會自動出現。 */
+  const subjectOptions = [
+    "全部",
+    ...Array.from(
+      new Set(
+        ONION_LESSONS.filter((l) => stage === "全部" || l.stages.includes(stage)).map((l) => l.subject),
+      ),
+    ),
+  ];
 
   const [phase, setPhase] = useState<Phase>("start");
   const [frameIdx, setFrameIdx] = useState(0);
@@ -240,7 +249,7 @@ export default function OnionLessonGame({ bestStars, muted = false, onBest, onEx
             ))}
           </div>
           <div className="ol-subject-chips" role="group" aria-label="依科目篩選課程">
-            {["全部", "數學", "國語", "自然"].map((item) => (
+            {subjectOptions.map((item) => (
               <button
                 key={item}
                 type="button"
@@ -558,6 +567,8 @@ function subjectColor(subject: string): string {
       return "#2f9e6e";
     case "社會":
       return "#c0763f";
+    case "思辨":
+      return "#d6336c";
     default:
       return "#8a5fb0";
   }

@@ -203,4 +203,23 @@ describe("洋蔥動畫講解 OnionAcademyGame", () => {
     expect(chapters[3]).toHaveAttribute("aria-current", "step");
     expect(screen.getByText(`第 4 / ${lesson.frames.length} 幀`)).toBeInTheDocument();
   });
+
+  it("切到國中後，學科篩選自動出現「思辨」，且能篩出思辨課", () => {
+    render(<OnionAcademyGame bestStars={undefined} onBest={vi.fn()} onExit={vi.fn()} />);
+    // 預設學段是國小：國小階段沒有思辨課，不應出現思辨按鈕
+    expect(screen.queryByRole("button", { name: "思辨" })).not.toBeInTheDocument();
+
+    // 切到國中：學科篩選由課程目錄動態產生，思辨要自動出現
+    fireEvent.click(screen.getByRole("tab", { name: "國中" }));
+    const thinking = ONION_LESSONS.filter((l) => l.subject === "思辨" && l.stages.includes("國中"));
+    expect(thinking.length).toBeGreaterThan(0);
+    expect(screen.getByRole("button", { name: "思辨" })).toBeInTheDocument();
+
+    // 篩「思辨」：只出現思辨課
+    fireEvent.click(screen.getByRole("button", { name: "思辨" }));
+    for (const l of thinking) expect(screen.getByText(l.title)).toBeInTheDocument();
+    for (const l of ONION_LESSONS.filter((l) => l.subject !== "思辨" && l.stages.includes("國中"))) {
+      expect(screen.queryByText(l.title)).not.toBeInTheDocument();
+    }
+  });
 });
