@@ -36,8 +36,8 @@ const SH_BIO_CELL: OnionLesson = {
     { id: 1, step: "步驟 1：細胞是一座分工工廠", caption: "嗨！細胞不是一袋漿糊，而是一座分工精密的工廠，今天來認識各區的員工。", action: "wave", prop: { kind: "none" }, duration: 3000 },
     { id: 2, step: "步驟 2：認識主要胞器", caption: "細胞核像總部、粒線體是發電廠、核糖體做蛋白質、內質網和高基氏體負責加工與運送。", action: "point", prop: { kind: "flow", steps: ["細胞核（總部）", "粒線體（發電廠）", "核糖體（做蛋白質）", "內質網（加工）", "高基氏體（包裝送出）"], active: 0 }, duration: 3600 },
     { id: 3, step: "步驟 3：膜的選擇性通透", caption: "細胞膜像篩子，只讓特定小分子通過，這叫選擇性通透，守護細胞內的穩定。", action: "think", prop: { kind: "text", text: "選擇性通透：膜只放行特定物質", sub: "脂溶性小分子、氣體較易通過", tone: "ok" }, duration: 3600 },
-    { id: 4, step: "步驟 4：被動運輸不耗能", caption: "擴散和滲透都順著濃度梯度走，不用花能量；水從低濃度處流向高濃度處，這叫做滲透。", action: "walk", prop: { kind: "flow", steps: ["順濃度梯度", "擴散：分子隨機散開", "滲透：水穿膜", "不消耗 ATP"], active: 3 }, duration: 3600, ask: { prompt: "擴散和滲透進出細胞，需不需要消耗 ATP？", options: ["不需要，順梯度進行", "需要消耗 ATP", "只在植物細胞發生", "只在膜上發生"], answer: 0, hint: "被動運輸順濃度梯度、不耗能；主動運輸才要 ATP。" } },
-    { id: 5, step: "步驟 5：生活實例——紅血球泡水", caption: "把紅血球放進三種水：清水裡水一直滲進來，紅血球脹到破裂；放在與血漿等張的生理食鹽水中維持原狀；放濃鹽水裡水往外流，紅血球萎縮。這就是滲透的威力。", action: "walk", prop: { kind: "flow", steps: ["清水：水進入 → 脹破", "生理食鹽水：進出平衡", "濃鹽水：水流出 → 萎縮", "水由低濃度往高濃度跑"], active: 1 }, duration: 4200, ask: { prompt: "把紅血球放入清水，它會怎麼變？", options: ["維持原狀", "吸水脹大甚至破裂", "失水萎縮", "立刻死亡但不變形"], answer: 1, hint: "清水對細胞內部是低張，水會滲透進來。" } },
+    { id: 4, step: "步驟 4：被動運輸不耗能", caption: "擴散和滲透都順著濃度梯度走，不用花能量；水從低濃度處流向高濃度處，這叫做滲透。", action: "walk", prop: { kind: "flow", steps: ["順濃度梯度", "擴散：分子隨機散開", "滲透：水穿膜", "不消耗 ATP"], active: 3 }, duration: 3600, ask: { prompt: "擴散和滲透進出細胞，需不需要消耗 ATP？", options: ["不需要，順梯度進行", "需要，逆濃度梯度才耗能", "滲透不需要、擴散需要", "大分子進出時才不耗能"], answer: 0, hint: "被動運輸順濃度梯度、不耗能；主動運輸才要 ATP。" } },
+    { id: 5, step: "步驟 5：生活實例——紅血球泡水", caption: "把紅血球放進三種水：清水裡水一直滲進來，紅血球脹到破裂；放在與血漿等張的生理食鹽水中維持原狀；放濃鹽水裡水往外流，紅血球萎縮。這就是滲透的威力。", action: "walk", prop: { kind: "flow", steps: ["清水：水進入 → 脹破", "生理食鹽水：進出平衡", "濃鹽水：水流出 → 萎縮", "水由低濃度往高濃度跑"], active: 1 }, duration: 4200, ask: { prompt: "把紅血球放入清水，它會怎麼變？", options: ["維持原狀", "吸水脹大甚至破裂", "失水萎縮", "先脹大再恢復原狀"], answer: 1, hint: "清水對細胞內部是低張，水會滲透進來。" } },
     { id: 6, step: "步驟 6：主動運輸要花 ATP", caption: "主動運輸逆著濃度梯度送物質，像扛東西上樓，必須消耗 ATP 能量才辦得到。", action: "jump", prop: { kind: "text", text: "主動運輸：逆梯度、要 ATP", sub: "運輸蛋白協助、會耗能", tone: "ok" }, duration: 3600, ask: { prompt: "下列哪一種運輸方式需要消耗 ATP？", options: ["主動運輸", "擴散", "滲透", "都不需要"], answer: 0, hint: "主動運輸逆濃度梯度，要耗能；擴散與滲透是免費的被動運輸。" } },
     { id: 7, step: "步驟 7：植物細胞的專屬構造", caption: "植物細胞多了細胞壁、葉綠體和液胞：細胞壁撐外形、葉綠體行光合作用、液胞儲水。", action: "point", prop: { kind: "flow", steps: ["細胞壁（支撐）", "葉綠體（光合作用）", "液胞（儲水）", "動物細胞無此三樣"], active: 1 }, duration: 3600 },
     { id: 8, step: "步驟 8：深化——蛋白質出廠路線", caption: "把胞器串成一條線：要送出細胞的蛋白質，先在核糖體組裝、送進內質網摺疊加工、再到高基氏體包裝分類，最後以小泡運到細胞膜分泌出去——一條線看出分工。", action: "point", prop: { kind: "flow", steps: ["核糖體組裝", "內質網加工", "高基氏體包裝", "小泡送到細胞膜"], active: 3 }, duration: 4000 },
@@ -49,7 +49,7 @@ const SH_BIO_CELL: OnionLesson = {
     { id: "sh-bio-cell-3", prompt: "氧氣、二氧化碳等氣體進出細胞，主要透過下列哪一種方式？", options: ["簡單擴散", "主動運輸", "滲透", "胞吞作用"], answer: 0, hints: ["氣體是小分子", "順濃度梯度直接穿膜"], explanation: "氣體等小分子順濃度梯度直接穿過膜，屬於簡單擴散，不耗能。" },
     { id: "sh-bio-cell-4", prompt: "小腸絨毛把葡萄糖送進血液，常逆濃度梯度進行，這需要？", options: ["擴散即可", "主動運輸與 ATP", "滲透即可", "完全不需能量"], answer: 1, hints: ["逆梯度就要花能量", "靠運輸蛋白幫忙"], explanation: "逆濃度梯度運送必須靠主動運輸，消耗 ATP 並由運輸蛋白協助。" },
     { id: "sh-bio-cell-5", prompt: "植物細胞與動物細胞相比，特有的構造不包括下列哪一項？", options: ["細胞壁", "葉綠體", "粒線體", "液胞"], answer: 2, hints: ["想想兩者都有的胞器", "粒線體負責供能，雙方都有"], explanation: "粒線體在植物與動物細胞都有；細胞壁、葉綠體、液胞才是植物細胞特有的構造。" },
-    { id: "sh-bio-cell-6", prompt: "把紅血球放入濃食鹽水中，它通常會？", options: ["吸水脹大", "維持原狀", "分裂成兩個", "失水萎縮"], answer: 3, hints: ["水由低濃度往高濃度跑", "細胞內水分往外滲透"], explanation: "濃食鹽水張力高，水從紅血球內部滲透出去，紅血球失水萎縮（在清水才會脹破）。" },
+    { id: "sh-bio-cell-6", prompt: "把紅血球放入濃食鹽水中，它通常會？", options: ["吸水脹大", "維持原狀", "先失水萎縮再吸水恢復", "失水萎縮"], answer: 3, hints: ["水由低濃度往高濃度跑", "細胞內水分往外滲透"], explanation: "濃食鹽水張力高，水從紅血球內部滲透出去，紅血球失水萎縮（在清水才會脹破）。" },
   ],
 };
 
@@ -75,7 +75,7 @@ const SH_BIO_GENETICS: OnionLesson = {
     { id: 2, step: "步驟 2：顯性蓋過隱性", caption: "以高莖（T）對矮莖（t）為顯性：Tt 個體表現高莖，只有 tt 才表現矮莖。", action: "point", prop: { kind: "text", text: "顯性 T 蓋過隱性 t", sub: "基因型 Tt、TT → 高莖；tt → 矮莖", tone: "ok" }, duration: 3600 },
     { id: 3, step: "步驟 3：單性雜交得 F1", caption: "純種高莖 TT 與矮莖 tt 雜交，子代 F1 全為 Tt，外表通通都是高莖。", action: "think", prop: { kind: "flow", steps: ["親代 TT × tt", "配子 T 和 t", "F1 全為 Tt", "外表皆高莖"], active: 3 }, duration: 3600 },
     { id: 4, step: "步驟 4：F1 自交得 3:1", caption: "F1 自交 Tt × Tt，子代基因型 TT:Tt:tt ＝ 1:2:1，高莖:矮莖 ＝ 3:1。", action: "walk", prop: { kind: "bars", items: [{ label: "高莖", value: 3 }, { label: "矮莖", value: 1 }], unit: "份", active: 0 }, duration: 3600, ask: { prompt: "Tt 自交得到的子代，高莖與矮莖的比例約為？", options: ["3:1", "1:1", "9:3:3:1", "2:1"], answer: 0, hint: "基因型 1:2:1，顯性高莖佔 3 份、矮莖 1 份，故為 3:1。" } },
-    { id: 5, step: "步驟 5：易錯點——長得像，基因未必同", caption: "看外表分不出 TT 和 Tt：兩者都表現高莖。要知道一棵高莖豌豆是純合（TT）還是雜合（Tt），只能讓它和矮莖 tt 測交——後代若全高莖即 TT，若出現矮莖就是 Tt。", action: "think", prop: { kind: "flow", steps: ["TT × tt → 全 Tt（全高莖）", "Tt × tt → Tt:tt ＝ 1:1", "有矮莖出現 ⇒ 親本是 Tt", "這叫測交"], active: 3 }, duration: 4200, ask: { prompt: "一棵外表高莖的豌豆，要確認它是 TT 還是 Tt，最好的方法是？", options: ["看它開什麼花", "和矮莖 tt 測交", "量它的高度", "把它切片看細胞"], answer: 1, hint: "讓它與隱性純合子雜交，看後代有沒有出現隱性性狀。" } },
+    { id: 5, step: "步驟 5：易錯點——長得像，基因未必同", caption: "看外表分不出 TT 和 Tt：兩者都表現高莖。要知道一棵高莖豌豆是純合（TT）還是雜合（Tt），只能讓它和矮莖 tt 測交——後代若全高莖即 TT，若出現矮莖就是 Tt。", action: "think", prop: { kind: "flow", steps: ["TT × tt → 全 Tt（全高莖）", "Tt × tt → Tt:tt ＝ 1:1", "有矮莖出現 ⇒ 親本是 Tt", "這叫測交"], active: 3 }, duration: 4200, ask: { prompt: "一棵外表高莖的豌豆，要確認它是 TT 還是 Tt，最好的方法是？", options: ["觀察它的葉片形狀", "和矮莖 tt 測交", "量它的高度", "用顯微鏡數染色體數目"], answer: 1, hint: "讓它與隱性純合子雜交，看後代有沒有出現隱性性狀。" } },
     { id: 6, step: "步驟 6：棋盤方格驗算", caption: "用棋盤方格把 T 和 t 排成橫直兩邊，四格分別是 TT、Tt、Tt、tt，一眼看清比例。", action: "jump", prop: { kind: "flow", steps: ["橫列 T、t", "直行 T、t", "交叉得四格", "TT、Tt、Tt、tt"], active: 3 }, duration: 3600, ask: { prompt: "棋盤方格中，Tt 這個基因型出現了幾格？", options: ["2 格", "1 格", "3 格", "4 格"], answer: 0, hint: "四格為 TT、Tt、Tt、tt，Tt 佔其中兩格。" } },
     { id: 7, step: "步驟 7：雙性雜交得 9:3:3:1", caption: "兩對性狀一起雜交（如黃圓 × 綠縐），F2 呈現 9:3:3:1 的四種表現型比例。", action: "point", prop: { kind: "bars", items: [{ label: "黃圓", value: 9 }, { label: "黃縐", value: 3 }, { label: "綠圓", value: 3 }, { label: "綠縐", value: 1 }], unit: "份", active: 0 }, duration: 3600 },
     { id: 8, step: "步驟 8：深化——機率可相乘", caption: "兩對基因獨立遺傳，機率可以分開算再相乘：黃色機率 3/4 乘以圓形機率 3/4，就得到黃圓 9/16——9:3:3:1 其實就是兩個 3:1 相乘。", action: "point", prop: { kind: "balance", left: "(3/4 黃 : 1/4 綠)", right: "× (3/4 圓 : 1/4 縐)", tip: "＝ 9:3:3:1" }, duration: 3800 },
@@ -86,7 +86,7 @@ const SH_BIO_GENETICS: OnionLesson = {
     { id: "sh-bio-genetics-2", prompt: "純種高莖 TT 與矮莖 tt 雜交，F1 的基因型是？", options: ["TT", "tt", "TT 和 tt", "Tt"], answer: 3, hints: ["親代各給一個等位基因", "T 配 t"], explanation: "TT 只給 T、tt 只給 t，F1 全為 Tt。" },
     { id: "sh-bio-genetics-3", prompt: "Tt 自交，子代出現矮莖（tt）的機率約為？", options: ["1/4", "1/2", "3/4", "0"], answer: 0, hints: ["基因型 1:2:1", "tt 佔其中 1 份"], explanation: "Tt × Tt 的子代基因型 TT:Tt:tt ＝ 1:2:1，tt 佔 1/4，故矮莖機率 1/4。" },
     { id: "sh-bio-genetics-4", prompt: "雙因子雜交 F2 的表現型比例是？", options: ["3:1", "9:3:3:1", "1:1", "1:2:1"], answer: 1, hints: ["兩對性狀一起算", "四種表現型"], explanation: "兩對基因獨立遺傳，F2 表現型呈 9:3:3:1。" },
-    { id: "sh-bio-genetics-5", prompt: "為什麼 F1 全為高莖，卻能生出矮莖的後代？", options: ["突變造成", "高莖是後天獲得", "矮莖基因 t 被隱藏、自交才現形", "孟德爾記錯了"], answer: 2, hints: ["隱性被顯性遮住", "純合 tt 才看得到"], explanation: "隱性基因在雜合子 Tt 中被顯性 T 遮蓋，自交出現 tt 純合子時矮莖才表現出來。" },
+    { id: "sh-bio-genetics-5", prompt: "為什麼 F1 全為高莖，卻能生出矮莖的後代？", options: ["突變造成", "環境不良讓後代變矮", "矮莖基因 t 被隱藏、自交才現形", "高莖與矮莖會互相轉換"], answer: 2, hints: ["隱性被顯性遮住", "純合 tt 才看得到"], explanation: "隱性基因在雜合子 Tt 中被顯性 T 遮蓋，自交出現 tt 純合子時矮莖才表現出來。" },
     { id: "sh-bio-genetics-6", prompt: "把一株高莖豌豆與矮莖（tt）雜交，後代約有一半高莖、一半矮莖，這株高莖的基因型是？", options: ["TT", "tt", "無法判斷", "Tt"], answer: 3, hints: ["出現矮莖代表它有帶 t", "TT 與 tt 雜交後代應全高莖"], explanation: "後代出現矮莖 tt，代表親本高莖必須帶有 t，故為 Tt（Tt × tt → Tt:tt ＝ 1:1）。" },
   ],
 };
@@ -112,7 +112,7 @@ const SH_BIO_DNA: OnionLesson = {
     { id: 1, step: "步驟 1：細胞裡的說明書", caption: "嗨！你的每個細胞都有一本說明書——DNA，今天看它怎麼複製、轉錄、轉譯成蛋白質。", action: "wave", prop: { kind: "none" }, duration: 3000 },
     { id: 2, step: "步驟 2：DNA 半保留複製", caption: "DNA 雙股解開，各當模板合成新股，子代每條 DNA 都是一舊一新，叫做半保留複製。", action: "point", prop: { kind: "flow", steps: ["雙股解開", "各股當模板", "合成新互補股", "一舊一新"], active: 3 }, duration: 3600 },
     { id: 3, step: "步驟 3：鹼基配對守則", caption: "配對守則：DNA 中 A 對 T、G 對 C；轉錄時 RNA 改用 U，所以模板 A 對 U、T 對 A。", action: "think", prop: { kind: "text", text: "DNA：A=T、G≡C；RNA：A=U", sub: "轉錄以 DNA 為模板做出 mRNA", tone: "ok" }, duration: 3600, ask: { prompt: "DNA 複製時，A 應與下列哪一個鹼基配對？", options: ["T", "U", "G", "C"], answer: 0, hint: "DNA 中 A 與 T 配對；RNA 才用 U。" } },
-    { id: 4, step: "步驟 4：生活實例——DNA 指紋", caption: "為什麼一根毛髮就能認人？因為每個人（除同卵雙胞胎）DNA 鹼基序列都不同，科學家切出片段、比對條紋，就像條碼一樣指認身分，這就是 DNA 鑑定。", action: "walk", prop: { kind: "text", text: "DNA 條紋＝個人條碼", sub: "除同卵雙胞胎外人人不同", tone: "ok" }, duration: 4000, ask: { prompt: "DNA 鑑定能指認身分，根本原因是？", options: ["所有人 DNA 都一樣", "每個人（除同卵雙胞胎）DNA 序列不同", "DNA 會說話", "DNA 是紅色的"], answer: 1, hint: "序列差異就是人的遺傳條碼。" } },
+    { id: 4, step: "步驟 4：生活實例——DNA 指紋", caption: "為什麼一根毛髮就能認人？因為每個人（除同卵雙胞胎）DNA 鹼基序列都不同，科學家切出片段、比對條紋，就像條碼一樣指認身分，這就是 DNA 鑑定。", action: "walk", prop: { kind: "text", text: "DNA 條紋＝個人條碼", sub: "除同卵雙胞胎外人人不同", tone: "ok" }, duration: 4000, ask: { prompt: "DNA 鑑定能指認身分，根本原因是？", options: ["所有人 DNA 都一樣", "每個人（除同卵雙胞胎）DNA 序列不同", "DNA 只存在於血液細胞", "血型相同的人 DNA 一定相同"], answer: 1, hint: "序列差異就是人的遺傳條碼。" } },
     { id: 5, step: "步驟 5：轉錄抄出副本", caption: "轉錄：以 DNA 一股為模板，在細胞核合成 mRNA，把基因資訊抄成可帶出的副本。", action: "walk", prop: { kind: "flow", steps: ["RNA 聚合酶結合", "以 DNA 為模板", "合成 mRNA", "副本送出細胞核"], active: 2 }, duration: 3600 },
     { id: 6, step: "步驟 6：轉譯與密碼子", caption: "轉譯在核糖體進行：每 3 個鹼基組成一個密碼子，對應 1 個胺基酸，像三鍵一字的密碼。", action: "jump", prop: { kind: "text", text: "密碼子：3 個鹼基 = 1 個胺基酸", sub: "AUG 是起始密碼子", tone: "ok" }, duration: 3600, ask: { prompt: "mRNA 上幾個相鄰鹼基組成一個密碼子？", options: ["3 個", "1 個", "2 個", "4 個"], answer: 0, hint: "三個鹼基（一個密碼子）對應一個胺基酸。" } },
     { id: 7, step: "步驟 7：深化——密碼子的簡併性", caption: "三個鹼基有 4³ ＝ 64 種排列，但自然界胺基酸只有約 20 種——代表好幾個密碼子可能對應同一個胺基酸，這叫「簡併性」。所以一個鹼基改了，胺基酸不一定跟著變。", action: "point", prop: { kind: "balance", left: "64 種密碼子", right: "約 20 種胺基酸", tip: "一碼對多胺基酸 → 簡併性" }, duration: 4000 },
@@ -125,7 +125,7 @@ const SH_BIO_DNA: OnionLesson = {
     { id: "sh-bio-dna-3", prompt: "轉錄時，mRNA 上的 A 是與 DNA 模板上的哪個鹼基配對？", options: ["T", "U", "G", "C"], answer: 0, hints: ["RNA 用 U 但對方是 DNA", "DNA 不用 U"], explanation: "模板是 DNA，其上 T 與 RNA 的 A 配對（DNA 中沒有 U，是 RNA 用 U 取代 T）。" },
     { id: "sh-bio-dna-4", prompt: "一個密碼子由幾個核苷酸組成，對應幾個胺基酸？", options: ["1 個核苷酸、對應 1 個", "3 個、對應 1 個", "2 個、對應 1 個", "3 個、對應 3 個"], answer: 1, hints: ["三鍵一字", "三個鹼基一組"], explanation: "三個相鄰核苷酸組成一個密碼子，對應一個胺基酸。" },
     { id: "sh-bio-dna-5", prompt: "下列有關「中心法則」的敘述，何者正確？", options: ["蛋白質可反轉錄成 DNA（一般情況）", "RNA 不能複製", "資訊流向為 DNA→RNA→蛋白質", "轉譯在細胞核進行"], answer: 2, hints: ["一般流向是轉錄再轉譯", "反轉錄只見於反轉錄病毒"], explanation: "一般中心法則：DNA 轉錄成 RNA、再轉譯成蛋白質；轉譯在細胞質的核糖體進行。" },
-    { id: "sh-bio-dna-6", prompt: "DNA 鑑定（如刑事、親子鑑定）能區分兩個人，主要依據是？", options: ["所有人 DNA 長度不同", "DNA 在細胞核裡", "DNA 會變色", "每個人（除同卵雙胞胎）的 DNA 鹼基序列不同"], answer: 3, hints: ["序列就像個人的條碼", "同卵雙胞胎序列才會相同"], explanation: "每個人（除同卵雙胞胎）DNA 鹼基序列都獨特，切出片段比對條紋即可指認身分。" },
+    { id: "sh-bio-dna-6", prompt: "DNA 鑑定（如刑事、親子鑑定）能區分兩個人，主要依據是？", options: ["所有人 DNA 長度不同", "DNA 在細胞核裡", "DNA 只存在於血液中", "每個人（除同卵雙胞胎）的 DNA 鹼基序列不同"], answer: 3, hints: ["序列就像個人的條碼", "同卵雙胞胎序列才會相同"], explanation: "每個人（除同卵雙胞胎）DNA 鹼基序列都獨特，切出片段比對條紋即可指認身分。" },
   ],
 };
 
@@ -188,7 +188,7 @@ const SH_BIO_ECOLOGY: OnionLesson = {
     { id: 1, step: "步驟 1：草原上的能量鏈", caption: "嗨！草原上草被兔吃、兔被狐吃，能量一路往上卻越來越少，今天看能量塔。", action: "wave", prop: { kind: "none" }, duration: 3000 },
     { id: 2, step: "步驟 2：食物鏈與食物網", caption: "生產者（草）用陽光造養分，初級消費者（兔）吃草，次級消費者（狐）吃兔，交織成食物網。", action: "point", prop: { kind: "flow", steps: ["生產者：草", "初級消費者：兔", "次級消費者：狐", "多條鏈交織成網"], active: 3 }, duration: 3600 },
     { id: 3, step: "步驟 3：生態系三角色", caption: "生態系三角色：生產者製造有機物、消費者取食、分解者把屍體分解成無機物回歸環境。", action: "think", prop: { kind: "flow", steps: ["生產者（製造）", "消費者（取食）", "分解者（分解）", "物質循環再利用"], active: 3 }, duration: 3600, ask: { prompt: "在生態系中把動植物屍體分解成無機物的是？", options: ["分解者", "生產者", "消費者", "初級消費者"], answer: 0, hint: "分解者（如真菌、腐生生物）把有機物打回無機物。" } },
-    { id: 4, step: "步驟 4：生活實例——為什麼肉比較貴", caption: "100 單位草只能養出 10 單位兔、再養出 1 單位狐。人若直接吃菜，能量利用率高；若吃牛肉，等於過了一層牛，能量損失九成——這就是為什麼葷食比素食耗費更多資源。", action: "walk", prop: { kind: "bars", items: [{ label: "草", value: 100 }, { label: "牛", value: 10 }, { label: "人吃牛肉", value: 1 }], unit: "單位能量", active: 1 }, duration: 4200, ask: { prompt: "吃牛肉比吃蔬菜多浪費能量，最主要原因是？", options: ["牛跑得很快", "能量經過牛這一層又損失約 90%", "牛肉比較重", "蔬菜有毒"], answer: 1, hint: "每多一層消費者，能量就只剩約 10%。" } },
+    { id: 4, step: "步驟 4：生活實例——為什麼肉比較貴", caption: "100 單位草只能養出 10 單位兔、再養出 1 單位狐。人若直接吃菜，能量利用率高；若吃牛肉，等於過了一層牛，能量損失九成——這就是為什麼葷食比素食耗費更多資源。", action: "walk", prop: { kind: "bars", items: [{ label: "草", value: 100 }, { label: "牛", value: 10 }, { label: "人吃牛肉", value: 1 }], unit: "單位能量", active: 1 }, duration: 4200, ask: { prompt: "吃牛肉比吃蔬菜多浪費能量，最主要原因是？", options: ["牛的消化系統特別耗能", "能量經過牛這一層又損失約 90%", "蔬菜本身的能量比肉類還多", "肉類在體內幾乎不產生能量"], answer: 1, hint: "每多一層消費者，能量就只剩約 10%。" } },
     { id: 5, step: "步驟 5：能量塔每層剩 10%", caption: "營養階層每往上傳一層，能量只剩約 10%：生產者 100 單位，到初級消費者剩 10，再到次級只剩 1。", action: "walk", prop: { kind: "bars", items: [{ label: "生產者", value: 100 }, { label: "初級消費者", value: 10 }, { label: "次級消費者", value: 1 }], unit: "單位", active: 0 }, duration: 3600, ask: { prompt: "能量在相鄰兩營養階層間傳遞，大約只剩多少比例？", options: ["約 10%", "約 50%", "約 90%", "100%"], answer: 0, hint: "能量塔每傳一層只剩約十分之一（10%）。" } },
     { id: 6, step: "步驟 6：頂級掠食者稀少", caption: "因為能量越往上越少，能養活的個體也越少，所以頂級掠食者數量天生就稀少。", action: "jump", prop: { kind: "text", text: "能量少 → 頂級掠食者數量少", sub: "營養階層越高、能量越少", tone: "ok" }, duration: 3600 },
     { id: 7, step: "步驟 7：深化——有毒物質會放大", caption: "和能量相反，DDT、重金屬這類難分解的毒物，吃進去排不出去：每吃一層就累積一層，到頂級掠食者體內濃度最高，這叫生物放大，所以老鷹、美人魚才會中毒。", action: "point", prop: { kind: "flow", steps: ["水中微量 DDT", "浮游生物累積", "小魚吃浮游生物再累積", "老鷹吃小魚、體內最高"], active: 3 }, duration: 4000 },
@@ -199,9 +199,9 @@ const SH_BIO_ECOLOGY: OnionLesson = {
     { id: "sh-bio-ecology-1", prompt: "生態系中能自己製造有機物的角色是？", options: ["消費者", "分解者", "生產者", "次級消費者"], answer: 2, hints: ["利用陽光或化能", "綠色植物、藻類"], explanation: "生產者（如植物）行光合作用製造有機物，是能量進入生態系的入口。" },
     { id: "sh-bio-ecology-2", prompt: "草 → 兔 → 狐這條路中，狐狸屬於？", options: ["生產者", "初級消費者", "分解者", "次級消費者"], answer: 3, hints: ["吃初級消費者（兔）", "站在第三階層"], explanation: "狐吃兔（初級消費者），屬於次級消費者。" },
     { id: "sh-bio-ecology-3", prompt: "能量在營養階層間傳遞，大約保留多少比例？", options: ["10%", "50%", "90%", "100%"], answer: 0, hints: ["每層大量以熱散失", "所謂能量塔"], explanation: "相鄰營養階層間能量傳遞效率約 10%，其餘多以熱散失。" },
-    { id: "sh-bio-ecology-4", prompt: "為什麼生態系中的頂級掠食者數量通常很少？", options: ["牠們不會繁殖", "能量逐層減少、能養活的個體有限", "被分解者吃光", "沒有食物鏈"], answer: 1, hints: ["越高層能量越少", "養不起太多個體"], explanation: "能量每層只剩約 10%，越高營養階層可得能量越少，能支持的個體數也越少。" },
+    { id: "sh-bio-ecology-4", prompt: "為什麼生態系中的頂級掠食者數量通常很少？", options: ["牠們繁殖率太低", "能量逐層減少、能養活的個體有限", "牠們的天敵太多", "牠們不參與食物鏈"], answer: 1, hints: ["越高層能量越少", "養不起太多個體"], explanation: "能量每層只剩約 10%，越高營養階層可得能量越少，能支持的個體數也越少。" },
     { id: "sh-bio-ecology-5", prompt: "關於物質循環與能量流動，下列何者正確？", options: ["能量也能在生態系中循環再利用", "兩者都單向流失", "物質循環、能量單向流失", "兩者都完全循環"], answer: 2, hints: ["物質可被回收", "能量沿鏈散失無法回收"], explanation: "物質（如碳、水）經分解者回收循環，能量沿食物鏈單向流動並以熱散失，無法回收。" },
-    { id: "sh-bio-ecology-6", prompt: "DDT 等難分解毒物，為何頂級掠食者體內濃度最高？", options: ["牠們比較愛吃髒東西", "牠們代謝很快", "DDT 會自己蒸發上去", "毒物隨食物鏈逐層累積（生物放大）"], answer: 3, hints: ["毒物吃進去排不出來", "每一層再往上累積一層"], explanation: "難分解毒物被生物吸收後不易排出，隨營養階層逐層累積放大，頂級掠食者吃下多層生物，體內濃度最高。" },
+    { id: "sh-bio-ecology-6", prompt: "DDT 等難分解毒物，為何頂級掠食者體內濃度最高？", options: ["牠們體型最大，直接吸進的 DDT 最多", "牠們代謝很快", "高層生物會自行合成 DDT", "毒物隨食物鏈逐層累積（生物放大）"], answer: 3, hints: ["毒物吃進去排不出來", "每一層再往上累積一層"], explanation: "難分解毒物被生物吸收後不易排出，隨營養階層逐層累積放大，頂級掠食者吃下多層生物，體內濃度最高。" },
   ],
 };
 
@@ -237,7 +237,7 @@ const SH_BIO_PLANT_PHYSIOLOGY: OnionLesson = {
     { id: "sh-bio-plant-physiology-1", prompt: "光合作用把 CO₂ 轉成葡萄糖，主要在哪個構造進行？", options: ["粒線體", "液胞", "葉綠體", "細胞核"], answer: 2, hints: ["綠色的小顆粒", "吸收光能的場所"], explanation: "葉綠體含有光合色素，是進行光合作用的場所。" },
     { id: "sh-bio-plant-physiology-2", prompt: "光合作用可分為光反應和下列哪一階段？", options: ["蒸散", "呼吸", "發酵", "碳反應"], answer: 3, hints: ["第二階段固定碳", "在基質進行"], explanation: "光合作用分為光反應（產生 ATP/NADPH）與碳反應（固定 CO₂ 成葡萄糖）。" },
     { id: "sh-bio-plant-physiology-3", prompt: "植物的水分主要由哪個構造向上運輸？", options: ["木質部", "韌皮部", "氣孔", "表皮"], answer: 0, hints: ["像水管往上送水", "導管在此"], explanation: "木質部中的導管把根吸收的水分和礦物質向上運輸到莖葉。" },
-    { id: "sh-bio-plant-physiology-4", prompt: "植物莖朝光源彎曲（向光性），主要是因為？", options: ["莖兩側均勻生長", "生長素使背光側長得較快", "光直接把莖推彎", "根的吸收作用"], answer: 1, hints: ["生長素分布不均", "背光側細胞伸長快"], explanation: "生長素在背光側較多，該側細胞伸長較快，使莖朝光源彎曲。" },
+    { id: "sh-bio-plant-physiology-4", prompt: "植物莖朝光源彎曲（向光性），主要是因為？", options: ["莖兩側均勻生長", "生長素使背光側長得較快", "背光側生長素較少、長得慢", "根的吸收作用"], answer: 1, hints: ["生長素分布不均", "背光側細胞伸長快"], explanation: "生長素在背光側較多，該側細胞伸長較快，使莖朝光源彎曲。" },
     { id: "sh-bio-plant-physiology-5", prompt: "下列有關蒸散作用的敘述，何者正確？", options: ["蒸散會讓植物失水，完全沒好處", "蒸散只在夜間發生", "蒸散產生的拉力協助運水上升", "蒸散與氣孔無關"], answer: 2, hints: ["失水也帶來好處", "經由氣孔進行"], explanation: "蒸散散失水氣形成向上的拉力，是木質部運水的主要動力，且經由氣孔進行。" },
     { id: "sh-bio-plant-physiology-6", prompt: "葉片澱粉實驗中，照光半邊滴碘液變成藍黑色，是因為？", options: ["碘液本身是藍黑色", "酒精把葉子染藍", "葉綠素是藍黑色", "照光行光合作用製造了澱粉，澱粉遇碘變藍黑色"], answer: 3, hints: ["澱粉遇碘變色是檢驗原理", "暗處理後只剩新造的澱粉"], explanation: "光合作用產生的澱粉遇碘液會變藍黑色；照光半邊能行光合作用，故變色，遮光半邊不能。" },
   ],
@@ -277,7 +277,7 @@ const SH_BIO_HUMAN_BODY: OnionLesson = {
     { id: "sh-bio-human-body-3", prompt: "體溫偏高時身體出汗散熱、把溫度拉回，這是？", options: ["負回饋", "正回饋", "發炎反應", "免疫作用"], answer: 0, hints: ["啟動相反作用", "拉回設定點"], explanation: "負回饋在偏離設定點時啟動相反作用（如出汗散熱），使數值回到恆定。" },
     { id: "sh-bio-human-body-4", prompt: "進食後血糖上升，體內主要分泌哪種激素來降低血糖？", options: ["升糖素", "胰島素", "腎上腺素", "生長激素"], answer: 1, hints: ["促進細胞吸收葡萄糖", "由胰島分泌"], explanation: "胰島素促進細胞吸收葡萄糖，使血糖下降；升糖素則相反，會升高血糖。" },
     { id: "sh-bio-human-body-5", prompt: "神經系統與內分泌系統最主要的差異是？", options: ["神經只存在脊椎動物", "內分泌不需受刺激", "神經快而短、內分泌慢而持久", "兩者完全相同"], answer: 2, hints: ["一個用電、一個用血", "時效不同"], explanation: "神經靠電訊號即時反應、效果短；內分泌靠血液運激素、慢而持久。" },
-    { id: "sh-bio-human-body-6", prompt: "分娩時子宮收縮越來越強、直到胎兒生出，屬於哪種機制？", options: ["負回饋", "恆定作用", "隨機波動", "正回饋"], answer: 3, hints: ["結果強化原本的反應", "一路加速直到完成"], explanation: "分娩時收縮刺激催產素、催產素又加強收縮，是「結果強化原反應」的正回饋；與拉回設定點的負回饋方向相反。" },
+    { id: "sh-bio-human-body-6", prompt: "分娩時子宮收縮越來越強、直到胎兒生出，屬於哪種機制？", options: ["負回饋", "恆定作用", "神經系統的純反射動作", "正回饋"], answer: 3, hints: ["結果強化原本的反應", "一路加速直到完成"], explanation: "分娩時收縮刺激催產素、催產素又加強收縮，是「結果強化原反應」的正回饋；與拉回設定點的負回饋方向相反。" },
   ],
 };
 
@@ -302,7 +302,7 @@ const SH_BIO_BIOTECH: OnionLesson = {
     { id: 1, step: "步驟 1：生物科技在身邊", caption: "嗨！警察用 DNA 抓犯人、農民種抗蟲玉米，都靠生物科技，今天看 PCR 和基因轉殖。", action: "wave", prop: { kind: "none" }, duration: 3000 },
     { id: 2, step: "步驟 2：PCR 三步循環", caption: "PCR 在試管裡大量複製 DNA：先加熱解鏈、降溫讓引子結合、再延伸合成，循環放大。", action: "point", prop: { kind: "flow", steps: ["加熱解鏈（95°C）", "降溫引子結合", "延伸合成新股", "重複循環放大"], active: 3 }, duration: 3600, ask: { prompt: "PCR 第一步要把雙股 DNA 打開，需要怎麼做？", options: ["加熱解鏈", "降溫", "加引子", "加酶即可"], answer: 0, hint: "PCR 先高溫（約 95°C）使雙股變性解開。" } },
     { id: 3, step: "步驟 3：基因轉殖概念", caption: "基因轉殖：把一段目標基因（如抗蟲基因）送進另一生物，讓它表現出新性狀，例如抗蟲作物。", action: "think", prop: { kind: "text", text: "基因轉殖：植入目標基因", sub: "讓受體表現新性狀", tone: "ok" }, duration: 3600 },
-    { id: 4, step: "步驟 4：轉殖操作流程", caption: "步驟：選目標基因→接入載體→轉入細胞→篩選成功株→培養成植株，一步步做到。", action: "walk", prop: { kind: "flow", steps: ["選目標基因", "接入載體", "轉入細胞", "篩選成功株"], active: 3 }, duration: 3600, ask: { prompt: "基因轉殖作物「抗蟲」，是因為被植入了什麼？", options: ["殺蟲劑", "一段抗蟲目標基因", "更多葉綠體", "肥料基因"], answer: 1, hint: "植入抗蟲基因後，作物自己能表現抗蟲蛋白質。" } },
+    { id: 4, step: "步驟 4：轉殖操作流程", caption: "步驟：選目標基因→接入載體→轉入細胞→篩選成功株→培養成植株，一步步做到。", action: "walk", prop: { kind: "flow", steps: ["選目標基因", "接入載體", "轉入細胞", "篩選成功株"], active: 3 }, duration: 3600, ask: { prompt: "基因轉殖作物「抗蟲」，是因為被植入了什麼？", options: ["殺蟲劑", "一段抗蟲目標基因", "更厚的外皮", "抗病基因"], answer: 1, hint: "植入抗蟲基因後，作物自己能表現抗蟲蛋白質。" } },
     { id: 5, step: "步驟 5：PCR 溫度曲線細拆", caption: "一個循環要換三次溫度：95°C 高熱把雙股拆開、降到約 55°C 讓引子貼上模板、再升到約 72°C 讓聚合酶把新股補齊——酶要耐熱，否則第一輪就被煮熟了。", action: "jump", prop: { kind: "flow", steps: ["95°C：解鏈", "55°C：引子結合", "72°C：延伸合成", "需耐熱 DNA 聚合酶"], active: 3 }, duration: 4200, ask: { prompt: "PCR 循環中，讓引子與模板互補配對（退火）發生在約多少度？", options: ["55°C", "95°C", "72°C", "0°C"], answer: 0, hint: "高溫解鏈、降溫才配對、中溫延伸。" } },
     { id: 6, step: "步驟 6：基因編輯的倫理", caption: "基因編輯有正反觀點：支持者看重醫療與糧食效益，疑慮者擔心生態與倫理風險，需審慎評估。", action: "jump", prop: { kind: "text", text: "基因編輯：效益與風險並存", sub: "醫療糧食 vs 生態倫理", tone: "warn" }, duration: 3600 },
     { id: 7, step: "步驟 7：深化——偵測應用", caption: "PCR 的威力在於「指數放大」：微量 DNA 每次循環加倍，30 輪後變成十億倍，所以犯罪現場一絲毛髮、微量血液都能鑑識；親子鑑定也是比對這些被放大的片段條紋。", action: "point", prop: { kind: "text", text: "微量 DNA → 30 輪 → 可偵測量", sub: "指數放大，故能鑑識、認親", tone: "ok" }, duration: 4000 },
@@ -312,9 +312,9 @@ const SH_BIO_BIOTECH: OnionLesson = {
   questions: [
     { id: "sh-bio-biotech-1", prompt: "PCR 技術的主要用途是？", options: ["切割 DNA", "直接轉殖基因", "在試管中大量複製特定 DNA", "定序蛋白質"], answer: 2, hints: ["試管裡放大", "反覆循環"], explanation: "PCR（聚合酶連鎖反應）能在體外反覆循環，大量複製特定的 DNA 片段。" },
     { id: "sh-bio-biotech-2", prompt: "PCR 循環中，讓引子與模板結合發生在哪一步？", options: ["加熱解鏈", "延伸合成", "純化", "降溫退火"], answer: 3, hints: ["降溫才會配對", "退火步驟"], explanation: "降溫（退火）時引子與單股模板互補配對結合，之後才延伸。" },
-    { id: "sh-bio-biotech-3", prompt: "基因轉殖作物能抗蟲，關鍵在於？", options: ["植入並表現抗蟲基因", "噴更多農藥", "改用有機肥", "改變葉片顏色"], answer: 0, hints: ["自己生產抗蟲蛋白", "不是外加農藥"], explanation: "植入抗蟲基因後，作物自身能表現抗蟲蛋白質，從而抵抗害蟲。" },
+    { id: "sh-bio-biotech-3", prompt: "基因轉殖作物能抗蟲，關鍵在於？", options: ["植入並表現抗蟲基因", "噴更多農藥", "改用有機肥", "讓葉片變硬，害蟲咬不動"], answer: 0, hints: ["自己生產抗蟲蛋白", "不是外加農藥"], explanation: "植入抗蟲基因後，作物自身能表現抗蟲蛋白質，從而抵抗害蟲。" },
     { id: "sh-bio-biotech-4", prompt: "關於基因編輯的倫理，下列何者較為中立客觀？", options: ["應全面禁止", "效益與風險並存、需審慎評估", "完全無風險可隨意做", "只有壞處"], answer: 1, hints: ["權衡兩面", "依法規管理"], explanation: "客觀態度是權衡醫療與糧食效益，以及生態與倫理風險，並以法規管理。" },
-    { id: "sh-bio-biotech-5", prompt: "為什麼 PCR 能讓極微量的 DNA 也被偵測到？", options: ["它把蛋白質變多", "它直接創造 DNA", "它反覆循環放大、短時間複製出大量 DNA", "它不需要模板"], answer: 2, hints: ["每次循環倍數增加", "指數放大"], explanation: "PCR 每次循環使模板加倍，微量 DNA 經多輪放大後達到可偵測的量。" },
+    { id: "sh-bio-biotech-5", prompt: "為什麼 PCR 能讓極微量的 DNA 也被偵測到？", options: ["它把 RNA 反轉錄成 DNA", "它直接創造 DNA", "它反覆循環放大、短時間複製出大量 DNA", "它不需要模板"], answer: 2, hints: ["每次循環倍數增加", "指數放大"], explanation: "PCR 每次循環使模板加倍，微量 DNA 經多輪放大後達到可偵測的量。" },
     { id: "sh-bio-biotech-6", prompt: "PCR 反覆加熱到 95°C 還能運作，是因為反應中使用了？", options: ["常溫酵素即可", "大量冰塊降溫", "不需要酶", "耐熱的 DNA 聚合酶"], answer: 3, hints: ["一般酶高熱就變性", "耐熱酶來自嗜熱菌"], explanation: "PCR 每輪都要高溫解鏈，一般 DNA 聚合酶會被熱破壞，故需耐熱聚合酶（如 Taq 酶）才能反覆循環。" },
   ],
 };
