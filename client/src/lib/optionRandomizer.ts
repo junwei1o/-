@@ -601,6 +601,30 @@ const FUNCTION_CHARACTERS = /[的了在是他她它們著地之與和也都會�
 const bigramCache = new Map<string, Set<string>>();
 const BIGRAM_CACHE_LIMIT = 40000;
 
+/**
+ * 校園與日常生活高頻通用詞。
+ * 這些詞跨主題大量出現（「學校」「學生」「可以」…），若計入語意關聯分數，
+ * 會讓借用來的干擾項與題幹「假性相關」。比對時應排除。
+ */
+const GENERIC_STOP_WORDS = new Set([
+  "學校", "學生", "老師", "同學", "大家", "我們", "他們", "你們", "自己",
+  "今天", "明天", "昨天", "時候", "地方", "東西", "事情", "問題", "方法", "方式",
+  "可以", "因為", "所以", "如果", "這樣", "那樣", "什麼", "怎麼", "為什麼",
+  "一起", "已經", "還有", "但是", "或是", "以及", "這些", "那些",
+  "覺得", "知道", "朋友", "現在", "然後", "非常", "常常", "總是", "其實", "一樣",
+]);
+
+/** 停用詞拆解出的單字集合：凡出現在任一通用詞中的字，都不參與語意關聯計算。 */
+const GENERIC_STOP_CHARS = (() => {
+  const chars = new Set<string>();
+  GENERIC_STOP_WORDS.forEach((word) => {
+    for (let index = 0; index < word.length; index += 1) {
+      chars.add(word[index]);
+    }
+  });
+  return chars;
+})();
+
 /** 擷取中文連續二元詞（依標點/非中文字斷詞，去除功能字），作為語意關聯指紋。 */
 export function contentBigrams(text: string): Set<string> {
   const cached = bigramCache.get(text);
@@ -669,12 +693,17 @@ export function borrowingCandidates(
     }
     // 語意關聯：長選項需共享實詞二元詞，且內容字覆蓋率達一定比例（防止只靠一個常見詞通過）；
     // 短選項（字詞題）僅開放同主題池，且需共享至少 2 個實字。
-    const candidateContentChars = (candidate.match(/[\u4e00-\u9fff]/g) ?? []).filter((character) => !FUNCTION_CHARACTERS.test(character));
+    // 内容字同時排除功能字與高頻通用停用詞（如「學校」「學生」），避免通用詞灌水關聯分數。
+    const candidateContentChars = (candidate.match(/[\u4e00-\u9fff]/g) ?? []).filter(
+      (character) => !FUNCTION_CHARACTERS.test(character) && !GENERIC_STOP_CHARS.has(character),
+    );
     if (averageOptionLength > 6) {
       let overlap = 0;
-      contentBigrams(candidate).forEach((bigram) => {
+      for (const bigram of Array.from(contentBigrams(candidate))) {
+        // 含停用詞的 bigram（如「學校」「學生」）不計入重合數，避免跨主題通用詞造成假性相關。
+        if (GENERIC_STOP_WORDS.has(bigram)) continue;
         if (promptBigrams.has(bigram)) overlap += 1;
-      });
+      }
       if (overlap < bigramThreshold) return false;
       const sharedCharacters = candidateContentChars.filter((character) => promptCharacters.has(character)).length;
       if (candidateContentChars.length > 0 && sharedCharacters / candidateContentChars.length < 0.2) return false;
