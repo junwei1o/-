@@ -617,6 +617,8 @@ const GENERIC_STOP_WORDS = new Set([
 /** 停用詞拆解出的單字集合：凡出現在任一通用詞中的字，都不參與語意關聯計算。 */
 const GENERIC_STOP_CHARS = (() => {
   const chars = new Set<string>();
+  // 不用 for...of 迭代 Set / string：tsconfig 未設 target（預設 ES3），
+  // TS2802 會擋下。改用 forEach + 索引存取，行為相同且不需 downlevelIteration。
   GENERIC_STOP_WORDS.forEach((word) => {
     for (let index = 0; index < word.length; index += 1) {
       chars.add(word[index]);
