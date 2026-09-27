@@ -1,54 +1,27 @@
-import { jsxLocPlugin } from "@builder.io/vite-plugin-jsx-loc";
-import tailwindcss from "@tailwindcss/vite";
-import react from "@vitejs/plugin-react";
-import path from "node:path";
-import { defineConfig } from "vite";
+import { defineConfig } from 'vite';
+import { fileURLToPath, URL } from 'node:url';
+import react from '@vitejs/plugin-react';
+import tailwindcss from '@tailwindcss/vite';
 
-const PROJECT_ROOT = import.meta.dirname;
-
-const plugins = [react(), tailwindcss(), jsxLocPlugin()];
-
+// 前端建置：client/ 為根目錄，產出到 dist/（與 server bundle 同目錄）
+// @/ 路徑別名與 tsconfig.json 的 paths 對齊，供 client/src 內部使用。
 export default defineConfig({
-  plugins,
+  root: 'client',
+  plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
-      "@": path.resolve(import.meta.dirname, "client", "src"),
-      "@shared": path.resolve(import.meta.dirname, "shared"),
-      "@assets": path.resolve(import.meta.dirname, "attached_assets"),
+      '@': fileURLToPath(new URL('./client/src', import.meta.url)),
     },
   },
-  envDir: path.resolve(import.meta.dirname),
-  root: path.resolve(import.meta.dirname, "client"),
-  publicDir: path.resolve(import.meta.dirname, "client", "public"),
   build: {
-    outDir: path.resolve(import.meta.dirname, "dist/public"),
+    outDir: '../dist',
     emptyOutDir: true,
-    // 程式碼分包：大型第三方庫拆成獨立、可長期快取的檔，換頁／改版不重複下載。
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          "react-vendor": ["react", "react-dom", "react-hook-form", "@tanstack/react-query"],
-          "trpc-vendor": ["@trpc/client", "@trpc/react-query", "@trpc/server", "superjson", "zod"],
-          "ui-vendor": [
-            "class-variance-authority",
-            "clsx",
-            "tailwind-merge",
-            // framer-motion 僅「深度反思」lazy 頁使用，移出首屏必載的 ui-vendor，
-            // 由 Rollup 跟隨使用它的 lazy chunk（PaperExam）。
-            "lucide-react",
-            "sonner",
-          ],
-          "charts-vendor": ["recharts"],
-        },
-      },
-    },
+    sourcemap: false,
   },
   server: {
-    host: true,
-    allowedHosts: ["localhost", "127.0.0.1"],
-    fs: {
-      strict: true,
-      deny: ["**/.*"],
+    port: 5173,
+    proxy: {
+      '/trpc': 'http://127.0.0.1:3001',
     },
   },
 });

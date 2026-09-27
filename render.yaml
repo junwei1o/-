@@ -1,8 +1,12 @@
 # Render Infrastructure-as-Code
 # https://render.com/docs/blueprint-spec
 #
-# 加了這個檔後，在 Render Dashboard → Service → Settings →
-# 「Connect Repository」連接 GitHub repo，以後每次 git push 自動觸發部署。
+# 服務實體（xue-adventure）早已建立在 Render Dashboard 上，
+# 連接 GitHub repo https://github.com/junwei1o/- 的 main 分支。
+# 這裡的 name 必須與 Dashboard 上的服務名稱一致，改名會被 Render
+# 誤判成新服務，因此保持不變；對外網址仍是 https://xue-gr3a.onrender.com/
+# 每次 push 到 main 會自動觸發部署（autoDeploy: true）。
+#
 # 環境變數的實際值（key/secret）不在這裡硬編，由 Render Dashboard 的
 # Environment 頁面管理；這裡只列出需要存在的 key，防止遺漏。
 

@@ -1,33 +1,57 @@
-import express from "express";
-import { createServer } from "http";
-import path from "path";
-import { fileURLToPath } from "url";
+import express, { type Request, type Response } from 'express';
+import path from 'node:path';
+import { createExpressMiddleware } from '@trpc/server/adapters/express';
+import { appRouter } from './trpc';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const app = express();
+app.disable('x-powered-by');
 
-async function startServer() {
-  const app = express();
-  const server = createServer(app);
+// ─── tRPC API ───
+app.use(
+  '/trpc',
+  createExpressMiddleware({
+    router: appRouter,
+    createContext: () => ({}),
+  }),
+);
 
-  // Serve static files from dist/public in production
-  const staticPath =
-    process.env.NODE_ENV === "production"
-      ? path.resolve(__dirname, "public")
-      : path.resolve(__dirname, "..", "dist", "public");
+// ─── 靜態檔案（Vite 產出）───
+const distDir = path.resolve(process.cwd(), 'dist');
 
-  app.use(express.static(staticPath));
+app.use(
+  express.static(distDir, {
+    index: false,
+    etag: true,
+    lastModified: true,
+    setHeaders: (res: Response, filePath: string) => {
+      if (filePath.endsWith('index.html')) {
+        res.setHeader('cache-control', 'no-cache');
+      } else if (filePath.includes(`${path.sep}assets${path.sep}`)) {
+        // 有雜湊檔名的資源可以永久快取
+        res.setHeader('cache-control', 'public, max-age=31536000, immutable');
+      } else {
+        res.setHeader('cache-control', 'public, max-age=3600');
+      }
+    },
+  }),
+);
 
-  // Handle client-side routing - serve index.html for all routes
-  app.get("*", (_req, res) => {
-    res.sendFile(path.join(staticPath, "index.html"));
+// ─── SPA fallback：所有非 API 路徑都回 index.html ───
+app.get('*', (req: Request, res: Response, next) => {
+  if (req.path.startsWith('/trpc')) return next();
+  res.setHeader('cache-control', 'no-cache');
+  res.sendFile(path.join(distDir, 'index.html'), (err) => {
+    if (err) {
+      res
+        .status(503)
+        .type('text/plain; charset=utf-8')
+        .send('前端尚未建置，請先執行 pnpm build');
+    }
   });
+});
 
-  const port = process.env.PORT || 3000;
+const port = Number(process.env.PORT ?? 3001);
 
-  server.listen(port, () => {
-    console.log(`Server running on http://localhost:${port}/`);
-  });
-}
-
-startServer().catch(console.error);
+app.listen(port, () => {
+  console.log(`島嶼探險家已啟動：http://localhost:${port} (NODE_ENV=${process.env.NODE_ENV ?? 'development'})`);
+});

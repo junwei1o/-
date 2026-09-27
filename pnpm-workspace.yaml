@@ -1,0 +1,14 @@
+# pnpm 設定
+#
+# packages 讓 pnpm 10 認得這是 workspace 根目錄（缺這個欄位時
+# pnpm 10 會直接報 "packages field missing or empty"）。
+packages:
+  - '.'
+
+# pnpm 11 預設不執行第三方套件的安裝腳本（build scripts），並會把
+# 「被忽略的安裝腳本」視為錯誤、讓 install 以非 0 結束，Render 上的
+# `pnpm install --frozen-lockfile` 就會部署失敗。
+# esbuild 必須完成安裝動作才有對應平台的二進位檔，否則 `vite build`
+# 與 `pnpm build` 的 esbuild 階段都會掛掉。這裡只放行 esbuild。
+allowBuilds:
+  esbuild: true

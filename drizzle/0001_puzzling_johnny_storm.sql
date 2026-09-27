@@ -1,1 +1,0 @@
-ALTER TABLE `question_bank` MODIFY COLUMN `area` varchar(64);
