@@ -128,6 +128,41 @@ export function extractTextContent(
   return parts.join("").trim();
 }
 
+/** LLM 沒有回出可解析 JSON 時拋出；用來區分「不是 JSON」與「JSON 不符 schema」。 */
+export class AssistantJsonError extends Error {
+  constructor(message = "assistant did not return JSON") {
+    super(message);
+    this.name = "AssistantJsonError";
+  }
+}
+
+/**
+ * 盡力解析 LLM 回傳的 JSON。
+ *
+ * 供應商不一定遵守 response_format（尤其 json_schema），常見的回法是包在
+ * ```json code fence 裡，或前後多加一段說明。這裡依序試「原文 → 去 fence →
+ * 第一個 { 到最後一個 }」，都失敗才拋 AssistantJsonError。
+ */
+export function parseAssistantJson(raw: string): unknown {
+  const trimmed = raw.trim();
+  const noFence = trimmed.replace(/^```[a-zA-Z]*\s*/, "").replace(/\s*```$/, "");
+  const start = noFence.indexOf("{");
+  const end = noFence.lastIndexOf("}");
+
+  const candidates = [trimmed];
+  if (noFence !== trimmed) candidates.push(noFence);
+  if (start >= 0 && end > start) candidates.push(noFence.slice(start, end + 1));
+
+  for (const candidate of candidates) {
+    try {
+      return JSON.parse(candidate);
+    } catch {
+      // 換下一種剝法再試一次
+    }
+  }
+  throw new AssistantJsonError();
+}
+
 export type ResponseFormat =
   | { type: "text" }
   | { type: "json_object" }

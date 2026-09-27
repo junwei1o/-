@@ -18,7 +18,7 @@ import {
 import { TARGETED_PRACTICE_ITEMS, summarizeTargetedPractice } from "./targetedPractice";
 import { COOKIE_NAME } from "@shared/const";
 import { z } from "zod";
-import { extractTextContent, invokeLLM } from "./_core/llm";
+import { AssistantJsonError, extractTextContent, invokeLLM, parseAssistantJson } from "./_core/llm";
 import { ENV } from "./_core/env";
 import {
   createAssignment,
@@ -209,7 +209,7 @@ export const appRouter = router({
         const content = extractTextContent(response.choices[0]?.message.content);
         if (!content) throw new Error("AI response content is unavailable");
         try {
-          const result = JSON.parse(content);
+          const result = parseAssistantJson(content);
           return z.object({
             initialHint: z.string().min(1).max(1200),
             advancedHint: z.string().min(1).max(1600),
@@ -218,8 +218,12 @@ export const appRouter = router({
             misconception: z.string().min(1).max(1200),
             encouragement: z.string().min(1).max(300),
           }).parse(result);
-        } catch {
-          throw new Error("AI explanation format is invalid");
+        } catch (error) {
+          throw new Error(
+            error instanceof AssistantJsonError
+              ? "AI explanation did not return JSON"
+              : "AI explanation format is invalid",
+          );
         }
       }),
     reviewPlan: publicProcedure
@@ -327,7 +331,7 @@ export const appRouter = router({
         const content = extractTextContent(response.choices[0]?.message.content);
         if (!content) throw new Error("AI review plan content is unavailable");
         try {
-          const result = JSON.parse(content);
+          const result = parseAssistantJson(content);
           return z.object({
             title: z.string().min(1).max(160),
             summary: z.string().min(1).max(500),
@@ -351,8 +355,12 @@ export const appRouter = router({
               if (check.difficulty !== "挑戰" && check.hints.length > 0) ctx.addIssue({ code: z.ZodIssueCode.custom, message: "hints are only allowed for challenge" });
             }),
           }).parse(result);
-        } catch {
-          throw new Error("AI review plan format is invalid");
+        } catch (error) {
+          throw new Error(
+            error instanceof AssistantJsonError
+              ? "AI review plan did not return JSON"
+              : "AI review plan format is invalid",
+          );
         }
       }),
     progressSummary: publicProcedure
@@ -374,9 +382,13 @@ export const appRouter = router({
         const content = extractTextContent(response.choices[0]?.message.content);
         if (!content) throw new Error("AI progress summary content is unavailable");
         try {
-          return z.object({ help: z.string().min(1).max(260), mastery: z.string().min(1).max(260), nextStep: z.string().min(1).max(120) }).parse(JSON.parse(content));
-        } catch {
-          throw new Error("AI progress summary format is invalid");
+          return z.object({ help: z.string().min(1).max(260), mastery: z.string().min(1).max(260), nextStep: z.string().min(1).max(120) }).parse(parseAssistantJson(content));
+        } catch (error) {
+          throw new Error(
+            error instanceof AssistantJsonError
+              ? "AI progress summary did not return JSON"
+              : "AI progress summary format is invalid",
+          );
         }
       }),
 

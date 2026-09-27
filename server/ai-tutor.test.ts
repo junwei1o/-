@@ -57,7 +57,7 @@ describe("aiTutor.explain", () => {
       choices: [{ message: { content: "{not-json}" } }],
     }), { status: 200 })));
 
-    await expect(appRouter.createCaller(context).aiTutor.explain(input)).rejects.toThrow("AI explanation format is invalid");
+    await expect(appRouter.createCaller(context).aiTutor.explain(input)).rejects.toThrow("AI explanation did not return JSON");
   });
 });
 
@@ -113,6 +113,14 @@ describe("aiTutor.reviewPlan", () => {
   it("rejects malformed review plan output", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response(JSON.stringify({
       choices: [{ message: { content: "{not-json}" } }],
+    }), { status: 200 })));
+
+    await expect(appRouter.createCaller(context).aiTutor.reviewPlan(reviewInput)).rejects.toThrow("AI review plan did not return JSON");
+  });
+
+  it("回了 JSON 但欄位不合 schema 時，報格式錯誤而不是「不是 JSON」", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response(JSON.stringify({
+      choices: [{ message: { content: JSON.stringify({ title: "標題", summary: "總結" }) } }],
     }), { status: 200 })));
 
     await expect(appRouter.createCaller(context).aiTutor.reviewPlan(reviewInput)).rejects.toThrow("AI review plan format is invalid");
