@@ -349,7 +349,7 @@ curl -s https://xue-gr3a.onrender.com/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | h
 - 經典海報 classic：沿用原 mc-* 暖木彩帶風（data-skin 預設外觀保留）。
 - 無障礙/手機：prefers-reduced-motion 關跑馬燈與脈動；520px 下領航員改 static 全寬、徽章縮小、幾何 scale .8、切換鈕縮小。
 - 測試：QuizRoom.test.tsx 加 4 例（預設極簡＋進度/彈幕/氣泡換句、切孟菲斯寫 localStorage、切經典出彩帶、重入沿用本機皮）共 7 例綠；tsc 0 error、vite build OK。
-- rebase 注記：本節與倍數防衛戰（29a8bed）并行開發，rebase 後合併第 8 張卡、進度條 playRecords 補 best.meteor、標題 8 種。
+- rebase 注記：本節與倍數防衛戰（29a8bed）並行開發，rebase 後合併第 8 張卡、進度條 playRecords 補 best.meteor、標題 8 種。
 ## 2026-09-18 倍數防衛戰隨機波次變體（3／9 的倍數）
 - METEOR_WAVE_CONFIG 擴到 5 種：2、5、3、9、同時是 2 和 5（=10）；3/9 的 hint 教「各位數字和是 3/9 的倍數」（42→4+2=6、63→6+3=9）。
 - buildMeteorWaves 改隨機組合：首波固定抽 2 或 5（個位數特徵暖身），第 2、3 波從 3/9/10 抽，波波不重複；每輪順序都不同，重玩性提升。
@@ -407,7 +407,7 @@ curl -s https://xue-gr3a.onrender.com/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | h
   - 關卡碼頭：面板新增 ISLAND_DOCKS（島嶼→2 款融合玩法），顯示本機最佳星等/分數，新 prop onOpenGame（Home.tsx/StudentMap.tsx 傳 setLocation(`/classroom/${id}`)；未傳時唯讀，測試不需 Router）。
 - QuizRoom hub：cards 9→6（flipdex/flashrush/relay/trap/meteor/duo）、playRecords 同步、「自由玩法（6 種融合玩法）」；測試改 6 卡。
 - 驗證：tsc 0 錯、1119 tests 全綠、build 成功。
-- 踩坑：Edit 工具批次多檔編輯會「部分静默丟失」（本輪 6 處），每個 Edit 後必 grep 驗證；span 地標章不能放進 <svg> 內，要放 canvas div 層。
+- 踩坑：Edit 工具批次多檔編輯會「部分靜默丟失」（本輪 6 處），每個 Edit 後必 grep 驗證；span 地標章不能放進 <svg> 內，要放 canvas div 層。
 - 補記（同日）：面板「真實地標＋關卡碼頭」與 QuizRunner flipdex 三處（初始 revealed／begin 重置／翻牌渲染）曾因 Edit 靜默丟失，已於 80ec616／482c2e4 補上；最終 bundle index-DnVZPJ5H.js 線上一致，線上 Playwright 回歸 25/25（地標章 15、面板地標 3、碼頭 2 並可導航 /classroom/duo、雙重奏兩段流程、閃電接力 mixed、翻牌圖鑑翻牌、舊路由 6 條相容、Hub 六卡、無 pageerror）。
 
 ## 2026-09-19 全站現代學生風格裝潢
@@ -654,7 +654,7 @@ curl -s https://xue-gr3a.onrender.com/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | h
 - rebase 整合：本提交 push 前發現遠端已多「第二季四課」（6f5def2、585fadc，共同祖先 81c1392），classroom.css 自動合併、handover 手動解衝突（兩段都保留）。整合後選課頁自動變 8 張卡，第二季新課沿用同一 `.ol-*` class，自動繼本輪膠囊返回／厚邊面板／立體選項等 UI 對齊。
 - 整合後重跑驗證（全部通過）：tsc 0 錯誤；build 乾淨（bundle index-szt2tKzb.js，無 CSS 警告）；測試 onionAcademyLessons **51**、OnionAcademyGame 3、ClassroomComponents 23、OnionLesson 5 全綠（順手把 OnionAcademyGame 過時測試名「顯示全部 4 堂課」改為 8 堂，斷言邏輯本就遍歷整個 ONION_LESSONS）。
 - 第二季四課 Playwright 真實瀏覽器閉環 ALL PASS（`.testlogs/pw_season2.py`）：選課頁實際 8 張卡；photosynthesis/negative-number/linear-equation/onion-cell 皆 intro→進動畫（`.ol-stage` SVG 圖形成功渲染 48/36/36/25 個）→逐幀實際前進 9 次到第 10/10 幀→進入闖關→照答案答滿 5 題→結算 **3★、答對 5/5、70 金幣**→「回我的教室」回 /quiz-room；**0 pageerror**。四題答案索引：photosynthesis `[1,2,0,2,3]`、negative-number `[0,1,2,2,0]`、linear-equation `[1,1,1,2,1]`、onion-cell `[2,1,1,0,1]`。截圖 `.testlogs/ui-audit/s2_*_lesson.png`、`s2_*_result.png`。
-- Playwright 操作備註（供後續复测）：洋蔥按鈕實際文字為「開始動畫講解」「進入闖關」（非「開始上課」「跳過動畫」）；intro 根容器與 start 同名 `.ol-start`，判斷 intro 要用 `.ol-rules`；星等 class 為 `.ol-star.is-on`。選課卡第 5 張起在視口外，且 `.app-route-shell` 為 overflow:auto，Playwright 內建捲動不可靠，需先 `window.scrollBy` 定位再點擊；JS `el.click()` 對本元件無效，須用真實滑鼠點擊。
+- Playwright 操作備註（供後續復測）：洋蔥按鈕實際文字為「開始動畫講解」「進入闖關」（非「開始上課」「跳過動畫」）；intro 根容器與 start 同名 `.ol-start`，判斷 intro 要用 `.ol-rules`；星等 class 為 `.ol-star.is-on`。選課卡第 5 張起在視口外，且 `.app-route-shell` 為 overflow:auto，Playwright 內建捲動不可靠，需先 `window.scrollBy` 定位再點擊；JS `el.click()` 對本元件無效，須用真實滑鼠點擊。
 - 二次 rebase 整合（最新 3 提交）：push 前遠端再增「繁體檢查／選項隨機化（含 OnionAcademyGame 課程題進場洗牌）／洋蔥流程改造（中途提問 ask、重點整理 summary 頁、答錯重試＋逐級提示、音效）」。OnionAcademyGame.tsx、classroom.css、OnionAcademyGame.test 皆自動合併成功，僅 handover 衝突（兩邊保留）。
 - 整合後重跑：tsc 0 錯；build 乾淨；測試 onionAcademyLessons **67**、OnionAcademyGame **5**、ClassroomComponents **23**、OnionLesson **5** 全綠。
 - 洋蔥全 8 課新流程 Playwright 真實瀏覽器閉環 **ALL PASS、0 pageerror**（`.testlogs/pw_onion8.py`，答案以 esbuild 載入題庫取「正解文字」定位，見 `.testlogs/onion_answers.json`，不再依賴固定索引）：每課 intro→開始動畫講解（`.ol-stage` SVG 15–56 個圖形成功渲染）→逐幀到末幀、**2 個中途提問 `.ol-ask` 皆成功彈出並略過**→末幀「看重點整理」進 `.ol-summary`（**3 條 takeaways**）→「開始闖關」→5 題（選項已隨機化，按正解文字首次就點對）→結算 **3★、答對 5/5、70 金幣**→「回我的教室」回 /quiz-room。
@@ -676,12 +676,12 @@ curl -s https://xue-gr3a.onrender.com/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | h
 - 驗收：tsc 0 錯；全量 170 檔 **1136 例**全綠；build 通過（index 1.3M/426KB gzip）；繁檢（含 docs）零命中。
 - 未做（評估後 ROI 低）：`index.css` 540KB（gzip 99KB）拆頁——Tailwind 全站共用，拆分需大改結構。
 
-## 2026-09-20 第四輪：年級偏好兩份不同步＋教室／自主練習年級錯配＋國中微课補到九年級
+## 2026-09-20 第四輪：年級偏好兩份不同步＋教室／自主練習年級錯配＋國中微課補到九年級
 - **Bug A（最嚴重）：站內有兩份年級偏好，而且沒有同步**。設定頁（Settings）寫的是 `UserPreferences.gradeLevel`（key `xue-adventure-user-prefs-v1`），但 `loadStudentGradePreference()` 讀的是另一份 `xue-adventure-filters-v1`——而那份 key **全站沒有任何寫入點**（`saveStudentGradePreference` 零引用），結果永遠是 null。影響：老師在設定頁選七年級後，洋蔥選課頁的預設學段、原則測驗年級、教室取題**全部拿不到年級**，國中生仍被當成國小生。
   - 修法：以設定頁那份為單一真相，`loadStudentGradePreference` 讀不到 filters 時 fallback 到 `UserPreferences.gradeLevel`。**坑**：`loadUserPreferences()` 有預設值四年級，直接呼叫會讓「從沒設定過的學生」一律被當四年級反而限縮題目，所以 fallback 前必須先確認該 key 真的存在。
 - **Bug B：教室六個玩法取題完全不看年級**（`buildChoiceDeck(24,"綜合")` 從 1210 題隨機）→ 三年級會抽到九年級的二次函數題。`classroomBank` 新增 `scopeRowsByGrade()`：先取 |年級差| ≤1，不夠放寬 ≤2，最後才退回全題庫；`buildChoiceDeck`/`buildTrueFalseDeck`/`buildRelayRounds` 都套用，並新增可選 `grade` 參數（沒傳就讀年級偏好，沒設定等同原本行為）。新增 5 例測試。
 - **Bug C：`PaperExam` 知識島自主練習也用全題庫**。新增 `exploreQuestions`（依年級就近篩選）只套用在「自主探索」——到期複習、錯題重練、隨機冒險**刻意不過濾**，否則會找不到學生自己的題目。
-- **國中動畫微课補到九年級**：原本 8 堂只到七上，八、九年級完全沒有微课。新增兩堂（各 10 幀×5 題，含 2 題中途提問、3 條小結、每題 2 個提示）：
+- **國中動畫微課補到九年級**：原本 8 堂只到七上，八、九年級完全沒有微課。新增兩堂（各 10 幀×5 題，含 2 題中途提問、3 條小結、每題 2 個提示）：
   1. `pythagorean` 畢氏定理：兩杯水倒進大杯子（八下數學）——三邊蓋正方形，小杯 3²=9、4²=16 的水倒進斜邊大杯 5²=25 剛好裝滿（clipPath 水位動畫），再演示 6-8-10 與反求一股。
   2. `quadratic` 二次函數：會轉彎的拋物線（九上數學）——座標平面描點 (−2,4)…(2,4) → 連成拋物線 → 開口上下（a 正負）→ 上下／左右平移（y＝x²+3、y＝(x−2)²）。
   - 場景元件 `PythagoreanScene`／`QuadraticScene`＋`classroom.css` 的 py-／qd- keyframes（含 reduced-motion 降級）；播放器零改動，選課卡自動變 10 張。

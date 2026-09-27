@@ -303,6 +303,43 @@ export function buildTheaterDeck(
     挑戰: nChallenge,
   };
 
+  // 同科目同難度、但落在目前年級範圍外的題，先補進該難度的池子。
+  //
+  // 為什麼需要：英語的 difficulty 幾乎等同年級（3–4＝基礎、5–6＝標準、7–9＝挑戰），
+  // 學生把年級設在 6、scope 只放大到 ±1 時「基礎」池會是空的，40% 暖身配額
+  // 就直接落到標準題，被後面的跨難度補足接手。這裡改從「同難度、年級稍遠」補，
+  // 讓暖身設計真的成立；同難度再也沒有題才維持原樣。
+  for (const d of order) {
+    const short = quotas[d] - buckets[d].length;
+    if (short <= 0) continue;
+    const inBucket = new Set(buckets[d]);
+    const candidates = base.filter(
+      (row) =>
+        row.difficulty === d &&
+        (!subject || subject === "綜合" || row.subject === subject) &&
+        !inBucket.has(row),
+    );
+    if (!candidates.length) continue;
+
+    const distances: number[] = [];
+    const byDistance = new Map<number, CurriculumQuestionRow[]>();
+    for (const row of candidates) {
+      const key = wanted == null ? 0 : Math.abs(row.grade - wanted);
+      const group = byDistance.get(key);
+      if (group) group.push(row);
+      else {
+        byDistance.set(key, [row]);
+        distances.push(key);
+      }
+    }
+    distances.sort((a, b) => a - b);
+    const ordered: CurriculumQuestionRow[] = [];
+    distances.forEach((key) => {
+      shuffleArray(byDistance.get(key) ?? [], random).forEach((row) => ordered.push(row));
+    });
+    buckets[d].push(...ordered.slice(0, short));
+  }
+
   const picked: Record<string, ClassroomChoice[]> = { 基礎: [], 標準: [], 挑戰: [] };
   for (const d of order) {
     picked[d] = buckets[d].splice(0, quotas[d]).map((row) => rowToChoice(row, random));

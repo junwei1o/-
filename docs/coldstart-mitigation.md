@@ -116,6 +116,6 @@ Render 的 **Static Sites 是永久免費**的，自帶 CDN、自動部署、自
 若要補測，指令如下（服務需先靜置超過 15 分鐘）：
 
 ```bash
-curl -s -o /dev/null -w "首字节TTFB=%{time_starttransfer}s 总计=%{time_total}s\n" \
+curl -s -o /dev/null -w "首字節TTFB=%{time_starttransfer}s 總計=%{time_total}s\n" \
   https://xue-gr3a.onrender.com/
 ```

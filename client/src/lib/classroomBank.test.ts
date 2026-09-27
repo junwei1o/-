@@ -12,6 +12,7 @@ import {
   buildImageQuiz,
   buildRelayRounds,
   buildTrueFalseDeck,
+  buildTheaterDeck,
   factorPairs,
   factorStars,
   fillToPaper,
@@ -448,5 +449,54 @@ describe("倍數防衛戰題庫", () => {
     expect(meteorChainBonus(1)).toBe(10);
     expect(meteorChainBonus(2)).toBe(25);
     expect(meteorChainBonus(3)).toBe(40);
+  });
+});
+
+
+describe("題庫劇場：難度梯度組卷（4:4:2）", () => {
+  /** 固定種子，讓組卷結果可重現。 */
+  const rng = (seed: number) => {
+    let a = seed >>> 0;
+    return () => {
+      a = (a + 0x6d2b79f5) | 0;
+      let t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  };
+  const order = { 基礎: 0, 標準: 1, 挑戰: 2 } as const;
+
+  it("每一科、每一年級都拿得到足額 10 題（不開天窗）", () => {
+    for (const subject of ["國語", "數學", "自然", "社會", "英語"] as const) {
+      for (const grade of [3, 4, 5, 6, 7, 8, 9]) {
+        const deck = buildTheaterDeck(10, subject, rng(grade * 7 + subject.length), grade);
+        expect(deck.length, `${subject} ${grade} 年級題數`).toBe(10);
+      }
+    }
+  });
+
+  it("英語六年級（±1 範圍內基礎題為 0）仍補得出 40% 暖身題", () => {
+    // 英語的 difficulty 幾乎等同年級：5、6 年級都沒有基礎題，
+    // 不補的話暖身配額會被跨難度補足吃成標準題。
+    const deck = buildTheaterDeck(10, "英語", rng(6), 6);
+    expect(deck).toHaveLength(10);
+    const basic = deck.filter((q) => q.difficulty === "基礎").length;
+    expect(basic, "英語六年級基礎題數").toBe(Math.round(10 * 0.4));
+  });
+
+  it("組卷由淺到深：基礎 → 標準 → 挑戰", () => {
+    const deck = buildTheaterDeck(10, "數學", rng(42), 5);
+    const levels = deck.map((q) => order[q.difficulty as keyof typeof order] ?? 1);
+    for (let i = 1; i < levels.length; i += 1) {
+      expect(levels[i], `第 ${i} 題難度不得低於第 ${i - 1} 題`).toBeGreaterThanOrEqual(levels[i - 1] as number);
+    }
+  });
+
+  it("題目不重複（補足邏輯不會把同一題放進兩次）", () => {
+    for (const grade of [3, 5, 6, 8]) {
+      const deck = buildTheaterDeck(10, "英語", rng(grade), grade);
+      const ids = deck.map((q) => q.id);
+      expect(new Set(ids).size, `英語 ${grade} 年級 id 唯一`).toBe(ids.length);
+    }
   });
 });
