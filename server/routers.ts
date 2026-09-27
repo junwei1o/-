@@ -184,7 +184,7 @@ export const appRouter = router({
               }),
             },
           ],
-          max_tokens: 900,
+          max_tokens: 2400,
           response_format: {
             type: "json_schema",
             json_schema: {
@@ -207,7 +207,7 @@ export const appRouter = router({
           },
         });
         const content = extractTextContent(response.choices[0]?.message.content);
-        if (!content) throw new Error("AI response content is unavailable");
+        if (!content) throw new Error(`AI response content is unavailable (finish=${response.choices[0]?.finish_reason ?? "?"})`);
         try {
           const result = parseAssistantJson(content);
           return z.object({
@@ -221,7 +221,7 @@ export const appRouter = router({
         } catch (error) {
           throw new Error(
             error instanceof AssistantJsonError
-              ? "AI explanation did not return JSON"
+              ? `AI explanation did not return JSON (finish=${response.choices[0]?.finish_reason ?? "?"}, len=${content.length})`
               : "AI explanation format is invalid",
           );
         }
@@ -265,7 +265,7 @@ export const appRouter = router({
               }),
             },
           ],
-          max_tokens: 900,
+          max_tokens: 2400,
           response_format: {
             type: "json_schema",
             json_schema: {
@@ -329,7 +329,7 @@ export const appRouter = router({
           },
         });
         const content = extractTextContent(response.choices[0]?.message.content);
-        if (!content) throw new Error("AI review plan content is unavailable");
+        if (!content) throw new Error(`AI review plan content is unavailable (finish=${response.choices[0]?.finish_reason ?? "?"})`);
         try {
           const result = parseAssistantJson(content);
           return z.object({
@@ -358,7 +358,7 @@ export const appRouter = router({
         } catch (error) {
           throw new Error(
             error instanceof AssistantJsonError
-              ? "AI review plan did not return JSON"
+              ? `AI review plan did not return JSON (finish=${response.choices[0]?.finish_reason ?? "?"}, len=${content.length})`
               : "AI review plan format is invalid",
           );
         }
@@ -376,17 +376,17 @@ export const appRouter = router({
             { role: "system", content: "你是台灣國小學生的學習陪伴者。只根據提供的真實趨勢數據說明變化，不得虛構進步、原因、分數或不存在的紀錄。請使用繁體中文、正向、具體、溫和且不誇大的語氣。求助習慣與知識點掌握度必須分開說明；提示使用不是扣分。輸出必須符合 JSON schema。" },
             { role: "user", content: JSON.stringify({ task: "請產生本期進步摘要：第一句說明求助習慣的可觀察變化，第二句說明知識點掌握度的可觀察變化，第三句給一個不超過 20 字的下一步鼓勵。若資料不足，請明確說目前仍在累積觀測，不要推測。", data: input }) },
           ],
-          max_tokens: 320,
+          max_tokens: 1000,
           response_format: { type: "json_schema", json_schema: { name: "learning_progress_summary", strict: true, schema: { type: "object", properties: { help: { type: "string", description: "求助習慣趨勢摘要，提示使用不扣分" }, mastery: { type: "string", description: "知識點掌握度趨勢摘要" }, nextStep: { type: "string", description: "一句短的正向下一步" } }, required: ["help", "mastery", "nextStep"], additionalProperties: false } } },
         });
         const content = extractTextContent(response.choices[0]?.message.content);
-        if (!content) throw new Error("AI progress summary content is unavailable");
+        if (!content) throw new Error(`AI progress summary content is unavailable (finish=${response.choices[0]?.finish_reason ?? "?"})`);
         try {
           return z.object({ help: z.string().min(1).max(260), mastery: z.string().min(1).max(260), nextStep: z.string().min(1).max(120) }).parse(parseAssistantJson(content));
         } catch (error) {
           throw new Error(
             error instanceof AssistantJsonError
-              ? "AI progress summary did not return JSON"
+              ? `AI progress summary did not return JSON (finish=${response.choices[0]?.finish_reason ?? "?"}, len=${content.length})`
               : "AI progress summary format is invalid",
           );
         }
