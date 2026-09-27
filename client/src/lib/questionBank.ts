@@ -172,6 +172,19 @@ function mergedBank(
 export type QuestionBankSource = "server" | "local";
 
 /**
+ * 「後端沒有回傳任何題目」時的共用空陣列。
+ *
+ * 為什麼不能用 `query.data?.questions ?? []`：那個字面量每次 render 都是全新參考，
+ * 而下方 mergedBank／expanded 的 WeakMap 正是以「陣列參考」當 key。線上部署是純靜態
+ * （沒有後端 API），query.data 永遠是 undefined，於是每次 re-render 都拿到新參考 →
+ * 快取永遠 miss → 重新展開 5000 題（實測每次約 2 秒主執行緒阻塞，手機上更久）。
+ *
+ * 改成模組層級的單一常數，參考永久穩定，WeakMap 只會 miss 一次，
+ * 全站所有呼叫 useQuestionBank 的頁面都只會展開一次。
+ */
+const NO_SERVER_QUESTIONS: readonly CurriculumQuestionRow[] = [];
+
+/**
  * 取得正式題庫。後端有資料時使用後端資料；後端無法連線、查詢失敗或回傳空資料時，
  * 自動改用內建的 500 題題庫，因此回傳的 isLoading 永遠不會卡住操作、error 永遠為 null。
  *
@@ -193,13 +206,13 @@ export function useQuestionBank() {
   }, []);
 
   const questions = useMemo(() => {
-    const serverQuestions = (query.data?.questions ?? []) as CurriculumQuestionRow[];
+    const serverQuestions = (query.data?.questions ?? NO_SERVER_QUESTIONS) as CurriculumQuestionRow[];
     // 後端題庫與本地題庫聯集合併（後端只收錄部分題目，本地才是完整的 5000 題），
     // 以題幹去重避免同一題出現兩次；英語 seed 固定附加（後端 schema 未收錄英語）。
     const merged = mergedBank(serverQuestions, localRows);
     return expanded(merged).map((question) => shuffleQuestionOptions(question));
   }, [query.data, localRows]);
-  const usingLocal = (query.data?.questions ?? []).length === 0 && localRows.length === 0;
+  const usingLocal = (query.data?.questions ?? NO_SERVER_QUESTIONS).length === 0 && localRows.length === 0;
   const source = (usingLocal ? "local" : "server") as QuestionBankSource;
   return {
     questions,
