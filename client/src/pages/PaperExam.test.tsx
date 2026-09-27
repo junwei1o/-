@@ -47,6 +47,8 @@ vi.mock("@/lib/trpc", () => ({
       },
     },
   },
+  // cloudSync 等自建 client 會用到這個 link；測試中回傳一個永遠離線、不發網路請求的 link。
+  staticSafeLink: () => () => ({ type: "unknown" as never, path: "noop", input: undefined, ctx: {} as never }),
 }));
 
 // 隔離 useQuestionBank：測試宇宙只含 mockQuestion，不注入本地英語 seed，維持「單題」假設。

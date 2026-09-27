@@ -83,6 +83,68 @@ let localPending: Promise<CurriculumQuestionRow[]> | null = null;
  */
 export const LOCAL_QUESTION_BANK: CurriculumQuestionRow[] = [];
 
+/**
+ * 題庫延遲載入的排程。
+ *
+ * 為什麼要延遲：兩份精簡檔解壓後共 3.0MB（國小 1.66MB ＋ 國中 1.28MB），
+ * Brotli 壓縮後 486KB，4G 實測仍要佔 1.3～1.7 秒，而且會佔用行動網路有限頻寬，
+ * 拖慢首屏的 JS／CSS。
+ *
+ * 誰真的需要它：答題頁（/practice）、錯題本、學習歷程等要拿題目出題的畫面，
+ * 以及首頁的「隨機冒險」與小測試（點下去才需要）。純看首屏的學生不需要。
+ *
+ * 為什麼不能只用 requestIdleCallback：實測它在首屏繪製完、主執行緒一空閒
+ * 就立刻觸發（headless 實測請求時間 7848ms，與首屏同時），等於沒有延後。
+ * 因此這裡在 requestIdleCallback 之外再加一道「載入事件」閘門：
+ * 學生碰到任何會出題的入口時，才真的開始下載。
+ */
+let idleScheduled = false;
+
+/** 已確認要下載題庫（首屏的主要 JS／CSS 都回應完之後才放行）。 */
+function whenFirstPaintSettled(): Promise<void> {
+  // 沒有 window（SSR／測試）→ 直接視為可以載入。
+  if (typeof window === "undefined") return Promise.resolve();
+  if (typeof requestIdleCallback !== "function") {
+    return new Promise<void>((resolve) => setTimeout(resolve, 0));
+  }
+  return new Promise<void>((resolve) => {
+    // 雙重保險：主執行緒空閒（首屏畫面已畫出）且 load 事件已觸發（關鍵資源到位）。
+    const maybeStart = () => {
+      if (idleScheduled) return;
+      if (document.readyState === "complete") {
+        idleScheduled = true;
+        resolve();
+      }
+    };
+    window.addEventListener("load", maybeStart, { once: true });
+    // load 若因故沒來（例如慢速資源），逾時後仍放行，別讓學生永遠等不到題目。
+    requestIdleCallback(maybeStart, { timeout: 4000 });
+  });
+}
+
+/**
+ * eager=false 的頁面用：等首屏完全結束後才下載題庫。
+ * 學生一進站不會立刻搶頻寬；一旦真的要答題，loadLocalBank() 會立即同步啟動。
+ */
+function waitForIdleThenLoad(): Promise<CurriculumQuestionRow[]> {
+  if (localCache) return Promise.resolve(localCache);
+  return whenFirstPaintSettled().then(() => loadLocalBank());
+}
+
+/** 請瀏覽器在首屏結束後預先載入題庫（供 App 主動呼叫的預熱入口）。 */
+export function preloadLocalBankWhenIdle(): void {
+  if (localCache || idleScheduled) return;
+  void waitForIdleThenLoad();
+}
+
+/**
+ * 學生正要答題時呼叫：立刻開始下載題庫，不等延遲排程。
+ * 回傳同一個 Promise，因此重複呼叫（例如連點兩次）只會下載一次。
+ */
+export function ensureLocalBank(): Promise<CurriculumQuestionRow[]> {
+  return loadLocalBank();
+}
+
 export function loadLocalBank(): Promise<CurriculumQuestionRow[]> {
   if (localCache) return Promise.resolve(localCache);
   if (!localPending) {
@@ -200,37 +262,54 @@ const NO_SERVER_QUESTIONS: readonly CurriculumQuestionRow[] = [];
  * 取得正式題庫。後端有資料時使用後端資料；後端無法連線、查詢失敗或回傳空資料時，
  * 自動改用內建的 500 題題庫，因此回傳的 isLoading 永遠不會卡住操作、error 永遠為 null。
  *
+ * 線上是純靜態部署（/trpc/* 一律被 SPA fallback 回 index.html），後端題庫 API 並不存在。
+ * main.tsx 的 tRPC link 層已把這些請求直接擋掉（省下每次約 2 秒的往返等待與錯誤解析），
+ * 這裡只保留 enabled 語意清楚；接上後端後 link 層自動恢復網路請求。
+ *
  * 選項展開（5000 題約 2 秒）已移到 Web Worker 執行：Worker 結果回來前，
  * 這裡回傳的是「未展開但已可作答」的 4 選題，學生可以馬上開始答；
  * 展開完成後才換成 6 選題版。因此回傳的題目數在載入完成後會增加，
  * 呼叫端不可假設題數固定（各頁面原本就以過濾／抽題方式使用，不是直接索引題庫）。
  *
  * 打亂選項順序每次作答都會重新執行（刻意讓正解位置每題不同），只花數毫秒。
+ *
+ * options.eager：預設 true＝一進頁面就下載題庫（答題頁需要立刻能出題）。
+ * 傳 false＝等首屏完全結束才下載（首頁這類「要看畫面、不急著出題」的頁面用），
+ * 省下首屏的 3MB 網路用量。學生若在等待期間就點了要出題的入口，
+ * 呼叫 ensureLocalBank() 會立刻下載，不必等排程。
  */
-export function useQuestionBank() {
-  const query = trpc.questionBank.list.useQuery({ limit: 1200 });
+export function useQuestionBank(options?: { eager?: boolean }) {
+  const eager = options?.eager ?? true;
+  const query = trpc.questionBank.list.useQuery({ limit: 1200 }, { retry: false });
   const [localRows, setLocalRows] = useState<CurriculumQuestionRow[]>([]);
   /** Worker 展開完成的題目；未完成前為 null，畫面先用未展開的 4 選題。 */
   const [expandedRows, setExpandedRows] = useState<CurriculumQuestionRow[] | null>(null);
 
   useEffect(() => {
     let alive = true;
-    loadLocalBank().then((rows) => {
+    // eager=false 的頁面（純看首屏、不出題）等首屏結束再下載 3MB 題庫。
+    const start = eager ? loadLocalBank() : waitForIdleThenLoad();
+    start.then((rows) => {
       if (alive) setLocalRows(rows);
     });
     return () => {
       alive = false;
     };
-  }, []);
+  }, [eager]);
 
+  const serverQuestions = (query.data?.questions ?? NO_SERVER_QUESTIONS) as CurriculumQuestionRow[];
+  // 還沒有任何題目來源前不要排展開作業（否則會對空陣列排一次無意義的 Promise）。
+  // 注意：後端有題目時也要能展開，不能只等本地題庫。
+  const hasBank = localRows.length > 0 || serverQuestions.length > 0;
   const merged = useMemo(() => {
-    const serverQuestions = (query.data?.questions ?? NO_SERVER_QUESTIONS) as CurriculumQuestionRow[];
+    if (!hasBank) return NO_SERVER_QUESTIONS;
     // 後端題庫與本地題庫聯集合併（後端只收錄部分題目，本地才是完整的 5000 題），
     // 以題幹去重避免同一題出現兩次；英語 seed 固定附加（後端 schema 未收錄英語）。
     return mergedBank(serverQuestions, localRows);
-  }, [query.data, localRows]);
+  }, [serverQuestions, localRows, hasBank]);
 
   useEffect(() => {
+    if (!hasBank) return;
     let alive = true;
     setExpandedRows(null);
     expandQuestions(merged).then((rows) => {
@@ -239,7 +318,7 @@ export function useQuestionBank() {
     return () => {
       alive = false;
     };
-  }, [merged]);
+  }, [merged, hasBank]);
 
   // 展開完成前先用原始 4 選題（學生可立即作答），完成後切換到 6 選題版。
   const answerable = expandedRows ?? merged;

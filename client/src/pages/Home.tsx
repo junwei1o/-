@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { AlarmClock, Backpack, BookOpenCheck, Bug, CalendarDays, ChevronLeft, ChevronRight, Coins, Compass, Crosshair, Dices, RotateCcw, ShieldAlert, Sparkles, Timer, X, Zap } from "lucide-react";
 import { toast } from "sonner";
 import { useLocation } from "wouter";
-import { useQuestionBank } from "@/lib/questionBank";
+import { ensureLocalBank, useQuestionBank } from "@/lib/questionBank";
 import { getMemoryAlarmCount, loadAdaptiveProfile } from "@/game/adaptiveLearning";
 import { getInventory } from "@/game/inventoryService";
 import { loadRpgState } from "@/game/rpgStorage";
@@ -59,7 +59,11 @@ export function buildWeeklySuggestion(records: LearningRecord[], now = Date.now(
 
 export default function Home() {
   const [, setLocation] = useLocation();
-  const { questions: questionBankRows } = useQuestionBank();
+  // 首頁只需要在「隨機冒險」與小測試被點下去時才要有題目，
+  // 因此延到瀏覽器空閒才下載 3MB 題庫，不跟首屏的 JS／CSS 搶頻寬。
+  const { questions: questionBankRows, isExpanding: bankExpanding } = useQuestionBank({ eager: false });
+  /** 題庫還沒下載／展開完成前，會出題的按鈕先顯示準備中。 */
+  const bankLoading = bankExpanding || questionBankRows.length === 0;
   const [rpgState, setRpgState] = useState(() => loadRpgState());
   const [profile, setProfile] = useState(() => loadAdaptiveProfile());
   const [inventory, setInventory] = useState(() => getInventory());
@@ -132,6 +136,8 @@ export default function Home() {
   }
 
   function openSubject(subject: KnowledgeIslandSubject) {
+    // 學生要開始答題了：立刻下載題庫（答題頁需要立刻有題目可出題）。
+    void ensureLocalBank();
     setLocation(`/practice?subject=${encodeURIComponent(subject)}&source=home-dashboard`);
   }
 
@@ -192,6 +198,8 @@ export default function Home() {
   }
 
   function startRandomAdventure() {
+    // 學生主動要答題了：若還在延遲排程中等待，立刻開始下載題庫。
+    void ensureLocalBank();
     // The unlocked-island contract intentionally remains explicit for maintainers:
     // const candidateSubjects = new Set(availableIslands.map((island) => island.subject));
     // questions.filter((question) => candidateSubjects.has(question.subject))
@@ -423,7 +431,7 @@ export default function Home() {
                 <button ref={firstActionRef} tabIndex={isActionsOpen ? 0 : -1} type="button" className="home-dashboard-action primary" onClick={() => openSubject(firstUse ? islands[0].subject : nextIsland.subject)}><BookOpenCheck size={19} aria-hidden="true" /> {firstUse ? "開始探險" : "繼續探險"}<small>{firstUse ? "從國文島・台北啟航" : `前往${nextIsland.shortTitle}`}</small></button>
                 <button tabIndex={isActionsOpen ? 0 : -1} type="button" className="home-dashboard-action" onClick={() => setLocation("/wrong-answers")}><RotateCcw size={18} aria-hidden="true" /> 錯題重練<small>整理真實作答線索</small></button>
                 <button tabIndex={isActionsOpen ? 0 : -1} type="button" className={`home-dashboard-action home-dashboard-memory-alarm ${memoryAlarmCount > 0 ? "has-due" : ""}`} onClick={() => setLocation("/review-hub")} aria-label={memoryAlarmCount > 0 ? `記憶警報，今日有 ${memoryAlarmCount} 題到期複習` : "記憶警報，目前沒有到期複習"}><AlarmClock size={18} aria-hidden="true" /> 記憶警報<small>{memoryAlarmCount > 0 ? `今日有 ${memoryAlarmCount} 題線索回來了` : "目前沒有到期題目"}</small>{memoryAlarmCount > 0 && <strong aria-hidden="true">{memoryAlarmCount}</strong>}</button>
-                <button tabIndex={isActionsOpen ? 0 : -1} type="button" className="home-dashboard-action" disabled={questions.length === 0} onClick={startRandomAdventure}><Dices size={18} aria-hidden="true" /> 隨機冒險<small>答對可獲雙倍金幣</small></button>
+                <button tabIndex={isActionsOpen ? 0 : -1} type="button" className="home-dashboard-action" disabled={bankLoading} onClick={startRandomAdventure}><Dices size={18} aria-hidden="true" /> 隨機冒險<small>{bankLoading ? "正在準備題目…" : "答對可獲雙倍金幣"}</small></button>
                 <DailySignInPill tabbable={isActionsOpen} />
               </nav>
               <HomeContactCard />
