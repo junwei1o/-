@@ -11,7 +11,8 @@ import { trpc } from "@/lib/trpc";
  */
 // 英語文題目由前端本地題庫提供（後端 question_bank subject enum 尚未收錄英語，避免改動資料庫 schema）。
 import englishSeed from "../../../data/taiwan_english_seed.json";
-import { expandQuestionBankToSix, shuffleQuestionOptions } from "./optionRandomizer";
+import { expandQuestions } from "./optionExpandScheduler";
+import { shuffleQuestionOptions } from "./optionRandomizer";
 
 /** 與後端 question_bank 資料列一致的題目欄位（去掉僅後端使用的時間戳）。 */
 export type CurriculumQuestionRow = {
@@ -111,25 +112,9 @@ export const LOCAL_ENGLISH_BANK: CurriculumQuestionRow[] = (() => {
 })();
 
 /**
- * 離線後備庫的「擴充成 6 選項」結果。擴充是純確定性運算（只依題目內容產生干擾項），
- * 因此模組載入時算一次即可，不必在每次 query.data 變動時對近千題重跑。
- * 打亂選項順序仍保留在 useQuestionBank 中每次執行（那是刻意要讓正解位置每次都不同）。
- */
-/** 擴充結果依來源陣列快取：5000 題重算一次不便宜，不該每次 render 都重跑。 */
-const expandedCache = new WeakMap<readonly CurriculumQuestionRow[], CurriculumQuestionRow[]>();
-
-function expanded(questions: readonly CurriculumQuestionRow[]): CurriculumQuestionRow[] {
-  const hit = expandedCache.get(questions);
-  if (hit) return hit;
-  const result = expandQuestionBankToSix(questions as CurriculumQuestionRow[]);
-  expandedCache.set(questions, result);
-  return result;
-}
-
-/**
  * 合併結果也要共用：useQuestionBank 每個元件各叫一次，若各自合併就會各自拿到
- * 不同的陣列，進而各自重跑一次 5000 題的展開（一次 1.4 秒，幾個畫面就卡好幾秒）。
- * 這裡用「後端陣列 → 本地陣列 → 合併結果」兩層快取，全站只展開一次。
+ * 不同的陣列，進而各自重跑一次 5000 題的展開。
+ * 這裡用「後端陣列 → 本地陣列 → 合併結果」兩層快取，全站只合併一次。
  */
 const mergedCache = new WeakMap<
   readonly CurriculumQuestionRow[],
@@ -188,12 +173,18 @@ const NO_SERVER_QUESTIONS: readonly CurriculumQuestionRow[] = [];
  * 取得正式題庫。後端有資料時使用後端資料；後端無法連線、查詢失敗或回傳空資料時，
  * 自動改用內建的 500 題題庫，因此回傳的 isLoading 永遠不會卡住操作、error 永遠為 null。
  *
- * 回傳前會把每題擴充成 6 個選項並隨機打亂順序（answer 索引同步修正），
- * 讓正確答案每次載入都出現在不同位置。
+ * 選項展開（5000 題約 2 秒）已移到 Web Worker 執行：Worker 結果回來前，
+ * 這裡回傳的是「未展開但已可作答」的 4 選題，學生可以馬上開始答；
+ * 展開完成後才換成 6 選題版。因此回傳的題目數在載入完成後會增加，
+ * 呼叫端不可假設題數固定（各頁面原本就以過濾／抽題方式使用，不是直接索引題庫）。
+ *
+ * 打亂選項順序每次作答都會重新執行（刻意讓正解位置每題不同），只花數毫秒。
  */
 export function useQuestionBank() {
   const query = trpc.questionBank.list.useQuery({ limit: 1200 });
   const [localRows, setLocalRows] = useState<CurriculumQuestionRow[]>([]);
+  /** Worker 展開完成的題目；未完成前為 null，畫面先用未展開的 4 選題。 */
+  const [expandedRows, setExpandedRows] = useState<CurriculumQuestionRow[] | null>(null);
 
   useEffect(() => {
     let alive = true;
@@ -205,13 +196,31 @@ export function useQuestionBank() {
     };
   }, []);
 
-  const questions = useMemo(() => {
+  const merged = useMemo(() => {
     const serverQuestions = (query.data?.questions ?? NO_SERVER_QUESTIONS) as CurriculumQuestionRow[];
     // 後端題庫與本地題庫聯集合併（後端只收錄部分題目，本地才是完整的 5000 題），
     // 以題幹去重避免同一題出現兩次；英語 seed 固定附加（後端 schema 未收錄英語）。
-    const merged = mergedBank(serverQuestions, localRows);
-    return expanded(merged).map((question) => shuffleQuestionOptions(question));
+    return mergedBank(serverQuestions, localRows);
   }, [query.data, localRows]);
+
+  useEffect(() => {
+    let alive = true;
+    setExpandedRows(null);
+    expandQuestions(merged).then((rows) => {
+      if (alive) setExpandedRows(rows as CurriculumQuestionRow[]);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [merged]);
+
+  // 展開完成前先用原始 4 選題（學生可立即作答），完成後切換到 6 選題版。
+  const answerable = expandedRows ?? merged;
+  const questions = useMemo(() => {
+    // 只在題庫（合併或展開）換掉時才重新洗牌，避免每個 render 都重跑。
+    return answerable.map((question) => shuffleQuestionOptions(question));
+  }, [answerable]);
+
   const usingLocal = (query.data?.questions ?? NO_SERVER_QUESTIONS).length === 0 && localRows.length === 0;
   const source = (usingLocal ? "local" : "server") as QuestionBankSource;
   return {
@@ -222,7 +231,8 @@ export function useQuestionBank() {
     error: null as null,
     refetch: query.refetch,
     source,
-    /** 後端查詢失敗而改用內建題庫時為 true（可用於顯示離線提示）。 */
+    /** 選項展開是否仍在 Web Worker 中進行（true 表示現在是 4 選題，完成後自動升級為 6 選題）。 */
+    isExpanding: expandedRows === null,
     isFallback: usingLocal && query.isError,
   };
 }

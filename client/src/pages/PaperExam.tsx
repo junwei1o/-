@@ -88,7 +88,12 @@ function errorTypeLabel(errorType: AdaptiveErrorType) {
 
 export default function PaperExam() {
   const [location, setLocation] = useLocation();
-  const { questions: questionBankRows, refetch: refetchQuestionBank, isFallback: questionBankFallback } = useQuestionBank();
+  const {
+    questions: questionBankRows,
+    refetch: refetchQuestionBank,
+    isFallback: questionBankFallback,
+    isExpanding: questionBankExpanding,
+  } = useQuestionBank();
   const questions = questionBankRows as PaperQuestion[];
   /**
    * 知識島「自主練習」用的題池：依學生年級就近取題。
@@ -885,9 +890,9 @@ function pickPoolWithCooldown(nextScope: PaperScope): PaperQuestion[] {
         <p>選擇試卷範圍後逐題作答。點選選項就會立即顯示正誤與解析，不需要交卷，也不會在作答中跳轉或重排；每題限時 30 秒，平常試卷會在題間加入 3 題配對連連看（配對成績獨立計算）。</p>
         {!paperReady && (
           <nav className="paper-home-launchpad" aria-label="學習快速入口">
-            <button type="button" className="paper-home-primary" onClick={() => requestPaperStart()} disabled={questions.length === 0}>
+            <button type="button" className="paper-home-primary" onClick={() => requestPaperStart()} disabled={questions.length === 0 || questionBankExpanding}>
               <BookOpenCheck size={20} aria-hidden="true" />
-              <span><strong>開始今日試卷</strong><small>依目前選擇建立固定題組</small></span>
+              <span><strong>開始今日試卷</strong><small>{questionBankExpanding ? "正在準備選項…" : "依目前選擇建立固定題組"}</small></span>
             </button>
             <button type="button" className="paper-home-secondary" onClick={() => setLocation("/map")}>
               <MapPinned size={19} aria-hidden="true" />
@@ -929,8 +934,8 @@ function pickPoolWithCooldown(nextScope: PaperScope): PaperQuestion[] {
           ))}
         </div>
         {!paperReady && (
-          <button type="button" className="paper-primary-button" onClick={() => requestPaperStart()} disabled={questions.length === 0}>
-            <BookOpenCheck size={19} aria-hidden="true" /> 建立試卷
+          <button type="button" className="paper-primary-button" onClick={() => requestPaperStart()} disabled={questions.length === 0 || questionBankExpanding}>
+            <BookOpenCheck size={19} aria-hidden="true" /> {questionBankExpanding ? "正在準備選項…" : "建立試卷"}
           </button>
         )}
         {questionBankFallback && <p className="paper-error" role="status"><CircleAlert size={17} aria-hidden="true" /> 線上題庫暫時無法連線，已改用內建題庫（{questions.length} 題），可直接離線作答。<button type="button" onClick={() => refetchQuestionBank()}>重新連線</button></p>}
