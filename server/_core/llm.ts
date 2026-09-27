@@ -108,6 +108,26 @@ export type JsonSchema = {
 
 export type OutputSchema = JsonSchema;
 
+/**
+ * 把模型回傳的 content 攤平成純文字。
+ *
+ * OpenAI 相容供應商回 `content: string` 與回
+ * `content: [{ type: "text", text: "…" }, …]` 都很常見；只判斷
+ * `typeof content === "string"` 會把後者當成「沒有回覆」，整支 AI 功能直接失敗。
+ * 取不到任何文字時回傳空字串，由呼叫端決定錯誤訊息。
+ */
+export function extractTextContent(
+  content: string | Array<TextContent | ImageContent | FileContent> | undefined,
+): string {
+  if (typeof content === "string") return content.trim();
+  if (!Array.isArray(content)) return "";
+  const parts: string[] = [];
+  for (const part of content) {
+    if (part && part.type === "text" && typeof part.text === "string") parts.push(part.text);
+  }
+  return parts.join("").trim();
+}
+
 export type ResponseFormat =
   | { type: "text" }
   | { type: "json_object" }

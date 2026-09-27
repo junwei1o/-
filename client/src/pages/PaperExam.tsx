@@ -5,6 +5,7 @@ import { useQuestionBank } from "@/lib/questionBank";
 import { loadStudentGradePreference } from "@/lib/studentGradePreference";
 import { getSubjectStudyTips, GENERAL_STUDY_TIPS } from "@/lib/studyTips";
 import { SpeechReadableText } from "@/components/SpeechReadableText";
+import { PaperWrongList } from "@/components/PaperWrongList";
 import { SpeechReadButton } from "@/components/SpeechReadButton";
 import { AiReviewPlanCard } from "@/components/AiReviewPlanCard";
 import { QuestionTransition } from "@/components/QuestionTransition";
@@ -287,13 +288,29 @@ export default function PaperExam() {
     if (current) startedAtRef.current = Date.now();
   }, [current?.id]);
 
+  // AI 複習計畫：篩選變動後先等一下再打。
+  // 原本每次依賴變動就立刻 mutate，快速切換篩選會連發多次請求、
+  // 後到的回覆也可能覆蓋先到的（同一個 mutation 只有一份狀態）。
+  // 這裡防抖 400ms，並用「請求內容簽章」擋掉重複請求。
+  const planRequestKeyRef = useRef<string | null>(null);
+  const [planQueued, setPlanQueued] = useState(false);
   useEffect(() => {
     if (!showSummary || filteredWrongQuestions.length === 0) {
+      planRequestKeyRef.current = null;
+      setPlanQueued(false);
       reviewPlan.reset();
       return;
     }
-    reviewPlan.reset();
-    reviewPlan.mutate(reviewPlanPayload);
+    const requestKey = JSON.stringify(reviewPlanPayload);
+    if (requestKey === planRequestKeyRef.current) return;
+    setPlanQueued(true);
+    const timer = window.setTimeout(() => {
+      planRequestKeyRef.current = requestKey;
+      setPlanQueued(false);
+      reviewPlan.reset();
+      reviewPlan.mutate(reviewPlanPayload);
+    }, 400);
+    return () => window.clearTimeout(timer);
   }, [showSummary, filteredWrongQuestions.length, wrongReasonFilter, wrongSubjectFilter, reviewPlanPayload, reviewPlan.reset, reviewPlan.mutate]);
 
   useEffect(() => {
@@ -1115,41 +1132,14 @@ function pickPoolWithCooldown(nextScope: PaperScope): PaperQuestion[] {
               </div>
               {filteredWrongQuestions.length > 0 ? <>
                 <AiReviewPlanCard
-                  isPending={reviewPlan.isPending}
+                  isPending={reviewPlan.isPending || planQueued}
                   error={Boolean(reviewPlan.error)}
                   data={reviewPlan.data}
                   filteredCount={filteredWrongQuestions.length}
                   knowledgeMastery={knowledgeMastery}
                   onRetry={() => reviewPlan.mutate(reviewPlanPayload)}
                 />
-                <div className="paper-wrong-list">
-                {filteredWrongQuestions.map((question) => {
-                  const selectedAnswer = answers[question.id];
-                  const isOrderQuestion = question.questionType === "排序題";
-                  const selectedText = isOrderQuestion
-                    ? selectedAnswer === 0 ? "順序正確" : "順序錯誤或未完成"
-                    : selectedAnswer !== undefined && selectedAnswer >= 0 ? question.options[selectedAnswer] : "（未作答）";
-                  const correctText = isOrderQuestion
-                    ? (question.orderItems ?? []).join(" → ")
-                    : question.options[question.answer];
-                  return (
-                    <article key={`summary-${question.id}`} className="paper-wrong-card">
-                      <p className="paper-question-meta">第 {deck.indexOf(question) + 1} 題 · {question.subject} · {question.learningTopic}{question.questionType === "填空題" ? " · 填空題" : isOrderQuestion ? " · 排序題" : ""}</p>
-                      <SpeechReadableText as="h3" text={question.prompt} label="錯題題目" className="paper-wrong-prompt" compact={false} />
-                      <div className="paper-wrong-answer-grid">
-                        <p><span>你的作答</span><SpeechReadableText as="strong" text={selectedText} label="你的作答" compact /></p>
-                        <p><span>正確答案</span><SpeechReadableText as="strong" text={correctText} label="正確答案" compact /></p>
-                      </div>
-                      {isOrderQuestion && (
-                        <ol className="paper-order-answer" style={{ margin: "4px 0 8px", paddingLeft: 20, fontSize: 14, lineHeight: 1.8 }}>
-                          {(question.orderItems ?? []).map((item, index) => <li key={`${item}-${index}`}>{item}</li>)}
-                        </ol>
-                      )}
-                      <SpeechReadableText as="p" text={question.explanation} label="錯題詳細解析" className="paper-explanation" compact={false} />
-                    </article>
-                  );
-                })}
-                </div>
+                <PaperWrongList questions={filteredWrongQuestions} answers={answers} deck={deck} />
               </> : <aside className="paper-summary-empty-filter" aria-live="polite"><strong>找不到符合條件的錯題</strong><span>請清除篩選，或換一個題型與錯誤原因。</span></aside>}
             </div>
           ) : (

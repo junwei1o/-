@@ -1,26 +1,13 @@
 import React, { useMemo } from "react";
 import { ArrowLeft, GraduationCap, Award, Trophy, CalendarDays, RotateCcw } from "lucide-react";
 import { useLocation } from "wouter";
-import {
-  loadAdaptiveProfile,
-  isGraduated,
-  getGraduationDate,
-} from "@/game/adaptiveLearning";
-import { useQuestionBank } from "@/lib/questionBank";
-import type { KnowledgeIslandSubject } from "@/lib/studentKnowledgeIslands";
+import { loadAdaptiveProfile } from "@/game/adaptiveLearning";
+import { useQuestionLookup } from "@/lib/questionLookup";
+import { collectGraduatedGroups } from "@/lib/wrongBook";
 import "./HomeDashboard.css";
 
-const SUBJECTS: KnowledgeIslandSubject[] = ["國語", "數學", "社會", "自然"];
 /** 累計畢業題數的成就里程碑。 */
 const MILESTONES = [1, 5, 10, 25, 50, 100];
-
-type GradItem = {
-  questionId: string;
-  subject: KnowledgeIslandSubject;
-  prompt: string;
-  knowledge: string[];
-  graduatedAt: number | null;
-};
 
 function formatDate(timestamp: number | null): string {
   if (!timestamp) return "日期未記錄";
@@ -32,41 +19,13 @@ function formatDate(timestamp: number | null): string {
 
 export default function GraduationHall() {
   const [, setLocation] = useLocation();
-  const { questions } = useQuestionBank();
+  const lookup = useQuestionLookup();
+  const profile = useMemo(() => loadAdaptiveProfile(), []);
 
-  const groups = useMemo(() => {
-    const profile = loadAdaptiveProfile();
-    const byId = new Map(questions.map((question) => [question.id, question]));
-
-    const metaByQuestion = new Map<string, { subject: string; knowledge: string[] }>();
-    profile.attempts.forEach((attempt) => {
-      metaByQuestion.set(attempt.questionId, {
-        subject: attempt.curriculumDomain,
-        knowledge: attempt.knowledge ?? [],
-      });
-    });
-
-    const items: GradItem[] = [];
-    metaByQuestion.forEach((meta, questionId) => {
-      if (!isGraduated(profile.attempts, questionId)) return;
-      const question = byId.get(questionId);
-      items.push({
-        questionId,
-        subject: meta.subject as KnowledgeIslandSubject,
-        prompt: question?.prompt ?? `（題目資料待補）${meta.knowledge.join("、") || questionId}`,
-        knowledge: question?.knowledge?.length ? question.knowledge : meta.knowledge,
-        graduatedAt: getGraduationDate(profile.attempts, questionId),
-      });
-    });
-
-    // 各科目分組；組內最近畢業的排前面。
-    return SUBJECTS.map((subject) => ({
-      subject,
-      items: items
-        .filter((item) => item.subject === subject)
-        .sort((a, b) => (b.graduatedAt ?? 0) - (a.graduatedAt ?? 0)),
-    })).filter((group) => group.items.length > 0);
-  }, [questions]);
+  const groups = useMemo(
+    () => collectGraduatedGroups(profile, lookup),
+    [profile, lookup],
+  );
 
   const total = groups.reduce((count, group) => count + group.items.length, 0);
   const latestDate = groups.reduce((latest, group) => {

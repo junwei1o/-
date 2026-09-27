@@ -18,7 +18,7 @@ import {
 import { TARGETED_PRACTICE_ITEMS, summarizeTargetedPractice } from "./targetedPractice";
 import { COOKIE_NAME } from "@shared/const";
 import { z } from "zod";
-import { invokeLLM } from "./_core/llm";
+import { extractTextContent, invokeLLM } from "./_core/llm";
 import { ENV } from "./_core/env";
 import {
   createAssignment,
@@ -206,8 +206,8 @@ export const appRouter = router({
             },
           },
         });
-        const content = response.choices[0]?.message.content;
-        if (typeof content !== "string") throw new Error("AI response content is unavailable");
+        const content = extractTextContent(response.choices[0]?.message.content);
+        if (!content) throw new Error("AI response content is unavailable");
         try {
           const result = JSON.parse(content);
           return z.object({
@@ -324,8 +324,8 @@ export const appRouter = router({
             },
           },
         });
-        const content = response.choices[0]?.message.content;
-        if (typeof content !== "string") throw new Error("AI review plan content is unavailable");
+        const content = extractTextContent(response.choices[0]?.message.content);
+        if (!content) throw new Error("AI review plan content is unavailable");
         try {
           const result = JSON.parse(content);
           return z.object({
@@ -371,8 +371,8 @@ export const appRouter = router({
           max_tokens: 320,
           response_format: { type: "json_schema", json_schema: { name: "learning_progress_summary", strict: true, schema: { type: "object", properties: { help: { type: "string", description: "求助習慣趨勢摘要，提示使用不扣分" }, mastery: { type: "string", description: "知識點掌握度趨勢摘要" }, nextStep: { type: "string", description: "一句短的正向下一步" } }, required: ["help", "mastery", "nextStep"], additionalProperties: false } } },
         });
-        const content = response.choices[0]?.message.content;
-        if (typeof content !== "string") throw new Error("AI progress summary content is unavailable");
+        const content = extractTextContent(response.choices[0]?.message.content);
+        if (!content) throw new Error("AI progress summary content is unavailable");
         try {
           return z.object({ help: z.string().min(1).max(260), mastery: z.string().min(1).max(260), nextStep: z.string().min(1).max(120) }).parse(JSON.parse(content));
         } catch {
@@ -480,8 +480,8 @@ export const appRouter = router({
         // 沒自備代理 → 用伺服器內建供應商鏈（Groq/Cerebras/…，取決於 ENV）；
         // 完全沒設金鑰時 invokeLLM 會拋錯，客戶端同樣降級到離線規則腦。
         const response = await invokeLLM({ messages, max_tokens: 220 });
-        const content = response.choices[0]?.message.content;
-        if (typeof content !== "string" || content.trim().length === 0) {
+        const content = extractTextContent(response.choices[0]?.message.content);
+        if (!content) {
           throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "學習模型沒有回覆" });
         }
         const usage = response.usage
@@ -492,7 +492,7 @@ export const appRouter = router({
             }
           : null;
         await recordReflectUsage(input.studentName, usage);
-        return { text: content.trim(), source: "builtin" as const, remaining: gate.remaining, usage };
+        return { text: content, source: "builtin" as const, remaining: gate.remaining, usage };
       }),
   }),
   questionBank: router({

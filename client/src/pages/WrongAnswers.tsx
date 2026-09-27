@@ -3,63 +3,21 @@ import { ArrowLeft, RotateCcw, Flame, Play, GraduationCap } from "lucide-react";
 import { useLocation } from "wouter";
 import {
   loadAdaptiveProfile,
-  isInWrongBook,
-  getCorrectStreak,
-  getRemainingToGraduate,
   WRONG_GRADUATION_STREAK,
 } from "@/game/adaptiveLearning";
-import { useQuestionBank } from "@/lib/questionBank";
-import type { KnowledgeIslandSubject } from "@/lib/studentKnowledgeIslands";
+import { useQuestionLookup } from "@/lib/questionLookup";
+import { collectWrongBookGroups } from "@/lib/wrongBook";
 import "./HomeDashboard.css";
-
-const SUBJECTS: KnowledgeIslandSubject[] = ["國語", "數學", "社會", "自然"];
-
-type WrongItem = {
-  questionId: string;
-  subject: KnowledgeIslandSubject;
-  prompt: string;
-  knowledge: string[];
-  streak: number;
-  remaining: number;
-};
 
 export default function WrongAnswers() {
   const [, setLocation] = useLocation();
-  const { questions } = useQuestionBank();
+  const lookup = useQuestionLookup();
+  const profile = useMemo(() => loadAdaptiveProfile(), []);
 
-  const groups = useMemo(() => {
-    const profile = loadAdaptiveProfile();
-    const byId = new Map(questions.map((question) => [question.id, question]));
-
-    // 每題取一筆代表紀錄（拿科目與知識點），再只保留仍在錯題本的題。
-    const metaByQuestion = new Map<string, { subject: string; knowledge: string[] }>();
-    profile.attempts.forEach((attempt) => {
-      metaByQuestion.set(attempt.questionId, {
-        subject: attempt.curriculumDomain,
-        knowledge: attempt.knowledge ?? [],
-      });
-    });
-
-    const items: WrongItem[] = [];
-    metaByQuestion.forEach((meta, questionId) => {
-      if (!isInWrongBook(profile.attempts, questionId)) return;
-      const question = byId.get(questionId);
-      items.push({
-        questionId,
-        subject: meta.subject as KnowledgeIslandSubject,
-        prompt: question?.prompt ?? `（題目資料待補）${meta.knowledge.join("、") || questionId}`,
-        knowledge: question?.knowledge?.length ? question.knowledge : meta.knowledge,
-        streak: getCorrectStreak(profile.attempts, questionId),
-        remaining: getRemainingToGraduate(profile.attempts, questionId),
-      });
-    });
-
-    // 各科目分組；科目內把「越接近畢業」的題排前面，營造再一下就解掉的動力。
-    return SUBJECTS.map((subject) => ({
-      subject,
-      items: items.filter((item) => item.subject === subject).sort((a, b) => a.remaining - b.remaining),
-    })).filter((group) => group.items.length > 0);
-  }, [questions]);
+  const groups = useMemo(
+    () => collectWrongBookGroups(profile, lookup),
+    [profile, lookup],
+  );
 
   const totalWrong = groups.reduce((count, group) => count + group.items.length, 0);
   const almostDone = groups.reduce(
