@@ -9,13 +9,13 @@ import TopNavigation from "@/components/TopNavigation";
 import BxEnhance from "@/components/bx/BxEnhance";
 import CloudModePrompt from "@/components/CloudModePrompt";
 import AuthGate from "@/components/AuthGate";
-import Home from "@/pages/Home";
 import { initGameData } from "@/utils/storage";
-// 5000 題內建題庫合計約 2.7MB：不在開站關鍵路徑 static 載入，改於下方 useEffect
-// 在瀏覽器閒置時才動態 import 預載，避免與首屏搶頻寬。
 import { OfflineBanner } from "@/components/OfflineBanner";
 
-// 路由懶加載：首頁與導覽保持直接載入（首屏最快），其餘頁面進入時才下載。
+// 路由懶加載：首頁也一併懶加載——它是唯一會帶入 5000 題內建題庫的頁面，
+// 而題庫對「只想登入看看首頁」的學生完全不需要。靜態 import 會讓 Home 的
+// 模組層級副作用在登入閘道顯示 LoginPage 時就被拉進來，徒增 3MB 下載。
+const Home = React.lazy(() => import("@/pages/Home"));
 const PaperExam = React.lazy(() => import("./pages/PaperExam"));
 const MatchingPage = React.lazy(() => import("./pages/MatchingPage"));
 const RegionDetail = React.lazy(() => import("./pages/RegionDetail"));
@@ -140,25 +140,13 @@ function Router() {
 function App() {
   useEffect(() => {
     initGameData();
-    // 題庫合計約 2.7MB，不在開站關鍵路徑與首屏搶頻寬：等瀏覽器閒置（最長 2.5s）
-    // 再背景預載；不支援 requestIdleCallback 的瀏覽器退為 1.2s 後執行。
-    let handle: number;
-    const preload = () => {
-      // 動態 import：確保題庫模組本身也不站在開站關鍵路徑上。
-      void import("@/lib/questionBank").then((m) => m.loadLocalBank());
-    };
-    if (typeof window.requestIdleCallback === "function") {
-      handle = window.requestIdleCallback(preload, { timeout: 2500 });
-    } else {
-      handle = window.setTimeout(preload, 1200);
-    }
-    return () => {
-      if (typeof window.cancelIdleCallback === "function") {
-        window.cancelIdleCallback(handle);
-      } else {
-        window.clearTimeout(handle);
-      }
-    };
+    // 註：這裡刻意「不」預載 5000 題內建題庫。
+    // 舊實作會在 requestIdleCallback(2.5s) 後無條件 import 題庫，但：
+    //   1) 未登入時 AuthGate 只顯示 LoginPage，學生根本沒有要答題，
+    //      卻照樣吃掉 3MB 下載（實測登入頁也會載入，徒佔行動頻寬）。
+    //   2) 登入後首頁 Home 的 useQuestionBank({ eager: false }) 已經會在
+    //      load 事件後自行下載；學生主動點答題時 ensureLocalBank() 更會立即拉。
+    // 題庫載入的唯一入口因此集中在 lib/questionBank，行為一致且不會多載。
   }, []);
 
   return (
