@@ -1072,6 +1072,24 @@
 .answer-board-table tbody tr.is-me { background: color-mix(in srgb, var(--tidal) 10%, var(--white)); }
 .answer-board-table tbody tr.is-me:hover { background: color-mix(in srgb, var(--tidal) 14%, var(--white)); }
 
+/* ── O8：手機端 8 欄放不下（容器 ~327px / 內容 720px），前兩欄凍結、其餘橫向捲動 ──
+   ① collapse 改 separate：collapse 模式下 sticky 儲存格的框線會脫落。
+   ② 凍結欄底色固定 #fffefb，與 .paper-exam-panel 一致，捲動時才不會透出下層列。
+   ③ 凍結欄必須各自補上 hover / 我的紀錄底色，否則會蓋住列底色。 */
+.answer-board-table { border-collapse: separate; border-spacing: 0; }
+.answer-board-table th:nth-child(1),
+.answer-board-table td:nth-child(1) { position: sticky; left: 0; width: 56px; min-width: 56px; z-index: 1; background: #fffefb; }
+.answer-board-table th:nth-child(2),
+.answer-board-table td:nth-child(2) { position: sticky; left: 56px; min-width: 128px; white-space: nowrap; z-index: 1; background: #fffefb; box-shadow: 7px 0 8px -7px rgba(18,62,74,.5); }
+.answer-board-table th:nth-child(1),
+.answer-board-table th:nth-child(2) { z-index: 2; }
+.answer-board-table tbody tr.is-me td:nth-child(1),
+.answer-board-table tbody tr.is-me td:nth-child(2) { background: color-mix(in srgb, var(--tidal) 10%, #fffefb); }
+.answer-board-table tbody tr:hover td:nth-child(1),
+.answer-board-table tbody tr:hover td:nth-child(2) { background: color-mix(in srgb, var(--tidal) 6%, #fffefb); }
+.answer-board-table tbody tr.is-me:hover td:nth-child(1),
+.answer-board-table tbody tr.is-me:hover td:nth-child(2) { background: color-mix(in srgb, var(--tidal) 14%, #fffefb); }
+
 .answer-board-rank-badge { display: inline-flex; align-items: center; gap: 3px; font-weight: 800; font-size: 13px; color: var(--muted); }
 .answer-board-rank-badge.rank-1 { color: var(--yellow); }
 .answer-board-rank-badge.rank-2 { color: var(--muted); }
