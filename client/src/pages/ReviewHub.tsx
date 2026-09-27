@@ -3,6 +3,7 @@ import { useLocation } from "wouter";
 import { AlarmClock, CheckCircle2, Coins, RotateCcw, ShieldAlert, Sparkles, TrendingUp } from "lucide-react";
 import { toast } from "sonner";
 import { useQuestionBank } from "@/lib/questionBank";
+import { useQuestionLookup, type LookupQuestion } from "@/lib/questionLookup";
 import { loadAdaptiveProfile, recordAdaptiveAttempt, saveAdaptiveProfile, type AdaptiveDifficulty } from "@/game/adaptiveLearning";
 import { getPlayerData, updatePlayerData } from "@/utils/storage";
 import { createWrongReviewReplacement, ensureTargetedPracticeLoaded } from "@/lib/targetedPractice";
@@ -60,7 +61,18 @@ export default function ReviewHub() {
     };
   }, []);
 
-  const bankById = useMemo(() => new Map(questions.map((question) => [question.id, question])), [questions]);
+  // 試卷 deck 會混入 fill_bank / order_bank 的題目（見 paperExam.mixPaperVariants），
+  // 但主題庫（useQuestionBank）沒有它們；只用主題庫時這些題會被 buildReviewDeck
+  // 的 `if (!original) continue` 靜默略過，錯題複習永遠等不到它們。
+  // 排序題沒有 options（orderToPaper 會留空），本頁以選項按鈕作答、無法呈現，仍需排除。
+  const lookup = useQuestionLookup();
+  const bankById = useMemo(() => {
+    const map = new Map<string, LookupQuestion>();
+    lookup.forEach((question, id) => {
+      if (question.options && question.options.length > 0) map.set(id, question);
+    });
+    return map;
+  }, [lookup]);
   const replace = useMemo(() => createWrongReviewReplacement(questions), [questions]);
   const due = useMemo(() => collectDueReviews(profile), [profile]);
   // targetedVersion 只作「備用題庫載入完成後重組」的信號，不參與計算。

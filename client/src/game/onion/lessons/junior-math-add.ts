@@ -359,7 +359,7 @@ const JH_MATH_PROBABILITY_TREE: OnionLesson = {
   ],
   frames: [
     { id: 1, step: "步驟 1：什麼是機率", caption: "你看，機率就是想要的情形除以所有可能的情形，先把全部列出來才不會漏。", action: "wave", prop: { kind: "text", text: "機率 ＝ 想要 ÷ 全部", sub: "一定是 0 到 1 之間", tone: "ok" }, duration: 3200 },
-    { id: 2, step: "步驟 2：抛硬幣的樹", caption: "我們先看抛一枚硬幣：可能出現正面或反面，各 1 種，總共 2 種可能。", action: "point", prop: { kind: "flow", steps: ["開始", "正面", "反面"], active: 0 }, duration: 3400 },
+    { id: 2, step: "步驟 2：拋硬幣的樹", caption: "我們先看拋一枚硬幣：可能出現正面或反面，各 1 種，總共 2 種可能。", action: "point", prop: { kind: "flow", steps: ["開始", "正面", "反面"], active: 0 }, duration: 3400 },
     { id: 3, step: "步驟 3：連拋兩次的樹", caption: "連拋兩次哦：正正、正反、反正、反反，用樹狀圖就能列出全部 4 種結果。", action: "think", prop: { kind: "flow", steps: ["第1次：正/反", "正正", "正反", "反正", "反反"], active: 1 }, duration: 3600 },
     { id: 4, step: "步驟 4：試算兩次組合", caption: "你算算看：連拋兩枚硬幣，恰好出現一正一反的情形，總共有幾種？", action: "think", prop: { kind: "flow", steps: ["正正", "正反", "反正", "反反"], active: 1 }, duration: 3600, ask: { prompt: "兩枚硬幣恰好一正一反，有幾種情形？", options: ["2 種", "1 種", "3 種", "4 種"], answer: 0, hint: "一正一反包含兩種順序：第一次正第二次反，以及第一次反第二次正。" } },
     { id: 5, step: "步驟 5：機率在 0 到 1", caption: "記得哦，機率一定落在 0 到 1 之間：一定發生是 1、絕不會發生是 0。", action: "point", prop: { kind: "text", text: "0 ≦ 機率 ≦ 1\n必然＝1　不可能＝0", sub: "機率不會超過 1", tone: "ok" }, duration: 3400 },
@@ -370,7 +370,7 @@ const JH_MATH_PROBABILITY_TREE: OnionLesson = {
   ],
   questions: [
     { id: "jh-math-probability-tree-1", prompt: "機率的計算方式是？", options: ["全部 ÷ 想要", "想要 ÷ 全部", "想要 × 全部", "全部 − 想要"], answer: 1, hints: ["看符合的佔全部幾分之幾", "分子是符合條件的情形數"], explanation: "機率 ＝ 想要的情形數 ÷ 所有可能的情形數。" },
-    { id: "jh-math-probability-tree-2", prompt: "抛一枚硬幣出正面的機率是？", options: ["1", "0", "1/2", "1/4"], answer: 2, hints: ["只有正面、反面兩種結果", "正面佔其中幾種"], explanation: "兩種等可能結果中正面佔 1 種，機率 1/2。" },
+    { id: "jh-math-probability-tree-2", prompt: "拋一枚硬幣出正面的機率是？", options: ["1", "0", "1/2", "1/4"], answer: 2, hints: ["只有正面、反面兩種結果", "正面佔其中幾種"], explanation: "兩種等可能結果中正面佔 1 種，機率 1/2。" },
     { id: "jh-math-probability-tree-3", prompt: "兩枚硬幣恰好一正一反的機率是？", options: ["1/4", "3/4", "2/3", "1/2"], answer: 3, hints: ["正反、反正兩種順序都算", "全部共有 4 種結果"], explanation: "一正一反有『正反、反正』2 種，共 4 種，機率 2/4 ＝ 1/2。" },
     { id: "jh-math-probability-tree-4", prompt: "兩枚硬幣至少一面是正面的機率是？", options: ["3/4", "1/2", "1/4", "2/3"], answer: 0, hints: ["先找完全不符合的那一種", "符合的再除以全部 4 種"], explanation: "4 種中除『反反』外都符合，共 3 種，機率 3/4。" },
     { id: "jh-math-probability-tree-5", prompt: "擲一顆骰子，點數大於 4 的機率是？", options: ["1/2", "1/3", "2/3", "1/6"], answer: 1, hints: ["點數 1 到 6 共 6 種", "大於 4 的有哪幾個"], explanation: "6 種等可能中，5 和 6 兩種符合，機率 2/6 ＝ 1/3。" },

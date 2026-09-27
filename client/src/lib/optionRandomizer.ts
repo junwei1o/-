@@ -695,7 +695,7 @@ export function borrowingCandidates(
     }
     // 語意關聯：長選項需共享實詞二元詞，且內容字覆蓋率達一定比例（防止只靠一個常見詞通過）；
     // 短選項（字詞題）僅開放同主題池，且需共享至少 2 個實字。
-    // 内容字同時排除功能字與高頻通用停用詞（如「學校」「學生」），避免通用詞灌水關聯分數。
+    // 內容字同時排除功能字與高頻通用停用詞（如「學校」「學生」），避免通用詞灌水關聯分數。
     const candidateContentChars = (candidate.match(/[\u4e00-\u9fff]/g) ?? []).filter(
       (character) => !FUNCTION_CHARACTERS.test(character) && !GENERIC_STOP_CHARS.has(character),
     );

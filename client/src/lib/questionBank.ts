@@ -137,9 +137,13 @@ const mergedCache = new WeakMap<
 >();
 
 /**
- * 題幹正規化：用來把後端題庫與本地題庫重疊的題目去掉。
+ * 題幹正規化：用來把「同一題同時存在於後端與本地」的重疊去掉。
  * 沒有題幹的資料列（例如只帶 id 的測試假資料）改用 id 判斷，
  * 否則會被當成同一題刪到只剩一題。
+ *
+ * ⚠ 這個鍵只能比對「不同來源」，不能在同一來源內使用：
+ * 本地題庫有大量共用模板題幹的題目（「下列四句英語的敘述中，有一句觀念錯誤」
+ * 就有 44 題，選項與答案各不相同），同源內去重會把它們一次刪光。
  */
 function dedupeKey(question: CurriculumQuestionRow): string {
   const prompt = String(question.prompt ?? "").replace(/\s+/g, "");
@@ -157,15 +161,38 @@ function mergedBank(
   }
   const hit = inner.get(localRows);
   if (hit) return hit;
-  const seen = new Set<string>();
-  const merged: CurriculumQuestionRow[] = [];
-  for (const question of [...serverQuestions, ...localRows, ...LOCAL_ENGLISH_BANK]) {
-    const key = dedupeKey(question);
-    if (seen.has(key)) continue;
-    seen.add(key);
-    merged.push(question);
-  }
+  const merged = mergeAcrossSources([serverQuestions, localRows, LOCAL_ENGLISH_BANK]);
   inner.set(localRows, merged);
+  return merged;
+}
+
+/**
+ * 依序合併多個題庫來源，只在「跨來源」去重。
+ *
+ * 比對的是「前面所有來源」的題幹，同一個來源內部不互相比對 ——
+ * 因此同一份檔案裡共用模板題幹、但選項與答案不同的題目會全部保留。
+ * 實測：改用這個邏輯後，可用題庫從 3906 題恢復到 4991 題（+1085），
+ * 其中英語模板題（「下列四句英語的敘述中，有一句觀念錯誤」共 44 題）從 1 題回到 44 題。
+ *
+ * 匯出是為了讓單元測試直接覆蓋這段邏輯（mergedBank 本身有快取、難以重複呼叫）。
+ */
+export function mergeAcrossSources(
+  sources: ReadonlyArray<readonly CurriculumQuestionRow[]>,
+): CurriculumQuestionRow[] {
+  const merged: CurriculumQuestionRow[] = [];
+  const seenInEarlierSources = new Set<string>();
+
+  for (const rows of sources) {
+    const keysOfThisSource = new Set<string>();
+    for (const question of rows) {
+      const key = dedupeKey(question);
+      keysOfThisSource.add(key);
+      if (seenInEarlierSources.has(key)) continue;
+      merged.push(question);
+    }
+    keysOfThisSource.forEach((key) => seenInEarlierSources.add(key));
+  }
+
   return merged;
 }
 

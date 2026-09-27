@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { beforeAll, describe, expect, it } from "vitest";
-import { loadLocalBank, LOCAL_ENGLISH_BANK, LOCAL_QUESTION_BANK } from "./questionBank";
+import { loadLocalBank, LOCAL_ENGLISH_BANK, LOCAL_QUESTION_BANK, mergeAcrossSources } from "./questionBank";
+import type { CurriculumQuestionRow } from "./questionBank";
 import { loadStudentGradePreference, STUDENT_GRADE_PREFERENCE_STORAGE_KEY } from "./studentGradePreference";
 
 // 題庫 2.7MB 採動態載入，測試必須等它讀進來才能看到內容。
@@ -100,5 +101,78 @@ describe("年級偏好：內容等級上限六年級", () => {
       expect(loadStudentGradePreference()).toBe(expected);
     }
     localStorage.clear();
+  });
+});
+
+
+describe("mergeAcrossSources：只在跨來源去重", () => {
+  /** 造一列合法題目；prompt 與 answer 可覆寫以便模擬「同題幹不同答案」。 */
+  const row = (
+    id: string,
+    prompt: string,
+    answer = 0,
+    subject: CurriculumQuestionRow["subject"] = "國語",
+  ): CurriculumQuestionRow => ({
+    id,
+    grade: 3,
+    subject,
+    questionType: "選擇題",
+    difficulty: "基礎",
+    curriculumDomain: "語文領域",
+    learningTopic: "測試主題",
+    prompt,
+    options: ["甲", "乙", "丙", "丁"],
+    answer,
+    explanation: "解析",
+    knowledge: ["知識點"],
+  });
+
+  const TEMPLATE = "下列四句英語的敘述中，有一句觀念錯誤，是哪一句？";
+
+  it("同一來源內共用模板題幹的題目全部保留（這是回歸重點）", () => {
+    // 本地題庫就是這種型態：同題幹、不同選項與答案，共 44 題
+    const local = [
+      row("a1", TEMPLATE, 0),
+      row("a2", TEMPLATE, 1),
+      row("a3", TEMPLATE, 2),
+      row("a4", TEMPLATE, 3),
+    ];
+    const merged = mergeAcrossSources([[], local]);
+    expect(merged).toHaveLength(4);
+    expect(new Set(merged.map((q) => q.id)).size).toBe(4);
+  });
+
+  it("跨來源同題只留最先出現的那份", () => {
+    const server = [row("s1", "同一題", 1), row("s2", "後端獨有", 0)];
+    const local = [row("l1", "同一題", 3), row("l2", "本地獨有", 2)];
+    const merged = mergeAcrossSources([server, local]);
+    expect(merged.map((q) => q.id)).toEqual(["s1", "s2", "l2"]);
+  });
+
+  it("第三個來源跟「前兩個」比對，但不會跟自己比對", () => {
+    const server = [row("s1", "前源已有", 0)];
+    const local = [row("l1", "前源已有", 1)];
+    const third = [
+      row("e1", "前源已有", 2),           // 前源已有 → 略過
+      row("e2", "第三源自己有兩題", 3),   // 第三源內部不去重
+      row("e3", "第三源自己有兩題", 0),   // 同上，兩題都留
+    ];
+    const merged = mergeAcrossSources([server, local, third]);
+    expect(merged.map((q) => q.id)).toEqual(["s1", "e2", "e3"]);
+  });
+
+  it("題幹空白的資料列改用 id 判斷，不會被整批刪掉", () => {
+    const a = [row("id-1", ""), row("id-2", "")];
+    const b = [row("id-1", ""), row("id-3", "")];
+    const merged = mergeAcrossSources([a, b]);
+    expect(merged.map((q) => q.id)).toEqual(["id-1", "id-2", "id-3"]);
+  });
+
+  it("實測資料集：合併後題數高於逐題去重的舊邏輯", async () => {
+    await loadLocalBank();
+    const local = [...LOCAL_QUESTION_BANK, ...LOCAL_ENGLISH_BANK];
+    const merged = mergeAcrossSources([local, local.slice(0, 0)]);
+    // 本地同源不去重 → 全數保留
+    expect(merged).toHaveLength(local.length);
   });
 });

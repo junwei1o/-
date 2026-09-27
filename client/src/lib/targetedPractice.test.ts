@@ -23,7 +23,7 @@ const question = (over: Partial<PaperQuestion> = {}): PaperQuestion => ({
   prompt: "小明有 18 顆蘋果，吃掉了 7 顆，現在還有幾顆？",
   options: ["11", "25", "12", "10"],
   answer: 0,
-  explanation: "把原本的數量減掉吃掉的数量。",
+  explanation: "把原本的數量減掉吃掉的數量。",
   ...over,
 });
 

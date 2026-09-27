@@ -103,7 +103,7 @@ export const MINDSET_TIPS: string[] = [
 ];
 
 /** 各科都適用的核心原則 */
-export const CORE_PRINCIPLE = "基礎題不丟分，中档題多拿分，難題搶步驟分。";
+export const CORE_PRINCIPLE = "基礎題不丟分，中檔題多拿分，難題搶步驟分。";
 
 /**
  * 依學科名稱取得對應的答題技巧；找不到完全符合時回傳通用原則。

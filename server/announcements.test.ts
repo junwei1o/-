@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 /**
- * 直接 stub 三個 announcements 函数，避开 drizzle 内部调用链。
+ * 直接 stub 三個 announcements 函數，避開 drizzle 內部調用鏈。
  * 這樣測試的是路由呼叫契約，而不是 drizzle ORM 行為。
  */
 const fakeRows = new Map<number, {

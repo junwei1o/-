@@ -38,6 +38,13 @@ export default function StudentMap() {
 
   return (
     <main className="student-map-page">
+      {/*
+        全站唯一沒有 h1 的頁面：補一個視覺隱藏的主標，修正標題層級
+        （原本第一個標題是 <p class="paper-exam-kicker">，往下接 h2/h3）。
+        用 sr-only 而不是把 kicker 改成 h1，是因為 index.css 的
+        `h1..h6 { font-weight:700 !important }` 會把 kicker 的 800 蓋掉，改了會變字重。
+      */}
+      <h1 className="sr-only">我的學習關係圖</h1>
       <header className="student-map-intro">
         <p className="paper-exam-kicker">我的學習關係圖</p>
         <p>先從「我」出發：每一次練習、觀察與反思，都是拼上自己學習地圖的一塊。</p>

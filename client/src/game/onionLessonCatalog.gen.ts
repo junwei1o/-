@@ -321,7 +321,7 @@ export const ONION_LESSON_CATALOG: OnionLessonSummary[] = [
     "stages": [
       "國中"
     ],
-    "desc": "一個細胞怎麼變成兩個，而且染色體還不能少給？洋蔥用循環圖带你走完複製→排隊→分裂四步驟。"
+    "desc": "一個細胞怎麼變成兩個，而且染色體還不能少給？洋蔥用循環圖帶你走完複製→排隊→分裂四步驟。"
   },
   {
     "id": "speed-rate",

@@ -106,11 +106,11 @@ describe("speechSynthesis 混合引擎", () => {
     controller.speak("第二句"); // 觸發新的 generation，第一個請求應作廢
     gate.resolve(blobOf());
     await vi.waitFor(() => expect(fetcher).toHaveBeenCalledTimes(2));
-    // 給微任務一點時間，若守門失效第一個請求會创建 Audio
+    // 給微任務一點時間，若守門失效第一個請求會創建 Audio
     await Promise.resolve();
     await Promise.resolve();
     expect(StubAudio.instances.length).toBeLessThanOrEqual(1);
-    // 唯一（若已创建）的 Audio 必須屬於第二句——用 fetcher 呼叫數量對齊即可，
+    // 唯一（若已創建）的 Audio 必須屬於第二句——用 fetcher 呼叫數量對齊即可，
     // 關鍵斷言：stop 之後不會再多出實體
     controller.stop();
     expect(StubAudio.instances.length).toBeLessThanOrEqual(1);

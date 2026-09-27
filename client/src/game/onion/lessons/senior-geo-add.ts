@@ -122,7 +122,7 @@ const SH_GEO_TAIWAN_REGION: OnionLesson = {
   ],
   questions: [
     { id: "sh-geo-taiwan-region-1", prompt: "台灣北部的主要產業是？", options: ["石化重工業", "政治金融與服務業", "農業為主", "航太工業"], answer: 1, hints: ["首都與大港在北部", "商業決策集中地"], explanation: "北部因首都與港口集中，政治、金融、服務業最發達。" },
-    { id: "sh-geo-taiwan-region-2", prompt: "台灣中部以什麼產業见长？", options: ["金融服務", "觀光為主", "農業與精密機械", "石化重工業"], answer: 2, hints: ["想到工具機、自行車", "還有豐沛的農產"], explanation: "中部以農業與精密機械（如工具機）見長。" },
+    { id: "sh-geo-taiwan-region-2", prompt: "台灣中部以什麼產業見長？", options: ["金融服務", "觀光為主", "農業與精密機械", "石化重工業"], answer: 2, hints: ["想到工具機、自行車", "還有豐沛的農產"], explanation: "中部以農業與精密機械（如工具機）見長。" },
     { id: "sh-geo-taiwan-region-3", prompt: "台灣南部產業特色是？", options: ["政治金融", "精密機械", "觀光農業", "石化與重工業"], answer: 3, hints: ["南部有大煉油與鋼鐵廠", "港口配合出貨"], explanation: "南部有石化與重工業，工廠、港口密集。" },
     { id: "sh-geo-taiwan-region-4", prompt: "台灣東部因地形限制，產業以？", options: ["觀光與農業", "金融中心", "重工業", "航太工業"], answer: 0, hints: ["地勢陡、平原少", "好山好水適合觀光"], explanation: "東部地勢陡、平原少，以大規模工業不易，以觀光與農業為主。" },
     { id: "sh-geo-taiwan-region-5", prompt: "台灣產業轉型的趨勢是？", options: ["從研發退回代工", "從代工走向研發與品牌", "只做農業", "完全停止工業"], answer: 1, hints: ["提升附加價值", "發展自有技術"], explanation: "台灣產業正從代工組裝轉向研發與自有品牌，以提升附加價值。" },
