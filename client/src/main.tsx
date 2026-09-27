@@ -1,6 +1,5 @@
-import { trpc } from "@/lib/trpc";
+import { staticSafeLink, trpc } from "@/lib/trpc";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { httpBatchLink } from "@trpc/client";
 import { createRoot } from "react-dom/client";
 import superjson from "superjson";
 import App from "./App";
@@ -37,14 +36,27 @@ function initAnalytics(): void {
 }
 initAnalytics();
 
-const queryClient = new QueryClient();
-
 // local-first、未接後端時，部分查詢會被 SPA fallback 回 index.html 或直接網路失敗，
 // 屬於預期性降級（元件皆有本地兜底），不該印成紅字污染 console；只記錄非預期的真實錯誤。
 function isExpectedOfflineError(err: unknown): boolean {
   const msg = err instanceof Error ? err.message : String(err);
   return /Unexpected token|Failed to fetch|fetch failed|Network ?Error|not valid JSON|Load failed/i.test(msg);
 }
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      // 預期性離線錯誤（純靜態部署、飛航模式）重試沒有意義，只會讓學生多等幾秒。
+      // 預設 3 次重試的指數退避在 4G 上就是好幾秒白畫面。
+      retry(failureCount, error) {
+        if (isExpectedOfflineError(error)) return false;
+        return failureCount < 2;
+      },
+      // 重新連線時自動恢復（學生從飛航模式切回來的常見情境）。
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 queryClient.getQueryCache().subscribe(event => {
   if (event.type === "updated" && event.action.type === "error") {
@@ -61,19 +73,13 @@ queryClient.getMutationCache().subscribe(event => {
   }
 });
 
+// local-first 靜態部署時，後端 API 根本不存在（/api/trpc 與 /trpc/* 都被
+// SPA fallback 回 index.html）。若照常發請求，每次查詢都要等一次往返才拿到
+// 無法解析的 HTML 再拋錯——4G 實測單次就 2 秒，首頁多個查詢會疊成好幾秒白畫面。
+//
+// 開關與 fetch 守衛集中在 lib/trpc，cloudSync 等自建 client 也共用同一套判斷。
 const trpcClient = trpc.createClient({
-  links: [
-    httpBatchLink({
-      url: "/api/trpc",
-      transformer: superjson,
-      fetch(input, init) {
-        return globalThis.fetch(input, {
-          ...(init ?? {}),
-          credentials: "include",
-        });
-      },
-    }),
-  ],
+  links: [staticSafeLink(superjson)],
 });
 
 createRoot(document.getElementById("root")!).render(

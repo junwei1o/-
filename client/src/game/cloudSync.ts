@@ -1,6 +1,7 @@
-import { createTRPCClient, httpBatchLink } from "@trpc/client";
+import { createTRPCClient } from "@trpc/client";
 import superjson from "superjson";
 import type { AppRouter } from "../../../server/routers";
+import { staticSafeLink } from "@/lib/trpc";
 import { getPlayerName } from "./identity";
 
 /**
@@ -49,9 +50,8 @@ export type CloudLoadResult = { ok: true; save: CloudSaveSummary } | { ok: false
 let client: ReturnType<typeof createTRPCClient<AppRouter>> | null = null;
 function getClient() {
   if (!client) {
-    client = createTRPCClient<AppRouter>({
-      links: [httpBatchLink({ url: "/api/trpc", transformer: superjson })],
-    });
+    // 與主 app 同一套 link：純靜態部署時不會發出注定失敗的請求（見 lib/trpc）。
+    client = createTRPCClient<AppRouter>({ links: [staticSafeLink(superjson)] });
   }
   return client;
 }
