@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useLocation } from "wouter";
-import { ClipboardList, Copy, Download, Lightbulb, School, Sparkles, Target, Trash2, UserRound, Users } from "lucide-react";
+import { ClipboardList, Copy, Download, Lightbulb, School, Sparkles, Target, UserRound, Users } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { getCloudMode } from "@/game/cloudSync";
 import { TeacherLineSection } from "@/components/TeacherLineSection";
@@ -35,11 +35,9 @@ function StudentCard({
   studentName,
   assignmentCount,
   onAssign,
-  onRemove,
 }: {
   studentName: string;
   assignmentCount: number;
-  onRemove: (studentName: string) => void;
   /** 帶上預設知識點時，出作業表單會直接鎖定那個知識點。 */
   onAssign: (studentName: string, preset?: { subject: string; topic: string }) => void;
 }) {
@@ -111,14 +109,6 @@ function StudentCard({
       <div className="mentor-card-actions">
         <button type="button" className="settings-secondary-button" onClick={() => onAssign(studentName)}>
           <ClipboardList size={15} aria-hidden="true" /> 給 {studentName} 出作業
-        </button>
-        <button
-          type="button"
-          className="teacher-link-button is-danger"
-          onClick={() => onRemove(studentName)}
-          title="把這位學生從班級移除，並清掉他在本站的作答紀錄"
-        >
-          <Trash2 size={14} aria-hidden="true" /> 移除
         </button>
       </div>
     </article>
@@ -276,23 +266,6 @@ function TeacherDashboardInner() {
     { subject: subject as "國語" | "數學" | "自然" | "社會", grade },
     { enabled: showAssign && isSingleSubject, retry: false },
   );
-
-  const removeMember = trpc.teacher.removeMember.useMutation({
-    onSuccess: () => {
-      setNotice("已移除這位學生，他的作答紀錄也一併清掉了。");
-      void reportQuery.refetch();
-    },
-    onError: () => setNotice("無法連線到伺服器，移除失敗。"),
-  });
-
-  const deleteClassMutation = trpc.teacher.deleteClass.useMutation({
-    onSuccess: () => {
-      localStorage.removeItem(TEACHER_CODE_KEY);
-      setCode("");
-      setNotice("班級已刪除。");
-    },
-    onError: () => setNotice("無法連線到伺服器，刪除班級失敗。"),
-  });
 
   const createClass = trpc.teacher.createClass.useMutation({
     onSuccess: (result) => {
@@ -513,17 +486,6 @@ function TeacherDashboardInner() {
                 >
                   切換班級
                 </button>
-                <button
-                  type="button"
-                  className="teacher-link-button is-danger"
-                  onClick={() => {
-                    if (window.confirm(`刪除班級「${trimmedCode}」？學生名單、作業與繳交紀錄都會清掉，無法復原。`)) {
-                      deleteClassMutation.mutate({ classCode: trimmedCode });
-                    }
-                  }}
-                >
-                  <Trash2 size={14} aria-hidden="true" /> 刪除班級
-                </button>
               </div>
               <p className="teacher-hint">
                 學生在「我的教室」輸入這組碼就能加入。目前 {students.length} 位學生。
@@ -643,11 +605,6 @@ function TeacherDashboardInner() {
                     studentName={student.studentName}
                     assignmentCount={student.assignmentCount}
                     onAssign={(name, preset) => openAssign(name, preset)}
-                    onRemove={(name) => {
-                      if (window.confirm(`把「${name}」從班級移除？他在本站的作答紀錄會一起清掉，之後要用同一個船名重新加入。`)) {
-                        removeMember.mutate({ classCode: trimmedCode, studentName: name });
-                      }
-                    }}
                   />
                 ))}
               </div>

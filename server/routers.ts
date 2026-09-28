@@ -22,9 +22,6 @@ import { AssistantJsonError, extractTextContent, invokeLLM, parseAssistantJson }
 import { ENV } from "./_core/env";
 import {
   createAssignment,
-  deleteClass,
-  purgeStudentName,
-  removeClassMember,
   createClass,
   createCloudSave,
   createWeeklyQuiz,
@@ -1205,36 +1202,6 @@ export const appRouter = router({
     myClasses: publicProcedure
       .input(z.object({ studentName: cloudNameSchema }))
       .query(async ({ input }) => ({ classes: await listClassesOfStudent(input.studentName) })),
-
-    /** 移除班級中的一位學生（連帶清掉他的繳交與作答紀錄）。 */
-    removeMember: publicProcedure
-      .input(z.object({
-        classCode: z.string().trim().min(4).max(8),
-        studentName: z.string().trim().min(1).max(24),
-      }))
-      .mutation(async ({ input }) => {
-        await removeClassMember(input.classCode.trim().toUpperCase(), input.studentName.trim());
-        return { ok: true as const };
-      }),
-
-    /** 刪除班級（成員、作業、繳交紀錄全清）。 */
-    deleteClass: publicProcedure
-      .input(z.object({ classCode: z.string().trim().min(4).max(8) }))
-      .mutation(async ({ input }) => {
-        await deleteClass(input.classCode.trim().toUpperCase());
-        return { ok: true as const };
-      }),
-
-    /**
-     * 清除某個船名的所有雲端痕跡（船籍＋作答紀錄＋班級成員身分）。
-     * 用來清測試帳號，或孩子打錯船名重取後不想留舊資料。
-     */
-    purgeStudent: publicProcedure
-      .input(z.object({ studentName: z.string().trim().min(1).max(24) }))
-      .mutation(async ({ input }) => {
-        await purgeStudentName(input.studentName.trim());
-        return { ok: true as const };
-      }),
 
     /**
      * 尚未加入本班的船籍名單。
