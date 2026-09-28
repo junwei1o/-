@@ -126,11 +126,104 @@ function StudentCard({
 }
 
 /**
+ * /teacher 入口（計劃 A Phase 2）：先確認後端教師會話（auth.me），
+ * 未登入時整頁只顯示通關語輸入；登入成功（httpOnly cookie 已簽發、
+ * me 重新查詢為 teacher）後才掛載督學台本體。
+ * 通關語只留在表單 state，絕不寫 localStorage（避免多一個洩漏面）。
+ */
+export default function TeacherDashboard() {
+  const meQuery = trpc.auth.me.useQuery(undefined, { retry: false, staleTime: 15_000 });
+  const [passphrase, setPassphrase] = useState("");
+  const [loginError, setLoginError] = useState<string | null>(null);
+  const loginMutation = trpc.teacher.login.useMutation({
+    onSuccess: (result) => {
+      if (result.ok) {
+        setPassphrase("");
+        setLoginError(null);
+        void meQuery.refetch();
+        return;
+      }
+      setLoginError(
+        result.reason === "notConfigured"
+          ? "後端尚未設定 TEACHER_PASSPHRASE，教師端暫時無法登入。"
+          : "通關語錯誤，請再試一次。",
+      );
+    },
+    onError: (error) => setLoginError(`登入失敗：${error.message}`),
+  });
+
+  // auth.me 的型別是 User（role 僅 user/admin），教師 role 是運行期哨兵值，以結構型別讀取
+  const isTeacher = (meQuery.data as { role?: string } | null | undefined)?.role === "teacher";
+
+  if (meQuery.isLoading) {
+    return (
+      <main className="teacher-page" aria-busy="true">
+        <div className="teacher-inner">
+          <p className="teacher-hint">正在確認教師身份…</p>
+        </div>
+      </main>
+    );
+  }
+
+  if (isTeacher) return <TeacherDashboardInner />;
+
+  return (
+    <main className="teacher-page" aria-labelledby="teacher-login-title">
+      <div className="teacher-inner">
+        <header className="teacher-header">
+          <div>
+            <p className="settings-eyebrow">督學台</p>
+            <h1 id="teacher-login-title">教師登入</h1>
+            <p>輸入教師通關語，以管理班級、指派作業與查閱學習報告。</p>
+          </div>
+          <School size={32} aria-hidden="true" />
+        </header>
+
+        <section className="teacher-card" aria-label="教師通關語登入">
+          <form
+            className="teacher-form"
+            onSubmit={(event) => {
+              event.preventDefault();
+              setLoginError(null);
+              loginMutation.mutate({ passphrase });
+            }}
+          >
+            <label>
+              教師通關語
+              <input
+                type="password"
+                value={passphrase}
+                onChange={(event) => setPassphrase(event.target.value)}
+                placeholder="請輸入 TEACHER_PASSPHRASE"
+                maxLength={200}
+                autoComplete="current-password"
+              />
+            </label>
+            {loginError ? (
+              <p className="teacher-notice" role="alert">
+                {loginError}
+              </p>
+            ) : null}
+            <button
+              type="submit"
+              className="settings-primary-button"
+              disabled={loginMutation.isPending || passphrase.length === 0}
+            >
+              {loginMutation.isPending ? "驗證中…" : "登入"}
+            </button>
+          </form>
+        </section>
+      </div>
+    </main>
+  );
+}
+
+/**
  * 督學台（1 老師帶少數學生的小班場景）。
  * 設計取捨：不做大班的「名單＋矩陣」，改成一人一張卡，
  * 老師一眼看到每個孩子「哪裡不會」，並能直接出作業。
  */
-export default function TeacherDashboard() {
+function TeacherDashboardInner() {
   const [, setLocation] = useLocation();
   // local-first 未開雲端船籍時沒有後端；AI 用量等雲端專區整段不渲染、也不發請求。
   const isCloud = getCloudMode().mode === "cloud";

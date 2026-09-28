@@ -64,7 +64,10 @@ import {
   submitAssignment,
   updateCloudSave,
 } from "./db";
+import { timingSafeEqual } from "node:crypto";
 import { getSessionCookieOptions } from "./_core/cookies";
+import { TEACHER_OPEN_ID } from "./_core/context";
+import { sdk } from "./_core/sdk";
 import { systemRouter } from "./_core/systemRouter";
 import { TRPCError } from "@trpc/server";
 import { publicProcedure, router } from "./_core/trpc";
@@ -1126,6 +1129,41 @@ export const appRouter = router({
       }),
   }),
   teacher: router({
+    /**
+     * 教師登入（計劃 A Phase 2）：驗證通關語後簽發 30 天 httpOnly session cookie。
+     * 通關語未配置時一律拒絕（安全側）；比較用 timingSafeEqual 防側信道。
+     */
+    login: publicProcedure
+      .input(z.object({ passphrase: z.string().min(1).max(200) }))
+      .mutation(async ({ input, ctx }) => {
+        const SESSION_MS = 30 * 24 * 60 * 60 * 1000;
+        const expected = ENV.teacherPassphrase;
+        if (!expected) return { ok: false as const, reason: "notConfigured" as const };
+
+        // 先比長度再定時比較：timingSafeEqual 要求等長，長度差異不視為秘密
+        const a = Buffer.from(input.passphrase);
+        const b = Buffer.from(expected);
+        if (a.length !== b.length || !timingSafeEqual(a, b)) {
+          return { ok: false as const, reason: "invalid" as const };
+        }
+
+        // openId 哨兵與 context.ts 的 TEACHER_OPEN_ID 共用同一常數
+        const token = await sdk.createSessionToken(TEACHER_OPEN_ID, {
+          expiresInMs: SESSION_MS,
+          name: "teacher",
+        });
+        const cookieOptions = getSessionCookieOptions(ctx.req);
+        ctx.res.cookie(COOKIE_NAME, token, {
+          ...cookieOptions,
+          // 陷阱 6：SameSite=None 瀏覽器強制要求 Secure 屬性；本機 http 開發時
+          // secure=false 會被拒絕寫入 → 降為 lax（同源 API 請求不受影響，
+          // 正式環境經 x-forwarded-proto=https 時維持 none）。
+          sameSite: cookieOptions.secure ? "none" : "lax",
+          maxAge: SESSION_MS,
+        });
+        return { ok: true as const };
+      }),
+
     /** 建立班級並取得 6 位班級碼。 */
     createClass: publicProcedure
       .input(z.object({
