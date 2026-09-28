@@ -9,15 +9,15 @@ beforeAll(async () => {
   await loadLocalBank();
 });
 
-describe("內建題庫：國小＋國中", () => {
-  it("擴充後共 5000 題，五科各 1000 題", () => {
-    // 內建題庫（國小＋國中精簡檔）＋英語 seed 合計為全站 5000 題。
+describe("內建題庫：國小", () => {
+  it("國小題庫＋英語 seed 合計約 2900 題，五科皆有份量", () => {
+    // 2026-09-28：國中／高中題庫已移除，改為國小單一學段。
     const all = [...LOCAL_QUESTION_BANK, ...LOCAL_ENGLISH_BANK];
-    expect(all.length).toBeGreaterThanOrEqual(5000);
+    expect(all.length).toBeGreaterThanOrEqual(2000);
     const counts = new Map<string, number>();
     for (const q of all) counts.set(q.subject, (counts.get(q.subject) ?? 0) + 1);
     for (const subject of ["數學", "自然", "社會", "國語", "英語"]) {
-      expect(counts.get(subject) ?? 0, `${subject} 題數`).toBeGreaterThanOrEqual(1000);
+      expect(counts.get(subject) ?? 0, `${subject} 題數`).toBeGreaterThanOrEqual(100);
     }
   });
 
@@ -25,9 +25,9 @@ describe("內建題庫：國小＋國中", () => {
     const cross = LOCAL_QUESTION_BANK.filter(
       (q) => Array.isArray((q as { subjectCombination?: unknown }).subjectCombination),
     ) as Array<{ subjectCombination: string[]; knowledge: string[] }>;
-    expect(cross.length).toBeGreaterThanOrEqual(200);
-    expect(cross.filter((q) => q.subjectCombination.length === 3).length).toBeGreaterThanOrEqual(120);
-    expect(cross.filter((q) => q.subjectCombination.length === 5).length).toBeGreaterThanOrEqual(80);
+    expect(cross.length).toBeGreaterThanOrEqual(100);
+    expect(cross.filter((q) => q.subjectCombination.length === 3).length).toBeGreaterThanOrEqual(60);
+    expect(cross.filter((q) => q.subjectCombination.length === 5).length).toBeGreaterThanOrEqual(40);
     for (const q of cross) {
       // 科目不能重複，而且每個科目都要有對應的知識點——否則就是有科目只是「湊數」
       expect(new Set(q.subjectCombination).size).toBe(q.subjectCombination.length);
@@ -35,27 +35,15 @@ describe("內建題庫：國小＋國中", () => {
     }
   });
 
-  it("每個年級都有題（國中不再被靜默丟回國小題）", () => {
-    for (const grade of [3, 4, 5, 6, 7, 8, 9]) {
+  it("每個年級（3–6）都有題", () => {
+    for (const grade of [3, 4, 5, 6]) {
       const count = LOCAL_QUESTION_BANK.filter((q) => q.grade === grade).length;
-      expect(count, `${grade} 年級題數`).toBeGreaterThanOrEqual(600);
+      expect(count, `${grade} 年級題數`).toBeGreaterThanOrEqual(100);
     }
   });
 
-  it("國中三個年級都涵蓋四個科目（否則選了年級會沒題目）", () => {
-    for (const grade of [7, 8, 9]) {
-      const subjects = new Set(
-        LOCAL_QUESTION_BANK.filter((q) => q.grade === grade).map((q) => q.subject),
-      );
-      expect(subjects.size, `${grade} 年級科目數`).toBeGreaterThanOrEqual(2);
-      expect(subjects.has("數學")).toBe(true);
-      expect(subjects.has("自然")).toBe(true);
-    }
-  });
-
-  it("七年級每題欄位完整：選項相異、答案索引合法、有解析與知識點", () => {
-    // 擴充後七年級也有是非題（2 個選項），不再只有 4 選題。
-    for (const q of LOCAL_QUESTION_BANK.filter((x) => x.grade === 7)) {
+  it("國小題每題欄位完整：選項相異、答案索引合法、有解析與知識點", () => {
+    for (const q of LOCAL_QUESTION_BANK.slice(0, 300)) {
       expect(q.options.length).toBeGreaterThanOrEqual(2);
       expect(new Set(q.options).size).toBe(q.options.length);
       expect(q.answer).toBeGreaterThanOrEqual(0);
@@ -66,24 +54,16 @@ describe("內建題庫：國小＋國中", () => {
     }
   });
 
-  it("國中題 id 不與國小題重複", () => {
+  it("題目 id 全站唯一", () => {
     const ids = LOCAL_QUESTION_BANK.map((q) => q.id);
     expect(new Set(ids).size).toBe(ids.length);
   });
 
-  it("國中題正解位置平均分布（不出現集中在第一選項的狀況）", () => {
-    const junior = LOCAL_QUESTION_BANK.filter((q) => q.grade === 7);
-    const counts = [0, 1, 2, 3].map((slot) => junior.filter((q) => q.answer === slot).length);
+  it("正解位置平均分布（不出現集中在第一選項的狀況）", () => {
+    const counts = [0, 1, 2, 3].map(
+      (slot) => LOCAL_QUESTION_BANK.filter((q) => q.answer === slot).length,
+    );
     for (const c of counts) expect(c).toBeGreaterThanOrEqual(5);
-  });
-
-  it("七年級仍涵蓋原本四個微課主題（擴充後主題更多）", () => {
-    const topics = new Set(LOCAL_QUESTION_BANK.filter((q) => q.grade === 7).map((q) => q.learningTopic));
-    for (const topic of ["光合作用", "一元一次方程式", "細胞的構造", "負數與數線"]) {
-      expect(topics.has(topic), `缺少主題 ${topic}`).toBe(true);
-    }
-    // 擴充後七年級不該只剩這四個主題
-    expect(topics.size).toBeGreaterThan(10);
   });
 });
 

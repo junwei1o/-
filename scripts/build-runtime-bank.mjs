@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 /**
- * 產生前端用的「精簡題庫」：data/runtime_bank_elementary.json、data/runtime_bank_junior.json
+ * 產生前端用的「精簡題庫」：data/runtime_bank_elementary.json
  *
  * 為什麼需要：完整的 data/taiwan_curriculum_500.json 有 1.1MB（含縮排），
  * 其中 learningPerformance / learningContent / competency 三個課綱欄位佔 185KB，
  * 但前端完全沒有顯示它們 → 白白被打包進 index 主包（1.6MB）。
  * 精簡檔只留執行期真的會用到的欄位，主包可瘦身。
  *
- * 來源仍是 data/taiwan_curriculum_500.json 與 data/junior_high_bank.json（單一真相）。
+ * 來源仍是 data/taiwan_curriculum_500.json 與 data/generated_bank.json（單一真相）。
  * 用法：node scripts/build-runtime-bank.mjs
  */
 import { readFileSync, writeFileSync } from "node:fs";
@@ -43,8 +43,6 @@ const SOURCES = [
     generated: (q) => Number(q.grade) <= 6,
   },
   {
-    to: "data/runtime_bank_junior.json",
-    from: ["data/junior_high_bank.json"],
     generated: (q) => Number(q.grade) >= 7,
   },
 ];

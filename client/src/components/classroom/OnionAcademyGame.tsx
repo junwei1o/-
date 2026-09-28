@@ -17,7 +17,6 @@ import {
 } from "@/game/onionAcademyLessons";
 import "@/components/classroom/classroom.css";
 import { LessonStage, OnionMascot } from "@/components/classroom/OnionAcademyScenes";
-import { loadStudentGradePreference } from "@/lib/studentGradePreference";
 import { useClassroomSound } from "./useClassroomSound";
 import { shuffleQuestionOptions } from "@/lib/optionRandomizer";
 
@@ -72,11 +71,8 @@ export default function OnionLessonGame({ bestStars, muted = false, onBest, onEx
   const [lessonBest, setLessonBest] = useState<Record<string, LessonBest>>(() => loadLessonBest());
   /** 選課頁科目篩選。 */
   const [subjectFilter, setSubjectFilter] = useState<string>("全部");
-  /** 選課頁學段分流：國中生進站不會再被國小課淹沒。 */
-  const [stage, setStage] = useState<OnionStage | "全部">(() => {
-    const grade = typeof window === "undefined" ? null : loadStudentGradePreference();
-    return grade && grade >= 7 ? "國中" : "國小";
-  });
+  /** 選課頁學段：本專案只做國小，國中／高中課程已於 2026-09-28 移除。 */
+  const [stage, setStage] = useState<OnionStage | "全部">("國小");
   const visibleLessons = ONION_LESSONS.filter(
     (l) =>
       (stage === "全部" || l.stages.includes(stage)) &&
@@ -235,7 +231,7 @@ export default function OnionLessonGame({ bestStars, muted = false, onBest, onEx
             <p className="ol-desc">每堂約 5 分鐘：先看動畫講解，再闖 5 題。答對即時解析，全對三顆星。</p>
           </header>
           <div className="ol-stage-tabs" role="tablist" aria-label="依學段篩選課程">
-            {(["國小", "國中", "高中", "全部"] as const).map((item) => (
+            {(["國小"] as const).map((item) => (
               <button
                 key={item}
                 type="button"

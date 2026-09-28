@@ -35,30 +35,22 @@ function opt(text: string): HTMLElement {
 }
 
 describe("洋蔥動畫講解 OnionAcademyGame", () => {
-  it("選課器預設顯示國小課；可切換國中／高中／全部，也可回我的教室", () => {
+  it("選課器列出所有國小課；頁籤只剩國小，也可回我的教室", () => {
     const onBest = vi.fn();
     const onExit = vi.fn();
     render(<OnionAcademyGame bestStars={undefined} onBest={onBest} onExit={onExit} />);
     expect(screen.getByText("選一門動畫課")).toBeInTheDocument();
 
-    // 預設為「國小」：只出現國小課
-    const elementary = ONION_LESSONS.filter((l) => l.stages.includes("國小") && !l.stages.includes("國中"));
-    const junior = ONION_LESSONS.filter((l) => l.stages.includes("國中") && !l.stages.includes("國小"));
-    for (const l of elementary) expect(screen.getByText(l.title)).toBeInTheDocument();
-    for (const l of junior) expect(screen.queryByText(l.title)).not.toBeInTheDocument();
+    // 2026-09-28：本專案只做國小，國中／高中課程已移除，故全部課程都是國小課。
+    const all = ONION_LESSONS.filter((l) => l.stages.includes("國小"));
+    expect(all.length).toBe(ONION_LESSONS.length);
+    for (const l of all) expect(screen.getByText(l.title)).toBeInTheDocument();
 
-    // 切到「國中」
-    fireEvent.click(screen.getByRole("tab", { name: "國中" }));
-    for (const l of junior) expect(screen.getByText(l.title)).toBeInTheDocument();
-
-    // 切到「高中」：高中課程要能單獨篩出來
-    fireEvent.click(screen.getByRole("tab", { name: "高中" }));
-    const senior = ONION_LESSONS.filter((l) => l.stages.includes("高中"));
-    for (const l of senior) expect(screen.getByText(l.title)).toBeInTheDocument();
-
-    // 切到「全部」：200 堂課程全部列出（也順帶驗證課名不重複，否則 getByText 會撞）
-    fireEvent.click(screen.getByRole("tab", { name: "全部" }));
-    for (const l of ONION_LESSONS) expect(screen.getByText(l.title)).toBeInTheDocument();
+    // 學段頁籤只剩「國小」；國中／高中／全部都不該再出現
+    expect(screen.getByRole("tab", { name: "國小" })).toBeInTheDocument();
+    expect(screen.queryByRole("tab", { name: "國中" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("tab", { name: "高中" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("tab", { name: "全部" })).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: /回我的教室/ }));
     expect(onExit).toHaveBeenCalledTimes(1);
@@ -204,21 +196,17 @@ describe("洋蔥動畫講解 OnionAcademyGame", () => {
     expect(screen.getByText(`第 4 / ${lesson.frames.length} 幀`)).toBeInTheDocument();
   });
 
-  it("切到國中後，學科篩選自動出現「思辨」，且能篩出思辨課", () => {
+  it("學科篩選自動出現「思辨」，且能篩出思辨課", () => {
     render(<OnionAcademyGame bestStars={undefined} onBest={vi.fn()} onExit={vi.fn()} />);
-    // 預設學段是國小：國小階段沒有思辨課，不應出現思辨按鈕
-    expect(screen.queryByRole("button", { name: "思辨" })).not.toBeInTheDocument();
-
-    // 切到國中：學科篩選由課程目錄動態產生，思辨要自動出現
-    fireEvent.click(screen.getByRole("tab", { name: "國中" }));
-    const thinking = ONION_LESSONS.filter((l) => l.subject === "思辨" && l.stages.includes("國中"));
+    // 思辨課原本標為國中，2026-09-28 隨國中學段移除一併改標為國小，故預設即應出現。
+    const thinking = ONION_LESSONS.filter((l) => l.subject === "思辨");
     expect(thinking.length).toBeGreaterThan(0);
     expect(screen.getByRole("button", { name: "思辨" })).toBeInTheDocument();
 
     // 篩「思辨」：只出現思辨課
     fireEvent.click(screen.getByRole("button", { name: "思辨" }));
     for (const l of thinking) expect(screen.getByText(l.title)).toBeInTheDocument();
-    for (const l of ONION_LESSONS.filter((l) => l.subject !== "思辨" && l.stages.includes("國中"))) {
+    for (const l of ONION_LESSONS.filter((l) => l.subject !== "思辨")) {
       expect(screen.queryByText(l.title)).not.toBeInTheDocument();
     }
   });

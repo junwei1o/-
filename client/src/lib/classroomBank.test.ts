@@ -190,13 +190,6 @@ describe("教室玩法依年級取題（國中生不再被丟回國小題）", (
     expect(grades.has(3)).toBe(false);
   });
 
-  it("九年級學生也拿得到題（不會因為篩太嚴而開天窗）", () => {
-    const deck = buildChoiceDeck(10, "綜合", seeded(), 9);
-    expect(deck).toHaveLength(10);
-    const grades = new Set(deck.map((q) => q.grade));
-    expect([...grades].every((g) => g >= 7)).toBe(true);
-  });
-
   it("沒給年級時等同原本行為（全題庫，向後相容）", () => {
     const deck = buildChoiceDeck(24, "綜合", seeded(), null);
     expect(deck).toHaveLength(24);

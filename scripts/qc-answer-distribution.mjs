@@ -25,7 +25,6 @@ const ROOT = path.resolve(SCRIPT_DIR, '..');
 // 三个题库来源。defaultSeg 用于题目未携带有效 grade 时回退判定学段。
 const SOURCES = [
   { file: 'data/runtime_bank_elementary.json', defaultSeg: '小學', label: 'runtime_bank_elementary' },
-  { file: 'data/runtime_bank_junior.json', defaultSeg: '國中', label: 'runtime_bank_junior' },
   { file: 'data/taiwan_english_seed.json', defaultSeg: '小學', label: 'taiwan_english_seed' },
 ];
 

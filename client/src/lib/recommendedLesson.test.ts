@@ -35,17 +35,15 @@ describe("weakestSubjectThisWeek", () => {
 });
 
 describe("pickRecommendedLesson", () => {
-  it("國小只會推薦含國小的課，國中只會推薦含國中的課", () => {
+  it("推薦的課一定含國小（本專案只有國小學段）", () => {
     for (let offset = 0; offset < 10; offset += 1) {
       const el = pickRecommendedLesson({ stage: "國小", now: NOW + offset * DAY });
       expect(el?.lesson.stages).toContain("國小");
-      const jh = pickRecommendedLesson({ stage: "國中", now: NOW + offset * DAY });
-      expect(jh?.lesson.stages).toContain("國中");
     }
   });
 
   it("有弱科時優推該科，且理由提到科目", () => {
-    const picked = pickRecommendedLesson({ stage: "國中", weakSubject: "數學", now: NOW });
+    const picked = pickRecommendedLesson({ stage: "國小", weakSubject: "數學", now: NOW });
     expect(picked?.lesson.subject).toBe("數學");
     expect(picked?.reason).toContain("數學");
   });
@@ -65,7 +63,7 @@ describe("pickRecommendedLesson", () => {
   });
 
   it("推薦的課一定在課程清單裡，路由指向洋蔥動畫講解", () => {
-    const picked = pickRecommendedLesson({ stage: "國中", now: NOW });
+    const picked = pickRecommendedLesson({ stage: "國小", now: NOW });
     expect(ONION_LESSONS.map((l) => l.id)).toContain(picked?.lesson.id);
     expect(ONION_ACADEMY_ROUTE).toBe("/classroom/onion-academy");
   });

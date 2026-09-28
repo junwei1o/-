@@ -17,7 +17,7 @@ const CT_PART_WHOLE: OnionLesson = {
   subject: "思辨",
   topic: "局部與整體",
   grade: "思辨入門",
-  stages: ["國中"],
+  stages: ["國小"],
   desc: "盲人摸象的故事告訴我們：只看到一小段，就以為看見全部，容易誤判。學會把不同片段拼起來。",
   takeaways: [
     "局部只是整體的一小部分，不能拿它當全部",
@@ -53,7 +53,7 @@ const CT_CHANGE_SCALE: OnionLesson = {
   subject: "思辨",
   topic: "量變與質變",
   grade: "思辨入門",
-  stages: ["國中"],
+  stages: ["國小"],
   desc: "每天進步一點點，看似沒什麼，累積到一個程度，就會產生讓人驚訝的大變化。",
   takeaways: [
     "小改變一開始不明顯，這叫量變",
@@ -89,7 +89,7 @@ const CT_INTERNAL_EXTERNAL: OnionLesson = {
   subject: "思辨",
   topic: "內因與外因",
   grade: "思辨入門",
-  stages: ["國中"],
+  stages: ["國小"],
   desc: "一件事的結果，是自己內在條件和外在環境一起造成的。不要只怪自己，也不要只怪環境。",
   takeaways: [
     "內因：自己的態度、習慣、能力，相對可以掌控",
@@ -125,7 +125,7 @@ const CT_EVIDENCE_INFERENCE: OnionLesson = {
   subject: "思辨",
   topic: "證據與推論",
   grade: "思辨入門",
-  stages: ["國中"],
+  stages: ["國小"],
   desc: "窗邊有一個書包，你會推論什麼？學會分開「我看到的」和「我猜的」，別把猜想當了事實。",
   takeaways: [
     "證據：親眼看到、可以觀察的事實",
@@ -161,7 +161,7 @@ const CT_CORRELATION_CAUSATION: OnionLesson = {
   subject: "思辨",
   topic: "相關與因果",
   grade: "思辨進階",
-  stages: ["國中"],
+  stages: ["國小"],
   desc: "冰淇淋賣越好、溺水的人越多，是冰淇淋造成溺水嗎？學會分辨「一起發生」和「真的造成」。",
   takeaways: [
     "相關：兩件事常常一起出現、同步變化",
@@ -197,7 +197,7 @@ const CT_BALANCE_TRADEOFF: OnionLesson = {
   subject: "思辨",
   topic: "權衡與取舍",
   grade: "思辨進階",
-  stages: ["國中"],
+  stages: ["國小"],
   desc: "現實選擇很少完美，每個方案都有利有弊。學會把收益和代價放上天平，再做決定。",
   takeaways: [
     "大多數選擇沒有完美答案，每個選項都有利弊",

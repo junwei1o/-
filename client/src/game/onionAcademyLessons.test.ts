@@ -2,9 +2,6 @@ import { describe, expect, it } from "vitest";
 import {
   CHINESE_DE_LESSON,
   FRACTION_LESSON,
-  LINEAR_EQUATION_LESSON,
-  NEGATIVE_NUMBER_LESSON,
-  ONION_CELL_LESSON,
   ONION_LESSONS,
   PHOTOSYNTHESIS_LESSON,
   TRIANGLE_AREA_LESSON,
@@ -139,64 +136,37 @@ function lessonIntegrity(lesson: typeof FRACTION_LESSON) {
 
 describe("registry & lookup", () => {
   it("registers all lessons across every subject", () => {
-    expect(ONION_LESSONS.length).toBeGreaterThanOrEqual(200);
+    expect(ONION_LESSONS.length).toBeGreaterThanOrEqual(70);
     const subjects = new Set(ONION_LESSONS.map((l) => l.subject));
-    // 擴充到 200 堂後科目橫跨國小到高中：國小五大科 ＋ 高中各科。
+    // 2026-09-28：只做國小，科目為五大科 ＋ 思辨素養。
     // 這裡逐一列出（而不是只檢查數量），這樣漏掉一整科會被抓到。
-    for (const subject of [
-      "數學",
-      "國語",
-      "自然",
-      "英語",
-      "社會",
-      "物理",
-      "化學",
-      "生物",
-      "地球科學",
-      "歷史",
-      "地理",
-      "公民",
-      "英文",
-      "國文",
-    ]) {
+    for (const subject of ["數學", "國語", "自然", "英語", "社會", "思辨"]) {
       expect(subjects.has(subject), `缺少科目：${subject}`).toBe(true);
     }
-    expect(subjects.size).toBeGreaterThanOrEqual(14);
+    expect(subjects.size).toBeGreaterThanOrEqual(6);
   });
 
   it("每一堂課只屬於一個學段（國中看過的國小不會再來一遍）", () => {
     for (const lesson of ONION_LESSONS) {
       expect(lesson.stages).toHaveLength(1);
-      expect(["國小", "國中", "高中"]).toContain(lesson.stages[0]);
+      expect(["國小"]).toContain(lesson.stages[0]);
     }
     // 知識點可以跨學段各開一堂（如光合作用），但 id 必須不同，不能同一堂掛兩邊
     const ids = ONION_LESSONS.map((l) => l.id);
     expect(new Set(ids).size).toBe(ids.length);
   });
 
-  it("每個學段都有足夠的課可選（不再只有個位數）", () => {
+  it("國小有足夠的課可選（不再只有個位數）", () => {
     const elementary = ONION_LESSONS.filter((l) => l.stages.includes("國小"));
-    const junior = ONION_LESSONS.filter((l) => l.stages.includes("國中"));
-    const senior = ONION_LESSONS.filter((l) => l.stages.includes("高中"));
     expect(elementary.length).toBeGreaterThanOrEqual(70);
-    expect(junior.length).toBeGreaterThanOrEqual(65);
-    expect(senior.length).toBeGreaterThanOrEqual(65);
+    // 國中／高中已於 2026-09-28 移除，不應再有課掛在這些學段
+    expect(ONION_LESSONS.filter((l) => l.stages.includes("國中")).length).toBe(0);
+    expect(ONION_LESSONS.filter((l) => l.stages.includes("高中")).length).toBe(0);
   });
 
-  it("國中三個年級都有動畫課（八、九年級不再是空的）", () => {
-    const junior = ONION_LESSONS.filter((l) => l.stages.includes("國中"));
-    const grades = new Set(junior.map((l) => l.grade));
-    // 七上、八下、九上都要有課
-    expect(grades.has("七上")).toBe(true);
-    expect(grades.has("八下")).toBe(true);
-    expect(grades.has("九上")).toBe(true);
-  });
-
-  it("國小與國中都各有課程，選課頁分流不會出現空清單", () => {
+  it("國小課程清單不為空，選課頁不會出現空清單", () => {
     const elementary = ONION_LESSONS.filter((l) => l.stages.includes("國小"));
-    const junior = ONION_LESSONS.filter((l) => l.stages.includes("國中"));
-    expect(elementary.length).toBeGreaterThanOrEqual(4);
-    expect(junior.length).toBeGreaterThanOrEqual(4);
+    expect(elementary.length).toBeGreaterThanOrEqual(70);
   });
 
   it("getOnionLesson finds by id and falls back to first", () => {
@@ -273,47 +243,5 @@ describe("photosynthesis lesson data integrity", () => {
     expect(all).toContain("二氧化碳");
     expect(all).toContain("葉綠體");
     expect(all).toContain("氧氣");
-  });
-});
-
-describe("negative number lesson data integrity", () => {
-  lessonIntegrity(NEGATIVE_NUMBER_LESSON);
-
-  it("uses 12 frames and teaches number line, ordering and opposites", () => {
-    expect(NEGATIVE_NUMBER_LESSON.frames).toHaveLength(12);
-    const all = NEGATIVE_NUMBER_LESSON.frames.map((f) => f.caption).join("");
-    expect(all).toContain("數線");
-    expect(all).toContain("相反數");
-  });
-});
-
-describe("linear equation lesson data integrity", () => {
-  lessonIntegrity(LINEAR_EQUATION_LESSON);
-
-  it("uses 12 frames and teaches balance, solving and 移項", () => {
-    expect(LINEAR_EQUATION_LESSON.frames).toHaveLength(12);
-    const all = LINEAR_EQUATION_LESSON.frames.map((f) => f.caption).join("");
-    expect(all).toContain("天平");
-    expect(all).toContain("移項");
-  });
-
-  it("solution of every equation question is a small integer", () => {
-    // 第 5 題是「哪個方程式的解」題型，答案是式子；前 4 題答案應為整數
-    for (const q of LINEAR_EQUATION_LESSON.questions.slice(0, 4)) {
-      expect(q.options[q.answer]).toMatch(/^[−-]?\d+$/);
-    }
-  });
-});
-
-describe("onion cell lesson data integrity", () => {
-  lessonIntegrity(ONION_CELL_LESSON);
-
-  it("uses 12 frames and covers wall, membrane, nucleus, vacuole", () => {
-    expect(ONION_CELL_LESSON.frames).toHaveLength(12);
-    const all = ONION_CELL_LESSON.frames.map((f) => f.caption).join("");
-    expect(all).toContain("細胞壁");
-    expect(all).toContain("細胞膜");
-    expect(all).toContain("細胞核");
-    expect(all).toContain("液泡");
   });
 });

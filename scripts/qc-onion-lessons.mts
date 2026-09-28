@@ -14,7 +14,7 @@
  *   4. 提問與題目：ask 的 answer 索引合法、選項不重複；題目的 answer 索引
  *      合法、選項不重複、詳解與提示不缺
  *   5. 題目 id：全站唯一，且以自己課程的 id 開頭（作答紀錄的鍵不能撞號）
- *   6. 規模：累計 200 堂課，涵蓋國小／國中／高中三個學段
+ *   6. 規模：國小學段課程數與題數達標（國中／高中已於 2026-09-28 移除）
  *
  * 用法：npx tsx scripts/qc-onion-lessons.mts
  */
@@ -303,31 +303,23 @@ for (const lesson of ONION_LESSONS) {
 ONION_LESSONS.forEach(checkLesson);
 
 const elementary = ONION_LESSONS.filter((l) => l.stages.includes("國小"));
-const junior = ONION_LESSONS.filter((l) => l.stages.includes("國中"));
-const senior = ONION_LESSONS.filter((l) => l.stages.includes("高中"));
 const questionsOf = (list: OnionLesson[]) => list.reduce((sum, l) => sum + l.questions.length, 0);
 const stepsOf = (list: OnionLesson[]) =>
   list.reduce((sum, l) => sum + l.frames.filter((f) => f.step && f.step.trim()).length, 0);
 
 console.log("── 洋蔥學院內容驗證 ──");
-console.log(
-  `課程總數：${ONION_LESSONS.length} 堂（國小 ${elementary.length}、國中 ${junior.length}、高中 ${senior.length}）`,
-);
-console.log(
-  `題目總數：${questionsOf(ONION_LESSONS)} 題（國小 ${questionsOf(elementary)}、國中 ${questionsOf(junior)}、高中 ${questionsOf(senior)}）`,
-);
+console.log(`課程總數：${ONION_LESSONS.length} 堂（國小 ${elementary.length}）`);
+console.log(`題目總數：${questionsOf(ONION_LESSONS)} 題（國小 ${questionsOf(elementary)}）`);
 // 分母要用「實際分鏡總數」：核心課程有 10 幀的課，寫死 length * 7 會算出
 // 「1033 / 1015」這種分子大於分母的荒謬數字。
 const framesOf = (list: OnionLesson[]) => list.reduce((sum, l) => sum + l.frames.length, 0);
 console.log(`步驟標籤：${stepsOf(ONION_LESSONS)} / ${framesOf(ONION_LESSONS)} 幀`);
 console.log(`科目：${[...new Set(ONION_LESSONS.map((l) => l.subject))].join("、")}`);
 
-// 規模門檻：累計 200 堂，三個學段都要有足夠份量（課程數／題數同步檢查）。
+// 規模門檻：本專案只做國小（國中／高中課程已於 2026-09-28 移除）。
 // 這是「最終目標」而非階段目標——產課期間會看到 ❗，補齊後就該消失。
 const TARGETS = [
   { stage: "國小", lessons: elementary, minLessons: 70, minQuestions: 350 },
-  { stage: "國中", lessons: junior, minLessons: 65, minQuestions: 325 },
-  { stage: "高中", lessons: senior, minLessons: 65, minQuestions: 325 },
 ];
 for (const target of TARGETS) {
   if (target.lessons.length < target.minLessons) {
@@ -338,7 +330,6 @@ for (const target of TARGETS) {
     console.log(`❗ ${target.stage}題數應達 ${target.minQuestions}，實際 ${count}`);
   }
 }
-if (ONION_LESSONS.length < 200) console.log(`❗ 課程總數應達 200 堂，實際 ${ONION_LESSONS.length}`);
 
 if (issues.length === 0) {
   console.log("\n沒有發現問題 ✅");

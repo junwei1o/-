@@ -7,27 +7,22 @@ import { ONION_LESSONS } from "./onionAcademyLessons";
  * 固化成測試，避免之後新增課程時又把「步驟標籤」或「題數」漏掉。
  */
 describe("洋蔥學院內容驗證", () => {
-  /** 最終目標：累計 200 堂（國小 70／國中 65／高中 65），每學段各 350／325／325 題。 */
-  it("課程規模達標（200 堂、三學段各 65~70 堂）", () => {
+  /**
+   * 2026-09-28：本專案改為只做國小，國中／高中課程已全部移除。
+   * 因此門檻改為國小單一學段；原「200 堂、三學段各 65~70 堂」的目標不再適用。
+   */
+  it("課程規模達標（國小）", () => {
     const of = (stage: string) => ONION_LESSONS.filter((l) => l.stages.includes(stage));
     const count = (list: typeof ONION_LESSONS) => list.reduce((sum, l) => sum + l.questions.length, 0);
-    expect(ONION_LESSONS.length).toBeGreaterThanOrEqual(200);
     expect(of("國小").length).toBeGreaterThanOrEqual(70);
-    expect(of("國中").length).toBeGreaterThanOrEqual(65);
-    expect(of("高中").length).toBeGreaterThanOrEqual(65);
     expect(count(of("國小"))).toBeGreaterThanOrEqual(350);
-    expect(count(of("國中"))).toBeGreaterThanOrEqual(325);
-    expect(count(of("高中"))).toBeGreaterThanOrEqual(325);
   });
 
-  it("三個學段都有課，且涵蓋多個科目", () => {
+  it("只有國小學段，且涵蓋多個科目", () => {
     const stages = new Set(ONION_LESSONS.map((l) => l.stages[0]));
-    expect([...stages].sort()).toEqual(["國中", "國小", "高中"]);
-    // 高中要真的橫跨自然與社會各科，不能只有數學
-    const seniorSubjects = new Set(
-      ONION_LESSONS.filter((l) => l.stages.includes("高中")).map((l) => l.subject),
-    );
-    expect(seniorSubjects.size).toBeGreaterThanOrEqual(8);
+    expect([...stages].sort()).toEqual(["國小"]);
+    const subjects = new Set(ONION_LESSONS.map((l) => l.subject));
+    expect(subjects.size).toBeGreaterThanOrEqual(5);
   });
 
   /**

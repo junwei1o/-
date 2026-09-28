@@ -18,7 +18,6 @@ import { expandQuestionBankToSix } from "../client/src/lib/optionRandomizer";
 const ROOT = process.cwd();
 const FILES = [
   "data/runtime_bank_elementary.json",
-  "data/runtime_bank_junior.json",
   "data/taiwan_english_seed.json",
 ];
 

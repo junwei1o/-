@@ -8,7 +8,7 @@
  *   { "q373": { "options": ["...","...","...","..."], "answer": 1 }, ... }
  *
  * 會同時更新來源檔（taiwan_curriculum_500 / generated_bank）與產物檔
- * （runtime_bank_elementary / runtime_bank_junior），保持一致性。
+ * （runtime_bank_elementary），保持一致性。
  * 套用後若改到來源檔，記得重跑 scripts/build-runtime-bank.mjs。
  */
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
@@ -30,7 +30,6 @@ const TARGETS = [
   { file: "data/taiwan_curriculum_500.json", indent: 2 },
   { file: "data/generated_bank.json", indent: null },
   { file: "data/runtime_bank_elementary.json", indent: null },
-  { file: "data/runtime_bank_junior.json", indent: null },
 ];
 
 const missing = new Set(Object.keys(patch));

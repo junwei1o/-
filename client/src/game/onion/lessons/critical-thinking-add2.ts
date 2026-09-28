@@ -18,7 +18,7 @@ const CT_SELF_AWARENESS: OnionLesson = {
   subject: "思辨",
   topic: "自我認知",
   grade: "思辨入門",
-  stages: ["國中"],
+  stages: ["國小"],
   desc: "你怎麼描述自己？別人又怎麼看你？兩邊不一定一樣，把兩邊合起來，才能更認識自己。",
   takeaways: [
     "自己眼中的自己，和別人眼中的自己常常不同",
@@ -54,7 +54,7 @@ const CT_CHOICE_COST: OnionLesson = {
   subject: "思辨",
   topic: "選擇的代價",
   grade: "思辨入門",
-  stages: ["國中"],
+  stages: ["國小"],
   desc: "選了 A，就等於放棄 B 可能帶來的好處。這個「放棄掉的好處」，就是選擇的真正代價。",
   takeaways: [
     "每個選擇都會放棄另一條路的可能",
@@ -90,7 +90,7 @@ const CT_PERSPECTIVE_STANCE: OnionLesson = {
   subject: "思辨",
   topic: "觀點與立場",
   grade: "思辨進階",
-  stages: ["國中"],
+  stages: ["國小"],
   desc: "同一場球賽，兩邊球迷說法完全不一樣。立場不同、資訊不同，看法自然不同，不代表有人一定錯。",
   takeaways: [
     "立場、經驗、資訊不同，都會造成看法不同",
@@ -126,7 +126,7 @@ const CT_STEREOTYPE: OnionLesson = {
   subject: "思辨",
   topic: "刻板印象",
   grade: "思辨進階",
-  stages: ["國中"],
+  stages: ["國小"],
   desc: "「男生都很……」「女生都喜歡……」這些話聽起來很熟，但把一群人用一句話概括，常常會誤傷人。",
   takeaways: [
     "刻板印象是用一個標籤概括一整群人",
@@ -162,7 +162,7 @@ const CT_SAMPLING: OnionLesson = {
   subject: "思辨",
   topic: "抽樣與樣本",
   grade: "思辨進階",
-  stages: ["國中"],
+  stages: ["國小"],
   desc: "問了三個人就說全班都喜歡，對嗎？樣本太小、又不平均，結論就容易歪掉。",
   takeaways: [
     "樣本是用來代表全體的一小群人",
@@ -198,7 +198,7 @@ const CT_NUMBERS_CHARTS: OnionLesson = {
   subject: "思辨",
   topic: "數字與圖表",
   grade: "思辨進階",
-  stages: ["國中"],
+  stages: ["國小"],
   desc: "同一份數據，換個刻度、砍掉起點，看起來就完全不同。看懂圖表背後的把戲，才不會被數字帶著走。",
   takeaways: [
     "圖表的刻度可以放大或縮小差距",

@@ -21,7 +21,7 @@ const CT_ONLINE_RUMOR: OnionLesson = {
   subject: "思辨",
   topic: "網路謠言",
   grade: "思辨進階",
-  stages: ["國中"],
+  stages: ["國小"],
   desc: "群組傳來「緊急！吃這個會中毒」，嚇得大家馬上轉發。可是，這是真的嗎？",
   takeaways: [
     "越驚悚、越緊急的訊息，越要先冷靜",
@@ -57,7 +57,7 @@ const CT_LOGICAL_FALLACY: OnionLesson = {
   subject: "思辨",
   topic: "邏輯謬誤",
   grade: "思辨進階",
-  stages: ["國中"],
+  stages: ["國小"],
   desc: "「大家都這樣做，所以我也要！」「不聽我的話就是笨蛋！」這些話聽起來很強，其實邏輯有漏洞。",
   takeaways: [
     "邏輯謬誤是看似有理、其實站不住腳的推論",
@@ -93,7 +93,7 @@ const CT_FRAMING: OnionLesson = {
   subject: "思辨",
   topic: "框架暗示",
   grade: "思辨進階",
-  stages: ["國中"],
+  stages: ["國小"],
   desc: "「這杯飲料有九成的人喜歡」和「有一成的人不喜歡」，說的是同一杯飲料，感受卻完全不同。",
   takeaways: [
     "同一件事，換個說法就會改變感受",
@@ -129,7 +129,7 @@ const CT_CREDIBILITY: OnionLesson = {
   subject: "思辨",
   topic: "可信度",
   grade: "思辨進階",
-  stages: ["國中"],
+  stages: ["國小"],
   desc: "「我表哥說」「新聞說」「醫生說」，同樣一句話，從不同人嘴裡說出來，可信度不一樣。",
   takeaways: [
     "判斷訊息先看來源：專業、經驗、動機",
@@ -165,7 +165,7 @@ const CT_COGNITIVE_BIAS: OnionLesson = {
   subject: "思辨",
   topic: "認知偏誤",
   grade: "思辨進階",
-  stages: ["國中"],
+  stages: ["國小"],
   desc: "大腦為了省力，常常走捷徑做判斷。這些捷徑大部分時候很好用，但有時候會讓我們看走眼。",
   takeaways: [
     "大腦會走捷徑，幫我們快速判斷",
@@ -201,7 +201,7 @@ const CT_VALUE_JUDGMENT: OnionLesson = {
   subject: "思辨",
   topic: "價值判斷",
   grade: "思辨進階",
-  stages: ["國中"],
+  stages: ["國小"],
   desc: "「這支手機賣一萬元」是事實，「賣一萬元太貴了」是好壞判斷。兩者常常被混在一起。",
   takeaways: [
     "事實描述：可以驗證、客觀的陳述",
@@ -237,7 +237,7 @@ const CT_EMPATHY: OnionLesson = {
   subject: "思辨",
   topic: "同理心",
   grade: "思辨入門",
-  stages: ["國中"],
+  stages: ["國小"],
   desc: "同學遲交作業，是偷懶還是家裡有事？先別急著罵，試著想想他經歷了什麼。",
   takeaways: [
     "同理心是想像別人的感受與處境",
@@ -273,7 +273,7 @@ const CT_GROUP_DECISION: OnionLesson = {
   subject: "思辨",
   topic: "集體決策",
   grade: "思辨進階",
-  stages: ["國中"],
+  stages: ["國小"],
   desc: "小組討論要選主題，有人怕得罪人就跟著舉手，結果選了大家都不滿意的方案。這就是集體決策的陷阱。",
   takeaways: [
     "一群人決策，不保證比一個人聰明",

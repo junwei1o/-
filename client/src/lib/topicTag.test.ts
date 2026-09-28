@@ -1,13 +1,11 @@
 import { describe, expect, it } from "vitest";
 import curriculumSeed from "../../../data/taiwan_curriculum_500.json";
-import juniorSeed from "../../../data/junior_high_bank.json";
 import { TOPIC_TAG_SUBJECTS, listTopicTags, resolveTopicTag, resolveTopicTagFromAttempt } from "./topicTag";
 
 type Row = { subject: string; knowledge: string[]; learningTopic?: string };
 
 const rows: Row[] = [
   ...(curriculumSeed as { questions: Row[] }).questions,
-  ...(juniorSeed as { questions: Row[] }).questions,
 ];
 
 describe("resolveTopicTag", () => {

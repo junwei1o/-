@@ -33,12 +33,11 @@ import { ENGLISH_JUNIOR_FACTS } from "./gen/englishJunior.mjs";
 const ROOT = process.cwd();
 const TARGET_PER_SUBJECT = 1000;
 const SEED = 20260920;
-const GRADES = [3, 4, 5, 6, 7, 8, 9];
+const GRADES = [3, 4, 5, 6];
 
 /** 課綱來源（不含自動產生的題目，這樣重跑才會得到同一份結果）。 */
 const EXISTING_FILES = [
   "data/taiwan_curriculum_500.json",
-  "data/junior_high_bank.json",
   "data/taiwan_english_seed.json",
 ];
 

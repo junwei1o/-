@@ -4,10 +4,10 @@ import { trpc } from "@/lib/trpc";
  * 題庫已擴充到 5000 題（各科約 1000 題），精簡檔超過 2MB。
  * 若繼續用靜態 import，會整包塞進 index 主包（從 1.6MB 爆到近 4MB），
  * 首屏在手機上會明顯變慢。改成動態 import：主包只留英語 seed（很小），
- * 國小／國中題庫在掛載後背景載入，載入前照常使用後端題庫，不會卡住任何操作。
+ * 國小題庫在掛載後背景載入，載入前照常使用後端題庫，不會卡住任何操作。
  *
- * 資料由 scripts/build-runtime-bank.mjs 從 data/taiwan_curriculum_500.json、
- * data/junior_high_bank.json 與 data/generated_bank.json 合併去重產生，勿手動編輯。
+ * 資料由 scripts/build-runtime-bank.mjs 從 data/taiwan_curriculum_500.json
+ * 與 data/generated_bank.json 合併去重產生，勿手動編輯。
  */
 // 英語文題目由前端本地題庫提供（後端 question_bank subject enum 尚未收錄英語，避免改動資料庫 schema）。
 import englishSeed from "../../../data/taiwan_english_seed.json";
@@ -149,13 +149,9 @@ export function loadLocalBank(): Promise<CurriculumQuestionRow[]> {
   if (localCache) return Promise.resolve(localCache);
   if (!localPending) {
     localPending = (async () => {
-      const [elementary, junior] = await Promise.all([
-        import("../../../data/runtime_bank_elementary.json"),
-        import("../../../data/runtime_bank_junior.json"),
-      ]);
+      const elementary = await import("../../../data/runtime_bank_elementary.json");
       const rows = [
         ...rowsFrom((elementary as { default?: unknown }).default ?? elementary),
-        ...rowsFrom((junior as { default?: unknown }).default ?? junior),
       ];
       localCache = rows;
       LOCAL_QUESTION_BANK.length = 0;
