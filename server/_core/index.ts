@@ -3,6 +3,7 @@ import express, { type Request } from "express";
 import { createServer } from "http";
 import net from "net";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
+import { rateLimit } from "express-rate-limit";
 import { registerOAuthRoutes } from "./oauth";
 import { registerStorageProxy } from "./storageProxy";
 import { registerBackupRoute } from "./backupRoute";
@@ -34,6 +35,9 @@ async function findAvailablePort(startPort: number = 3000): Promise<number> {
 async function startServer() {
   const app = express();
   const server = createServer(app);
+  // Render 反向代理的第一跳：讓 req.ip 是使用者真實 IP，
+  // 否則限流鍵會全站共用同一個代理 IP，一超額就全站被擋。
+  app.set("trust proxy", 1);
   // 背景自動佈建題庫（建表＋匯入內建 500 題）；不阻擋開機，失敗也不影響服務。
   void ensureQuestionBankReady();
   // LINE webhook：必須在 express.json 之前用 raw parser，才能拿原文驗簽章。
@@ -51,9 +55,32 @@ async function startServer() {
   registerStorageProxy(app);
   registerOAuthRoutes(app);
   registerBackupRoute(app);
-  // tRPC API
+  // API 速率限制（計劃 A Phase 4）：每 IP 每分鐘 300 次。
+  // 取捨：計畫範例值為 60/min，但校園 Wi-Fi 常整校共用一個對外 IP（NAT），
+  // 60/min 會把一間教室的正常作答整批誤殺；300/min 足以擋自動化洪水，
+  // 又不會傷到真人課堂。實際量測後可再收緊。
+  const apiLimiter = rateLimit({
+    windowMs: 60_000,
+    limit: 300,
+    standardHeaders: "draft-7",
+    legacyHeaders: false,
+    // 回 tRPC 錯誤形狀，讓前端解析得到結構化訊息而非純文字
+    handler: (_req, res) => {
+      res.status(429).json({
+        error: {
+          json: {
+            message: "請求過於頻繁，請稍等一分鐘再試",
+            code: -32000,
+            data: { code: "TOO_MANY_REQUESTS", httpStatus: 429 },
+          },
+        },
+      });
+    },
+  });
+  // tRPC API（先過限流）
   app.use(
     "/api/trpc",
+    apiLimiter,
     createExpressMiddleware({
       router: appRouter,
       createContext,
