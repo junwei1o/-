@@ -122,5 +122,8 @@ server/_core/public/
 # 本機 Playwright / 測試日誌與截圖
 .testlogs/
 
+# UI 視覺回歸截圖（scripts/ui-shots.mjs 產生，before/after 各數十張 PNG）
+shots-ui/
+
 # UI 設計技能運行目錄（原型/截圖，不進 repo）
 ui-design-runs/
