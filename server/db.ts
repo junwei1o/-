@@ -140,21 +140,70 @@ export type QuestionBankFilters = {
   limit?: number;
 };
 
+/**
+ * 題庫記憶體快取（2026-09-28 效能修正）。
+ *
+ * 修正前：getQuestionBank 每次請求都 SELECT 整列（含 options/knowledge JSON 與
+ * explanation text），線上實測 questionBank.list 平均 1.088s——是次慢端點的 2.8 倍。
+ *
+ * 為什麼可以快取：question_bank 是**靜態碼表**，執行期間只有
+ * ensureQuestionBankReady 這個寫入點（啟動時補缺 id），內容不會在使用中變動。
+ * 因此「載入一次、之後記憶體過濾」與「每次重查 DB」結果完全相同。
+ *
+ * 失效時機：ensureQuestionBankReady 在補完題目後呼叫 invalidateQuestionBankCache()；
+ * 手動改了 DB（不經本檔）則需重啟或呼叫 questionBank.sync（會走同一條失效路徑）。
+ */
+type QuestionBankRow = typeof questionBank.$inferSelect;
+
+let bankCache: QuestionBankRow[] | null = null;
+let bankCacheLoading: Promise<QuestionBankRow[]> | null = null;
+
+/** 讓下次查詢重新讀 DB（題庫寫入後呼叫；開發時手改 DB 也可用）。 */
+export function invalidateQuestionBankCache(): void {
+  bankCache = null;
+  bankCacheLoading = null;
+}
+
+/** 從 DB 讀取完整題庫一次，並快取之。並行呼叫共用同一個 Promise。 */
+async function loadQuestionBankCached(db: Db): Promise<QuestionBankRow[]> {
+  if (bankCache) return bankCache;
+  if (bankCacheLoading) return bankCacheLoading;
+
+  bankCacheLoading = (async () => {
+    const rows = (await db
+      .select()
+      .from(questionBank)
+      .orderBy(asc(questionBank.id))) as QuestionBankRow[];
+    bankCache = rows;
+    console.log(`[DB] 題庫已載入記憶體快取：${rows.length} 題`);
+    return rows;
+  })();
+
+  try {
+    return await bankCacheLoading;
+  } finally {
+    bankCacheLoading = null;
+  }
+}
+
 export async function getQuestionBank(filters: QuestionBankFilters = {}) {
   const db = await getDb();
   if (!db) throw new Error("Database is not available");
-  const conditions = [
-    filters.grade === undefined ? undefined : eq(questionBank.grade, filters.grade),
-    filters.subject === undefined ? undefined : eq(questionBank.subject, filters.subject),
-    filters.difficulty === undefined ? undefined : eq(questionBank.difficulty, filters.difficulty),
-    filters.curriculumDomain === undefined ? undefined : eq(questionBank.curriculumDomain, filters.curriculumDomain),
-  ].filter((condition): condition is NonNullable<typeof condition> => Boolean(condition));
+
   try {
-    return db
-      .select()
-      .from(questionBank)
-      .where(conditions.length > 0 ? and(...conditions) : undefined)
-      .limit(Math.min(Math.max(filters.limit ?? 500, 1), 1200));
+    // 先取快取的全表（單次載入），再於記憶體套用篩選——題庫僅數千筆，
+    // 記憶體過濾的耗時遠小於一次 DB 往返，且省下每次的網路與列掃描。
+    const all = await loadQuestionBankCached(db);
+    let rows = all;
+
+    if (filters.subject !== undefined) rows = rows.filter((r) => r.subject === filters.subject);
+    if (filters.grade !== undefined) rows = rows.filter((r) => r.grade === filters.grade);
+    if (filters.difficulty !== undefined) rows = rows.filter((r) => r.difficulty === filters.difficulty);
+    if (filters.curriculumDomain !== undefined) {
+      rows = rows.filter((r) => r.curriculumDomain === filters.curriculumDomain);
+    }
+
+    return rows.slice(0, Math.min(Math.max(filters.limit ?? 500, 1), 1200));
   } catch (err) {
     console.error("[DB] getQuestionBank failed:", err);
     throw err;
@@ -438,6 +487,7 @@ export async function ensureQuestionBankReady(): Promise<QuestionBankSyncReport>
         const chunk = SEED_QUESTIONS.slice(offset, offset + 50).map((row) => ({ ...row, area: row.area ?? null }));
         await db.insert(questionBank).values(chunk);
       }
+      invalidateQuestionBankCache();
       console.log(`[Database] 已自動匯入 ${SEED_QUESTIONS.length} 題至 question_bank`);
       return { seedCount, before: 0, missing: SEED_QUESTIONS.length, inserted: SEED_QUESTIONS.length };
     }
@@ -449,6 +499,10 @@ export async function ensureQuestionBankReady(): Promise<QuestionBankSyncReport>
     const missing = SEED_QUESTIONS.filter((row) => !have.has(row.id));
 
     if (missing.length === 0) {
+      // 啟動時預熱記憶體快取：避免第一位學生進站就等一次全表 SELECT。
+      void loadQuestionBankCached(db).catch((err) => {
+        console.warn("[Database] 題庫快取預熱失敗（首次查詢時會重試）：", (err as Error)?.message ?? err);
+      });
       console.log(`[Database] question_bank 已有 ${total} 題，與內建題庫一致，無需補題`);
       return { seedCount, before: total, missing: 0, inserted: 0 };
     }
@@ -459,6 +513,7 @@ export async function ensureQuestionBankReady(): Promise<QuestionBankSyncReport>
       await db.insert(questionBank).values(chunk);
       inserted += chunk.length;
     }
+    invalidateQuestionBankCache();
     console.log(`[Database] 題庫增量同步：補入 ${inserted} 題（原有 ${total} 題）`);
     return { seedCount, before: total, missing: missing.length, inserted };
   } catch (err) {

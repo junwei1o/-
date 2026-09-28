@@ -111,10 +111,11 @@ export function HomeContactCard() {
     return () => window.removeEventListener("storage", onStorage);
   }, []);
 
-  // 拉雲端公告（如果老師有班級碼）
+  // 拉雲端公告（如果老師有班級碼）。公告變動不頻繁，staleTime 60s 避免
+  // 每次進站/視窗切回都重打一次。
   const listQuery = trpc.teacher.listAnnouncements.useQuery(
     { classCode, limit: 5 },
-    { enabled: Boolean(classCode) },
+    { enabled: Boolean(classCode), staleTime: 60_000 },
   );
   const announcements: AnnouncementRow[] = (listQuery.data ?? []) as AnnouncementRow[];
   const postMutation = trpc.teacher.postAnnouncement.useMutation({
@@ -142,11 +143,16 @@ export function HomeContactCard() {
     onError: (e) => toast.error("無法刪除：" + e.message),
   });
   // P0（2026-09-28）：刪除公告需教師會話；非教師（含尚未在 /teacher 登入者）
-  // 直接不渲染刪除鈕，避免點了才 401。僅在有公告時才查詢，多一筆極小請求。
+  // 直接不渲染刪除鈕，避免點了才 401。
+  //
+  // 效能修正：原本 enabled 綁「announcements.length > 0」會造成 waterfall——
+  // 先等 listAnnouncements 回來才知道要不要問 me，教師帳號進站因此多等一個
+  // RTT。改成與 list 同一個條件（Boolean(classCode)）後兩者可並行發出。
+  // auth.me 極輕（僅回 session 解析結果，實測 0.12s），且 staleTime 60s。
   const meQuery = trpc.auth.me.useQuery(undefined, {
     retry: false,
     staleTime: 60_000,
-    enabled: announcements.length > 0,
+    enabled: Boolean(classCode),
   });
   const isTeacher = (meQuery.data as { role?: string } | null | undefined)?.role === "teacher";
   const [posting, setPosting] = useState(false);

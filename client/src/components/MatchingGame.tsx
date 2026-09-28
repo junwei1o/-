@@ -177,14 +177,28 @@ export default function MatchingGame({ set, onComplete, resultActions, muted = f
   }, [drawMatchLines]);
 
   useEffect(() => {
-    const redraw = () => drawMatchLines();
-    window.addEventListener("resize", redraw);
-    window.addEventListener("scroll", redraw, true);
-    window.addEventListener("orientationchange", redraw);
+    // 效能（2026-09-28）：scroll 事件在行動裝置可達每秒 60+ 次，原本每次都
+    // 直接跑 drawMatchLines（強制 getBoundingClientRect reflow ＋ 逐條寫 SVG），
+    // 實測在配對多的桌次會掉幀。改為 rAF 節流：同一幀內只畫一次。
+    // passive:true 讓瀏覽器不必等 handler 跑完就開始捲動。
+    let ticking = false;
+    const scheduleRedraw = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        ticking = false;
+        drawMatchLines();
+      });
+    };
+
+    const passiveOptions = { passive: true } as const;
+    window.addEventListener("resize", scheduleRedraw);
+    window.addEventListener("scroll", scheduleRedraw, { ...passiveOptions, capture: true });
+    window.addEventListener("orientationchange", scheduleRedraw);
     return () => {
-      window.removeEventListener("resize", redraw);
-      window.removeEventListener("scroll", redraw, true);
-      window.removeEventListener("orientationchange", redraw);
+      window.removeEventListener("resize", scheduleRedraw);
+      window.removeEventListener("scroll", scheduleRedraw, true);
+      window.removeEventListener("orientationchange", scheduleRedraw);
     };
   }, [drawMatchLines]);
 
