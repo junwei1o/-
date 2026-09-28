@@ -24,6 +24,10 @@ vi.mock("wouter", () => ({
 }));
 vi.mock("@/lib/trpc", () => ({
   trpc: {
+    auth: {
+      // P0：HomeContactCard 的教師閘會讀 auth.me；dashboard 測試預設非教師（null）
+      me: { useQuery: () => ({ data: null, isLoading: false }) },
+    },
     questionBank: {
       list: {
         useQuery: () => ({
