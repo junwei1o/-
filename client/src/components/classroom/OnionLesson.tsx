@@ -164,13 +164,19 @@ export default function OnionLesson({ course = FRACTION_COURSE, muted = false, o
     setWrongQuestions(0);
     setQuestionEverWrong(false);
     setChosen(null);
+    // 重做必須重洗選項：quiz 陣列 identity 不變，靠 reshuffleNonce 觸發 quizPool 重算。
+    setReshuffleNonce((n) => n + 1);
     setScreen("quiz");
   };
 
   /* ---------- 測驗作答 ---------- */
   const quiz = layer.quiz;
-  /** 每次進場洗牌選項，避免正解固定在同一個位置。 */
-  const quizPool = useMemo(() => quiz.map((q) => shuffleQuestionOptions(q)), [quiz]);
+  /**
+   * 每次進場洗牌選項，避免正解固定在同一個位置。
+   * reshuffleNonce 只在重做（startQuiz）時 +1。
+   */
+  const [reshuffleNonce, setReshuffleNonce] = useState(0);
+  const quizPool = useMemo(() => quiz.map((q) => shuffleQuestionOptions(q)), [quiz, reshuffleNonce]);
   const question = quizPool[qIndex];
   const wrongCountThisQ = wrongSet.length;
   const hintLevel = chosen === null ? Math.min(wrongCountThisQ, 3) : 0;

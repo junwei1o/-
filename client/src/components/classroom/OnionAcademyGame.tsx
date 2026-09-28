@@ -103,11 +103,16 @@ export default function OnionLessonGame({ bestStars, muted = false, onBest, onEx
   const [askPicked, setAskPicked] = useState<number | null>(null);
   /** 闖關：本題已錯幾次（驅動逐級提示）。 */
   const [quizWrong, setQuizWrong] = useState<number[]>([]);
-
-  /** 每次進場洗牌選項，避免正解固定在同一個位置。 */
+  /**
+   * 每次進場洗牌選項，避免正解固定在同一個位置。
+   * reshuffleNonce 只在重做（startLesson）時 +1：lesson 物件 identity 不變，
+   * useMemo 不會重算，必須靠這個 nonce 強制重洗。
+   */
+  const [reshuffleNonce, setReshuffleNonce] = useState(0);
   const quizPool = React.useMemo(
     () => lesson.questions.map((q) => shuffleQuestionOptions(q)),
-    [lesson],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [lesson, reshuffleNonce],
   );
   const frame: OnionFrame = lesson.frames[frameIdx];
   const isLastFrame = frameIdx >= lesson.frames.length - 1;
@@ -143,6 +148,8 @@ export default function OnionLessonGame({ bestStars, muted = false, onBest, onEx
     setAsked([]);
     setAskPicked(null);
     setPlaying(true);
+    // 重做必須重洗選項：lesson 物件 identity 不變，靠 reshuffleNonce 觸發 quizPool 重算。
+    setReshuffleNonce((n) => n + 1);
     setPhase("lesson");
   };
   /** 答對（或略過）這一幀的提問，繼續播放。 */

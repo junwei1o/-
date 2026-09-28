@@ -85,6 +85,58 @@ export function shuffleQuestionOptions<T extends ShuffleableQuestion>(question: 
   return { ...question, options, answer, ...(strongDistractor ? { strongDistractor } : {}) };
 }
 
+/**
+ * 排列簽名：用「選項文字序列」join 而非索引序列。
+ * 這樣「同位置同內容」才判為相同，且與 6 選題擴充（附加選項）無關——
+ * 即使題目被擴充成 6 選，只要前 4 個文字排列相同，簽名就相同。
+ */
+export function permutationSignature(question: ShuffleableQuestion): string {
+  if (!Array.isArray(question?.options)) return "";
+  return question.options.join("‖");
+}
+
+/**
+ * 打亂單題選項順序，但保證結果與 forbidden 內的任一排列都不同。
+ *
+ * 用途：每次重做同一題、或重新開始整份測驗時，選項順序必須與上一次
+ * 作答不同，也不得與題庫原始順序相同（需求 R1/R2/R4）。
+ *
+ * - 輸入：question、forbiddenPermutations（不得出現的排列簽名陣列，
+ *   通常是「上次排列」＋「原始排列」）、random（預設 Math.random，
+ *   每次呼叫結果都不同）。
+ * - 迴圈（上限 12 次）：shuffleQuestionOptions → 計算簽名 → 不在
+ *   forbidden 內就回傳。12 次都撞（理論上僅 2–3 選項的小排列空間
+ *   才可能）→ 回傳最後一次結果並 console.debug。
+ * - 是非題：直接走既有豁免路徑，不進迴圈（「正確／錯誤」順序是語意約定，
+ *   打亂會出現「✕ 正確」這種符號錯位）。
+ *
+ * ⚠️ 不得傳入按題目 id 的穩定種子（seededRandom(hashStringToSeed(id))）——
+ * 那會讓同一題每次打亂結果一樣，直接違反「每次重做都不同」的需求。
+ */
+export function shuffleQuestionOptionsDistinct<T extends ShuffleableQuestion>(
+  question: T,
+  forbiddenPermutations: readonly string[] = [],
+  random: () => number = Math.random,
+): T {
+  if (forbiddenPermutations.length === 0) {
+    return shuffleQuestionOptions(question, random);
+  }
+  const forbidden = new Set(forbiddenPermutations);
+  let last = question;
+  for (let attempt = 0; attempt < 12; attempt += 1) {
+    const shuffled = shuffleQuestionOptions(question, random);
+    const signature = permutationSignature(shuffled);
+    last = shuffled;
+    if (!forbidden.has(signature)) return shuffled;
+  }
+  // 12 次都撞上（僅 2–3 選項的小排列空間理論上可能）：回傳最後一次，
+  // 並留下可追蹤的除錯訊息。
+  console.debug(
+    `[shuffleDistinct] 12 次重擲仍撞上 forbidden（選項數=${question.options?.length ?? 0}），回傳最後一次結果`,
+  );
+  return last;
+}
+
 type BankPools = {
   /** key: `${subject} ${topic}` → 該主題所有題目的錯誤選項（已剔除全庫正解）。 */
   topicPools: Map<string, string[]>;

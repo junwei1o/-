@@ -225,3 +225,92 @@ describe("軸別文案", () => {
     expect(DEFAULT_TRI_AXIS_SIZE).toBe(12);
   });
 });
+
+describe("重做保證（需求 R1/R2/R4）", () => {
+  const bank = makeBank();
+  const records = [
+    record("g5-數學-基礎", false, 1),
+    record("g5-國語-標準", false, 2),
+  ];
+
+  it("重做時選項排列與上次不同，也與題庫原始排列不同", () => {
+    const first = buildTriAxisPaper({ questions: bank, records, preferences: prefs, seed: 11 });
+    const second = buildTriAxisPaper({
+      questions: bank,
+      records,
+      preferences: prefs,
+      seed: 22,
+      previousDeck: first.questions,
+    });
+    expect(second.questions.length).toBeGreaterThan(0);
+    let differed = 0;
+    for (const question of second.questions) {
+      const original = bank.find((row) => row.id === question.id)!;
+      const originalSignature = original.options.join("‖");
+      const currentSignature = question.options.join("‖");
+      // 不得與題庫原始排列相同
+      expect(currentSignature).not.toBe(originalSignature);
+      // 不得與上次 deck 中該題的排列相同
+      const previous = first.questions.find((row) => row.id === question.id);
+      if (previous && previous.options.join("‖") !== originalSignature) {
+        if (currentSignature !== previous.options.join("‖")) differed += 1;
+      } else {
+        differed += 1;
+      }
+    }
+    // 4 選題 24 種排列：若打亂真的生效，絕大多數題都應與上次不同
+    expect(differed).toBe(second.questions.length);
+  });
+
+  it("previousDeck 可選：不傳時只保證與原始排列不同", () => {
+    const deck = buildTriAxisPaper({ questions: bank, records, preferences: prefs, seed: 33 });
+    for (const question of deck.questions) {
+      const original = bank.find((row) => row.id === question.id)!;
+      expect(question.options.join("‖")).not.toBe(original.options.join("‖"));
+    }
+  });
+
+  it("打亂後正解文字不丟（options[answer] 仍是原正解）", () => {
+    const deck = buildTriAxisPaper({ questions: bank, records, preferences: prefs, seed: 44 });
+    for (const question of deck.questions) {
+      const original = bank.find((row) => row.id === question.id)!;
+      expect(question.options[question.answer]).toBe(original.options[original.answer]);
+    }
+  });
+
+  it("seed A vs seed B：deck 的 id 序列不同（統計性，跑 5 組 seed）", () => {
+    const sequences = new Set<string>();
+    for (const seed of [101, 102, 103, 104, 105]) {
+      const deck = buildTriAxisPaper({ questions: bank, records, preferences: prefs, seed });
+      sequences.add(deck.questions.map((question) => question.id).join(","));
+    }
+    expect(sequences.size).toBeGreaterThan(1);
+  });
+
+  it("同 seed 重組前後（經 previousDeck）選項排列不同", () => {
+    const first = buildTriAxisPaper({ questions: bank, records, preferences: prefs, seed: 55 });
+    const second = buildTriAxisPaper({
+      questions: bank,
+      records,
+      preferences: prefs,
+      seed: 55,
+      previousDeck: first.questions,
+    });
+    const signatures = (deck: TriAxisQuestion[]) =>
+      deck.map((question) => `${question.id}:${question.options.join("‖")}`).join("｜");
+    // 同一 seed 若選出相同題序，會觸發重掷 seed 保證（S3.2）；
+    // 無論走哪條路，兩次試卷整體（題序＋選項排列）必須不同。
+    expect(signatures(second.questions)).not.toBe(signatures(first.questions));
+  });
+
+  it("回歸：軸別計數與難度行為不變", () => {
+    const deck = buildTriAxisPaper({ questions: bank, records, preferences: prefs, seed: 11 });
+    expect(deck.questions.length).toBe(DEFAULT_TRI_AXIS_SIZE);
+    // 過去軸來自真實錯題
+    const pastIds = deck.questions.filter((question) => question.axis === "過去").map((question) => question.id);
+    expect(pastIds.length).toBeGreaterThan(0);
+    for (const id of pastIds) {
+      expect(["g5-數學-基礎", "g5-國語-標準"]).toContain(id);
+    }
+  });
+});

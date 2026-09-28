@@ -23,6 +23,7 @@
 import { MIN_GRADE, MAX_GRADE, type UserPreferences } from "@/game/adaptiveLearning";
 import type { LearningRecord } from "@/utils/storage";
 import type { PaperQuestion } from "./paperExam";
+import { permutationSignature, shuffleQuestionOptionsDistinct } from "./optionRandomizer";
 
 /** 三條時間軸。 */
 export type PaperAxis = "過去" | "現在" | "未來";
@@ -117,6 +118,11 @@ export type BuildTriAxisInput = {
   quota?: number;
   /** 指定 seed 以便重現。 */
   seed?: number;
+  /**
+   * 上一次的試卷（重做時傳入，用來保證選項排列與上次不同）。
+   * 可選欄位：不傳時只保證與題庫原始排列不同。
+   */
+  previousDeck?: readonly TriAxisQuestion[];
 };
 
 export type TriAxisDeck = {
@@ -164,6 +170,46 @@ function clampGrade(grade: number): number {
  *  - 任一軸題數不足時，由其他軸補齊，確保試卷長度穩定
  */
 export function buildTriAxisPaper(input: BuildTriAxisInput): TriAxisDeck {
+  // 題序保證：新 deck 的題目 id 序列若與上次完全相同（極小機率），
+  // 重掷 seed 重組一次（上限 3 次）。注意 seed 只影響「選題與軸內順序」，
+  // 選項打亂由下方的 distinct 保證獨立處理。
+  const previousIds = input.previousDeck?.map((question) => question.id).join("|");
+  let seed = input.seed ?? 20260928;
+  let deck = buildTriAxisDeckOnce({ ...input, seed });
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    if (!previousIds) break;
+    const ids = deck.questions.map((question) => question.id).join("|");
+    if (ids !== previousIds) break;
+    seed = (seed ^ 0x9e3779b9 ^ ((attempt + 1) * 0x85ebca6b)) >>> 0;
+    deck = buildTriAxisDeckOnce({ ...input, seed });
+  }
+
+  // 選項打亂保證：每題的選項排列不得與「題庫原始排列」相同，
+  // 若有傳 previousDeck，也不得與「上次 deck 中該題的排列」相同。
+  // 落點在組卷層（這裡），不是題庫層 —— questionBank.ts 的快照是
+  // Web Worker 展開 5000 題的效能特性，不得拆除。
+  const previousById = new Map((input.previousDeck ?? []).map((question) => [question.id, question]));
+  const questions = deck.questions.map((question) => {
+    const forbidden = [permutationSignature(question)];
+    const previous = previousById.get(question.id);
+    if (previous) {
+      const previousSignature = permutationSignature(previous);
+      if (previousSignature !== forbidden[0]) forbidden.push(previousSignature);
+    }
+    return { ...shuffleQuestionOptionsDistinct(question, forbidden), axis: question.axis };
+  });
+
+  return {
+    questions,
+    counts: deck.counts,
+  };
+}
+
+/**
+ * 單次組卷（內部函式）：選題＋軸內打散＋交錯排出，不做選項打亂。
+ * 選項打亂由外層 buildTriAxisPaper 統一做 distinct 保證。
+ */
+function buildTriAxisDeckOnce(input: BuildTriAxisInput): TriAxisDeck {
   const { questions, records, preferences } = input;
   const quota = input.quota ?? DEFAULT_AXIS_QUOTA;
 
@@ -227,6 +273,8 @@ export function buildTriAxisPaper(input: BuildTriAxisInput): TriAxisDeck {
   }
 
   // 交錯排出：過去 → 現在 → 未來 → 過去 → …
+  // 注意：這裡的軸別交錯是教學設計（軸別節奏），保留固定；
+  // 需求 R3/R4 由「交錯槽位內容每次都變」滿足（選題 seed 每次不同）。
   const interleaved: TriAxisQuestion[] = [];
   const cursors: Record<PaperAxis, number> = { 過去: 0, 現在: 0, 未來: 0 };
   const total = Math.max(...AXIS_ORDER.map((axis) => picked[axis].length));

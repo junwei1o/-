@@ -44,6 +44,12 @@ export default function TriAxisPaper() {
   const [finished, setFinished] = useState(false);
   /** 每次重新開始都換一個 seed，避免題目順序永遠一樣。 */
   const [seed, setSeed] = useState(() => (Date.now() ^ 0x5f3759df) >>> 0);
+  /**
+   * 上一次的試卷：重做時傳給 buildTriAxisPaper，保證選項排列與上次不同。
+   * 注意 deck 在組卷 effect 內被 set，為避免 effect 依賴它造成循環，
+   * 這裡用 ref 持有（寫入不觸發重組，讀取永遠是最新）。
+   */
+  const previousDeckRef = React.useRef<TriAxisQuestion[] | null>(null);
 
   const allQuestions = bankRows as PaperQuestion[];
 
@@ -55,7 +61,9 @@ export default function TriAxisPaper() {
       records: getLearningRecord(),
       preferences: loadUserPreferences(),
       seed,
+      previousDeck: previousDeckRef.current ?? undefined,
     });
+    previousDeckRef.current = built.questions;
     setDeck(built.questions);
     setIndex(0);
     setPicked(null);

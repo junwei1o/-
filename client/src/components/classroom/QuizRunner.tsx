@@ -58,8 +58,14 @@ export default function QuizRunner({
   onExit,
 }: Props) {
   const total = questions.length;
-  /** 每次進場重新洗牌選項（正解位置不再固定），題目池本身順序由 order 控制。 */
-  const pool = useMemo(() => questions.map((q) => shuffleQuestionOptions(q)), [questions]);
+  /**
+   * 每次進場重新洗牌選項（正解位置不再固定），題目池本身順序由 order 控制。
+   * reshuffleNonce 只在「再玩一輪」時 +1：同一次掛載內重做，questions 陣列
+   * identity 不變，useMemo 不會重算 —— 必須靠這個 nonce 強制重洗，
+   * 否則選項排列與上一輪完全相同（需求 R1/R4）。
+   */
+  const [reshuffleNonce, setReshuffleNonce] = useState(0);
+  const pool = useMemo(() => questions.map((q) => shuffleQuestionOptions(q)), [questions, reshuffleNonce]);
   const [phase, setPhase] = useState<Phase>("start");
   const [order, setOrder] = useState<number[]>(() => questions.map((_, i) => i));
   const [qIndex, setQIndex] = useState(0);
@@ -105,6 +111,8 @@ export default function QuizRunner({
     errorsRef.current = 0;
     setNewBest(false);
     setNonce((n) => n + 1);
+    // 重做必須重洗選項：questions identity 不變，靠 reshuffleNonce 觸發 pool 重算。
+    setReshuffleNonce((n) => n + 1);
     if (variant === "flip" || variant === "flipdex") {
       setFlipping(false);
       setRevealed(false);

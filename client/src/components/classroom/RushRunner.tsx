@@ -44,8 +44,12 @@ export default function RushRunner({
   onExit,
 }: Props) {
   const total = questions.length;
-  /** 每次進場重新洗牌選項，避免正解永遠停在同一個位置。 */
-  const pool = useMemo(() => questions.map((q) => shuffleQuestionOptions(q)), [questions]);
+  /**
+   * 每次進場重新洗牌選項，避免正解永遠停在同一個位置。
+   * reshuffleNonce 只在重做時 +1（見 begin），強制 pool 重算。
+   */
+  const [reshuffleNonce, setReshuffleNonce] = useState(0);
+  const pool = useMemo(() => questions.map((q) => shuffleQuestionOptions(q)), [questions, reshuffleNonce]);
   const [phase, setPhase] = useState<Phase>("start");
   const [order, setOrder] = useState<number[]>(() => questions.map((_, i) => i));
   const [qIndex, setQIndex] = useState(0);
@@ -96,6 +100,8 @@ export default function RushRunner({
     setLocked(false);
     setNewBest(false);
     setTimeLeft(Math.round(durationMs / 1000));
+    // 重做必須重洗選項：questions identity 不變，靠 reshuffleNonce 觸發 pool 重算。
+    setReshuffleNonce((n) => n + 1);
     setPhase("play");
     deadlineRef.current = Date.now() + durationMs;
     window.scrollTo({ top: 0 });

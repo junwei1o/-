@@ -13,9 +13,11 @@ import {
   labelDistractors,
   numberWithUnitDistractors,
   passageClauseDistractors,
+  permutationSignature,
   seededRandom,
   sequenceDistractors,
   shuffleQuestionOptions,
+  shuffleQuestionOptionsDistinct,
 } from "./optionRandomizer";
 
 type TestQuestion = {
@@ -190,6 +192,61 @@ describe("hashStringToSeed / seededRandom", () => {
     const left = seededRandom(hashStringToSeed("m1"));
     const right = seededRandom(hashStringToSeed("m1"));
     expect([left(), left()]).toEqual([right(), right()]);
+  });
+});
+
+describe("shuffleQuestionOptionsDistinct（重做保證）", () => {
+  it("給定 forbidden=[上次簽名, 原始簽名]，結果必不在其中", () => {
+    const original = permutationSignature(BANK[0]);
+    const previous = permutationSignature(shuffleQuestionOptions(BANK[0], seededRandom(7)));
+    const forbidden = previous === original ? [original] : [previous, original];
+    for (let seed = 100; seed < 130; seed += 1) {
+      const out = shuffleQuestionOptionsDistinct(BANK[0], forbidden, seededRandom(seed));
+      expect(forbidden).not.toContain(permutationSignature(out));
+    }
+  });
+
+  it("打亂前後正解文字一致（answer 指向同一個文字）", () => {
+    for (let seed = 200; seed < 220; seed += 1) {
+      const out = shuffleQuestionOptionsDistinct(BANK[0], [permutationSignature(BANK[0])], seededRandom(seed));
+      expect(out.options[out.answer]).toBe("40");
+    }
+  });
+
+  it("strongDistractor.optionIndex 指向的文字不變", () => {
+    for (let seed = 300; seed < 320; seed += 1) {
+      const out = shuffleQuestionOptionsDistinct(BANK[2], [permutationSignature(BANK[2])], seededRandom(seed));
+      expect(out.options[out.strongDistractor!.optionIndex]).toBe("小明騎車");
+    }
+  });
+
+  it("是非題維持豁免：順序恆為正確／錯誤", () => {
+    const reversedTrue = { questionType: "是非題" as const, options: ["錯誤", "正確"], answer: 1 };
+    for (let seed = 400; seed < 410; seed += 1) {
+      const out = shuffleQuestionOptionsDistinct(
+        reversedTrue,
+        [permutationSignature(reversedTrue)],
+        seededRandom(seed),
+      );
+      expect(out.options).toEqual(["正確", "錯誤"]);
+      expect(out.answer).toBe(0);
+    }
+  });
+
+  it("forbidden 為空時等同一般打亂", () => {
+    const out = shuffleQuestionOptionsDistinct(BANK[0], [], seededRandom(5));
+    const expected = shuffleQuestionOptions(BANK[0], seededRandom(5));
+    expect(out.options).toEqual(expected.options);
+    expect(out.answer).toBe(expected.answer);
+  });
+
+  it("正確答案的文字位置分佈不恆定（20 次至少出現 2 個不同位置）", () => {
+    const positions = new Set<number>();
+    for (let seed = 500; seed < 520; seed += 1) {
+      const out = shuffleQuestionOptionsDistinct(BANK[0], [permutationSignature(BANK[0])], seededRandom(seed));
+      positions.add(out.answer);
+    }
+    expect(positions.size).toBeGreaterThanOrEqual(2);
   });
 });
 
