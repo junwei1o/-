@@ -1,12 +1,13 @@
 import { useMemo, useState } from 'react';
 import { Link, useLocation } from 'wouter';
 import { STAGE_LABELS, islandById, stageDifficulty, stageKey, starFor } from '../../../shared/islands';
+import AnswerCompare from '../components/AnswerCompare';
+import QuestionSnapshot from '../components/QuestionSnapshot';
+import { LETTERS } from '../components/answerLetters';
 import Stars from '../components/Stars';
 import { loadProgress, recordStage } from '../lib/progress';
 import { nextOptionOrder } from '../lib/optionShuffler';
 import { trpc } from '../lib/trpc';
-
-const LETTERS = ['A', 'B', 'C', 'D', 'E', 'F'];
 
 /**
  * 路由入口：以 key 綁定關卡，換關時整段答題狀態重新掛載。
@@ -325,6 +326,29 @@ function QuizSession({
               </p>
             )}
           </div>
+        )}
+
+        {/* 答錯：並排答案比較＋題面快照 */}
+        {revealed && picked !== displayAnswer && picked !== null && (
+          <>
+            <AnswerCompare
+              correctLetter={LETTERS[displayAnswer]}
+              correctText={displayOptions[displayAnswer]}
+              pickedLetter={LETTERS[picked]}
+              pickedText={displayOptions[picked]}
+            />
+            <QuestionSnapshot
+              questionNumber={index + 1}
+              prompt={question.prompt}
+              topic={question.topic}
+              questionType={question.questionType}
+              knowledge={question.knowledge}
+              options={displayOptions}
+              answer={displayAnswer}
+              picked={picked}
+              wasCorrect={picked === displayAnswer}
+            />
+          </>
         )}
       </div>
 
