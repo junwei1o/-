@@ -315,7 +315,7 @@ export default function MatchingRush({
 
       <div className="mr-question" key={`${set.id}-${mode}-${mode === "speed" ? qIndex : rushIndex}`}>
         {question?.img ? (
-          <img className="mr-question-img" src={question.img} alt={question.left} draggable={false} decoding="async" />
+          <img className="mr-question-img" src={question.img} alt={question.left} draggable={false} decoding="async" loading="lazy" />
         ) : (
           <p className="mr-question-left">{question?.left ?? ""}</p>
         )}

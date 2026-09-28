@@ -384,6 +384,7 @@ export default function MatchingGame({ set, onComplete, resultActions, muted = f
                     alt={set.pairs[pair].l}
                     draggable={false}
                     decoding="async"
+                    loading="lazy"
                   />
                 ) : (
                   <span>{set.pairs[pair].l}</span>
