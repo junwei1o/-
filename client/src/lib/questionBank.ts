@@ -14,6 +14,9 @@ import englishSeed from "../../../data/taiwan_english_seed.json";
 import { expandQuestions } from "./optionExpandScheduler";
 import { shuffleQuestionOptions } from "./optionRandomizer";
 
+/** shuffleQuestionOptions 快取（同一題只洗一次，展開完成後不再重洗）。 */
+const shuffleCache = new WeakMap<object, typeof NO_SERVER_QUESTIONS[0]>();
+
 /** 與後端 question_bank 資料列一致的題目欄位（去掉僅後端使用的時間戳）。 */
 export type CurriculumQuestionRow = {
   id: string;
@@ -320,7 +323,14 @@ export function useQuestionBank(options?: { eager?: boolean }) {
   const answerable = expandedRows ?? merged;
   const questions = useMemo(() => {
     // 只在題庫（合併或展開）換掉時才重新洗牌，避免每個 render 都重跑。
-    return answerable.map((question) => shuffleQuestionOptions(question));
+    // 使用 WeakMap 快取：同一題只洗一次，展開完成後不再重洗。
+    return answerable.map((question) => {
+      const cached = shuffleCache.get(question);
+      if (cached) return cached;
+      const shuffled = shuffleQuestionOptions(question);
+      shuffleCache.set(question, shuffled);
+      return shuffled;
+    });
   }, [answerable]);
 
   const usingLocal = (query.data?.questions ?? NO_SERVER_QUESTIONS).length === 0 && localRows.length === 0;

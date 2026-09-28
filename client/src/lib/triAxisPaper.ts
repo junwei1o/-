@@ -25,6 +25,17 @@ import type { LearningRecord } from "@/utils/storage";
 import type { PaperQuestion } from "./paperExam";
 import { permutationSignature, shuffleQuestionOptionsDistinct } from "./optionRandomizer";
 
+/** permutationSignature 快取（每題只算一次，組卷時常需多次查詢）。 */
+const permSigCache = new Map<string, string>;
+
+function getPermSig(question: PaperQuestion): string {
+  const cached = permSigCache.get(question.id);
+  if (cached !== undefined) return cached;
+  const sig = permutationSignature(question);
+  permSigCache.set(question.id, sig);
+  return sig;
+}
+
 /** 三條時間軸。 */
 export type PaperAxis = "過去" | "現在" | "未來";
 
@@ -175,25 +186,32 @@ export function buildTriAxisPaper(input: BuildTriAxisInput): TriAxisDeck {
   // 選項打亂由下方的 distinct 保證獨立處理。
   const previousIds = input.previousDeck?.map((question) => question.id).join("|");
   let seed = input.seed ?? 20260928;
-  let deck = buildTriAxisDeckOnce({ ...input, seed });
+
+  // 預先建立三軸題池（可被外層 useMemo 快取，避免 seed 變動時重複過濾）
+  const pools = buildTriAxisPools(input.questions, input.records, input.preferences);
+
+  let deck: TriAxisDeck;
+  // 先跑一次確保 deck 被初始化
+  const rand = mulberry32(seed);
+  deck = buildTriAxisDeckFromPools(input, pools, mulberry32(seed));
+
   for (let attempt = 0; attempt < 3; attempt += 1) {
-    if (!previousIds) break;
-    const ids = deck.questions.map((question) => question.id).join("|");
+    if (!input.previousDeck) break;
+    const ids = deck.questions.map((q) => q.id).join("|");
+    const previousIds = input.previousDeck!.map((q) => q.id).join("|");
     if (ids !== previousIds) break;
-    seed = (seed ^ 0x9e3779b9 ^ ((attempt + 1) * 0x85ebca6b)) >>> 0;
-    deck = buildTriAxisDeckOnce({ ...input, seed });
+    seed = (seed ^ 0x9e3779b9 ^ 0x85ebca6b) >>> 0;
+    deck = buildTriAxisDeckFromPools(input, pools, mulberry32(seed));
   }
 
   // 選項打亂保證：每題的選項排列不得與「題庫原始排列」相同，
   // 若有傳 previousDeck，也不得與「上次 deck 中該題的排列」相同。
-  // 落點在組卷層（這裡），不是題庫層 —— questionBank.ts 的快照是
-  // Web Worker 展開 5000 題的效能特性，不得拆除。
-  const previousById = new Map((input.previousDeck ?? []).map((question) => [question.id, question]));
+  const previousById = new Map((input.previousDeck ?? []).map((q) => [q.id, q]));
   const questions = deck.questions.map((question) => {
-    const forbidden = [permutationSignature(question)];
+    const forbidden = [getPermSig(question)];
     const previous = previousById.get(question.id);
     if (previous) {
-      const previousSignature = permutationSignature(previous);
+      const previousSignature = getPermSig(previous);
       if (previousSignature !== forbidden[0]) forbidden.push(previousSignature);
     }
     return { ...shuffleQuestionOptionsDistinct(question, forbidden), axis: question.axis };
@@ -209,39 +227,72 @@ export function buildTriAxisPaper(input: BuildTriAxisInput): TriAxisDeck {
  * 單次組卷（內部函式）：選題＋軸內打散＋交錯排出，不做選項打亂。
  * 選項打亂由外層 buildTriAxisPaper 統一做 distinct 保證。
  */
-function buildTriAxisDeckOnce(input: BuildTriAxisInput): TriAxisDeck {
-  const { questions, records, preferences } = input;
-  const quota = input.quota ?? DEFAULT_AXIS_QUOTA;
+/**
+ * 建立三軸題池（可記憶體快取，避免重複 seed 時重複過濾）。
+ */
+export type PaperAxisKey = "過去" | "現在" | "未來";
 
+export interface TriAxisPools {
+  過去: PaperQuestion[];
+  現在: PaperQuestion[];
+  未來: PaperQuestion[];
+}
+
+export function buildTriAxisPools(
+  questions: readonly PaperQuestion[],
+  records: readonly LearningRecord[],
+  preferences: UserPreferences
+): TriAxisPools {
   const byId = new Map(questions.map((question) => [question.id, question]));
   const answeredIds = new Set(records.map((record) => record.questionId));
   const myGrade = clampGrade(preferences.gradeLevel ?? 4);
 
-  const pastPool = buildPastPool(byId, records);
-  const pastIds = new Set(pastPool.map((question) => question.id));
+  const pastPool = buildPastPool(
+    byId,
+    records.map((r) => ({ ...r, questionId: r.questionId })) // 類型適配
+  );
+  const pastIds = new Set(pastPool.map((q) => q.id));
 
-  const nowPool = questions.filter((question) => question.grade === myGrade && !pastIds.has(question.id));
-
-  const futurePool = questions.filter(
-    (question) =>
-      !pastIds.has(question.id) &&
-      !answeredIds.has(question.id) &&
-      (question.grade === myGrade + 1 || question.difficulty === "挑戰"),
+  const nowPool = questions.filter(
+    (q) => q.grade === clampGrade(preferences.gradeLevel ?? 4) && !new Set(pastPool.map(q => q.id)).has(q.id)
   );
 
-  const rand = mulberry32(input.seed ?? 20260928);
-  const pools: Record<PaperAxis, PaperQuestion[]> = {
-    過去: shuffle(pastPool, rand),
-    現在: shuffle(nowPool, rand),
-    未來: shuffle(futurePool, rand),
+  const futurePool = questions.filter(
+    (q) =>
+      !new Set(pastPool.map(q => q.id)).has(q.id) &&
+      !records.some(r => r.questionId === q.id) &&
+      (q.grade === clampGrade(preferences.gradeLevel ?? 4) + 1 || q.difficulty === "挑戰")
+  );
+
+  return { 過去: pastPool, 現在: nowPool, 未來: futurePool };
+}
+
+/**
+ * 以預建的題池組出三軸試卷（不做選項打亂，僅選題與交錯）。
+ */
+function buildTriAxisDeckFromPools(
+  input: BuildTriAxisInput,
+  pools: TriAxisPools,
+  rand: () => number
+): TriAxisDeck {
+  const quota = input.quota ?? DEFAULT_AXIS_QUOTA;
+
+  const randLocal = mulberry32(input.seed ?? 20260928);
+  const poolsShuffled: TriAxisPools = {
+    過去: shuffle([...pools.過去], randLocal),
+    現在: shuffle([...pools.現在], randLocal),
+    未來: shuffle([...pools.未來], randLocal),
   };
 
-  // 每軸先取 quota 題。
-  const picked: Record<PaperAxis, PaperQuestion[]> = { 過去: [], 現在: [], 未來: [] };
+  // 目標總題數 = quota * 3
+  const targetTotal = quota * AXIS_ORDER.length;
+  
+  // 先從每軸取 quota 題（基礎配額）
+  const picked: TriAxisPools = { 過去: [], 現在: [], 未來: [] };
   const usedIds = new Set<string>();
-  const take = (axis: PaperAxis, count: number) => {
-    while (count > 0 && pools[axis].length > 0) {
-      const question = pools[axis].shift()!;
+  const takeBase = (axis: PaperAxis, count: number) => {
+    while (count > 0 && poolsShuffled[axis].length > 0) {
+      const question = poolsShuffled[axis].shift()!;
       if (usedIds.has(question.id)) continue;
       usedIds.add(question.id);
       picked[axis].push(question);
@@ -251,24 +302,31 @@ function buildTriAxisDeckOnce(input: BuildTriAxisInput): TriAxisDeck {
   };
 
   for (const axis of AXIS_ORDER) {
-    take(axis, quota);
+    takeBase(axis, quota);
   }
 
-  // 某一軸題數不足時，由「仍有存量的軸」補齊**總題數**，
-  // 但補進去的題目**保留自己的真實軸別** —— 軸別標示必須誠實：
-  // 新玩家沒有任何錯題時，「錯題魔王」就是 0 題，不會拿普通題冒充錯題。
-  const target = quota * AXIS_ORDER.length;
-  let totalPicked = AXIS_ORDER.reduce((sum, axis) => sum + picked[axis].length, 0);
-  if (totalPicked < target) {
-    for (const donor of AXIS_ORDER) {
-      if (totalPicked >= target) break;
-      while (totalPicked < target && pools[donor].length > 0) {
-        const question = pools[donor].shift()!;
-        if (usedIds.has(question.id)) continue;
-        usedIds.add(question.id);
-        picked[donor].push(question);
-        totalPicked += 1;
+  // 如果總題數不足，由有存量的軸補齊（允許超額）
+  let totalPicked = picked.過去.length + picked.現在.length + picked.未來.length;
+  
+  if (totalPicked < targetTotal) {
+    // 按軸別輪詢補齊，直到達到目標或題庫用盡
+    while (picked.過去.length + picked.現在.length + picked.未來.length < targetTotal) {
+      let addedThisRound = false;
+      for (const axis of AXIS_ORDER) {
+        const currentTotal = picked.過去.length + picked.現在.length + picked.未來.length;
+        if (currentTotal >= targetTotal) break;
+        
+        const shuffledPool = poolsShuffled[axis];
+        if (shuffledPool.length > 0) {
+          const question = shuffledPool.shift()!;
+          if (!usedIds.has(question.id)) {
+            usedIds.add(question.id);
+            picked[axis].push(question);
+            addedThisRound = true;
+          }
+        }
       }
+      if (!addedThisRound) break; // 所有池都用完了
     }
   }
 
@@ -277,14 +335,20 @@ function buildTriAxisDeckOnce(input: BuildTriAxisInput): TriAxisDeck {
   // 需求 R3/R4 由「交錯槽位內容每次都變」滿足（選題 seed 每次不同）。
   const interleaved: TriAxisQuestion[] = [];
   const cursors: Record<PaperAxis, number> = { 過去: 0, 現在: 0, 未來: 0 };
-  const total = Math.max(...AXIS_ORDER.map((axis) => picked[axis].length));
-  for (let round = 0; round < total; round += 1) {
+  
+  // 使用輪詢方式交錯，直到達到目標總數或所有軸都用完
+  while (interleaved.length < targetTotal) {
+    let addedInRound = false;
     for (const axis of AXIS_ORDER) {
-      const question = picked[axis][cursors[axis]];
-      if (!question) continue;
-      cursors[axis] += 1;
-      interleaved.push({ ...question, axis });
+      if (interleaved.length >= targetTotal) break;
+      if (cursors[axis] < picked[axis].length) {
+        interleaved.push({ ...picked[axis][cursors[axis]], axis });
+        cursors[axis] += 1;
+        addedInRound = true;
+      }
     }
+    // 如果這一輪沒有加入任何題目，說明所有軸都用完了
+    if (!addedInRound) break;
   }
 
   return {

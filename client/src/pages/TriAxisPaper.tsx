@@ -35,7 +35,7 @@ function optionLabel(index: number, question: PaperQuestion): string {
  */
 export default function TriAxisPaper() {
   const [, setLocation] = useLocation();
-  const { questions: bankRows } = useQuestionBank();
+  const { questions: bankRows, isLoading, isExpanding } = useQuestionBank({ eager: false });
 
   const [deck, setDeck] = useState<TriAxisQuestion[] | null>(null);
   const [index, setIndex] = useState(0);
@@ -53,9 +53,13 @@ export default function TriAxisPaper() {
 
   const allQuestions = bankRows as PaperQuestion[];
 
+  // 題庫未載入時的骨架屏
+  const isBankReady = allQuestions.length > 0;
+  const isBankLoading = isLoading || isExpanding || !isBankReady;
+
   // 組卷：題庫載入後才組（離線時由本地題庫提供，因此不會卡住）。
   useEffect(() => {
-    if (allQuestions.length === 0) return;
+    if (!isBankReady) return;
     const built = buildTriAxisPaper({
       questions: allQuestions,
       records: getLearningRecord(),
@@ -143,7 +147,13 @@ export default function TriAxisPaper() {
         ))}
       </ol>
 
-      {!deck || deck.length === 0 ? (
+      {isBankLoading ? (
+        <div className="tri-paper-skeleton" role="status" aria-busy="true" aria-label="正在準備題目">
+          <div className="tri-paper-skeleton-header" />
+          <div className="tri-paper-skeleton-legend" />
+          <div className="tri-paper-skeleton-q" />
+        </div>
+      ) : !deck || deck.length === 0 ? (
         <p className="tri-paper-loading" role="status">正在準備題目…</p>
       ) : finished && score ? (
         <section className="tri-result" aria-labelledby="tri-result-title">

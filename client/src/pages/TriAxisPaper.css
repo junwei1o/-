@@ -271,3 +271,79 @@
 @media (prefers-reduced-motion: reduce) {
   .tri-q-option, .tri-btn, .tri-paper-back { transition: none; }
 }
+
+/* ── 骨架屏（題庫載入時）── */
+.tri-paper-skeleton {
+  display: grid;
+  gap: var(--space-5, 20px);
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 0.8; }
+}
+
+.tri-paper-skeleton-header {
+  display: grid;
+  gap: 6px;
+  padding: 4px 0;
+}
+
+.tri-paper-skeleton-header::before {
+  content: "";
+  width: 40%;
+  height: 24px;
+  background: linear-gradient(90deg, var(--line) 25%, var(--muted) 50%, var(--line) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+  border-radius: var(--radius-sm);
+}
+
+.tri-paper-skeleton-header::after {
+  content: "";
+  width: 60%;
+  height: 32px;
+  background: linear-gradient(90deg, var(--line) 25%, var(--muted) 50%, var(--line) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite 0.2s;
+  border-radius: var(--radius-md);
+}
+
+@keyframes skeleton-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.tri-paper-skeleton-legend {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.tri-paper-skeleton-legend-item {
+  height: 72px;
+  border: 1px solid var(--line);
+  border-left-width: 3px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(90deg, var(--line) 25%, var(--muted) 50%, var(--line) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+}
+
+@media (max-width: 640px) {
+  .tri-paper-skeleton-legend {
+    grid-template-columns: 1fr;
+  }
+}
+
+.tri-paper-skeleton-q {
+  display: grid;
+  gap: var(--space-4, 16px);
+  padding: clamp(14px, 2.4vw, 22px);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(90deg, var(--line) 25%, var(--muted) 50%, var(--line) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+}
