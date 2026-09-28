@@ -70,7 +70,7 @@ import { TEACHER_OPEN_ID } from "./_core/context";
 import { sdk } from "./_core/sdk";
 import { systemRouter } from "./_core/systemRouter";
 import { TRPCError } from "@trpc/server";
-import { publicProcedure, router } from "./_core/trpc";
+import { publicProcedure, router, teacherProcedure } from "./_core/trpc";
 import {
   REFLECT_LIMIT_PER_MIN,
   PROXY_TEST_LIMIT_PER_MIN,
@@ -1165,7 +1165,7 @@ export const appRouter = router({
       }),
 
     /** 建立班級並取得 6 位班級碼。 */
-    createClass: publicProcedure
+    createClass: teacherProcedure
       .input(z.object({
         name: z.string().trim().min(1, "請填班級名稱").max(40),
         teacherName: z.string().trim().min(1, "請填老師稱呼").max(24),
@@ -1259,7 +1259,7 @@ export const appRouter = router({
       }),
 
     /** 老師指派作業。 */
-    createAssignment: publicProcedure
+    createAssignment: teacherProcedure
       .input(z.object({
         classCode: z.string().trim().min(4).max(8),
         subject: z.enum(["國語", "數學", "自然", "社會", "綜合課綱"]),
@@ -1358,7 +1358,7 @@ export const appRouter = router({
      * 小班（1 老師 2 學生）場景下，老師最需要的是「這孩子哪裡不會」，
      * 而不是籠統的正確率，所以這裡直接從逐題明細聚合出錯最多的知識點。
      */
-    studentInsights: publicProcedure
+    studentInsights: teacherProcedure
       .input(z.object({
         studentName: cloudNameSchema,
         days: z.number().int().min(1).max(365).optional(),
@@ -1427,7 +1427,7 @@ export const appRouter = router({
       }),
 
     /** 班級報表：成員 × 作業的完成與正確率矩陣。 */
-    classReport: publicProcedure
+    classReport: teacherProcedure
       .input(z.object({ classCode: z.string().trim().min(4).max(8) }))
       .query(async ({ input }) => {
         const code = input.classCode.trim().toUpperCase();
@@ -1479,7 +1479,7 @@ export const appRouter = router({
       }),
 
     /** 老師發一則班級公告。 */
-    postAnnouncement: publicProcedure
+    postAnnouncement: teacherProcedure
       .input(z.object({
         classCode: z.string().trim().min(4).max(8),
         teacherName: z.string().trim().min(1).max(24),
@@ -1516,7 +1516,7 @@ export const appRouter = router({
       }),
 
     /** 老師刪除自己的公告。 */
-    deleteAnnouncement: publicProcedure
+    deleteAnnouncement: teacherProcedure
       .input(z.object({
         id: z.number().int().min(1),
         classCode: z.string().trim().min(4).max(8),
