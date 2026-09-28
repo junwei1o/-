@@ -9,9 +9,20 @@ if (isProduction && !process.env.JWT_SECRET) {
   );
 }
 
+// 教師通關語（計劃 A Phase 1）：未設定時只影響「教師端寫入操作」——登入端點
+// 回 notConfigured、teacherProcedure 全數拒絕（安全側降級），不應拖垮整站啟動。
+// 因此與 JWT_SECRET 不同，這裡不 fail-fast，只在生產環境警告提醒補設。
+if (isProduction && !process.env.TEACHER_PASSPHRASE) {
+  console.warn(
+    "[env] TEACHER_PASSPHRASE 未設定：教師端寫入／刪除操作將一律被拒。請於 Render Dashboard 設定後重啟。"
+  );
+}
+
 export const ENV = {
   appId: process.env.VITE_APP_ID ?? "",
   cookieSecret: process.env.JWT_SECRET ?? "",
+  /** 教師通關語（計劃 A）：空字串＝未配置，teacher.login 一律拒絕。 */
+  teacherPassphrase: process.env.TEACHER_PASSPHRASE ?? "",
   databaseUrl: process.env.DATABASE_URL ?? "",
   oAuthServerUrl: process.env.OAUTH_SERVER_URL ?? "",
   ownerOpenId: process.env.OWNER_OPEN_ID ?? "",
