@@ -23,10 +23,20 @@ function makeLocalStorageStub() {
   };
 }
 
+// 可變 mock 資料：讓個別測試切換「公告清單」與「是否為教師」（P0 教師閘測試）。
+// vi.hoisted 保證在 vi.mock 工廠被建立前就完成初始化。
+const h = vi.hoisted(() => ({
+  listData: [] as unknown[],
+  meData: null as unknown,
+}));
+
 vi.mock("@/lib/trpc", () => ({
   trpc: {
+    auth: {
+      me: { useQuery: () => ({ data: h.meData, isLoading: false }) },
+    },
     teacher: {
-      listAnnouncements: { useQuery: () => ({ data: undefined as unknown[] | undefined, isLoading: false, refetch: vi.fn() }) },
+      listAnnouncements: { useQuery: () => ({ data: h.listData, isLoading: false, refetch: vi.fn() }) },
       postAnnouncement: { useMutation: () => ({ mutate: vi.fn(), isPending: false }) },
       deleteAnnouncement: { useMutation: () => ({ mutate: vi.fn(), isPending: false }) },
     },
@@ -40,6 +50,8 @@ vi.mock("@/lib/trpc", () => ({
 beforeEach(() => {
   vi.stubGlobal("localStorage", makeLocalStorageStub());
   vi.restoreAllMocks();
+  h.listData.length = 0;
+  h.meData = null;
 });
 
 afterEach(() => {
@@ -130,5 +142,40 @@ describe("HomeContactCard 聯絡老師區塊", () => {
     // 仍然顯示原本的 LINE ID，沒有被覆寫
     expect(localStorage.getItem(STORAGE_LINE_ID)).toBe("liu_t3");
     expect(screen.getByText("liu_t3")).toBeTruthy();
+  });
+});
+
+describe("刪除公告鈕的教師閘（P0：非教師不可見、教師可見）", () => {
+  const STORAGE_CLASS_CODE = "xue-teacher-class-code-v1";
+
+  /** 佈置：本機有名稱與班級碼、雲端有一則同名公告。meData 由各測試自行設定。 */
+  function seedAnnouncement() {
+    localStorage.setItem(STORAGE_TEACHER_NAME, "劉老師");
+    localStorage.setItem(STORAGE_CLASS_CODE, "TNUC8E");
+    h.listData.push({
+      id: 1,
+      classCode: "TNUC8E",
+      teacherName: "劉老師",
+      content: "公告一",
+      createdAt: Date.now(),
+    });
+  }
+
+  it("非教師即使名稱相符也看不到刪除鈕（公告本身仍可讀）", () => {
+    seedAnnouncement(); // h.meData 保持 null＝未登入
+    render(<HomeContactCard />);
+    fireEvent.click(screen.getByRole("button", { name: /聯絡老師/ }));
+
+    expect(screen.getByText("公告一")).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "刪除" })).toBeNull();
+  });
+
+  it("已登入教師（auth.me.role=teacher）看得到刪除鈕", () => {
+    seedAnnouncement();
+    h.meData = { role: "teacher", name: "teacher" };
+    render(<HomeContactCard />);
+    fireEvent.click(screen.getByRole("button", { name: /聯絡老師/ }));
+
+    expect(screen.getByRole("button", { name: "刪除" })).toBeTruthy();
   });
 });

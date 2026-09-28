@@ -137,7 +137,18 @@ export function HomeContactCard() {
         toast.error("無法刪除：" + data.reason);
       }
     },
+    // P0（2026-09-28）：補 onError——沒有它時 401／網路錯誤會完全靜默，
+    // 是本檔唯一「按了沒反應」的錯誤路徑。
+    onError: (e) => toast.error("無法刪除：" + e.message),
   });
+  // P0（2026-09-28）：刪除公告需教師會話；非教師（含尚未在 /teacher 登入者）
+  // 直接不渲染刪除鈕，避免點了才 401。僅在有公告時才查詢，多一筆極小請求。
+  const meQuery = trpc.auth.me.useQuery(undefined, {
+    retry: false,
+    staleTime: 60_000,
+    enabled: announcements.length > 0,
+  });
+  const isTeacher = (meQuery.data as { role?: string } | null | undefined)?.role === "teacher";
   const [posting, setPosting] = useState(false);
   const [newContent, setNewContent] = useState("");
 
@@ -290,7 +301,7 @@ export function HomeContactCard() {
                               {new Date(row.createdAt).toLocaleString("zh-TW", {
                                 month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit",
                               })}
-                              {row.teacherName === contact.teacherName.trim() ? (
+                              {isTeacher && row.teacherName === contact.teacherName.trim() ? (
                                 <button
                                   type="button"
                                   className="home-contact-del"
