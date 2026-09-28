@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { trpc } from "@/lib/trpc";
 /**
- * 題庫已擴充到 5000 題（各科約 1000 題），精簡檔超過 2MB。
+ * 題庫為國小 2900 題（數學／自然／社會／國語 ＋ 英語 seed），國中／高中已於 2026-09-28 移除。
  * 若繼續用靜態 import，會整包塞進 index 主包（從 1.6MB 爆到近 4MB），
  * 首屏在手機上會明顯變慢。改成動態 import：主包只留英語 seed（很小），
  * 國小題庫在掛載後背景載入，載入前照常使用後端題庫，不會卡住任何操作。
@@ -77,7 +77,7 @@ let localPending: Promise<CurriculumQuestionRow[]> | null = null;
 
 /**
  * 內建題庫的「活陣列」。
- * 5000 題的精簡檔超過 2.7MB，靜態 import 會整包塞進主 bundle，首屏在手機上會卡。
+ * 2900 題的精簡檔約 1.7MB，靜態 import 會整包塞進主 bundle，首屏在手機上會卡。
  * 改成動態 import 之後，這裡先用空陣列占位，載入完成後「就地填入同一個陣列」：
  * 所有拿到這個參考的人都看得到題目（classroomBank 等同步消費端才不會開天窗）。
  */
@@ -299,7 +299,7 @@ export function useQuestionBank(options?: { eager?: boolean }) {
   const hasBank = localRows.length > 0 || serverQuestions.length > 0;
   const merged = useMemo(() => {
     if (!hasBank) return NO_SERVER_QUESTIONS;
-    // 後端題庫與本地題庫聯集合併（後端只收錄部分題目，本地才是完整的 5000 題），
+    // 後端題庫與本地題庫聯集合併（後端只收錄部分題目，本地才是完整的 2900 題），
     // 以題幹去重避免同一題出現兩次；英語 seed 固定附加（後端 schema 未收錄英語）。
     return mergedBank(serverQuestions, localRows);
   }, [serverQuestions, localRows, hasBank]);

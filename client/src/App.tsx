@@ -12,7 +12,7 @@ import AuthGate from "@/components/AuthGate";
 import { initGameData } from "@/utils/storage";
 import { OfflineBanner } from "@/components/OfflineBanner";
 
-// 路由懶加載：首頁也一併懶加載——它是唯一會帶入 5000 題內建題庫的頁面，
+// 路由懶加載：首頁也一併懶加載——它是唯一會帶入 2900 題內建題庫的頁面，
 // 而題庫對「只想登入看看首頁」的學生完全不需要。靜態 import 會讓 Home 的
 // 模組層級副作用在登入閘道顯示 LoginPage 時就被拉進來，徒增 3MB 下載。
 const Home = React.lazy(() => import("@/pages/Home"));
@@ -140,7 +140,7 @@ function Router() {
 function App() {
   useEffect(() => {
     initGameData();
-    // 註：這裡刻意「不」預載 5000 題內建題庫。
+    // 註：這裡刻意「不」預載 2900 題內建題庫。
     // 舊實作會在 requestIdleCallback(2.5s) 後無條件 import 題庫，但：
     //   1) 未登入時 AuthGate 只顯示 LoginPage，學生根本沒有要答題，
     //      卻照樣吃掉 3MB 下載（實測登入頁也會載入，徒佔行動頻寬）。
