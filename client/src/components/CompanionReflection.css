@@ -170,7 +170,7 @@
   font-size: 0.76rem;
 }
 
-@media (max-width: 480px) {
+@media (max-width: 640px) {
   .companion-reflect-overlay {
     padding: 10px;
     align-items: flex-end;

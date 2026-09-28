@@ -28,10 +28,18 @@
   transition: transform var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
 }
 .theme-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-sm); }
-.theme-card:focus-visible { outline: var(--focus-ring); outline-offset: 2px; }
+.theme-card:focus-visible { outline: var(--focus-ring); outline-offset: 2px; box-shadow: 0 0 0 2px var(--focus-ring-inner); }
 .theme-card.is-active {
   border-color: var(--tidal);
   box-shadow: 0 6px 16px color-mix(in srgb, var(--tidal) 22%, transparent);
+}
+/* `.is-active` 與 `.focus-visible` 同特異度 (0,2,0)，且寫在後面 → 會把焦點內環
+   整個蓋掉。結果是「目前選中的那張主題卡」聚焦時沒有內環（實測 default 主題下
+   box-shadow 仍是 0 6px 16px 的卡片陰影）。此處提高特異度到 (0,3,0)
+   並把原本的陰影**附加**回來。 */
+.theme-card.is-active:focus-visible {
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--tidal) 22%, transparent),
+              0 0 0 2px var(--focus-ring-inner);
 }
 .theme-card-preview {
   display: flex;

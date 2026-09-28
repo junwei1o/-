@@ -43,7 +43,7 @@
 }
 .on-rank {
   margin-left: auto;
-  font-size: 12.5px;
+  font-size: var(--type-meta);
   font-weight: 800;
   color: #b5651d;
   background: #fdeee2;
@@ -68,7 +68,7 @@
   width: 100%;
   border: 0;
   border-radius:var(--radius-lg);
-  font-size: 16px;
+  font-size: var(--type-lead);
   font-weight: 800;
   cursor: pointer;
   background: linear-gradient(135deg, #f2994a, #e8803a);
@@ -99,7 +99,7 @@
   animation: on-bob 3s ease-in-out infinite;
 }
 @keyframes on-bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
-.on-start-hero h2 { font-size: 26px; color: #214654; margin: 6px 0; }
+.on-start-hero h2 { font-size: var(--type-section); color: #214654; margin: 6px 0; }
 .on-start-hero p { color: #5a7180; font-size: 15px; line-height: 1.6; margin: 6px 0 0; }
 .on-rules { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 18px 0 6px; }
 .on-rule-chip {
@@ -107,11 +107,11 @@
   background: #e3f1f4; border: 1px solid #c4e3ea;
   padding: 7px 12px; border-radius:var(--radius-pill);
 }
-.on-bestline { margin-top: 14px; font-size: 13.5px; font-weight: 700; color: #b5651d; }
+.on-bestline { margin-top: 14px; font-size: var(--type-support); font-weight: 700; color: #b5651d; }
 
 /* ---------- 課程地圖（剝洋蔥路徑） ---------- */
 .on-map-title { font-size: 19px; color: #214654; margin: 4px 0 2px; }
-.on-map-sub { font-size: 13.5px; color: #6c818d; margin: 0 0 16px; }
+.on-map-sub { font-size: var(--type-support); color: #6c818d; margin: 0 0 16px; }
 .on-path { position: relative; display: flex; flex-direction: column; gap: 14px; }
 .on-node {
   display: flex; align-items: center; gap: 14px;
@@ -135,8 +135,8 @@
 .on-node.is-current .on-node-num { background: linear-gradient(135deg, #f2994a, #e8803a); }
 .on-node.is-locked .on-node-num { background: #b7c4cb; }
 .on-node-body { flex: 1; min-width: 0; }
-.on-node-body h3 { margin: 0 0 2px; font-size: 16px; color: #214654; }
-.on-node-body p { margin: 0; font-size: 12.5px; color: #6c818d; line-height: 1.45; }
+.on-node-body h3 { margin: 0 0 2px; font-size: var(--type-lead); color: #214654; }
+.on-node-body p { margin: 0; font-size: var(--type-meta); color: #6c818d; line-height: 1.45; }
 .on-node-state { flex: 0 0 auto; font-size: 13px; font-weight: 800; }
 .on-node-state.stars { color: #e8a13a; letter-spacing: 1px; }
 .on-node-state.lock { color: #9fb0b9; }
@@ -169,7 +169,7 @@
   display: flex; gap: 10px; align-items: flex-start;
   background: var(--white); border-radius:var(--radius-lg); padding: 13px 15px; margin-top: 12px;
   border: 1px solid #eef2f4;
-  font-size: 15.5px; line-height: 1.65; color: #334856; font-weight: 600;
+  font-size: var(--type-lead); line-height: 1.65; color: #334856; font-weight: 600;
   min-height: 64px;
 }
 .on-narration .on-mascot {
@@ -186,13 +186,13 @@
   font-size: 14px; font-weight: 800; padding: 0 16px;
   background: #eef4f6; color: #1b7082;
 }
-.on-ctrl.icon { flex: 0 0 46px; width: 46px; padding: 0; display: grid; place-items: center; font-size: 17px; }
+.on-ctrl.icon { flex: 0 0 46px; width: 46px; padding: 0; display: grid; place-items: center; font-size: var(--type-lead); }
 .on-ctrl.primary { background: linear-gradient(135deg, #1b7082, #2f93a8); color: var(--white); }
 .on-ctrl:active { transform: scale(0.96); }
 .on-ctrl-spacer { flex: 1; }
 
 /* ---------- 即時測驗 ---------- */
-.on-quiz-meta { font-size: 12.5px; font-weight: 800; letter-spacing: 0.04em; color: #1b7082; }
+.on-quiz-meta { font-size: var(--type-meta); font-weight: 800; letter-spacing: 0.04em; color: #1b7082; }
 .on-quiz-title { font-size: 18px; color: #214654; margin: 8px 0 4px; line-height: 1.5; }
 .on-quiz-stage { background: radial-gradient(circle at 50% 35%, #fdfdf8, #f6efe2); border-radius:var(--radius-lg); margin: 10px 0 4px; }
 .on-quiz-stage .on-stage-svg { max-height: 220px; }
@@ -202,7 +202,7 @@
   min-height: 52px; width: 100%; text-align: left;
   border: 2px solid #e4edf0; background: var(--white);
   border-radius:var(--radius-md); padding: 12px 14px;
-  font-size: 15.5px; font-weight: 700; color: #334856;
+  font-size: var(--type-lead); font-weight: 700; color: #334856;
   cursor: pointer; transition: transform 0.1s, border-color 0.15s, background 0.15s;
 }
 .on-option:active { transform: scale(0.985); }
@@ -234,7 +234,7 @@
   font-size: 14px; line-height: 1.6; color: #2f6b53; font-weight: 600;
   animation: on-fade-up 0.35s ease both;
 }
-.on-quiz-progress { font-size: 12.5px; color: #8296a1; font-weight: 700; margin-top: 10px; text-align: center; }
+.on-quiz-progress { font-size: var(--type-meta); color: #8296a1; font-weight: 700; margin-top: 10px; text-align: center; }
 
 /* ---------- 過層／結算 ---------- */
 .on-done { text-align: center; padding: 12px 6px; }
@@ -246,7 +246,7 @@
   animation: on-pop-in 0.5s cubic-bezier(0.2, 0.8, 0.3, 1.4) both;
 }
 @keyframes on-pop-in { from { transform: scale(0.3); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-.on-done h2 { font-size: 23px; color: #214654; margin: 6px 0; }
+.on-done h2 { font-size: var(--type-section); color: #214654; margin: 6px 0; }
 .on-done-stars { font-size: 34px; letter-spacing: 4px; margin: 6px 0; }
 .on-done-stars .off { color: #d9e2e6; }
 .on-done p { color: #5a7180; font-size: 15px; line-height: 1.6; }
@@ -297,7 +297,7 @@
   animation: on-pop 0.5s cubic-bezier(0.2, 0.8, 0.3, 1.4) both;
 }
 .on-frac-num, .on-frac-den { font-size: 56px; }
-.on-frac-tag { font-size: 17px; font-weight: 800; }
+.on-frac-tag { font-size: var(--type-lead); font-weight: 800; }
 .on-frac-line { transform-box: fill-box; transform-origin: center; animation: on-grow-x 0.45s 0.55s cubic-bezier(0.2,0.8,0.3,1) both; }
 
 .on-uneven-slice {

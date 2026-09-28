@@ -56,7 +56,8 @@ describe("environment design tokens", () => {
     expect(css).toContain(".rpg-companion-showcase { position:relative;");
     expect(css).toContain(".rpg-start-button,.rpg-lobby-secondary");
     expect(css).toContain("@media (prefers-reduced-motion:reduce) { .rpg-lobby-stage *, .rpg-lobby-stage:after { animation:none!important;");
-    expect(css).toContain("@media (max-width:760px) { .rpg-lobby-stage { grid-template-columns:1fr;");
+    // 斷點已於 2026-09-28 統一收斂為 640/768/1024/1280（原本此處是 760px）。
+    expect(css).toContain("@media (max-width:768px) { .rpg-lobby-stage { grid-template-columns:1fr;");
   });
 
   it("keeps HUD value feedback readable, low-stimulation, and motion-optional", () => {

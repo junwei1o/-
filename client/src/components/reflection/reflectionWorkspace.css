@@ -341,7 +341,7 @@
 .rc-snap-hint { font-size: 0.66rem; color: #98a59d; line-height: 1.4; }
 
 /* ---------- 響應式 ---------- */
-@media (max-width: 650px) {
+@media (max-width: 768px) {
   .rc-toolbar { border-radius:var(--radius-lg); top: 8px; padding: 6px 8px; gap: 6px; }
   .rc-theme-dot, .rc-toolbar-btn { padding: 4px 8px; font-size: 0.68rem; }
 }

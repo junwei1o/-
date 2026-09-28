@@ -497,7 +497,7 @@
 .paper-explanation-toggle:focus-visible, .paper-doubt-button:focus-visible, .paper-error-classification-actions button:focus-visible { outline: 3px solid rgba(33, 110, 147, 0.72); outline-offset: 2px; }
 .paper-challenge-prompt { margin: 0.75rem 0 0; padding: 0.65rem 0.75rem; border-radius:var(--radius-md); color: #315f4e; background: rgba(225, 244, 232, 0.78); font-size: 0.82rem; font-weight: 800; line-height: 1.55; }
 
-@media (max-width: 600px) {
+@media (max-width: 768px) {
   .paper-error-classification-actions, .paper-explanation-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .paper-error-classification-actions button, .paper-explanation-toggle, .paper-doubt-button { width: 100%; min-height: 2.75rem; }
   .paper-doubt-button { grid-column: 1 / -1; }
@@ -547,7 +547,7 @@
 .paper-scope-button.is-selected {
   border-color: var(--tidal);
   background: linear-gradient(135deg, color-mix(in srgb, var(--tidal) 12%, var(--white)), color-mix(in srgb, var(--tidal) 8%, var(--paper)));
-  box-shadow: 0 6px 16px rgba(11, 110, 142, 0.2), inset 0 1px 0 color-mix(in srgb, var(--white) 90%, transparent);
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--tidal) 20%, transparent), inset 0 1px 0 color-mix(in srgb, var(--white) 90%, transparent);
 }
 
 .paper-scope-button strong {
@@ -590,7 +590,7 @@
   font-size: 1.3rem;
 }
 
-@media (max-width: 480px) {
+@media (max-width: 640px) {
   .paper-options:has(.paper-option.is-true-false) {
     grid-template-columns: 1fr 1fr;
   }
@@ -651,7 +651,7 @@
 .paper-option.is-selected {
   border-color: var(--tidal);
   background: linear-gradient(135deg, color-mix(in srgb, var(--tidal) 12%, var(--white)), color-mix(in srgb, var(--tidal) 8%, var(--paper)));
-  box-shadow: 0 4px 14px rgba(11, 110, 142, 0.18), inset 0 1px 0 color-mix(in srgb, var(--white) 90%, transparent);
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--tidal) 18%, transparent), inset 0 1px 0 color-mix(in srgb, var(--white) 90%, transparent);
 }
 
 .paper-option.is-selected > span:first-of-type {
@@ -745,7 +745,7 @@
   border-color: transparent;
   color: var(--white);
   background: linear-gradient(135deg, var(--tidal), var(--tidal-deep));
-  box-shadow: 0 6px 16px rgba(11, 110, 142, 0.22), inset 0 1px 0 color-mix(in srgb, var(--white) 22%, transparent);
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--tidal) 22%, transparent), inset 0 1px 0 color-mix(in srgb, var(--white) 22%, transparent);
 }
 
 .paper-home-primary strong,
@@ -802,12 +802,12 @@
 .paper-primary-button {
   color: var(--white);
   background: linear-gradient(135deg, var(--tidal), var(--tidal-deep));
-  box-shadow: 0 4px 14px rgba(11, 110, 142, 0.28), inset 0 1px 0 color-mix(in srgb, var(--white) 20%, transparent);
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--tidal) 28%, transparent), inset 0 1px 0 color-mix(in srgb, var(--white) 20%, transparent);
 }
 
 .paper-primary-button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 22px rgba(11, 110, 142, 0.35);
+  box-shadow: 0 8px 22px color-mix(in srgb, var(--tidal) 35%, transparent);
 }
 
 .paper-primary-button:active {
@@ -834,12 +834,12 @@
 .paper-retry-unmastered-button {
   color: var(--white);
   background: linear-gradient(135deg, var(--coral), var(--coral-deep));
-  box-shadow: 0 4px 14px rgba(232, 117, 74, 0.28), inset 0 1px 0 color-mix(in srgb, var(--white) 20%, transparent);
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--coral) 28%, transparent), inset 0 1px 0 color-mix(in srgb, var(--white) 20%, transparent);
 }
 
 .paper-retry-unmastered-button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 22px rgba(232, 117, 74, 0.35);
+  box-shadow: 0 8px 22px color-mix(in srgb, var(--coral) 35%, transparent);
 }
 
 .paper-retry-unmastered-button:active {
@@ -939,7 +939,7 @@
 .paper-wrong-filters select:focus {
   outline: none;
   border-color: var(--tidal);
-  box-shadow: 0 0 0 3px rgba(11, 110, 142, 0.2);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--tidal) 20%, transparent);
 }
 
 .paper-filter-reset {
@@ -1163,7 +1163,7 @@
 .paper-next-group-tip-actions .paper-primary-button {
   color: var(--white) !important;
   background: linear-gradient(135deg, var(--tidal), var(--tidal-deep)) !important;
-  box-shadow: 0 4px 14px rgba(11, 110, 142, 0.28), inset 0 1px 0 color-mix(in srgb, var(--white) 20%, transparent) !important;
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--tidal) 28%, transparent), inset 0 1px 0 color-mix(in srgb, var(--white) 20%, transparent) !important;
 }
 
 .paper-question-actions .paper-primary-button:hover,
@@ -1171,7 +1171,7 @@
 .paper-review-confirmation-actions .paper-primary-button:hover,
 .paper-next-group-tip-actions .paper-primary-button:hover {
   transform: translateY(-2px) !important;
-  box-shadow: 0 8px 22px rgba(11, 110, 142, 0.35) !important;
+  box-shadow: 0 8px 22px color-mix(in srgb, var(--tidal) 35%, transparent) !important;
 }
 
 .paper-question-actions .paper-primary-button:active,

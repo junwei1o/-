@@ -46,7 +46,7 @@
 
 .student-knowledge-island-recent button:active { transform: scale(0.98); }
 
-@media (max-width: 390px) {
+@media (max-width: 640px) {
   .student-knowledge-island-recent ul { gap: 0.35rem; }
   .student-knowledge-island-recent button { font-size: 0.66rem; }
 }

@@ -118,7 +118,7 @@
   margin: 6px 0 2px;
   font-variant-numeric: tabular-nums;
 }
-.paper-question-timer strong { font-size: 17px; }
+.paper-question-timer strong { font-size: var(--type-lead); }
 .paper-question-timer.is-urgent {
   background: #fde3dc;
   color: #c2452f;

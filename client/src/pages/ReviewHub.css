@@ -18,7 +18,7 @@
 }
 
 .review-hub-eyebrow {
-  font-size: 11px;
+  font-size: var(--type-micro);
   font-weight: 700;
   letter-spacing: 0.14em;
   color: var(--tidal-deep);
@@ -124,7 +124,7 @@
 }
 
 .review-hub-ladder-node small {
-  font-size: 11px;
+  font-size: var(--type-micro);
   color: var(--tidal-deep);
   font-weight: 700;
 }
@@ -352,7 +352,7 @@
 }
 
 .review-hub-empty strong {
-  font-size: 17px;
+  font-size: var(--type-lead);
   color: var(--ink);
 }
 
@@ -413,7 +413,7 @@
   opacity: 0.8;
 }
 
-@media (max-width: 560px) {
+@media (max-width: 768px) {
   .review-hub-ladder-nodes {
     grid-template-columns: repeat(3, 1fr);
   }

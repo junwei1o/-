@@ -14,7 +14,7 @@
 .hub-eyebrow {
   margin: 0 0 8px;
   color: var(--muted);
-  font-size: 11px;
+  font-size: var(--type-micro);
   font-weight: 800;
   letter-spacing: 0.18em;
 }
@@ -221,7 +221,7 @@
 
 .hub-card h3 {
   margin: 2px 0 0;
-  font-size: 17px;
+  font-size: var(--type-lead);
   color: var(--ink);
 }
 
@@ -235,7 +235,7 @@
 .hub-card small {
   margin-top: auto;
   padding-top: 6px;
-  font-size: 11px;
+  font-size: var(--type-micro);
   font-weight: 800;
   color: var(--tidal);
 }
@@ -249,7 +249,7 @@
   align-items: center;
   gap: 8px;
   margin: 0 0 10px;
-  font-size: 16px;
+  font-size: var(--type-lead);
   color: var(--tidal-deep);
 }
 
@@ -259,7 +259,7 @@
 
 .hub-section-head h2 {
   margin: 0;
-  font-size: 17px;
+  font-size: var(--type-lead);
 }
 
 .hub-streak {
@@ -287,7 +287,7 @@
 .league-accuracy { min-width: 5.2rem; text-align: right; color: var(--muted-foreground); font-variant-numeric: tabular-nums; }
 .league-footnote { display: flex; align-items: center; gap: 0.35rem; margin-top: 0.9rem; }
 .hub-empty { padding: 1.6rem; text-align: center; color: var(--muted-foreground); background: var(--card); border-radius:var(--radius-md); border: 1px dashed color-mix(in srgb, var(--foreground) 22%, transparent); }
-@media (max-width: 520px) { .league-row { grid-template-columns: 2.2rem minmax(0, 1fr) auto; } .league-accuracy { grid-column: 2 / -1; text-align: left; padding-left: 2.8rem; } }
+@media (max-width: 640px) { .league-row { grid-template-columns: 2.2rem minmax(0, 1fr) auto; } .league-accuracy { grid-column: 2 / -1; text-align: left; padding-left: 2.8rem; } }
 
 /* 同學異步 PK */
 .pk-menu { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; }
@@ -322,7 +322,7 @@
 .illustration-hero-copy .hub-eyebrow { margin: 0 0 0.2rem; }
 .illustration-hero-copy .hub-title { margin: 0 0 0.25rem; font-size: 1.4rem; }
 .illustration-hero-copy .hub-sub { margin: 0; font-size: 0.85rem; max-width: 46ch; }
-@media (max-width: 560px) { .illustration-hero { min-height: 138px; } .illustration-hero-copy .hub-title { font-size: 1.2rem; } }
+@media (max-width: 768px) { .illustration-hero { min-height: 138px; } .illustration-hero-copy .hub-title { font-size: 1.2rem; } }
 :root[data-theme="dark"] .illustration-hero::after { background: linear-gradient(180deg, rgba(20,32,40,0.12) 0%, rgba(20,32,40,0.72) 48%, var(--card) 100%); }
 
 /* ── 2026-09-19 現代學生風格：hub 卡片、圖標晶片與標題 ── */

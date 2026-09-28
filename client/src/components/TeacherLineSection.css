@@ -15,7 +15,7 @@
 
 .line-notify-head h2 {
   margin: 0;
-  font-size: 17px;
+  font-size: var(--type-lead);
   font-family:var(--font-serif-tc);
 }
 
@@ -41,7 +41,7 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-size: 11px;
+  font-size: var(--type-micro);
   font-weight: 700;
   padding: 4px 10px;
   border-radius:var(--radius-pill);

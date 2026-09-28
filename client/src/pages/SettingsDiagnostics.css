@@ -330,4 +330,4 @@
 .pin-cloud-status-ok { color: #2e7d4f; }
 .pin-cloud-status-error { color: #c0392b; }
 .pin-cloud-status-info { color: var(--muted-foreground); }
-@media (max-width: 520px) { .pin-cloud-form { grid-template-columns: 1fr; } }
+@media (max-width: 640px) { .pin-cloud-form { grid-template-columns: 1fr; } }

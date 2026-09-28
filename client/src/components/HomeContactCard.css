@@ -18,7 +18,7 @@
   cursor: pointer;
   color: var(--ink);
   font-family: inherit;
-  font-size: 16px;
+  font-size: var(--type-lead);
   font-weight: 700;
 }
 
@@ -150,7 +150,7 @@
 
 .home-contact-classcode {
   margin-left: auto;
-  font-size: 11px;
+  font-size: var(--type-micro);
   font-weight: 500;
   color: var(--tidal-deep);
   letter-spacing: 0.04em;
@@ -186,7 +186,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 11px;
+  font-size: var(--type-micro);
   color: var(--tidal-deep);
   opacity: 0.8;
 }
@@ -198,7 +198,7 @@
   color: var(--coral);
   padding: 2px 8px;
   border-radius: 6px;
-  font-size: 11px;
+  font-size: var(--type-micro);
   font-family: inherit;
   cursor: pointer;
 }
@@ -329,7 +329,7 @@
 .home-contact-status.ok { background: rgba(108, 132, 96, 0.16); color: var(--moss); }
 .home-contact-status.err { background: color-mix(in srgb, var(--coral) 16%, transparent); color: var(--coral); }
 
-@media (max-width: 480px) {
+@media (max-width: 640px) {
   .home-contact-hint { display: none; }
   .home-contact-qr { width: 180px; height: 180px; }
   .home-contact-qr img { width: 164px; height: 164px; }
