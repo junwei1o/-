@@ -17,6 +17,17 @@
 4. 成績換算星星：≥60% 一顆、≥75% 兩顆、≥90% 三顆。
 5. 「學習紀錄」會統計各島通關數、正確率與最近挑戰。
 
+### 選項隨機打亂
+
+同一關每次挑戰（含看完解析後重新作答）時，**每題選項順序都會重新打亂**，
+且保證與上次不同，逼學生記「答案內容」而不是「答案位置」。
+
+- 種子：`科目|年級|關卡|第幾次挑戰`（attempt 從進度紀錄讀取）
+- 洗牌：Fisher–Yates（mulberry32 隨機數）
+- 保證：洗牌結果與上次完全相同時，強制交換前兩個位置
+- 離線首玩（純靜態部署、無 attempt 紀錄）：改用 `Math.random()`，每次進頁面順序都變
+- 實作：`client/src/lib/optionShuffler.ts`
+
 進度存在瀏覽器 `localStorage`（鍵名 `island-explorer.progress.v1`），不需註冊、不寫伺服器。
 
 ## 技術架構
@@ -35,8 +46,9 @@
 - `health` — 服務狀態與題庫規模
 - `meta` — 各島、各年級的題目數
 - `quiz({ subject, grade, stage })` — 回傳該關的 10 題。
-  以 `subject|grade|stage` 當種子決定抽題與選項順序，**同一關每次拿到的題目都相同**；
+  以 `subject|grade|stage` 當種子決定抽題，**同一關每次拿到的題目都相同**；
   選項順序會重排並同步更新答案索引，避免背答案。
+  前端會再以「第幾次挑戰」為種子逐題打亂選項順序（見「選項隨機打亂」）。
 
 ## 本機開發
 
@@ -81,7 +93,7 @@ client/          前端原始碼（Vite root）
   src/
     pages/       Home / IslandPage / StagesPage / QuizPage / RecordsPage
     components/  Layout（頁首頁尾）
-    lib/         trpc 用戶端、localStorage 進度
+    lib/         trpc 用戶端、localStorage 進度、選項隨機打亂
 server/          Express + tRPC
   index.ts       靜態檔 + SPA fallback + /trpc
   trpc.ts        路由與抽題邏輯

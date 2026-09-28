@@ -1,8 +1,9 @@
 import { useMemo, useState } from 'react';
 import { Link, useLocation } from 'wouter';
-import { STAGE_LABELS, islandById, stageDifficulty, starFor } from '../../../shared/islands';
+import { STAGE_LABELS, islandById, stageDifficulty, stageKey, starFor } from '../../../shared/islands';
 import Stars from '../components/Stars';
 import { loadProgress, recordStage } from '../lib/progress';
+import { nextOptionOrder } from '../lib/optionShuffler';
 import { trpc } from '../lib/trpc';
 
 const LETTERS = ['A', 'B', 'C', 'D', 'E', 'F'];
@@ -35,6 +36,13 @@ function QuizSession({
     { enabled: valid && stage >= 1 && stage <= 6 },
   );
 
+  // 本次挑戰次數：從進度紀錄讀（同一關的第幾次挑戰）。
+  // 每次挑戰（含看完解析後重新作答）都會遞增，選項順序隨之改變。
+  const [attempt, setAttempt] = useState(() => {
+    const key = stageKey(subject, grade, stage);
+    return (loadProgress().stages[key]?.attempts ?? 0) + 1;
+  });
+
   const [index, setIndex] = useState(0);
   const [picked, setPicked] = useState<number | null>(null);
   const [score, setScore] = useState(0);
@@ -44,6 +52,18 @@ function QuizSession({
   const question = questions[index];
   const revealed = picked !== null;
   const isLast = index === questions.length - 1;
+
+  // 選項順序：以「科目|年級|關卡|attempt」為種子逐題打亂。
+  // 同一關每次挑戰順序都不同，且與上次保證不同（見 optionShuffler）。
+  const seedKey = `${subject}|${grade}|${stage}`;
+  const orders = useMemo(() => {
+    if (!quiz.data) return [];
+    return quiz.data.questions.map((q, i) => nextOptionOrder(q.options.length, i, seedKey, attempt));
+  }, [quiz.data, attempt, seedKey]);
+
+  const order = orders[index] ?? null;
+  const displayOptions = order && question ? order.map((i) => question.options[i]) : [];
+  const displayAnswer = order && question ? order.indexOf(question.answer) : -1;
 
   const difficulty = useMemo(() => stageDifficulty(stage), [stage]);
 
@@ -99,7 +119,7 @@ function QuizSession({
   function pick(optionIndex: number) {
     if (revealed || result) return;
     setPicked(optionIndex);
-    if (optionIndex === question.answer) setScore((s) => s + 1);
+    if (optionIndex === displayAnswer) setScore((s) => s + 1);
   }
 
   function next() {
@@ -123,10 +143,12 @@ function QuizSession({
   }
 
   function retry() {
+    // 重新作答：attempt +1 → 選項順序改變，學生必須看內容而非位置
     setIndex(0);
     setPicked(null);
     setScore(0);
     setResult(null);
+    setAttempt((a) => a + 1);
   }
 
   // ─── 結算畫面 ───
@@ -157,7 +179,7 @@ function QuizSession({
         </h1>
         <p className="mt-2 text-sm text-slate-300">{message}</p>
 
-<Stars count={result.stars} size="text-5xl" zero="dim" className="pop mt-6 block" />
+        <Stars count={result.stars} size="text-5xl" zero="dim" className="pop mt-6 block" />
 
         <div className="mt-6 grid grid-cols-3 gap-3">
           {[
@@ -253,9 +275,9 @@ function QuizSession({
         </p>
 
         <div className="mt-6 space-y-3">
-          {question.options.map((option, optionIndex) => {
+          {displayOptions.map((option, optionIndex) => {
             const isPicked = picked === optionIndex;
-            const isAnswer = optionIndex === question.answer;
+            const isAnswer = optionIndex === displayAnswer;
 
             let style =
               'border-white/15 bg-white/5 hover:border-[#86e7dd]/60 hover:bg-white/10 text-slate-100';
@@ -294,8 +316,8 @@ function QuizSession({
         {revealed && (
           <div className="pop mt-5 rounded-2xl border border-[#ffc857]/30 bg-[#ffc857]/10 px-4 py-4">
             <div className="flex items-center gap-2 text-sm font-extrabold text-[#ffc857]">
-              <span aria-hidden>{picked === question.answer ? '✅' : '💡'}</span>
-              {picked === question.answer ? '答對了！' : '差一點點，來看解析'}
+              <span aria-hidden>{picked === displayAnswer ? '✅' : '💡'}</span>
+              {picked === displayAnswer ? '答對了！' : '差一點點，來看解析'}
             </div>
             {question.explanation && (
               <p className="mt-2 text-sm leading-relaxed text-slate-200">
