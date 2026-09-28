@@ -507,6 +507,9 @@
 .home-mode-card.is-sign-in svg { color:#ad7a17; }
 .home-mode-card.is-tavern { background:linear-gradient(140deg, #fff3df, #f6dca6); border-color:rgba(122,79,46,.42); }
 .home-mode-card.is-tavern svg { color:#7a4f2e; }
+/* 三軸混編試卷：以最深的品牌色標示為主要入口（過去→現在→未來的進程感）。 */
+.home-mode-card.is-tri-axis { background:linear-gradient(140deg, #eef6fa, #d0e7f1); border-color:rgba(11,110,142,.45); }
+.home-mode-card.is-tri-axis svg { color:#0b6e8e; }
 .home-mode-card-badge { position:absolute; top:.65rem; right:.65rem; margin:0 !important; color:#bf7d19 !important; }
 .home-mode-card:hover { transform:translateY(-2px); border-color:rgba(18,105,120,.52); box-shadow:0 10px 19px rgba(13,67,78,.14); }
 .home-mode-card:active { transform:scale(.97); }

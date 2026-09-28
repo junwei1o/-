@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { AlarmClock, Backpack, BookOpenCheck, Bug, CalendarDays, ChevronLeft, ChevronRight, Coins, Compass, Crosshair, Dices, RotateCcw, ShieldAlert, Sparkles, Timer, X, Zap } from "lucide-react";
+import { AlarmClock, Backpack, BookOpenCheck, Bug, CalendarDays, ChevronLeft, ChevronRight, Coins, Compass, Crosshair, Dices, Milestone, RotateCcw, ShieldAlert, Sparkles, Timer, X, Zap } from "lucide-react";
 import { toast } from "sonner";
 import { useLocation } from "wouter";
 import { ensureLocalBank, useQuestionBank } from "@/lib/questionBank";
@@ -247,36 +247,42 @@ export default function Home() {
   return (
     <main className="home-dashboard" aria-label="寶島探險家學習儀表板">
       <div className="home-dashboard-hud">
+        <section className="home-mode-hub" aria-labelledby="home-mode-hub-title">
+          <div className="home-mode-hub-heading">
+            <div>
+              <p className="home-dashboard-eyebrow">EXPEDITION MODES</p>
+              <h2 id="home-mode-hub-title">選擇下一段學習航線</h2>
+            </div>
+            <p>三種單機模式都會保留在你的本機學習軌跡中。</p>
+          </div>
+          <div className="home-mode-grid">
+            <button type="button" className="home-mode-card is-wrong-answer" onClick={() => setLocation("/wrong-answers")}>
+              <ShieldAlert size={25} aria-hidden="true" />
+              <strong>錯題魔王</strong>
+              <span>從真實錯題整理弱點</span>
+            </button>
+            <button type="button" className="home-mode-card is-timed" onClick={() => setLocation("/community?mode=timed")}>
+              <Timer size={25} aria-hidden="true" />
+              <strong>限時挑戰</strong>
+              <span>十題自我挑戰 · 個人紀錄</span>
+            </button>
+            <button type="button" className="home-mode-card is-sign-in" onClick={handleDailySignIn} aria-describedby="daily-sign-in-status">
+              <CalendarDays size={25} aria-hidden="true" />
+              <strong>每日簽到</strong>
+              <span id="daily-sign-in-status">{signedInToday ? "今天已簽到" : "今天回來留下足跡"} · {dailySignIn.streak} 天</span>
+              {dailySignIn.streak >= 7 ? <Crosshair size={15} className="home-mode-card-badge" aria-label="已達成一週探險家" /> : null}
+            </button>
+            <button type="button" className="home-mode-card is-tri-axis" onClick={() => setLocation("/tri-axis-paper")}>
+              <Milestone size={25} aria-hidden="true" />
+              <strong>三軸混編試卷</strong>
+              <span>過去錯題 · 現在鞏固 · 未來挑戰</span>
+            </button>
+          </div>
+          {/* 使用者若關閉「快速行動」側邊欄，簽到膠囊就改在首頁主區渲染，
+              避免簽到入口整個消失（側邊欄開啟時由側邊欄那份負責）。 */}
+          {!enableQuickSidebar ? <DailySignInPill /> : null}
+        </section>
         <FirstLightQuest />
-        <header className="home-dashboard-status">
-          <div>
-            <p className="home-dashboard-eyebrow">TAIWAN EXPEDITION STATUS</p>
-            <h1>{getPlayerName()}，{selectedTitle ? titleLabel(selectedTitle) : rankFromAnswers(answerCount)}</h1>
-            <p>學習足跡 {answerCount} 筆 · 下一次升階正在前方</p>
-            <div className="home-dashboard-progress" role="progressbar" aria-label="目前等級經驗值" aria-valuemin={0} aria-valuemax={100} aria-valuenow={progress}><span style={{ width: `${progress}%` }} /></div>
-          </div>
-          <div className="home-dashboard-status-side">
-            <p className={`home-dashboard-coins${isGoldPulseActive ? " is-gold-pulse" : ""}`} data-tour="coins" role="status" aria-live="polite" aria-atomic="true"><Coins size={17} aria-hidden="true" /> {playerData.gold} 金幣</p>
-            <button type="button" className="home-dashboard-backpack" aria-expanded={showBackpack} onClick={() => setShowBackpack((open) => !open)}><Backpack size={17} aria-hidden="true" /> 背包 {inventory.length}</button>
-          </div>
-        </header>
-        <BxEmptyState
-          slot="footprint"
-          filled={
-            <section className="home-adventure-journal-card" aria-label="昨日探險日誌">
-              <div>
-                <p className="home-dashboard-eyebrow">DAILY ADVENTURE LOG · {dailyAdventureSummary.dayKey}</p>
-                <h2>昨日的航海足跡</h2>
-                <p>{dailyAdventureSummary.summary}</p>
-              </div>
-              <div className="home-adventure-journal-stats" aria-label="昨日學習統計">
-                <span><strong>{dailyAdventureSummary.answered}</strong><small>題目</small></span>
-                <span><strong>{dailyAdventureSummary.accuracy === null ? "—" : `${Math.round(dailyAdventureSummary.accuracy * 100)}%`}</strong><small>正確率</small></span>
-              </div>
-            </section>
-          }
-        />
-
         {isSetupOpen ? (
           <section className="home-grade-setup" aria-labelledby="home-grade-title">
             <p className="home-dashboard-eyebrow">STEP 1 · 內容等級</p>
@@ -351,36 +357,6 @@ export default function Home() {
           ) : null}
         </section>
 
-        <section className="home-mode-hub" aria-labelledby="home-mode-hub-title">
-          <div className="home-mode-hub-heading">
-            <div>
-              <p className="home-dashboard-eyebrow">EXPEDITION MODES</p>
-              <h2 id="home-mode-hub-title">選擇下一段學習航線</h2>
-            </div>
-            <p>三種單機模式都會保留在你的本機學習軌跡中。</p>
-          </div>
-          <div className="home-mode-grid">
-            <button type="button" className="home-mode-card is-wrong-answer" onClick={() => setLocation("/wrong-answers")}>
-              <ShieldAlert size={25} aria-hidden="true" />
-              <strong>錯題魔王</strong>
-              <span>從真實錯題整理弱點</span>
-            </button>
-            <button type="button" className="home-mode-card is-timed" onClick={() => setLocation("/community?mode=timed")}>
-              <Timer size={25} aria-hidden="true" />
-              <strong>限時挑戰</strong>
-              <span>十題自我挑戰 · 個人紀錄</span>
-            </button>
-            <button type="button" className="home-mode-card is-sign-in" onClick={handleDailySignIn} aria-describedby="daily-sign-in-status">
-              <CalendarDays size={25} aria-hidden="true" />
-              <strong>每日簽到</strong>
-              <span id="daily-sign-in-status">{signedInToday ? "今天已簽到" : "今天回來留下足跡"} · {dailySignIn.streak} 天</span>
-              {dailySignIn.streak >= 7 ? <Crosshair size={15} className="home-mode-card-badge" aria-label="已達成一週探險家" /> : null}
-            </button>
-          </div>
-          {/* 使用者若關閉「快速行動」側邊欄，簽到膠囊就改在首頁主區渲染，
-              避免簽到入口整個消失（側邊欄開啟時由側邊欄那份負責）。 */}
-          {!enableQuickSidebar ? <DailySignInPill /> : null}
-        </section>
         <section className="home-feature-directory-entry" aria-labelledby="home-feature-directory-entry-title">
           {totalFeatureDirectoryCount ? (
             <button
@@ -397,6 +373,35 @@ export default function Home() {
             </button>
           ) : null}
         </section>
+        <header className="home-dashboard-status">
+          <div>
+            <p className="home-dashboard-eyebrow">TAIWAN EXPEDITION STATUS</p>
+            <h1>{getPlayerName()}，{selectedTitle ? titleLabel(selectedTitle) : rankFromAnswers(answerCount)}</h1>
+            <p>學習足跡 {answerCount} 筆 · 下一次升階正在前方</p>
+            <div className="home-dashboard-progress" role="progressbar" aria-label="目前等級經驗值" aria-valuemin={0} aria-valuemax={100} aria-valuenow={progress}><span style={{ width: `${progress}%` }} /></div>
+          </div>
+          <div className="home-dashboard-status-side">
+            <p className={`home-dashboard-coins${isGoldPulseActive ? " is-gold-pulse" : ""}`} data-tour="coins" role="status" aria-live="polite" aria-atomic="true"><Coins size={17} aria-hidden="true" /> {playerData.gold} 金幣</p>
+            <button type="button" className="home-dashboard-backpack" aria-expanded={showBackpack} onClick={() => setShowBackpack((open) => !open)}><Backpack size={17} aria-hidden="true" /> 背包 {inventory.length}</button>
+          </div>
+        </header>
+        <BxEmptyState
+          slot="footprint"
+          filled={
+            <section className="home-adventure-journal-card" aria-label="昨日探險日誌">
+              <div>
+                <p className="home-dashboard-eyebrow">DAILY ADVENTURE LOG · {dailyAdventureSummary.dayKey}</p>
+                <h2>昨日的航海足跡</h2>
+                <p>{dailyAdventureSummary.summary}</p>
+              </div>
+              <div className="home-adventure-journal-stats" aria-label="昨日學習統計">
+                <span><strong>{dailyAdventureSummary.answered}</strong><small>題目</small></span>
+                <span><strong>{dailyAdventureSummary.accuracy === null ? "—" : `${Math.round(dailyAdventureSummary.accuracy * 100)}%`}</strong><small>正確率</small></span>
+              </div>
+            </section>
+          }
+        />
+
         {showBackpack ? <aside className="home-dashboard-backpack-panel" aria-label="特產背包"><h2>特產背包</h2>{inventory.length ? <ul>{inventory.map((item) => <li key={item.id}><span aria-hidden="true">{item.emoji}</span>{item.name}</li>)}</ul> : <p>完成真實學習里程碑或發現地圖故事後，特產會收進這裡。</p>}</aside> : null}
         {enableQuickSidebar ? (
           <div className={`home-quick-sidebar ${isActionsOpen ? "is-open" : "is-collapsed"}`} data-open={isActionsOpen}>

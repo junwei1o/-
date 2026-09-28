@@ -17,6 +17,7 @@ import { OfflineBanner } from "@/components/OfflineBanner";
 // 模組層級副作用在登入閘道顯示 LoginPage 時就被拉進來，徒增 3MB 下載。
 const Home = React.lazy(() => import("@/pages/Home"));
 const PaperExam = React.lazy(() => import("./pages/PaperExam"));
+const TriAxisPaper = React.lazy(() => import("./pages/TriAxisPaper"));
 const MatchingPage = React.lazy(() => import("./pages/MatchingPage"));
 const RegionDetail = React.lazy(() => import("./pages/RegionDetail"));
 const MediaObservatory = React.lazy(() => import("./pages/MediaObservatory"));
@@ -97,6 +98,7 @@ function Router() {
         <Route path={"/camp"} component={DailyCamp} />
         <Route path={"/badges"} component={Badges} />
         <Route path={"/practice"} component={PaperExam} />
+        <Route path={"/tri-axis-paper"} component={TriAxisPaper} />
         <Route path={"/matching"} component={MatchingPage} />
         <Route path={"/wrong-answers"} component={WrongAnswers} />
         <Route path={"/graduation"} component={GraduationHall} />
