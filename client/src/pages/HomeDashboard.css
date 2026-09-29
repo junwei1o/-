@@ -858,6 +858,12 @@
 }
 .wrong-book-start:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(217, 112, 47, 0.32); }
 
+/* 畢業空態：同行的「前往錯題重練」CTA 與「返回航海儀表板」原本一個是緊湊 12px 圓角、
+   一個是 64px / 18px 的儀表板磁磚，視覺錯位。此處僅在本面板作用域內把返回鍵收斂到與 CTA
+   一致的緊湊規格（44px、--radius-md、14px/800），不更動全域 .home-dashboard-action。 */
+.graduation-empty-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 1rem; }
+.graduation-empty-actions .home-dashboard-action { min-height: 44px; padding: 9px 16px; border-radius: var(--radius-md); font-size: 14px; }
+
 .wrong-book-item {
   display: flex;
   align-items: center;

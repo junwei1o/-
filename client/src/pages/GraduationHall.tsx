@@ -55,20 +55,22 @@ export default function GraduationHall() {
           <p>
             紀念榜還是空的。到錯題重練把題目一題題破解，每題連續答對兩次，就會登上這裡。
           </p>
-          <button
-            className="wrong-book-start"
-            type="button"
-            onClick={() => setLocation("/wrong-answers")}
-          >
-            <RotateCcw size={15} aria-hidden="true" /> 前往錯題重練
-          </button>
-          <button
-            className="home-dashboard-action"
-            type="button"
-            onClick={() => setLocation("/")}
-          >
-            <ArrowLeft size={16} aria-hidden="true" /> 返回航海儀表板
-          </button>
+          <div className="graduation-empty-actions">
+            <button
+              className="wrong-book-start"
+              type="button"
+              onClick={() => setLocation("/wrong-answers")}
+            >
+              <RotateCcw size={15} aria-hidden="true" /> 前往錯題重練
+            </button>
+            <button
+              className="home-dashboard-action"
+              type="button"
+              onClick={() => setLocation("/")}
+            >
+              <ArrowLeft size={16} aria-hidden="true" /> 返回航海儀表板
+            </button>
+          </div>
         </section>
       ) : (
         <>
