@@ -6,6 +6,8 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import SortGame from "@/components/SortGame";
 import { SORT_SETS } from "@/lib/sortBank";
 
+const originalAudioContext = window.AudioContext;
+
 afterEach(() => cleanup());
 
 describe("SortGame 分類歸位", () => {
@@ -79,5 +81,69 @@ describe("SortGame 分類歸位", () => {
     } finally {
       vi.useRealTimers();
     }
+  });
+});
+
+describe("SortGame 音效 AudioContext 不堆疊（P2-4 回歸）", () => {
+  afterEach(() => {
+    Object.defineProperty(window, "AudioContext", { configurable: true, value: originalAudioContext });
+  });
+
+  it("連續 40+ 次互動只建立單一 AudioContext 實例", () => {
+    const close = vi.fn();
+    const makeOsc = () => ({
+      type: "sine" as OscillatorType,
+      frequency: { value: 0 },
+      connect: vi.fn(),
+      start: vi.fn(),
+      stop: vi.fn(),
+    });
+    const makeGain = () => ({
+      gain: { setValueAtTime: vi.fn(), exponentialRampToValueAtTime: vi.fn() },
+      connect: vi.fn(),
+    });
+    const constructed: object[] = [];
+    const AudioContextMock = vi.fn(function (this: {}) {
+      const ctx = {
+        currentTime: 0,
+        state: "running",
+        destination: {},
+        resume: vi.fn(),
+        createOscillator: makeOsc,
+        createGain: makeGain,
+        close,
+      };
+      constructed.push(ctx);
+      return ctx;
+    });
+    Object.defineProperty(window, "AudioContext", { configurable: true, value: AudioContextMock });
+
+    const onComplete = vi.fn();
+    const set = SORT_SETS[0];
+    const { container } = render(<SortGame set={set} onComplete={onComplete} />);
+
+    const clickItemText = (text: string) => {
+      const box = within(container.querySelector(".sg-items") as HTMLElement);
+      const btn = Array.from(box.getAllByRole("button")).find(
+        (b) =>
+          !b.hasAttribute("disabled") &&
+          Array.from(b.querySelectorAll("span")).some(
+            (s) => !s.classList.contains("sg-badge") && s.textContent?.trim() === text,
+          ),
+      ) as HTMLElement;
+      fireEvent.click(btn);
+    };
+
+    // 同一項目重複放錯分類籃，每次觸發一次 playSound("no")，共觸發 40 次。
+    const wrongItemText = set.categories[0].items[0];
+    const wrongBasketIndex = 1; // 第一個項目的正確籃是 0，放進 1 必定出錯
+    for (let i = 0; i < 40; i++) {
+      clickItemText(wrongItemText);
+      fireEvent.click(container.querySelectorAll(".sg-basket")[wrongBasketIndex]);
+    }
+
+    // 修復前：40 次互動 = 40 個 new AudioContext 且從不 close；修復後應復用單例。
+    expect(AudioContextMock).toHaveBeenCalledTimes(1);
+    expect(constructed).toHaveLength(1);
   });
 });

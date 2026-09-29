@@ -33,6 +33,9 @@ export default function SortGame({
   const completedRef = useRef(false);
   const sortedRef = useRef<Set<string>>(new Set());
   const errorsRef = useRef(0);
+  // 音效 AudioContext 跨互動复用單例，避免每次 playSound 都 new 而從未 close 的執行個體堆疊
+  // （與 MatchingGame / MatchingRush 相同模式）。
+  const audioCtxRef = useRef<AudioContext | null>(null);
 
   const total = board.items.length;
 
@@ -40,8 +43,12 @@ export default function SortGame({
     (kind: "win" | "ok" | "no") => {
       if (muted) return;
       try {
-        const AudioContextClass = window.AudioContext ?? (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
-        const ctx = new AudioContextClass();
+        const Ctor =
+          window.AudioContext ??
+          (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+        if (!Ctor) return;
+        const ctx = (audioCtxRef.current ??= new Ctor());
+        if (ctx.state === "suspended") void ctx.resume();
         const tone = (freq: number, delay: number, dur: number, type: OscillatorType, vol: number) => {
           const osc = ctx.createOscillator();
           const gain = ctx.createGain();
