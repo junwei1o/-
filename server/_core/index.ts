@@ -12,6 +12,7 @@ import { ensureQuestionBankReady } from "../db";
 import { createContext } from "./context";
 import { handleLineWebhook } from "./lineWebhook";
 import { serveStatic, setupVite } from "./vite";
+import { apiCacheControl } from "./apiCache";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -89,10 +90,11 @@ async function startServer() {
       });
     },
   });
-  // tRPC API（先過限流）
+  // tRPC API（先過限流，再依白名單設快取標頭——見 apiCache.ts）
   app.use(
     "/api/trpc",
     apiLimiter,
+    apiCacheControl,
     createExpressMiddleware({
       router: appRouter,
       createContext,
