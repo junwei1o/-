@@ -7,6 +7,7 @@
  * 成績透過 onBest 回寫教室最佳紀錄（與其他玩法一致的 3★ 標準）。
  */
 import React, { useEffect, useRef, useState } from "react";
+import { SpeechReadButton } from "@/components/SpeechReadButton";
 import { RotateCcw, Sparkles, Star, ChevronRight, Play, Pause, Home, GraduationCap, ArrowLeft, BookOpen, Lightbulb, SkipForward, ListChecks } from "lucide-react";
 import {
   ONION_LESSONS,
@@ -362,6 +363,7 @@ export default function OnionLessonGame({ bestStars, muted = false, onBest, onEx
             <div className="ol-ask" role="group" aria-label="動畫中途提問">
               <p className="ol-ask-head"><Lightbulb size={14} /> 先想一想，再往下看</p>
               <p className="ol-ask-q">{frame.ask.prompt}</p>
+              <SpeechReadButton key={frame.ask.prompt} text={frame.ask.prompt} label="提問" compact />
               <div className="ol-ask-opts">
                 {frame.ask.options.map((o, i) => (
                   <button
@@ -484,6 +486,7 @@ export default function OnionLessonGame({ bestStars, muted = false, onBest, onEx
         </header>
         <div className="ol-quiz">
           <p className="ol-q-prompt">{q.prompt}</p>
+          <SpeechReadButton key={q.prompt} text={q.prompt} label="題目" compact />
           {!answered && quizWrong.length > 0 && (
             <div className="ol-hint" role="status">
               <b>提示（第 {Math.min(quizWrong.length, 3)} 次）：</b>{" "}

@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { SpeechReadButton } from "@/components/SpeechReadButton";
 import { useClassroomSound } from "./useClassroomSound";
 import { accuracyStars } from "@/lib/classroomBank";
 import { shuffleArray } from "@/lib/matchingBank";
@@ -290,6 +291,7 @@ export default function QuizRunner({
               </figure>
             ) : null}
             <p className="cr-q-prompt">{question.prompt}</p>
+            <SpeechReadButton key={question.prompt} text={question.prompt} label="題目" compact />
             <div className="cr-options" role="group" aria-label="答案選項">
               {question.options.map((option, index) => {
                 let cls = "cr-option";

@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import { SpeechReadButton } from "@/components/SpeechReadButton";
 import { useClassroomSound } from "./useClassroomSound";
 import { buildFactorRounds, factorStars, type FactorRound } from "@/lib/classroomBank";
 import "./classroom.css";
@@ -220,6 +221,12 @@ export default function FactorGame({ muted = false, onExit, onBest, bestStars }:
           <span className="fc-n">{round.n}</span>
         </div>
         <p className="cr-q-prompt fc-ask">下面哪些數字是 <b>{round.n}</b> 的因數？把它們全部點起來！</p>
+        <SpeechReadButton
+          key={round.n}
+          text={`下面哪些數字是 ${round.n} 的因數？把它們全部點起來！`}
+          label="題目"
+          compact
+        />
 
         <div className="fc-bubbles" role="group" aria-label={`${round.n} 的因數候選數字`}>
           {round.choices.map((value) => {

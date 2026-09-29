@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import { SpeechReadButton } from "@/components/SpeechReadButton";
 import { useClassroomSound } from "./useClassroomSound";
 import {
   buildRectRounds,
@@ -383,6 +384,14 @@ export default function RectGame({ muted = false, onExit, onBest, bestStars }: P
           用 <b>{round.n}</b> 個方格在格線上拼長方形：長 × 寬 ＝ {round.n} 才成立！
           {remaining > 0 ? `還要找出 ${remaining} 種排法（1 × ${round.n} 的一排長條已直接過關）。` : "全部排法都找到了！"}
         </p>
+        <SpeechReadButton
+          key={round.n}
+          text={`用 ${round.n} 個方格在格線上拼長方形：長 × 寬 ＝ ${round.n} 才成立！${
+            remaining > 0 ? `還要找出 ${remaining} 種排法（1 × ${round.n} 的一排長條已直接過關）。` : "全部排法都找到了！"
+          }`}
+          label="題目"
+          compact
+        />
 
         <div className="rg-foundlist" aria-label="已找到的排法">
           <span className="rg-foundchip is-granted">1 × {round.n}（送分）</span>

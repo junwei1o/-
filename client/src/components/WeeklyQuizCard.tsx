@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { SpeechReadButton } from "@/components/SpeechReadButton";
 import { BookOpenCheck, CalendarDays, CheckCircle2, Coins, Lock, RotateCw, Sparkles, TrendingUp, X } from "lucide-react";
 import { toast } from "sonner";
 import { useLocation } from "wouter";
@@ -312,6 +313,12 @@ export function WeeklyQuizCard() {
                       <small>{question.difficulty}</small>
                     </div>
                     <p className="weekly-quiz-prompt">{question.prompt}</p>
+                    <SpeechReadButton
+                      key={question.prompt}
+                      text={question.prompt}
+                      label="本題"
+                      buttonText="朗讀本題"
+                    />
                     <ul className="weekly-quiz-options">
                       {question.options.map((option, optionIndex) => {
                         const isThisCorrect = optionIndex === question.answer;

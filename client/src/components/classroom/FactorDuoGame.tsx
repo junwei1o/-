@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import { SpeechReadButton } from "@/components/SpeechReadButton";
 import { useClassroomSound } from "./useClassroomSound";
 import {
   buildDuoRounds,
@@ -434,6 +435,12 @@ export default function FactorDuoGame({ muted = false, onExit, onBest, bestStars
             <span className="fc-n">{round.n}</span>
           </div>
           <p className="cr-q-prompt fc-ask">下面哪些數字是 <b>{round.n}</b> 的因數？把它們全部點起來！</p>
+          <SpeechReadButton
+            key={`f-${round.n}`}
+            text={`下面哪些數字是 ${round.n} 的因數？把它們全部點起來！`}
+            label="題目"
+            compact
+          />
 
           <div className="fc-bubbles" role="group" aria-label={`${round.n} 的因數候選數字`}>
             {round.factor.choices.map((value) => {
@@ -557,6 +564,14 @@ export default function FactorDuoGame({ muted = false, onExit, onBest, bestStars
           剛剛找過 <b>{round.n}</b> 的因數了，現在用 {round.n} 個方格把它們<b>拼成長方形</b>！
           {remaining > 0 ? `還要拼出 ${remaining} 種排法（1 × ${round.n} 的一排長條直接過關）。` : "全部排法都拼出來了！"}
         </p>
+        <SpeechReadButton
+          key={`r-${round.n}`}
+          text={`剛剛找過 ${round.n} 的因數了，現在用 ${round.n} 個方格把它們拼成長方形！${
+            remaining > 0 ? `還要拼出 ${remaining} 種排法（1 × ${round.n} 的一排長條直接過關）。` : "全部排法都拼出來了！"
+          }`}
+          label="題目"
+          compact
+        />
 
         <div className="rg-foundlist" aria-label="已找到的排法">
           <span className="rg-foundchip is-granted">1 × {round.n}（送分）</span>

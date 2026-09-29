@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { SpeechReadButton } from "@/components/SpeechReadButton";
 import {
   Check,
   ChevronRight,
@@ -433,6 +434,7 @@ export default function OnionLesson({ course = FRACTION_COURSE, muted = false, o
           <div className="on-card">
             <span className="on-quiz-meta">{layer.title} · 小測驗 {qIndex + 1}/{quiz.length}</span>
             <h2 className="on-quiz-title">{question.prompt}</h2>
+            <SpeechReadButton key={question.prompt} text={question.prompt} label="題目" compact />
             {visualScene && (
               <div className="on-quiz-stage">
                 <FractionStage key={`q-${question.id}`} scene={visualScene} />

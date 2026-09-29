@@ -1,4 +1,5 @@
 import React, { useMemo, useRef, useState } from "react";
+import { SpeechReadButton } from "@/components/SpeechReadButton";
 import MatchingGame from "@/components/MatchingGame";
 import { useClassroomSound } from "./useClassroomSound";
 import { buildRelayRounds, type RelayRound } from "@/lib/classroomBank";
@@ -150,6 +151,7 @@ export default function RelayMatch({ muted = false, onExit, onBest, bestStars }:
         <div className="cr-q-card">
           <span className="cr-q-meta">{round.choice.subject} · {round.choice.learningTopic}</span>
           <p className="cr-q-prompt">{round.choice.prompt}</p>
+          <SpeechReadButton key={round.choice.prompt} text={round.choice.prompt} label="題目" compact />
           <div className="cr-options">
             {round.choice.options.map((option, index) => {
               let cls = "cr-option";

@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import { SpeechReadButton } from "@/components/SpeechReadButton";
 import { useClassroomSound } from "./useClassroomSound";
 import {
   buildMeteorWaves,
@@ -533,6 +534,20 @@ export default function MeteorGame({ muted = false, onExit, onBest, bestStars, b
               {tutStep === 2 && <>【劃切練習】任務「2 的倍數」：用手指<b>滑過</b>下面 2 的倍數的泡泡，把它切開！</>}
               {tutStep === 3 && <>【拖拽練習】任務「2 的倍數」：<b>按住</b> 2 的倍數的泡泡<b>拖進</b>基地回收槽（也可以先點泡泡、再點回收槽）。</>}
             </p>
+            {tutStep >= 1 && tutStep <= 3 && (
+              <SpeechReadButton
+                key={tutStep}
+                text={
+                  tutStep === 1
+                    ? "【點擊練習】任務「2 的倍數」：點一下，下面是 2 的倍數的泡泡！"
+                    : tutStep === 2
+                      ? "【劃切練習】任務「2 的倍數」：用手指滑過下面 2 的倍數的泡泡，把它切開！"
+                      : "【拖拽練習】任務「2 的倍數」：按住 2 的倍數的泡泡拖進基地回收槽（也可以先點泡泡、再點回收槽）。"
+                }
+                label="操作說明"
+                compact
+              />
+            )}
             <div
               className="md-field md-tut-field"
               onPointerDown={(e) => {

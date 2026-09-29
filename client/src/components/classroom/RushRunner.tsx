@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { SpeechReadButton } from "@/components/SpeechReadButton";
 import { useClassroomSound } from "./useClassroomSound";
 import { shuffleArray } from "@/lib/matchingBank";
 import { shuffleQuestionOptions } from "@/lib/optionRandomizer";
@@ -230,6 +231,7 @@ export default function RushRunner({
       <div className="cr-q-card" key={`${qIndex}-${answered}`}>
         <span className="cr-q-meta">{isTfQuestion ? "是非判斷" : `${question.meta ?? "選擇題"}`}</span>
         <p className="cr-q-prompt">{question.prompt}</p>
+        <SpeechReadButton key={question.prompt} text={question.prompt} label="題目" compact />
 
         {isTfQuestion ? (
           <div className="cr-tf-options">
