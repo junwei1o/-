@@ -76,6 +76,12 @@ export function serveStatic(app: Express) {
     }),
   );
 
+  // 未命中的雜湊資產直接 404（覆核第⑥項）：讓 SPA fallback 只服務頁面路由，
+  // 否則 /assets/不存在.js 會回 200+HTML，壞連結被狀態碼掩飾、難以察覺。
+  app.use("/assets", (_req, res) => {
+    res.status(404).type("text/plain; charset=utf-8").send("Not Found");
+  });
+
   // fall through to index.html if the file doesn't exist
   app.use("*", (_req, res) => {
     res.setHeader("Cache-Control", "public, max-age=0, must-revalidate");

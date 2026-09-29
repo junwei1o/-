@@ -38,6 +38,18 @@ async function startServer() {
   // Render 反向代理的第一跳：讓 req.ip 是使用者真實 IP，
   // 否則限流鍵會全站共用同一個代理 IP，一超額就全站被擋。
   app.set("trust proxy", 1);
+  // 安全回應標頭（覆核第⑤項；手動設置、不引外部依賴以免動 lockfile）：
+  //   nosniff — 禁止 MIME 嗅探，防上傳/回應內容被當腳本執行；
+  //   Referrer-Policy — 跨站導引只帶來源、不帶路徑；
+  //   X-Frame-Options — 拒絕被 iframe 嵌入（點擊劫持）；
+  //   HSTS — 強制後續 HTTPS（Render 已終止 TLS，此處為保險）。
+  app.use((_req, res, next) => {
+    res.setHeader("X-Content-Type-Options", "nosniff");
+    res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+    res.setHeader("X-Frame-Options", "SAMEORIGIN");
+    res.setHeader("Strict-Transport-Security", "max-age=31536000");
+    next();
+  });
   // 背景自動佈建題庫（建表＋匯入內建 500 題）；不阻擋開機，失敗也不影響服務。
   void ensureQuestionBankReady();
   // LINE webhook：必須在 express.json 之前用 raw parser，才能拿原文驗簽章。
