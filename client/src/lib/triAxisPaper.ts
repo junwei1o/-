@@ -25,14 +25,28 @@ import type { LearningRecord } from "@/utils/storage";
 import type { PaperQuestion } from "./paperExam";
 import { permutationSignature, shuffleQuestionOptionsDistinct } from "./optionRandomizer";
 
-/** permutationSignature 快取（每題只算一次，組卷時常需多次查詢）。 */
-const permSigCache = new Map<string, string>;
+/**
+ * permutationSignature 快取：**以題目物件為鍵（WeakMap）**。
+ *
+ * 為什麼不能用 Map<question.id>（2026-09-29 回歸修復）：
+ * 同一題在組卷中會以兩個不同物件出現——「題庫原始排列」（deck 題，options 未動）
+ * 與「上次組卷的打亂排列」（previousDeck 題，options 已打亂），但 id 相同。
+ * 用 id 為鍵時 getPermSig(previous) 會命中第一次存入的**原始簽名**，
+ * 造成 previousSignature 永遠 === forbidden[0]、「上次排列」永遠進不了
+ * forbidden → 打亂只保證 ≠ 原始、不保證 ≠ 上次 → **每 3–4 次重做就有
+ * 1 次選項排列不變**（使用者可見的功能缺陷，24%–35% 機率）。
+ * 以物件為鍵則各物件按自身 options 各算各的，語意永遠正確。
+ *
+ * 註：每輪組卷的 deck 題都是新 spread 物件，跨輪不會命中——此快取只在
+ * 同一物件被重複查詢時省一次計算；本輪原先「CPU 減半」的宣稱一併撤回。
+ */
+const permSigCache = new WeakMap<PaperQuestion, string>();
 
 function getPermSig(question: PaperQuestion): string {
-  const cached = permSigCache.get(question.id);
+  const cached = permSigCache.get(question);
   if (cached !== undefined) return cached;
   const sig = permutationSignature(question);
-  permSigCache.set(question.id, sig);
+  permSigCache.set(question, sig);
   return sig;
 }
 
