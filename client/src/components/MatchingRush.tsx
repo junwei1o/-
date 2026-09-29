@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { isSoundEnabled } from "@/lib/soundPreference";
 import {
   buildRushQuestions,
   matchingStars,
@@ -76,7 +77,7 @@ export default function MatchingRush({
 
   const playSound = useCallback(
     (kind: "ok" | "no" | "win") => {
-      if (muted) return;
+      if (muted || !isSoundEnabled()) return;
       try {
         const Ctor =
           window.AudioContext ??

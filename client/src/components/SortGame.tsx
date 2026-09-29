@@ -1,6 +1,7 @@
 // C 分類歸位：上方散落項目、下方分類籃；點項目→點籃歸位（單指觸控）。
 // 成功/失敗都有回饋；30 秒倒數與星等結算沿用配對連連看的慣例。
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { isSoundEnabled } from "@/lib/soundPreference";
 import { buildSortBoard, sortStars, type SortResult, type SortSet } from "@/lib/sortBank";
 import { formatMatchingTime } from "@/lib/matchingBank";
 import "./SortGame.css";
@@ -41,7 +42,7 @@ export default function SortGame({
 
   const playSound = useCallback(
     (kind: "win" | "ok" | "no") => {
-      if (muted) return;
+      if (muted || !isSoundEnabled()) return;
       try {
         const Ctor =
           window.AudioContext ??

@@ -15,6 +15,7 @@ import {
   type MatchingSet,
 } from "@/lib/matchingBank";
 import "./MatchingGame.css";
+import { isSoundEnabled } from "@/lib/soundPreference";
 
 const SVG_NS = "http://www.w3.org/2000/svg";
 
@@ -72,7 +73,7 @@ export default function MatchingGame({ set, onComplete, resultActions, muted = f
 
   const playSound = useCallback(
     (kind: "ok" | "no" | "win") => {
-      if (muted) return;
+      if (muted || !isSoundEnabled()) return;
       try {
         const Ctor =
           window.AudioContext ??

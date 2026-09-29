@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { isSoundEnabled } from "@/lib/soundPreference";
 import { Flame, Sparkles, Star, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -29,6 +30,7 @@ function titleFor(streak: number) {
 
 function playVictorySound(streak: number) {
   if (typeof window === "undefined" || !window.AudioContext) return;
+  if (!isSoundEnabled()) return;
   try {
     const context = new window.AudioContext();
     const now = context.currentTime;

@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useSoundEnabled } from "@/lib/soundPreference";
 import { useLocation } from "wouter";
 import MatchingGame from "@/components/MatchingGame";
 import MatchingRush from "@/components/MatchingRush";
@@ -59,7 +60,9 @@ export default function MatchingPage() {
   const [nonce, setNonce] = useState(0);
   const [view, setView] = useState<"play" | "menu">("play");
   const [mode, setMode] = useState<"board" | "image" | "sort" | MatchingRushMode>("board");
-  const [muted, setMuted] = useState(false);
+  // 全域音效開關（2026-09-30）：原本是頁內 useState(false)——換頁即失效、
+  // 也不影響其他頁面；改接持久化的全站 master，此處按鈕從此開關全部音效。
+  const [muted, setMuted] = useSoundEnabled();
   const [best, setBest] = useState<BestMap>({});
   const [rushBest, setRushBest] = useState<RushBestMap>({});
 

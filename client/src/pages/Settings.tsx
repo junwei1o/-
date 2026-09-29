@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useSoundEnabled } from "@/lib/soundPreference";
 import { Accessibility, AlertTriangle, BarChart3, BookMarked, Clipboard, Crown, Download, GraduationCap, Lock, LockOpen, Palette, RefreshCw, School, Settings as SettingsIcon, Ship, Sparkles, Trash2, UserRound, Volume2 } from "lucide-react";
 import { toast } from "sonner";
 import { useLocation } from "wouter";
@@ -601,6 +602,9 @@ export default function Settings() {
     }
   };
 
+  // 全域音效開關（2026-09-30）：持久化 master switch，訂閱 store 與其他頁面即時同步。
+  const [soundEnabled, setSoundEnabled] = useSoundEnabled();
+
   return (
     <main className="settings-page" aria-labelledby="settings-title">
       <div className="settings-page-inner">
@@ -634,6 +638,7 @@ export default function Settings() {
           <input id="effect-intensity" aria-label="特效強度" className="settings-volume-slider" type="range" min="1" max="3" step="1" value={{ low: 1, medium: 2, high: 3 }[accessibilityPrefs.effectIntensity]} onChange={(event) => handleAccessibilityUpdate({ effectIntensity: (["low", "medium", "high"] as const)[Number(event.target.value) - 1] })} aria-valuetext={{ low: "低", medium: "中", high: "高" }[accessibilityPrefs.effectIntensity]} />
           <label className="settings-analytics-toggle"><span><strong>震動回饋</strong><small>{accessibilityPrefs.vibrationEnabled ? "已啟用操作觸感回饋" : "已關閉所有觸感回饋"}</small></span><input type="checkbox" role="switch" checked={accessibilityPrefs.vibrationEnabled} onChange={(event) => handleAccessibilityUpdate({ vibrationEnabled: event.target.checked })} /></label>
           <label className="settings-analytics-toggle"><span><strong>動畫簡化</strong><small>{accessibilityPrefs.reducedAnimation ? "特效將以短暫淡入淡出呈現" : "保留一般移動、旋轉與粒子效果"}</small></span><input type="checkbox" role="switch" checked={accessibilityPrefs.reducedAnimation} onChange={(event) => handleAccessibilityUpdate({ reducedAnimation: event.target.checked })} /></label>
+          <label className="settings-analytics-toggle"><span><strong>音效回饋</strong><small>{soundEnabled ? "答題與遊戲的合成音效已開啟" : "已關閉全部合成音效（不含朗讀）"}</small></span><input type="checkbox" role="switch" checked={soundEnabled} onChange={(event) => setSoundEnabled(event.target.checked)} /></label>
           <p className="settings-log-description" role="status">目前採用{{ low: "低", medium: "中", high: "高" }[accessibilityPrefs.effectIntensity]}強度特效；{accessibilityPrefs.reducedAnimation ? "動畫已簡化。" : "一般動畫已啟用。"}</p>
           <div className="settings-font-size-block">
             <ReadingScaleControl />

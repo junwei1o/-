@@ -1,4 +1,5 @@
 import { useCallback, useRef } from "react";
+import { isSoundEnabled } from "@/lib/soundPreference";
 
 /** 我的教室遊戲共用音效：成功（上行音）、失敗（低沉音）、過關（琶音）、翻牌、滴答。 */
 export function useClassroomSound(muted = false) {
@@ -28,7 +29,9 @@ export function useClassroomSound(muted = false) {
 
   const play = useCallback(
     (kind: "ok" | "no" | "win" | "flip" | "tick") => {
-      if (muted) return;
+      // 全域音效開關（2026-09-30）：muted 是呼叫端的頁面級覆寫，
+      // isSoundEnabled 是全站持久化 master switch——兩者任一關即無聲。
+      if (muted || !isSoundEnabled()) return;
       try {
         if (kind === "ok") {
           tone(620, 0, 0.12, 0.07, "triangle");

@@ -1,4 +1,5 @@
 import { readStoredValue, writeStoredValue } from "@/utils/storage";
+import { isSoundEnabled } from "@/lib/soundPreference";
 
 export const PAPER_STRATEGY_CUE_ENABLED_KEY = "xue.paperExam.strategyCue.enabled";
 
@@ -21,7 +22,9 @@ export function savePaperStrategyCueEnabled(enabled: boolean) {
 
 /** Plays a brief, low-volume cue during a direct learner action; browsers may safely decline it. */
 export function playPaperStrategyCue(enabled: boolean) {
-  if (!enabled) return;
+  // 全域音效開關（2026-09-30）：enabled 是本功能自己的開關，
+  // isSoundEnabled 是全站 master——任一關即靜音。
+  if (!enabled || !isSoundEnabled()) return;
   const AudioContextCtor = getAudioContextConstructor();
   if (!AudioContextCtor) return;
 
