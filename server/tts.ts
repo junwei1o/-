@@ -67,22 +67,51 @@ function runInstall(python: string, args: string[], onDone: (ok: boolean, note: 
     });
     child.on("error", (error) => onDone(false, String(error)));
     child.on("close", (code) => {
-      onDone(code === 0, code === 0 ? "" : stderr.slice(0, 200) || `exit ${code}`);
+      onDone(code === 0, code === 0 ? "" : stderr.slice(0, 300) || `exit ${code}`);
     });
   } catch (error) {
     onDone(false, String(error));
   }
 }
 
+function runInstallAsync(python: string, args: string[]): Promise<{ ok: boolean; note: string }> {
+  return new Promise((resolve) => runInstall(python, args, (ok, note) => resolve({ ok, note })));
+}
+
+/**
+ * 分類 pip 安裝失敗的原因，決定後續恢復分支（2026-09-30 覆核修正）：
+ * - blocked：PEP 668 externally-managed-environment（新版 Debian/Ubuntu
+ *   系統 Python 保護，連 --user 也擋）→ 加 --break-system-packages 重試
+ * - missing：pip 本體不存在 → ensurepip／get-pip 引導
+ * - oldPip：pip 不認識 --break-system-packages（<23.0.1）→ 不帶旗標重試
+ * - other：其餘錯誤（網路、磁碟…），直接回報
+ * 舊鏈把「任何失敗」都當 pip 缺失去跳 ensurepip——在 Render 上屬誤判
+ *（實測 pip:true、失敗原因正是 blocked，ensurepip 因而白白 exit 1）。
+ */
+function classifyPipFailure(stderr: string): "blocked" | "missing" | "oldPip" | "other" {
+  const s = stderr.toLowerCase();
+  if (s.includes("externally-managed-environment") || s.includes("externally managed")) return "blocked";
+  if (s.includes("no module named pip") || s.includes("pip: not found")) return "missing";
+  if (s.includes("no such option") && s.includes("break-system-packages")) return "oldPip";
+  return "other";
+}
+
+const GET_PIP_URL = "https://bootstrap.pypa.io/get-pip.py";
+const GET_PIP_PATH = path.join(os.tmpdir(), "get-pip.py");
+
 /**
  * 運行期自癒安裝（2026-09-30 Edge 全接入）。
  *
- * 實測：Render 映像**有 python3、有 pip、但無 edge_tts 模組**（buildCommand
- * 的 pip 安裝未必被 blueprint 套用）。因此在「合成失敗」時於背景對首個
- * python 候選安裝一次（每行程式僅一次）：先 `pip install --user`，
- * 失敗則 `ensurepip` 後重試。本次請求仍正常退位到瀏覽器語音，
- * 安裝完成後的**下一次合成即自動成功**——部署不依賴任何 Dashboard 操作。
- * 結果寫入 installNote 供 tts.health 遠端讀取。
+ * 實測供應鏈：Render 映像有 python3、有 pip、但無 edge_tts 模組，
+ * 且屬 PEP 668 externally-managed 環境（pip install 連 --user 都被擋）。
+ * 安裝鏈（依 classifyPipFailure 路由，只對「真正缺 pip」走引導）：
+ *   1. pip install --user --break-system-packages  —— 可拋棄執行個體上
+ *      破壞系統 Python 正是正確做法（保留 --user 避開 /usr/lib）
+ *   2. pip install --user（不帶旗標）—— 舊 pip 不認識旗標時
+ *   3. ensurepip 補 pip 後重試 —— 僅在分類為 missing 時
+ *   4. get-pip.py 引導安裝 —— ensurepip 也不可用時（官方 PyPA HTTPS）
+ * 本次請求照常退位瀏覽器語音；裝好後下次合成即成功。
+ * 結果寫入 installNote 供 tts.health 遠端讀取（Render 日誌外部不可見）。
  */
 function maybeInstallEdgeTts(): void {
   if (installStarted) return;
@@ -96,6 +125,7 @@ function maybeInstallEdgeTts(): void {
   const fail = (note: string) => {
     installing = false;
     installNote = `fail: ${note}`.slice(0, 400);
+    console.warn(`[tts] edge-tts 安裝失敗（朗讀退回瀏覽器語音）: ${installNote}`);
   };
   const succeed = (via: string) => {
     installing = false;
@@ -103,23 +133,60 @@ function maybeInstallEdgeTts(): void {
     console.log(`[tts] edge-tts 運行期安裝成功（${via}），遠端朗讀將於下次合成啟用`);
   };
 
-  runInstall(python, ["-m", "pip", "install", "--user", EDGE_TTS_SPEC], (ok, note) => {
-    if (ok) return succeed("pip --user");
-    // pip 模組不存在（slim 映像常見）→ 用 stdlib ensurepip 補出 pip 再裝
-    runInstall(python, ["-m", "ensurepip", "--user"], (ok2, note2) => {
-      if (!ok2) {
-        console.warn(`[tts] edge-tts 安裝失敗（pip 與 ensurepip 皆不可用）: ${note2 || note}`);
-        return fail(`pip: ${note.slice(0, 120)} | ensurepip: ${note2.slice(0, 120)}`);
-      }
-      runInstall(python, ["-m", "pip", "install", "--user", EDGE_TTS_SPEC], (ok3, note3) => {
-        if (ok3) succeed("ensurepip + pip");
-        else {
-          console.warn(`[tts] edge-tts 安裝失敗: ${note3}`);
-          fail(note3.slice(0, 200));
+  void (async () => {
+    const USER_FLAGS = ["--user", "--no-warn-script-location"];
+    // 步驟 1：現代 pip 標準路徑（PEP 668 環境以 break 旗標覆蓋保護）
+    let r = await runInstallAsync(python, [
+      "-m", "pip", "install", ...USER_FLAGS, "--break-system-packages", EDGE_TTS_SPEC,
+    ]);
+    if (r.ok) return succeed("pip --break-system-packages");
+
+    let kind = classifyPipFailure(r.note);
+
+    // 步驟 2：舊 pip 不認識旗標 → 不帶旗標重試
+    if (kind === "oldPip") {
+      r = await runInstallAsync(python, ["-m", "pip", "install", ...USER_FLAGS, EDGE_TTS_SPEC]);
+      if (r.ok) return succeed("pip --user（舊 pip 無 break 旗標）");
+      kind = classifyPipFailure(r.note);
+    }
+
+    // 步驟 3/4：只有「pip 真的缺失」才走引導——絕不盲目對被阻擋的安裝重試 ensurepip
+    if (kind === "missing") {
+      const ensure = await runInstallAsync(python, ["-m", "ensurepip", "--user"]);
+      if (ensure.ok) {
+        r = await runInstallAsync(python, [
+          "-m", "pip", "install", ...USER_FLAGS, "--break-system-packages", EDGE_TTS_SPEC,
+        ]);
+        if (r.ok) return succeed("ensurepip + pip --break-system-packages");
+        if (classifyPipFailure(r.note) === "oldPip") {
+          r = await runInstallAsync(python, ["-m", "pip", "install", ...USER_FLAGS, EDGE_TTS_SPEC]);
+          if (r.ok) return succeed("ensurepip + pip --user");
         }
-      });
-    });
-  });
+      }
+      // ensurepip 不可用 → 官方 get-pip.py 引導（PyPA HTTPS，可拋棄執行個體）
+      const dl = await runInstallAsync(python, [
+        "-c",
+        "import sys,urllib.request;urllib.request.urlretrieve('https://bootstrap.pypa.io/get-pip.py', sys.argv[1])",
+        GET_PIP_PATH,
+      ]);
+      if (dl.ok) {
+        const bootstrap = await runInstallAsync(python, [GET_PIP_PATH, ...USER_FLAGS]);
+        if (bootstrap.ok) {
+          r = await runInstallAsync(python, [
+            "-m", "pip", "install", ...USER_FLAGS, "--break-system-packages", EDGE_TTS_SPEC,
+          ]);
+          if (r.ok) return succeed("get-pip + pip --break-system-packages");
+          r = await runInstallAsync(python, ["-m", "pip", "install", ...USER_FLAGS, EDGE_TTS_SPEC]);
+          if (r.ok) return succeed("get-pip + pip --user");
+          return fail(`get-pip 後仍失敗: ${r.note.slice(0, 200)}`);
+        }
+        return fail(`get-pip 引導失敗: ${bootstrap.note.slice(0, 150)}`);
+      }
+      return fail(`ensurepip 與 get-pip 皆失敗: ensurepip=${ensure.note.slice(0, 80)} | get-pip=${dl.note.slice(0, 120)}`);
+    }
+
+    fail(r.note.slice(0, 300));
+  })();
 }
 
 /** 前端語速（倍率 0.6–1.4）→ edge-tts 速率（百分比字串，如 "-8%"）。 */
@@ -226,7 +293,14 @@ function statSize(filePath: string): number {
   }
 }
 
-export type TtsCandidateProbe = { python: string; exists: boolean; edgeTts: boolean; pip: boolean };
+export type TtsCandidateProbe = {
+  python: string;
+  exists: boolean;
+  edgeTts: boolean;
+  pip: boolean;
+  /** 使用者 site-packages 是否在 import 路徑上（--user 安裝後能被載入的前提）。 */
+  userSite: boolean;
+};
 export type TtsSupplyStatus = {
   candidates: TtsCandidateProbe[];
   breaker: { failures: number; brokenForMs: number };
@@ -249,18 +323,23 @@ export function probeEdgeTtsSupply(): TtsSupplyStatus {
     try {
       const existsProbe = spawnSync(python, ["-c", "print(1)"], { timeout: 4_000, stdio: "ignore" });
       if (existsProbe.error || existsProbe.status !== 0) {
-        return { python, exists: false, edgeTts: false, pip: false };
+        return { python, exists: false, edgeTts: false, pip: false, userSite: false };
       }
       const moduleProbe = spawnSync(python, ["-c", "import edge_tts"], { timeout: 4_000, stdio: "ignore" });
       const pipProbe = spawnSync(python, ["-m", "pip", "--version"], { timeout: 4_000, stdio: "ignore" });
+      const userSiteProbe = spawnSync(python, ["-c", "import site;print(int(bool(site.ENABLE_USER_SITE)))"], {
+        timeout: 4_000,
+        encoding: "utf8",
+      });
       return {
         python,
         exists: true,
         edgeTts: moduleProbe.status === 0,
         pip: !pipProbe.error && pipProbe.status === 0,
+        userSite: userSiteProbe.status === 0 && String(userSiteProbe.stdout).trim() === "1",
       };
     } catch {
-      return { python, exists: false, edgeTts: false, pip: false };
+      return { python, exists: false, edgeTts: false, pip: false, userSite: false };
     }
   });
   return {
