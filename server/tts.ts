@@ -39,9 +39,11 @@ const CACHE_DIR = path.join(os.tmpdir(), "hdmx-tts-cache");
  * 最後試 PATH 與系統 python。逐個嘗試 `python -m edge_tts`，模組不存在就換下一個。
  */
 function pythonCandidates(): string[] {
+  // 註（2026-09-30 音效巡檢）：移除開發機個人 venv 絕對路徑——本機路徑
+  // 隨提交帶上生產只會走到 fallback 分支，且屬個人資訊外洩（M12）。
+  // 本機開發請用 EDGE_TTS_PYTHON 指向自己的 venv。
   return [
     process.env.EDGE_TTS_PYTHON,
-    "/Users/g/.workbuddy/binaries/python/envs/default/bin/python3",
     "python3",
     "/usr/bin/python3",
   ].filter((candidate): candidate is string => Boolean(candidate));

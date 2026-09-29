@@ -67,6 +67,7 @@ export default function RushRunner({
   const completedRef = useRef(false);
   const lockedRef = useRef(false);
   const scoreRef = useRef(0);
+  const lastTickRef = useRef(-1);
   const comboRef = useRef(0);
   const maxComboRef = useRef(0);
   const correctRef = useRef(0);
@@ -159,10 +160,18 @@ export default function RushRunner({
   // 總倒數
   useEffect(() => {
     if (phase !== "play") return;
+    // 每輪重置去重鍵：避免上一輪停在 5 的 lastTick 吞掉本輪 tick。
+    lastTickRef.current = -1;
     const timer = window.setInterval(() => {
       const left = Math.max(0, Math.round((deadlineRef.current - Date.now()) / 1000));
       setTimeLeft(left);
-      if (left <= 5 && left > 0) play("tick");
+      // 效能（2026-09-30 音效巡檢）：200ms 迴圈原本每跳都 play("tick")——
+      // 最後 5 秒會打 25 聲機關槍式嗶聲；與 QuizRunner／FactorGame 一致，
+      // 以秒級去重讓每秒只響一聲（5 聲）。
+      if (left <= 5 && left > 0 && left !== lastTickRef.current) {
+        lastTickRef.current = left;
+        play("tick");
+      }
       if (left <= 0) finish();
     }, 200);
     return () => window.clearInterval(timer);

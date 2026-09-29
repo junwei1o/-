@@ -99,7 +99,17 @@ export function createSpeechController(engine?: SpeechEngine | null): SpeechCont
     utterance.rate = preferences.rate;
     utterance.pitch = 1;
     const voice = chooseTraditionalChineseVoice(speechEngine.getVoices());
-    if (voice) utterance.voice = voice;
+    if (voice) {
+      try {
+        utterance.voice = voice;
+      } catch {
+        // 瀏覽器對非 SpeechSynthesisVoice 物件會直接拋 TypeError
+        //（headless/擴充套件污染 getVoices 時實測踩到）；且此處拋出會
+        // 中斷整個 speak 流程——cancel 已執行、speak 永不到達，朗讀靜默
+        // 死亡還會被 ErrorBoundary 炸成整頁錯誤。保護起來：語音物件異常
+        // 就用瀏覽器預設語音繼續唸。
+      }
+    }
 
     activeUtterance = utterance;
     utterance.onstart = () => onStatus?.("speaking");
