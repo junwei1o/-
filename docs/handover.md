@@ -1,8 +1,32 @@
 # Hdmx（寶島探險家）專案開發交接報告
 
 > **用途**：完整記錄專案從開發至今的成果、架構、流程、待辦與部署方式，讓新接手的開發者可以無縫繼續。
-> **最後更新**：2026-09-16
+> **最後更新**：2026-09-16（**內文僅記錄到該日為止**；2026-09-29 只修訂下方「現況勘誤」所列的過期陳述）
 > **報告涵蓋範圍**：P0 → P1 → P2 → 補缺修復 → AI Token 用量 → 聯盟賽賽季系統 → 卡牌系統 → 夥伴怪獸多樣化，以及後續 P3-4、P3-5 待辦。
+
+---
+
+## ⚠️ 現況勘誤（2026-09-29 補註）—— 請先讀這一節再讀內文
+
+本文件成稿於 2026-09-16，其後專案有 **200+ 筆提交**，部分「現況」描述已失效。
+**凡要判斷「現在是什麼樣子」，請以本節為準**；內文其餘段落是**歷史紀錄**，數字（948 題、1090 題等）記載的是**當時**的真實值，不應改寫（改了會使紀錄失真）。
+
+| 位置 | 文件原述 | 2026-09-29 實況 |
+|---|---|---|
+| §0 表格「GitHub」 | 「**私有** repo `junwei1o/-`」 | **公開** repo（`private: false`，匿名 API 即可讀） |
+| §0 表格「程式碼根目錄」 | `/home/user/Doubao/chats/…/hdmx` | 實際開發機為 `/Users/g/Documents/trae_projects/hdmx` |
+| §0 表格「後端」 | 「**全部 publicProcedure，無登入系統**」 | **已不成立**：新增 `teacherProcedure`；教師以 `TEACHER_PASSPHRASE` 通關語登入（session cookie）；6 個教師 procedure 受保護；3 個硬刪除端點已從 API 整段移除；另有 API 層速率限制 300/min |
+| §0 表格「題庫」 | `taiwan_curriculum_500.json` **948 題** | 題庫已演進：948 → 1090 → `runtime_bank_elementary` 2895 題（**國中／高中內容已移除，收斂為國小單一學段**），使用者可見文案為「2900 題」 |
+| §8 交接總結「後續路線」 | 「**無未完成開發項**；五大長期項目已全部完成上線」 | **已不成立**，現有多項待辦（見下） |
+| §8「待辦／需使用者操作」 | 「LINE 兩個 Render 環境變數（需使用者操作）」 | **已完成**：LINE webhook 線上實測回 400（＝簽章驗證生效，secret 已設），推播已可用 |
+| §5 相關 | （未記載） | 另有 **447 處 CSS 選擇器損壞已修復**、**React 19 / Vite 7 / tRPC 11 無變**、**測試規模 165 檔 / 1149 測試全綠**（2026-09-29 實測） |
+
+### 現行待辦（2026-09-29；詳細證據見 `outputs/` 內的覆核報告）
+1. **【P0 安全】撤銷 GitHub PAT 並清理 `.git/config`** —— 本機兩個 clone 的 remote URL 仍內嵌明文 `ghp_…`（本文件 §6 自己就寫著「切勿把 PAT 寫進任何檔案」）。
+2. 補最小 CI（`.github/workflows/`）——本 repo 目前**完全沒有 CI**。
+3. 冷啟動（Render 免費層 15 分鐘休眠）——需先定義可接受閾值。
+4. 清理生產 DB 的測試班 `TNUC8E`（刪除端點已下線，需手動操作 DB）。
+5. 元件層色值（`--bx-*`／`--rc-*`／`--mg-*`／`--cr-*`）收斂回 design token（解 axe 對比度違規）。
 
 ---
 
@@ -11,14 +35,14 @@
 | 項目 | 內容 |
 |---|---|
 | 專案名稱 | 寶島探險家 hdmx（台灣國小學習 RPG，全程繁體中文） |
-| 程式碼根目錄 | `/home/user/Doubao/chats/38441428970787074/hdmx` |
-| GitHub | 私有 repo `junwei1o/-`，主分支 `main` |
+| 程式碼根目錄 | `/home/user/Doubao/chats/38441428970787074/hdmx` ⚠️ 已過期，見頂部勘誤 |
+| GitHub | 私有 repo `junwei1o/-`，主分支 `main` ⚠️ 「私有」已過期（現為公開），見頂部勘誤 |
 | 線上環境 | Render：`https://xue-gr3a.onrender.com`（push main 後約 2 分鐘自動部署） |
 | 前端 | Vite + React + TypeScript + wouter（路由）+ tRPC client + Tailwind/自訂 CSS |
-| 後端 | Node + Express + tRPC（`server/routers.ts`，全部 publicProcedure，**無登入系統**） |
+| 後端 | Node + Express + tRPC（`server/routers.ts`，全部 publicProcedure，**無登入系統**）⚠️ 已過期：現有 `teacherProcedure` 與教師登入，見頂部勘誤 |
 | 資料庫 | **MySQL**（Drizzle ORM，`mysqlTable`；不是 PostgreSQL） |
 | 使用者身份 | 無帳密登入，以「船名」（2–6 字）識別，存於 localStorage `xue-cloud-mode-v1`，雲端同步 |
-| 題庫 | `data/taiwan_curriculum_500.json`（948 題，4 科：數學/自然/社會/國語；英語僅前端） |
+| 題庫 | `data/taiwan_curriculum_500.json`（948 題，4 科：數學/自然/社會/國語；英語僅前端）⚠️ 已過期：現為 `runtime_bank_elementary` 2895 題／國小單一學段，見頂部勘誤 |
 | LLM 架構 | 前端不直連、不存 Key；走同域代理，Key 只放 Render 環境變數 |
 
 ### 重要目錄結構
@@ -287,9 +311,9 @@ curl -s https://xue-gr3a.onrender.com/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | h
 ## 8. 交接總結
 
 - **已上線且驗收**：P0、P1（英語島/PIN/戰鬥數值）、P2（教師端/全站週榜/AI 每日配額/異步 PK）、三項補缺、FAB 修復、AI Token 用量統計、聯盟賽完整賽季系統、卡牌系統 48 張、夥伴怪獸多樣化、文字冒險 6 章、夜間觀測深化（星語觀測/星光加成）。
-- **待辦**：LINE 兩個 Render 環境變數（需使用者操作）。
-- **後續路線**：無未完成開發項；五大長期項目（聯盟賽/卡牌/夥伴/文字冒險/夜間觀測）已全部完成上線。
-- **需使用者操作**：LINE 兩個 Render 環境變數。
+- **待辦**：LINE 兩個 Render 環境變數（需使用者操作）。⚠️ 已完成：LINE webhook 已驗簽（實測回 400）。
+- **後續路線**：無未完成開發項；五大長期項目（聯盟賽/卡牌/夥伴/文字冒險/夜間觀測）已全部完成上線。⚠️ 已過期：§頂部勘誤列有現行 5 項待辦。
+- **需使用者操作**：LINE 兩個 Render 環境變數。⚠️ 已完成。
 - 新接手者只要依第 4～6 節的守則與流程，即可直接繼續迭代。
 
 ## 2026-09-17 配對變體 A＋H 上線（510c059）
