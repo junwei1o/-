@@ -82,6 +82,21 @@ export function serveStatic(app: Express) {
     res.status(404).type("text/plain; charset=utf-8").send("Not Found");
   });
 
+  // 根目錄帶靜態副檔名的未命中路徑也回 404（覆核第⑥項補角）：否則
+  // /x.css、/x.json 之類缺檔同樣被 SPA fallback 包成 200+HTML。
+  // 用副檔名白名單而非「路徑有點就 404」——頁面路由參數可能含點
+  //（如 regionKey），只攔真實靜態檔案類型；真實存在的檔案早被上面
+  // 的 express.static 送出，不會走到這裡。
+  const STATIC_EXT =
+    /\.(?:m?js|cjs|css|map|json|webmanifest|txt|xml|svg|png|jpe?g|webp|gif|ico|woff2?|ttf|otf|mp[34]|wasm)$/i;
+  app.use((req, res, next) => {
+    if ((req.method === "GET" || req.method === "HEAD") && STATIC_EXT.test(req.path)) {
+      res.status(404).type("text/plain; charset=utf-8").send("Not Found");
+      return;
+    }
+    next();
+  });
+
   // fall through to index.html if the file doesn't exist
   app.use("*", (_req, res) => {
     res.setHeader("Cache-Control", "public, max-age=0, must-revalidate");

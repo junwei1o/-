@@ -293,6 +293,13 @@ export function useQuestionBank(options?: { eager?: boolean }) {
     let alive = true;
     // eager=false 的頁面（純看首屏、不出題）等首屏結束再下載 3MB 題庫。
     const start = eager ? loadLocalBank() : waitForIdleThenLoad();
+    // 逾時退路（覆核第③項殘餘風險）：本地 chunk 若「卡住」（hang，非 reject），
+    // 下面的 catch 永遠不觸發、fallback 永不啟用、學生無限等待。
+    // 12 秒仍未 settled 就先放行伺服器接手；本地若遲到仍會合併
+    //（mergedBank 按題幹去重），只是此罕見路徑多一次下載。
+    const hangTimer = window.setTimeout(() => {
+      if (alive) setLocalState((s) => (s === "loading" ? "failed" : s));
+    }, 12_000);
     start
       .then((rows) => {
         if (!alive) return;
@@ -302,9 +309,11 @@ export function useQuestionBank(options?: { eager?: boolean }) {
       .catch(() => {
         // 本地 chunk 下載失敗（動態 import reject）→ 標記失敗，讓下方伺服器 fallback 接手。
         if (alive) setLocalState("failed");
-      });
+      })
+      .finally(() => window.clearTimeout(hangTimer));
     return () => {
       alive = false;
+      window.clearTimeout(hangTimer);
     };
   }, [eager]);
 
