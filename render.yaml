@@ -12,7 +12,10 @@ services:
     runtime: node
     plan: free
     region: oregon
-    buildCommand: pnpm install --frozen-lockfile && pnpm build
+    # 遠端朗讀供應鏈（2026-09-30 全接入輪）：安裝 edge-tts 供 tts.synthesize。
+    # 容錯設計——映像若無 python3/pip 或 pypi 不通，僅警告並讓朗讀自動退回
+    # 瀏覽器內建語音（前端另有分頁級熔斷），絕不因此壞掉部署。
+    buildCommand: pnpm install --frozen-lockfile && (python3 -m pip install --user edge-tts 2>/dev/null || echo "[build] edge-tts install skipped: remote TTS disabled, browser voice fallback active") && pnpm build
     startCommand: pnpm start
     healthCheckPath: /
     autoDeploy: true

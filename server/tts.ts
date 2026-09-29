@@ -1,4 +1,4 @@
-import { spawn } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, renameSync, rmSync, statSync } from "node:fs";
 import os from "node:os";
@@ -129,8 +129,15 @@ export async function synthesizeSpeech({ text, voice, rate }: SpeechSynthesisInp
     const audio = readFileSync(cachePath);
     consecutiveFailures = 0;
     return audio;
-  } catch {
+  } catch (error) {
     consecutiveFailures += 1;
+    // 只在「首次失敗」與「觸發熔斷」各記一條：Render 日誌可診斷且不被刷屏。
+    if (consecutiveFailures === 1 || consecutiveFailures >= BREAKER_THRESHOLD) {
+      console.warn(
+        "[tts] Edge 合成失敗（退回瀏覽器語音）:",
+        error instanceof Error ? error.message : String(error),
+      );
+    }
     if (consecutiveFailures >= BREAKER_THRESHOLD) brokenUntil = Date.now() + BREAKER_COOLDOWN_MS;
     return null;
   }
@@ -142,4 +149,32 @@ function statSize(filePath: string): number {
   } catch {
     return 0;
   }
+}
+
+export type TtsCandidateProbe = { python: string; exists: boolean; edgeTts: boolean };
+export type TtsSupplyStatus = {
+  candidates: TtsCandidateProbe[];
+  breaker: { failures: number; brokenForMs: number };
+};
+
+/**
+ * 遠端朗讀供應鏈診斷（供 tts.health 端點，2026-09-30 全接入輪新增）：
+ * 逐一檢查 python 候選是否存在、能否載入 edge_tts 模組。
+ * 純本地 spawnSync——不碰網路、不回傳任何機密；部署後 curl 一次即可
+ * 定位「為何 synthesize 回 audio:null」（缺 python、缺模組、或僅熔斷中）。
+ */
+export function probeEdgeTtsSupply(): TtsSupplyStatus {
+  const candidates = pythonCandidates().map((python): TtsCandidateProbe => {
+    try {
+      const probe = spawnSync(python, ["-c", "import edge_tts"], { timeout: 4_000, stdio: "ignore" });
+      if (probe.error) return { python, exists: false, edgeTts: false };
+      return { python, exists: true, edgeTts: probe.status === 0 };
+    } catch {
+      return { python, exists: false, edgeTts: false };
+    }
+  });
+  return {
+    candidates,
+    breaker: { failures: consecutiveFailures, brokenForMs: Math.max(0, brokenUntil - Date.now()) },
+  };
 }

@@ -1,4 +1,4 @@
-import { synthesizeSpeech } from "./tts";
+import { probeEdgeTtsSupply, synthesizeSpeech } from "./tts";
 import {
   buildWeeklyQuiz,
   computeWeeklyRewards,
@@ -1529,6 +1529,14 @@ export const appRouter = router({
         const audio = await synthesizeSpeech(input);
         return audio ? { audio: audio.toString("base64"), mime: "audio/mpeg" } : { audio: null };
       }),
+
+    /**
+     * 遠端朗讀供應鏈診斷（2026-09-30 全接入輪新增）：回報各 python 候選
+     * 是否存在、能否載入 edge_tts，以及服務端熔斷狀態。純本地探測、
+     * 不碰網路、不回傳機密——部署後 curl 一次即可定位 synthesize 回
+     * audio:null 的確切原因（缺 python／缺模組／僅熔斷中）。
+     */
+    health: publicProcedure.query(() => probeEdgeTtsSupply()),
   }),
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),

@@ -5,6 +5,8 @@ import superjson from "superjson";
 import App from "./App";
 import { initReadingScale } from "@/game/readingScale";
 import { initTheme } from "@/lib/useTheme";
+import { setRemoteSpeechFetcher } from "@/lib/speechSynthesis";
+import { fetchRemoteSpeech } from "@/lib/speechRemote";
 import "./index.css";
 
 // 在 React 掛載前套用儲存的閱讀字號，避免大字級使用者看到字級閃爍。
@@ -12,6 +14,13 @@ import "./index.css";
 initReadingScale();
 // 同樣在掛載前套用儲存的外觀主題（data-theme），避免首屏色調閃爍。
 initTheme();
+
+// 遠端朗讀（Edge TTS）注入：全站朗讀入口（PaperExam／TriAxis／教室遊戲／
+// 週測…）共用同一個語音控制器，這裡注入一次即全覆蓋。
+// 失敗自動退回瀏覽器內建語音；speechRemote 另有分頁級熔斷——連續拿不到
+// 音檔就停用遠端，因此「供應鏈尚未就緒時先注入」的代價有界（每分頁最多
+// FAILURE_LIMIT 次失敗來回），可安全先行。供應鏈狀態用 tts.health 診斷。
+setRemoteSpeechFetcher(fetchRemoteSpeech);
 
 // 僅在正式配置 umami 網站分析端點（VITE_ANALYTICS_ENDPOINT 為完整 http(s) 網址、
 // 並提供 VITE_ANALYTICS_WEBSITE_ID）時才動態載入分析腳本；未配置的本機／local-first
