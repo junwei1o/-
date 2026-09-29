@@ -5,6 +5,7 @@ import {
   collectWeakTopics,
   notifyExamCompletion,
   sendLinePush,
+  sendLinePushWithRetry,
   shouldNotify,
   type ExamNotifyInput,
 } from "./lineNotify";
@@ -69,6 +70,26 @@ describe("buildExamSummary 訊息組裝", () => {
     const plain = buildExamSummary({ ...summaryBase, detail: null });
     expect(plain).toContain("自由練習");
   });
+
+  it("三軸欄位：試卷時間、完成時間、名次（有才顯示）", () => {
+    const text = buildExamSummary({
+      ...summaryBase,
+      detail: { scope: "三軸混編試卷", topics: [] },
+      durationSec: 65,
+      finishedAt: new Date(2026, 8, 28, 15, 4, 0).getTime(),
+      rank: 3,
+    });
+    expect(text).toContain("試卷時間 01:05");
+    expect(text).toContain("2026/09/28 15:04");
+    expect(text).toContain("目前第 3 名");
+  });
+
+  it("三軸欄位缺省時不顯示對應行", () => {
+    const text = buildExamSummary({ ...summaryBase, detail: { scope: "三軸混編試卷", topics: [] } });
+    expect(text).not.toContain("試卷時間");
+    expect(text).not.toContain("完成時間");
+    expect(text).not.toContain("目前第");
+  });
 });
 
 describe("collectWeakTopics 薄弱點聚合", () => {
@@ -126,6 +147,61 @@ describe("sendLinePush 發送", () => {
     const result = await sendLinePush("t", { recipientType: "group", recipientId: "G1", updatedAt: 0 }, "x");
     expect(result.ok).toBe(false);
     expect(result.reason).toContain("network down");
+  });
+});
+
+describe("sendLinePushWithRetry 指數退避重試", () => {
+  it("成功時只送一次", async () => {
+    fetchMock.mockResolvedValue({ ok: true });
+    const result = await sendLinePushWithRetry(
+      "t",
+      { recipientType: "user", recipientId: "U1", updatedAt: 0 },
+      "x",
+      { sleepMs: async () => {} },
+    );
+    expect(result.ok).toBe(true);
+    expect(result.attempts).toBe(1);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("429 先失敗後成功：重試並最終成功", async () => {
+    fetchMock
+      .mockResolvedValueOnce({ ok: false, status: 429, text: async () => "rate limited" })
+      .mockResolvedValueOnce({ ok: true });
+    const result = await sendLinePushWithRetry(
+      "t",
+      { recipientType: "user", recipientId: "U1", updatedAt: 0 },
+      "x",
+      { sleepMs: async () => {} },
+    );
+    expect(result.ok).toBe(true);
+    expect(result.attempts).toBe(2);
+  });
+
+  it("401 不重試（憑證錯重送也不會好）", async () => {
+    fetchMock.mockResolvedValue({ ok: false, status: 401, text: async () => "invalid token" });
+    const result = await sendLinePushWithRetry(
+      "t",
+      { recipientType: "user", recipientId: "U1", updatedAt: 0 },
+      "x",
+      { sleepMs: async () => {} },
+    );
+    expect(result.ok).toBe(false);
+    expect(result.attempts).toBe(1);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("連續 5xx 用完 3 次重試後回報", async () => {
+    fetchMock.mockResolvedValue({ ok: false, status: 500, text: async () => "boom" });
+    const result = await sendLinePushWithRetry(
+      "t",
+      { recipientType: "user", recipientId: "U1", updatedAt: 0 },
+      "x",
+      { sleepMs: async () => {} },
+    );
+    expect(result.ok).toBe(false);
+    expect(result.attempts).toBe(3);
+    expect(fetchMock).toHaveBeenCalledTimes(3);
   });
 });
 

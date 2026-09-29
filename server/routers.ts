@@ -628,13 +628,19 @@ export const appRouter = router({
           sessionKey: input.sessionKey ?? null,
         });
         // 做題完成 → 推 LINE 給老師（未設定金鑰/未綁定時靜默跳過，失敗不影響作答）。
-        await notifyExamCompletion({
+        // durationSec／finishedAt 傳給 LINE：試卷時間＋完成時間欄位用。
+        // 注意 notifyExamCompletion 是 fire-and-forget（內部不阻塞），見其註解。
+        void notifyExamCompletion({
           studentName: input.name,
           subject: input.subject,
           totalQuestions: input.totalQuestions,
           correctCount: input.correctCount,
           detail: input.detail ?? null,
           sessionKey: input.sessionKey ?? null,
+          durationSec: input.durationSec ?? null,
+          finishedAt: Date.now(),
+        }).catch((error) => {
+          console.error(`[recordExam] LINE 通知異常: ${error instanceof Error ? error.message : String(error)}`);
         });
         return { ok: true as const };
       }),
@@ -863,7 +869,8 @@ export const appRouter = router({
           sessionKey: `weekly-${name}-${input.weekKey}`,
         });
         // 週測完成 → 推 LINE 給老師（未設定金鑰/未綁定時靜默跳過）。
-        await notifyExamCompletion({
+        // fire-and-forget：不阻塞結算回應；finishedAt 傳給 LINE（週測無 durationSec 計時）。
+        void notifyExamCompletion({
           studentName: name,
           subject: "綜合課綱",
           totalQuestions: score.total,
@@ -881,6 +888,9 @@ export const appRouter = router({
             })),
           },
           sessionKey: `weekly-${name}-${input.weekKey}`,
+          finishedAt: Date.now(),
+        }).catch((error) => {
+          console.error(`[weeklyQuiz.submit] LINE 通知異常: ${error instanceof Error ? error.message : String(error)}`);
         });
         await markWeeklyQuizDone(row.id, score.correct, score.total);
 

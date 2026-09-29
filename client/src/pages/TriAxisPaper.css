@@ -259,12 +259,92 @@
 
 .tri-result-actions { display: flex; flex-wrap: wrap; gap: 8px; }
 
+/* ── 朗讀面板 ── */
+.tri-speech {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 10px 0 2px;
+  padding: 8px 10px;
+  border: 1px dashed var(--line);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--white) 70%, transparent);
+}
+
+.tri-speech-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 6px 12px;
+  border: 1px solid var(--tidal);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--tidal-deep);
+  font: inherit;
+  font-size: var(--type-meta);
+  font-weight: 800;
+  cursor: pointer;
+}
+.tri-speech-btn:hover:not(:disabled) { background: color-mix(in srgb, var(--tidal) 10%, transparent); }
+.tri-speech-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+.tri-speech-btn--stop { border-color: var(--muted); color: var(--muted); }
+
+.tri-speech-rate {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: var(--type-meta);
+  font-weight: 700;
+}
+.tri-speech-rate input[type="range"] {
+  width: 110px;
+  accent-color: var(--tidal);
+}
+
+.tri-speech-fallback {
+  flex-basis: 100%;
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--type-meta);
+  line-height: 1.6;
+}
+
+/* ── 清除進度按鈕 ── */
+.tri-paper-clear {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: var(--type-meta);
+  font-weight: 700;
+  cursor: pointer;
+}
+.tri-paper-clear:hover { color: var(--coral-deep); border-color: var(--line); }
+
+/* ── 結算榜單提示 ── */
+.tri-result-board-hint {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: var(--type-meta);
+  line-height: 1.6;
+}
+
 /* ── 行動載具 ── */
 @media (max-width: 640px) {
   .tri-axis-legend,
   .tri-result-axes { grid-template-columns: 1fr; }
   .tri-q-next { justify-self: stretch; }
   .tri-result-actions .tri-btn { flex: 1 1 auto; }
+  .tri-speech-rate input[type="range"] { width: 90px; }
 }
 
 /* 尊重使用者的減少動態偏好 */

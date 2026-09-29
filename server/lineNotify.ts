@@ -65,6 +65,12 @@ export type ExamNotifyInput = {
   detail: unknown;
   /** 同一份試卷的識別碼（去重用）；沒帶就不去重。 */
   sessionKey: string | null;
+  /** 試卷總耗時（秒，可選；有就顯示 mm:ss）。 */
+  durationSec?: number | null;
+  /** 完成時間戳（可選；有就顯示 yyyy/MM/dd HH:mm）。 */
+  finishedAt?: number | null;
+  /** 目前名次（可選；有就顯示「目前第 N 名」）。 */
+  rank?: number | null;
 };
 
 type TopicRow = { subject?: string; topic?: string; correct?: boolean };
@@ -116,6 +122,16 @@ export function buildExamSummary(input: ExamNotifyInput): string {
     `${input.studentName} 完成「${label}」${input.totalQuestions} 題`,
     `答對 ${input.correctCount} 題（正確率 ${rate}%）`,
   ];
+  // 三軸試卷專用欄位：試卷時間（mm:ss）＋完成時間＋名次。
+  if (typeof input.durationSec === "number") {
+    lines.push(`⏱ 試卷時間 ${formatMmSs(input.durationSec)}`);
+  }
+  if (typeof input.finishedAt === "number") {
+    lines.push(`🕒 完成時間 ${formatFinishTime(input.finishedAt)}`);
+  }
+  if (typeof input.rank === "number" && input.rank > 0) {
+    lines.push(`🏅 目前第 ${input.rank} 名`);
+  }
   if (weakTopics.length > 0) {
     lines.push(`⚠️ 薄弱點：${weakTopics.map((item) => `${item.topic}（錯 ${item.wrong}）`).join("・")}`);
   } else {
@@ -125,12 +141,30 @@ export function buildExamSummary(input: ExamNotifyInput): string {
   return lines.join("\n");
 }
 
+/** 秒數 → mm:ss（排行榜試卷時間欄位共用格式）。 */
+export function formatMmSs(durationSec: number): string {
+  const totalSec = Math.max(0, Math.floor(durationSec));
+  const minutes = Math.floor(totalSec / 60);
+  const seconds = totalSec % 60;
+  return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+}
+
+/** 時間戳 → yyyy/MM/dd HH:mm。 */
+export function formatFinishTime(timestamp: number): string {
+  const date = new Date(timestamp);
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  const hour = String(date.getHours()).padStart(2, "0");
+  const minute = String(date.getMinutes()).padStart(2, "0");
+  return `${date.getFullYear()}/${month}/${day} ${hour}:${minute}`;
+}
+
 /** 發送推播（fetch 可 mock；任何失敗都回報 reason 而不拋錯）。 */
 export async function sendLinePush(
   token: string,
   recipient: LineRecipientBinding,
   text: string,
-): Promise<{ ok: boolean; reason?: string }> {
+): Promise<SendLinePushResult> {
   try {
     const response = await fetch(LINE_PUSH_URL, {
       method: "POST",
@@ -145,12 +179,42 @@ export async function sendLinePush(
     });
     if (!response.ok) {
       const body = await response.text();
-      return { ok: false, reason: `LINE API ${response.status}: ${body.slice(0, 200)}` };
+      return { ok: false, reason: `LINE API ${response.status}: ${body.slice(0, 200)}`, status: response.status };
     }
     return { ok: true };
   } catch (error) {
     return { ok: false, reason: error instanceof Error ? error.message : String(error) };
   }
+}
+
+export type SendLinePushResult = { ok: boolean; reason?: string; status?: number };
+
+/**
+ * 可重試的錯誤才重試：429（限流）與 5xx（伺服器錯）值得等一下再送；
+ * 400／401／403 是請求本身有問題（憑證錯、對象錯），重送也不會好。
+ */
+export function isRetryableLineError(status: number | undefined): boolean {
+  if (status === undefined) return true; // 網路異常（fetch 拋錯）視為可重試
+  return status === 429 || (status >= 500 && status <= 599);
+}
+
+/** 指數退避重試：最多 3 次，間隔 1s → 2s → 4s。回傳最後一次結果＋嘗試次數。 */
+export async function sendLinePushWithRetry(
+  token: string,
+  recipient: LineRecipientBinding,
+  text: string,
+  options?: { maxAttempts?: number; sleepMs?: (attempt: number) => Promise<void> },
+): Promise<SendLinePushResult & { attempts: number }> {
+  const maxAttempts = Math.max(1, Math.min(5, options?.maxAttempts ?? 3));
+  const sleepMs = options?.sleepMs ?? ((attempt: number) => new Promise((resolve) => setTimeout(resolve, 1000 * 2 ** attempt)));
+  let last: SendLinePushResult = { ok: false, reason: "not-attempted" };
+  for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+    if (attempt > 0) await sleepMs(attempt - 1);
+    last = await sendLinePush(token, recipient, text);
+    if (last.ok) return { ...last, attempts: attempt + 1 };
+    if (!isRetryableLineError(last.status)) return { ...last, attempts: attempt + 1 };
+  }
+  return { ...last, attempts: maxAttempts };
 }
 
 /** 同一 sessionKey 5 分鐘內只推一次（學生補標錯誤原因會重複上報同一份卷）。 */
@@ -180,6 +244,9 @@ export async function getLineRecipient(): Promise<LineRecipientBinding | null> {
 /**
  * 試卷完成通知總入口：金鑰或綁定缺一即靜默跳過，推播失敗只記 log。
  * 回傳 { notified: true } 表示已送達 LINE。
+ *
+ * 發送走指數退避重試（429／5xx／網路異常最多 3 次，4xx 直接放棄）；
+ * 重試仍失敗時 reason 帶嘗試次數，方便督學台診斷。
  */
 export async function notifyExamCompletion(input: ExamNotifyInput): Promise<{ notified: boolean; reason?: string }> {
   const token = ENV.lineChannelAccessToken.trim();
@@ -187,9 +254,10 @@ export async function notifyExamCompletion(input: ExamNotifyInput): Promise<{ no
   if (!shouldNotify(input.sessionKey)) return { notified: false, reason: "dedupe" };
   const recipient = await getLineRecipient();
   if (!recipient) return { notified: false, reason: "line-recipient-not-bound" };
-  const result = await sendLinePush(token, recipient, buildExamSummary(input));
+  const result = await sendLinePushWithRetry(token, recipient, buildExamSummary(input));
   if (!result.ok) {
-    console.error(`[lineNotify] 推播失敗: ${result.reason ?? "unknown"}`);
+    console.error(`[lineNotify] 推播失敗（已重試 ${result.attempts} 次）: ${result.reason ?? "unknown"}`);
+    return { notified: false, reason: `${result.reason ?? "unknown"} (attempts=${result.attempts})` };
   }
-  return { notified: result.ok, reason: result.reason };
+  return { notified: true };
 }

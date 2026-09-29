@@ -1,9 +1,19 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useLocation } from "wouter";
-import { ArrowLeft, ChevronRight, RotateCcw, Sparkles } from "lucide-react";
+import { ArrowLeft, ChevronRight, RotateCcw, Sparkles, Trash2 } from "lucide-react";
 import { useQuestionBank } from "@/lib/questionBank";
 import type { PaperQuestion } from "@/lib/paperExam";
 import { loadUserPreferences } from "@/game/adaptiveLearning";
+import { recordExamCloud } from "@/game/cloudSync";
+import { buildQuestionSpeechText } from "@/lib/speechSynthesis";
+import { TriSpeechPanel } from "@/components/TriSpeechPanel";
+import { TriResultBoard } from "@/components/TriResultBoard";
+import {
+  clearTriAxisProgress,
+  loadTriAxisProgress,
+  saveTriAxisProgress,
+  type TriAxisAnswerEntry,
+} from "@/lib/triAxisProgress";
 import { addRecord, getLearningRecord, recordAnalyticsEvent } from "@/utils/storage";
 import {
   AXIS_META,
@@ -44,6 +54,10 @@ export default function TriAxisPaper() {
   const [finished, setFinished] = useState(false);
   /** 每次重新開始都換一個 seed，避免題目順序永遠一樣。 */
   const [seed, setSeed] = useState(() => (Date.now() ^ 0x5f3759df) >>> 0);
+  /** 試卷計時起點（試卷時間用）；草稿恢復時沿用原起點。 */
+  const startedAtRef = useRef<number>(Date.now());
+  /** 結算是否已上報排行榜（避免 StrictMode／重複 effect 重複寫入）。 */
+  const reportedRef = useRef<string | null>(null);
   /**
    * 上一次的試卷：重做時傳給 buildTriAxisPaper，保證選項排列與上次不同。
    * 注意 deck 在組卷 effect 內被 set，為避免 effect 依賴它造成循環，
@@ -68,21 +82,73 @@ export default function TriAxisPaper() {
       previousDeck: previousDeckRef.current ?? undefined,
     });
     previousDeckRef.current = built.questions;
-    setDeck(built.questions);
-    setIndex(0);
-    setPicked(null);
-    setAnswers({});
-    setFinished(false);
+    // 草稿恢復：不要求 deck 完全相同（作答會寫學習紀錄、改變下次題池，
+    // 全等校驗答錯即失效）。改為逐題映射：草稿裡每題只要在新 deck 找得到，
+    // 就恢復該題答案；找不到的丟棄；新 deck 完全不含草稿題則清草稿重來。
+    // seed 不再從草稿還原——每次 mount 都是新 seed，重開即新卷（符合 R4）。
+    const saved = loadTriAxisProgress();
+    const deckById = new Map(built.questions.map((question) => [question.id, question]));
+    const restoredAnswers: Record<string, number> = {};
+    let restoredCount = 0;
+    if (saved !== null) {
+      for (const [questionId, entry] of Object.entries(saved.answers)) {
+        if (deckById.has(questionId)) {
+          restoredAnswers[questionId] = (entry as TriAxisAnswerEntry).picked;
+          restoredCount += 1;
+        }
+      }
+    }
+    if (saved !== null && restoredCount > 0) {
+      startedAtRef.current = saved.startedAt;
+      // index 恢復到「第一個未作答且仍在 deck 的位置」，找不到就停在第 0 題。
+      let restoreIndex = built.questions.findIndex(
+        (question) => !(question.id in restoredAnswers),
+      );
+      if (restoreIndex < 0) restoreIndex = 0;
+      setDeck(built.questions);
+      setIndex(restoreIndex);
+      setAnswers(restoredAnswers);
+      setPicked(restoredAnswers[built.questions[restoreIndex]?.id ?? ""] ?? null);
+      setFinished(false);
+    } else {
+      if (saved !== null) clearTriAxisProgress();
+      setDeck(built.questions);
+      setIndex(0);
+      setPicked(null);
+      setAnswers({});
+      setFinished(false);
+      startedAtRef.current = Date.now();
+      reportedRef.current = null;
+    }
   }, [allQuestions, seed]);
 
   const current = deck?.[index];
 
   const handlePick = useCallback(
     (optionIndex: number) => {
-      if (!current || picked !== null) return;
+      if (!current || !deck || picked !== null) return;
       const correct = optionIndex === current.answer;
+      const answeredAt = Date.now();
       setPicked(optionIndex);
-      setAnswers((prev) => ({ ...prev, [current.id]: optionIndex }));
+      setAnswers((prev) => {
+        const next = { ...prev, [current.id]: optionIndex };
+        // 作答即存檔：重整後作答內容不遺失。
+        const entries: Record<string, TriAxisAnswerEntry> = {};
+        for (const [questionId, pickedIndex] of Object.entries(next)) {
+          entries[questionId] = {
+            picked: pickedIndex,
+            answeredAt: questionId === current.id ? answeredAt : Date.now(),
+          };
+        }
+        saveTriAxisProgress({
+          seed,
+          index,
+          answers: entries,
+          startedAt: startedAtRef.current,
+          deckIds: deck.map((question) => question.id),
+        });
+        return next;
+      });
       // 寫回既有學習紀錄，讓這裡的作答也進入弱點分析與錯題本。
       addRecord({
         questionId: current.id,
@@ -100,7 +166,7 @@ export default function TriAxisPaper() {
         timestamp: Date.now(),
       });
     },
-    [current, picked],
+    [current, deck, picked, seed, index],
   );
 
   const handleNext = useCallback(() => {
@@ -109,11 +175,32 @@ export default function TriAxisPaper() {
       setFinished(true);
       return;
     }
-    setIndex((i) => i + 1);
+    const nextIndex = index + 1;
+    setIndex(nextIndex);
     setPicked(null);
-  }, [deck, index]);
+    // 換題即存檔：重整後可回到同一題。
+    const entries: Record<string, TriAxisAnswerEntry> = {};
+    for (const [questionId, pickedIndex] of Object.entries(answers)) {
+      entries[questionId] = { picked: pickedIndex, answeredAt: Date.now() };
+    }
+    saveTriAxisProgress({
+      seed,
+      index: nextIndex,
+      answers: entries,
+      startedAt: startedAtRef.current,
+      deckIds: deck.map((question) => question.id),
+    });
+  }, [deck, index, answers, seed]);
 
   const handleRestart = useCallback(() => {
+    clearTriAxisProgress();
+    reportedRef.current = null;
+    setSeed((Date.now() ^ 0x9e3779b9) >>> 0);
+  }, []);
+
+  const handleClearProgress = useCallback(() => {
+    clearTriAxisProgress();
+    reportedRef.current = null;
     setSeed((Date.now() ^ 0x9e3779b9) >>> 0);
   }, []);
 
@@ -121,6 +208,52 @@ export default function TriAxisPaper() {
     () => (deck ? scoreTriAxisPaper(deck, answers) : null),
     [deck, answers],
   );
+
+  // 結算即上報排行榜：只寫一次（reportedRef 擋 StrictMode 重跑）。
+  // sessionKey 帶 seed，同一份卷重複結算會覆蓋而非重複入榜。
+  useEffect(() => {
+    if (!finished || !score || !deck || deck.length === 0) return;
+    if (reportedRef.current === `${seed}-${deck.length}`) return;
+    reportedRef.current = `${seed}-${deck.length}`;
+    const finishedAt = Date.now();
+    const durationSec = Math.max(0, Math.round((finishedAt - startedAtRef.current) / 1000));
+    const detail = {
+      scope: "三軸混編試卷",
+      weekKey: null,
+      topics: deck.map((question) => ({
+        questionId: question.id,
+        subject: question.subject,
+        topic: question.learningTopic ?? "",
+        grade: question.grade,
+        difficulty: question.difficulty,
+        correct: answers[question.id] === question.answer,
+      })),
+    };
+    recordExamCloud({
+      subject: "三軸混編試卷",
+      totalQuestions: score.total,
+      correctCount: score.correct,
+      detail,
+      sessionKey: `tri-axis-${seed}`,
+      durationSec,
+    });
+    clearTriAxisProgress();
+  }, [finished, score, deck, answers, seed]);
+
+  // 結算頁朗讀文字：分數＋各軸表現。
+  const resultSpeechText = useMemo(() => {
+    if (!score) return "";
+    const parts = AXIS_ORDER.map(
+      (axis) => `${AXIS_META[axis].name}答對 ${score.byAxis[axis].correct} 題，共 ${score.byAxis[axis].total} 題`,
+    );
+    return `本次航行結果：共 ${score.total} 題，答對 ${score.correct} 題，正確率 ${score.percentage}％。${parts.join("；")}。`;
+  }, [score]);
+
+  // 當前題朗讀文字：題幹＋選項。
+  const questionSpeechText = useMemo(() => {
+    if (!current) return "";
+    return buildQuestionSpeechText(current.prompt, current.options);
+  }, [current]);
 
   const headline = deck?.length ? `${index + 1} / ${deck.length}` : "—";
 
@@ -135,6 +268,16 @@ export default function TriAxisPaper() {
         <p className="tri-paper-desc">
           三條時間軸交錯出題，科目與難度全部打散：先回顧跌倒的地方，再鞏固正在學的，最後看一眼前方的挑戰。
         </p>
+        <button
+          type="button"
+          className="tri-paper-clear"
+          onClick={() => {
+            if (window.confirm("要清除這份試卷的作答進度並重新開始嗎？")) handleClearProgress();
+          }}
+          aria-label="清除作答進度並重新開始"
+        >
+          <Trash2 size={14} aria-hidden="true" /> 清除進度
+        </button>
       </header>
 
       <ol className="tri-axis-legend" aria-label="三條時間軸">
@@ -173,9 +316,14 @@ export default function TriAxisPaper() {
               </li>
             ))}
           </ul>
+          <TriSpeechPanel text={resultSpeechText} label="朗讀本次結果" />
+          <TriResultBoard score={score} seed={seed} />
           <div className="tri-result-actions">
             <button type="button" className="tri-btn tri-btn--primary" onClick={handleRestart}>
               <RotateCcw size={16} aria-hidden="true" /> 再來一張
+            </button>
+            <button type="button" className="tri-btn" onClick={() => setLocation("/answer-board")}>
+              查看答題榜
             </button>
             <button type="button" className="tri-btn" onClick={() => setLocation("/")}>
               回航海儀表板
@@ -197,6 +345,7 @@ export default function TriAxisPaper() {
             {current.subject} · {current.grade} 年級 · {current.difficulty} — {AXIS_META[current.axis].status}
           </p>
           <h2 id="tri-q-prompt" className="tri-q-prompt">{current.prompt}</h2>
+          <TriSpeechPanel text={questionSpeechText} label="朗讀題目" />
 
           <div className="tri-q-options" role="group" aria-label="選項">
             {current.options.map((option, optionIndex) => {

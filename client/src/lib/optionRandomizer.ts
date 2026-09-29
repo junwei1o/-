@@ -60,6 +60,20 @@ export function shuffledIndexes(count: number, random: () => number = Math.rando
 }
 
 /**
+ * 是非題判定（與 shuffleQuestionOptions 內的豁免條件一致，抽出共用）：
+ * 固定「正確」在前（○）、「錯誤」在後（✕），避免符號與語意錯位。
+ */
+export function isTrueFalseQuestion(question: ShuffleableQuestion): boolean {
+  if (!Array.isArray(question?.options)) return false;
+  return (
+    question.questionType === "是非題" ||
+    (question.options.length === 2 &&
+      question.options.includes("正確") &&
+      question.options.includes("錯誤"))
+  );
+}
+
+/**
  * 打亂單題選項順序。`random` 可傳入 seededRandom(seed) 以在同一個出題session內維持穩定，
  * 或省略改用 Math.random 讓每次出題都不同。answer 與 strongDistractor.optionIndex 會同步對應新位置。
  */
@@ -67,12 +81,7 @@ export function shuffleQuestionOptions<T extends ShuffleableQuestion>(question: 
   if (!Array.isArray(question?.options) || question.options.length < 2) return question;
   if (!Number.isInteger(question.answer) || question.answer < 0 || question.answer >= question.options.length) return question;
   // 是非題不打亂：固定「正確」在前（○）、「錯誤」在後（✕），避免符號與語意錯位（例如出現「✕ 正確」）。
-  const looksTrueFalse =
-    question.questionType === "是非題" ||
-    (question.options.length === 2 &&
-      question.options.includes("正確") &&
-      question.options.includes("錯誤"));
-  if (looksTrueFalse) {
+  if (isTrueFalseQuestion(question)) {
     const answeredText = question.options[question.answer];
     return { ...question, options: ["正確", "錯誤"], answer: answeredText === "正確" ? 0 : 1 };
   }
@@ -119,6 +128,12 @@ export function shuffleQuestionOptionsDistinct<T extends ShuffleableQuestion>(
   random: () => number = Math.random,
 ): T {
   if (forbiddenPermutations.length === 0) {
+    return shuffleQuestionOptions(question, random);
+  }
+  // 是非題早退：shuffleQuestionOptions 對是非題永遠回固定順序，
+  // 進迴圈只會空轉 12 次（簽名永遠在 forbidden 內）並刷 console.debug。
+  // 直接走一次既有豁免路徑即可。
+  if (isTrueFalseQuestion(question)) {
     return shuffleQuestionOptions(question, random);
   }
   const forbidden = new Set(forbiddenPermutations);
