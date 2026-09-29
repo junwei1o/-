@@ -2754,7 +2754,7 @@ body.bx-tour-open{overflow:hidden}
 .bx-tour__body{margin:0 0 16px;font-size:14px;line-height:1.7;color:var(--bx-mute)}
 .bx-tour__body strong{color:var(--bx-gold)}
 .bx-tour__dots{display:flex;gap:7px;margin-bottom:14px}
-.bx-dot{width:8px;height:8px;border-radius:50%;background:var(--bx-line);transition:.25s}
+.bx-dot{width:8px;height:8px;border-radius:50%;background:var(--bx-line);transition:background .25s,transform .25s}
 .bx-dot--done{background:rgba(245,166,35,.4)}
 .bx-dot--on{background:var(--bx-gold);transform:scale(1.35)}
 .bx-tour__actions{display:flex;justify-content:flex-end}
@@ -2860,7 +2860,7 @@ body.bx-tour-open{overflow:hidden}
   display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none;width:min(420px,calc(100vw - 24px))}
 .bx-toast{padding:12px 20px;background:var(--bx-navy);color:var(--white);border-radius:var(--radius-xl);font-size:14px;
   font-weight:600;box-shadow:var(--bx-sh);opacity:0;transform:translateY(-14px);
-  transition:.3s var(--bx-ease);text-align:center;max-width:100%}
+  transition:opacity .3s var(--bx-ease),transform .3s var(--bx-ease);text-align:center;max-width:100%}
 .bx-toast--in{opacity:1;transform:translateY(0)}
 .bx-confetti{position:fixed;inset:0;z-index:9750;pointer-events:none;overflow:hidden}
 .bx-confetti i{position:absolute;top:-14px;width:9px;height:14px;border-radius:2px;animation:bxFall 2s linear forwards}
@@ -2872,7 +2872,7 @@ body.bx-tour-open{overflow:hidden}
   padding-bottom:env(safe-area-inset-bottom)}
 .bx-nav__item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:9px 4px 8px;
   text-decoration:none;color:var(--bx-mute);min-height:56px;transition:color .2s;-webkit-tap-highlight-color:transparent}
-.bx-nav__ic{font-size:21px;line-height:1;filter:grayscale(1);opacity:.55;transition:.2s}
+.bx-nav__ic{font-size:21px;line-height:1;filter:grayscale(1);opacity:.55;transition:filter .2s,opacity .2s,transform .2s}
 .bx-nav__lb{font-size: var(--type-micro);font-weight:600}
 .bx-nav__item--on{color:var(--bx-gold)}
 .bx-nav__item--on .bx-nav__ic{filter:none;opacity:1;transform:translateY(-2px) scale(1.1)}
