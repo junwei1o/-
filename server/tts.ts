@@ -54,6 +54,9 @@ const EDGE_TTS_SPEC = "edge-tts>=6.1.9,<8";
 
 /** 每個行程式最多嘗試一次背景安裝。 */
 let installStarted = false;
+let installing = false;
+/** 安裝結果/進度摘要——Render 日誌外部不可見，經 tts.health 遠端診斷用。 */
+let installNote: string | null = null;
 
 function runInstall(python: string, args: string[], onDone: (ok: boolean, note: string) => void): void {
   try {
@@ -74,33 +77,46 @@ function runInstall(python: string, args: string[], onDone: (ok: boolean, note: 
 /**
  * 運行期自癒安裝（2026-09-30 Edge 全接入）。
  *
- * 實測：Render 映像**有 python3 但無 edge_tts 模組**（buildCommand 的
- * pip 安裝未必被 blueprint 套用）。因此在「合成失敗」時於背景對首個
+ * 實測：Render 映像**有 python3、有 pip、但無 edge_tts 模組**（buildCommand
+ * 的 pip 安裝未必被 blueprint 套用）。因此在「合成失敗」時於背景對首個
  * python 候選安裝一次（每行程式僅一次）：先 `pip install --user`，
  * 失敗則 `ensurepip` 後重試。本次請求仍正常退位到瀏覽器語音，
  * 安裝完成後的**下一次合成即自動成功**——部署不依賴任何 Dashboard 操作。
- * 安裝失敗只記日誌：朗讀退回瀏覽器語音，功能永不中斷。
+ * 結果寫入 installNote 供 tts.health 遠端讀取。
  */
 function maybeInstallEdgeTts(): void {
   if (installStarted) return;
   installStarted = true;
   const python = pythonCandidates()[0];
-  if (!python) return;
+  if (!python) {
+    installNote = "no python candidate";
+    return;
+  }
+  installing = true;
+  const fail = (note: string) => {
+    installing = false;
+    installNote = `fail: ${note}`.slice(0, 400);
+  };
+  const succeed = (via: string) => {
+    installing = false;
+    installNote = `ok via ${via}`;
+    console.log(`[tts] edge-tts 運行期安裝成功（${via}），遠端朗讀將於下次合成啟用`);
+  };
 
   runInstall(python, ["-m", "pip", "install", "--user", EDGE_TTS_SPEC], (ok, note) => {
-    if (ok) {
-      console.log("[tts] edge-tts 運行期安裝成功，遠端朗讀將於下次合成啟用");
-      return;
-    }
+    if (ok) return succeed("pip --user");
     // pip 模組不存在（slim 映像常見）→ 用 stdlib ensurepip 補出 pip 再裝
     runInstall(python, ["-m", "ensurepip", "--user"], (ok2, note2) => {
       if (!ok2) {
-        console.warn(`[tts] edge-tts 安裝失敗（pip 與 ensurepip 皆不可用，朗讀退回瀏覽器語音）: ${note2 || note}`);
-        return;
+        console.warn(`[tts] edge-tts 安裝失敗（pip 與 ensurepip 皆不可用）: ${note2 || note}`);
+        return fail(`pip: ${note.slice(0, 120)} | ensurepip: ${note2.slice(0, 120)}`);
       }
       runInstall(python, ["-m", "pip", "install", "--user", EDGE_TTS_SPEC], (ok3, note3) => {
-        if (ok3) console.log("[tts] edge-tts 運行期安裝成功（ensurepip 路徑），遠端朗讀將於下次合成啟用");
-        else console.warn(`[tts] edge-tts 安裝失敗（朗讀退回瀏覽器語音）: ${note3}`);
+        if (ok3) succeed("ensurepip + pip");
+        else {
+          console.warn(`[tts] edge-tts 安裝失敗: ${note3}`);
+          fail(note3.slice(0, 200));
+        }
       });
     });
   });
@@ -216,6 +232,10 @@ export type TtsSupplyStatus = {
   breaker: { failures: number; brokenForMs: number };
   /** 本行程式是否已嘗試過背景安裝（每進程一次）。 */
   installAttempted: boolean;
+  /** 背景安裝是否仍在進行。 */
+  installRunning: boolean;
+  /** 安裝結果摘要（ok via …／fail: …），Render 日誌外部不可見的替代診斷通道。 */
+  installNote: string | null;
 };
 
 /**
@@ -247,5 +267,7 @@ export function probeEdgeTtsSupply(): TtsSupplyStatus {
     candidates,
     breaker: { failures: consecutiveFailures, brokenForMs: Math.max(0, brokenUntil - Date.now()) },
     installAttempted: installStarted,
+    installRunning: installing,
+    installNote,
   };
 }

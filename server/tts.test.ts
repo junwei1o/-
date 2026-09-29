@@ -43,5 +43,7 @@ describe("probeEdgeTtsSupply：朗讀供應鏈診斷（tts.health 端點）", ()
     expect(status.breaker.failures).toBeGreaterThanOrEqual(0);
     expect(typeof status.breaker.brokenForMs).toBe("number");
     expect(typeof status.installAttempted).toBe("boolean");
+    expect(typeof status.installRunning).toBe("boolean");
+    if (status.installNote !== null) expect(typeof status.installNote).toBe("string");
   });
 });
