@@ -212,7 +212,7 @@ export default function OnboardingTour() {
         <p className="bx-tour__step">新手導覽 {idx + 1} / {STEPS.length}</p>
         <h3 className="bx-tour__title">{step.title}</h3>
         <p className="bx-tour__body" dangerouslySetInnerHTML={{ __html: step.body }} />
-        <div className="bx-tour__dots" aria-label={`第 ${idx + 1} 步，共 ${STEPS.length} 步`}>
+        <div className="bx-tour__dots" role="group" aria-label={`第 ${idx + 1} 步，共 ${STEPS.length} 步`}>
           {STEPS.map((s, i) => (
             <span key={s.id} className={`bx-dot ${i === idx ? "bx-dot--on" : ""} ${i < idx ? "bx-dot--done" : ""}`} />
           ))}
