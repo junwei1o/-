@@ -59,7 +59,8 @@
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
-  transition: all 0.16s var(--ease);
+  /* 效能（2026-09-30）：transition:all → 實際切換會變的 background/color。 */
+  transition: background 0.16s var(--ease), color 0.16s var(--ease);
 }
 
 .hub-tab:hover {

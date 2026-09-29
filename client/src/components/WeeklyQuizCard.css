@@ -187,7 +187,9 @@
   font-family: inherit;
   font-size: 14px;
   color: var(--ink);
-  transition: all 0.12s ease;
+  /* 效能（2026-09-30）：原 transition:all 會把 hover 沒變的屬性也列入過渡；
+     這裡收斂成實際互動會變的兩個屬性（hover 與對錯狀態都只動這兩個）。 */
+  transition: border-color 0.12s ease, background 0.12s ease;
 }
 
 .weekly-quiz-options .opt:hover:not(:disabled) {

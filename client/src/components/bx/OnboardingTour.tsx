@@ -160,15 +160,29 @@ export default function OnboardingTour() {
     }
 
     const raf = requestAnimationFrame(() => setPos(computePos(targetEl, cardRef.current)));
-    const reposition = () => setPos(computePos(targetEl, cardRef.current));
+    // 效能（2026-09-30 特效巡檢）：computePos 讀 getBoundingClientRect（強制
+    // 版面計算），原本每個 scroll 事件都跑一次；改 rAF 節流成每幀最多一次、
+    // passive 讓瀏覽器不必等 handler 就能捲動。定位延遲 ≤1 幀，視覺不變。
+    let ticking = false;
+    let scrollFrame = 0;
+    const reposition = () => {
+      if (ticking) return;
+      ticking = true;
+      scrollFrame = requestAnimationFrame(() => {
+        ticking = false;
+        scrollFrame = 0;
+        setPos(computePos(targetEl, cardRef.current));
+      });
+    };
     window.addEventListener("resize", reposition);
-    window.addEventListener("scroll", reposition, true);
+    window.addEventListener("scroll", reposition, { passive: true, capture: true });
     bxStore.update((s) => {
       s.onboarding.step = idx;
     });
 
     return () => {
       cancelAnimationFrame(raf);
+      cancelAnimationFrame(scrollFrame);
       window.removeEventListener("resize", reposition);
       window.removeEventListener("scroll", reposition, true);
     };

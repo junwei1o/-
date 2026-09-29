@@ -146,7 +146,9 @@
   font-size: 13px;
   font-family: inherit;
   cursor: pointer;
-  transition: all 0.15s ease;
+  /* 效能（2026-09-30）：transition:all → 顯式屬性（hover 動 background/transform、
+     :disabled 動 opacity）；其餘屬性不再參與每幀過渡計算。 */
+  transition: background 0.15s ease, transform 0.15s ease, opacity 0.15s ease;
 }
 
 .line-notify-btn:hover:not(:disabled) {

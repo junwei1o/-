@@ -209,7 +209,8 @@
   font-size: 14px;
   color: var(--ink);
   cursor: pointer;
-  transition: all 0.15s ease;
+  /* 效能（2026-09-30）：transition:all → 實際互動會變的 border-color/background。 */
+  transition: border-color 0.15s ease, background 0.15s ease;
 }
 
 .review-hub-opt:hover:not(:disabled) {
@@ -380,7 +381,8 @@
   font-size: 14px;
   font-family: inherit;
   cursor: pointer;
-  transition: all 0.15s ease;
+  /* 效能（2026-09-30）：transition:all → 實際互動會變的 background/transform。 */
+  transition: background 0.15s ease, transform 0.15s ease;
 }
 
 .review-hub-cta:hover:not(:disabled) {

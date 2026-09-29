@@ -158,7 +158,8 @@
   text-align: left;
   font-family: inherit;
   color: var(--ink);
-  transition: all 0.15s ease;
+  /* 效能（2026-09-30）：transition:all → hover 實際變的四個屬性。 */
+  transition: border-color 0.15s ease, background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
 }
 .features-card:hover {
   border-color: var(--tidal);
