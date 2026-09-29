@@ -1,7 +1,7 @@
 /* 配對連連看元件：所有 class 以 mg- 前綴，樣式限定在 .matching-game，避免污染全域。 */
 .matching-game{
   --mg-paper:#fbf6ea; --mg-ink:#3a2f23; --mg-ink2:#6b5d49;
-  --mg-orange:#e8843a; --mg-orange-d:#c9661f; --mg-sea:#2f7d8f; --mg-sea-d:#1f5d6b;
+  --mg-orange:#e8843a; --mg-orange-d:#A45319; --mg-sea:#2f7d8f; --mg-sea-d:#1f5d6b;
   --mg-green:#3f8a43; --mg-green-bg:#e2f0db; --mg-red:#d0503a; --mg-red-bg:#fbe1da;
   --mg-gold:#e0a92e; --mg-line:#e2d4b6; --mg-card:var(--white);
   position:relative; background:var(--mg-paper); color:var(--mg-ink);

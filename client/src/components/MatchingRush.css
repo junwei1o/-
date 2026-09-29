@@ -5,7 +5,7 @@
   max-width:560px;margin:0 auto;box-shadow:0 3px 0 rgba(58,47,35,.12);
 }
 .mr-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px}
-.mr-tag{display:inline-block;background:#fde6d2;color:var(--mg-orange-d,#c9661f);
+.mr-tag{display:inline-block;background:#fde6d2;color:var(--mg-orange-d,#A45319);
   font-size:12px;font-weight:800;border-radius:var(--radius-pill);padding:4px 12px}
 .mr-set-title{font-size: var(--type-support);font-weight:800;color:var(--mg-sea-d,#1f5d6b)}
 .mr-countdown{margin-left:auto;display:inline-flex;align-items:center;gap:4px;
