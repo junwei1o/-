@@ -37,9 +37,11 @@ describe("probeEdgeTtsSupply：朗讀供應鏈診斷（tts.health 端點）", ()
       expect(candidate.python.length).toBeGreaterThan(0);
       expect(typeof candidate.exists).toBe("boolean");
       expect(typeof candidate.edgeTts).toBe("boolean");
+      expect(typeof candidate.pip).toBe("boolean");
     }
     expect(typeof status.breaker.failures).toBe("number");
     expect(status.breaker.failures).toBeGreaterThanOrEqual(0);
     expect(typeof status.breaker.brokenForMs).toBe("number");
+    expect(typeof status.installAttempted).toBe("boolean");
   });
 });

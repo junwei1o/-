@@ -49,6 +49,63 @@ function pythonCandidates(): string[] {
   ].filter((candidate): candidate is string => Boolean(candidate));
 }
 
+/** 要安裝的 edge-tts 版本範圍（避免未釘版本的供應鏈風險，同時保留補丁升級）。 */
+const EDGE_TTS_SPEC = "edge-tts>=6.1.9,<8";
+
+/** 每個行程式最多嘗試一次背景安裝。 */
+let installStarted = false;
+
+function runInstall(python: string, args: string[], onDone: (ok: boolean, note: string) => void): void {
+  try {
+    const child = spawn(python, args, { stdio: ["ignore", "ignore", "pipe"] });
+    let stderr = "";
+    child.stderr?.on("data", (chunk: Buffer) => {
+      if (stderr.length < 500) stderr += chunk.toString();
+    });
+    child.on("error", (error) => onDone(false, String(error)));
+    child.on("close", (code) => {
+      onDone(code === 0, code === 0 ? "" : stderr.slice(0, 200) || `exit ${code}`);
+    });
+  } catch (error) {
+    onDone(false, String(error));
+  }
+}
+
+/**
+ * 運行期自癒安裝（2026-09-30 Edge 全接入）。
+ *
+ * 實測：Render 映像**有 python3 但無 edge_tts 模組**（buildCommand 的
+ * pip 安裝未必被 blueprint 套用）。因此在「合成失敗」時於背景對首個
+ * python 候選安裝一次（每行程式僅一次）：先 `pip install --user`，
+ * 失敗則 `ensurepip` 後重試。本次請求仍正常退位到瀏覽器語音，
+ * 安裝完成後的**下一次合成即自動成功**——部署不依賴任何 Dashboard 操作。
+ * 安裝失敗只記日誌：朗讀退回瀏覽器語音，功能永不中斷。
+ */
+function maybeInstallEdgeTts(): void {
+  if (installStarted) return;
+  installStarted = true;
+  const python = pythonCandidates()[0];
+  if (!python) return;
+
+  runInstall(python, ["-m", "pip", "install", "--user", EDGE_TTS_SPEC], (ok, note) => {
+    if (ok) {
+      console.log("[tts] edge-tts 運行期安裝成功，遠端朗讀將於下次合成啟用");
+      return;
+    }
+    // pip 模組不存在（slim 映像常見）→ 用 stdlib ensurepip 補出 pip 再裝
+    runInstall(python, ["-m", "ensurepip", "--user"], (ok2, note2) => {
+      if (!ok2) {
+        console.warn(`[tts] edge-tts 安裝失敗（pip 與 ensurepip 皆不可用，朗讀退回瀏覽器語音）: ${note2 || note}`);
+        return;
+      }
+      runInstall(python, ["-m", "pip", "install", "--user", EDGE_TTS_SPEC], (ok3, note3) => {
+        if (ok3) console.log("[tts] edge-tts 運行期安裝成功（ensurepip 路徑），遠端朗讀將於下次合成啟用");
+        else console.warn(`[tts] edge-tts 安裝失敗（朗讀退回瀏覽器語音）: ${note3}`);
+      });
+    });
+  });
+}
+
 /** 前端語速（倍率 0.6–1.4）→ edge-tts 速率（百分比字串，如 "-8%"）。 */
 export function toEdgeRate(rate: number): string {
   const safe = Number.isFinite(rate) ? Math.min(2, Math.max(0.5, rate)) : 1;
@@ -130,6 +187,8 @@ export async function synthesizeSpeech({ text, voice, rate }: SpeechSynthesisInp
     consecutiveFailures = 0;
     return audio;
   } catch (error) {
+    // 背景自癒：本行程式首次失敗時安裝 edge-tts（裝好後下次合成即成功）
+    maybeInstallEdgeTts();
     consecutiveFailures += 1;
     // 只在「首次失敗」與「觸發熔斷」各記一條：Render 日誌可診斷且不被刷屏。
     if (consecutiveFailures === 1 || consecutiveFailures >= BREAKER_THRESHOLD) {
@@ -151,30 +210,42 @@ function statSize(filePath: string): number {
   }
 }
 
-export type TtsCandidateProbe = { python: string; exists: boolean; edgeTts: boolean };
+export type TtsCandidateProbe = { python: string; exists: boolean; edgeTts: boolean; pip: boolean };
 export type TtsSupplyStatus = {
   candidates: TtsCandidateProbe[];
   breaker: { failures: number; brokenForMs: number };
+  /** 本行程式是否已嘗試過背景安裝（每進程一次）。 */
+  installAttempted: boolean;
 };
 
 /**
  * 遠端朗讀供應鏈診斷（供 tts.health 端點，2026-09-30 全接入輪新增）：
- * 逐一檢查 python 候選是否存在、能否載入 edge_tts 模組。
+ * 逐一檢查 python 候選是否存在、pip 是否可用、能否載入 edge_tts 模組。
  * 純本地 spawnSync——不碰網路、不回傳任何機密；部署後 curl 一次即可
- * 定位「為何 synthesize 回 audio:null」（缺 python、缺模組、或僅熔斷中）。
+ * 定位「為何 synthesize 回 audio:null」（缺 python／缺 pip／缺模組／熔斷中）。
  */
 export function probeEdgeTtsSupply(): TtsSupplyStatus {
   const candidates = pythonCandidates().map((python): TtsCandidateProbe => {
     try {
-      const probe = spawnSync(python, ["-c", "import edge_tts"], { timeout: 4_000, stdio: "ignore" });
-      if (probe.error) return { python, exists: false, edgeTts: false };
-      return { python, exists: true, edgeTts: probe.status === 0 };
+      const existsProbe = spawnSync(python, ["-c", "print(1)"], { timeout: 4_000, stdio: "ignore" });
+      if (existsProbe.error || existsProbe.status !== 0) {
+        return { python, exists: false, edgeTts: false, pip: false };
+      }
+      const moduleProbe = spawnSync(python, ["-c", "import edge_tts"], { timeout: 4_000, stdio: "ignore" });
+      const pipProbe = spawnSync(python, ["-m", "pip", "--version"], { timeout: 4_000, stdio: "ignore" });
+      return {
+        python,
+        exists: true,
+        edgeTts: moduleProbe.status === 0,
+        pip: !pipProbe.error && pipProbe.status === 0,
+      };
     } catch {
-      return { python, exists: false, edgeTts: false };
+      return { python, exists: false, edgeTts: false, pip: false };
     }
   });
   return {
     candidates,
     breaker: { failures: consecutiveFailures, brokenForMs: Math.max(0, brokenUntil - Date.now()) },
+    installAttempted: installStarted,
   };
 }
