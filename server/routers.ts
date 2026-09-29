@@ -517,7 +517,16 @@ export const appRouter = router({
         limit: z.number().int().min(1).max(1200).optional(),
       }).optional())
       .query(async ({ input }) => {
-        const questions = await getQuestionBank(input ?? {});
+        const rows = await getQuestionBank(input ?? {});
+        // P1-1 payload 精簡（2026-09-29 覆核第③項）：前端對下列欄位零讀取
+        // （全 client grep：learningPerformance/learningContent/competency 僅有
+        //  型別宣告、無任何 .欄位 讀取；createdAt/updatedAt 的命中全是本地
+        //  storage 紀錄與公告列，與題庫列無關）。時間戳合計佔原始 payload
+        //  22.4%、課綱三欄 9.9%，裁掉約省 32% 原始體積。
+        // area 必須保留：expeditionUnlocks.ts 以 question.area 對應地區章節。
+        const questions = rows.map(
+          ({ createdAt, updatedAt, learningPerformance, learningContent, competency, ...rest }) => rest
+        );
         return { questions, total: questions.length };
       }),
 

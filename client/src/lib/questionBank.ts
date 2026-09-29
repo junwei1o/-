@@ -258,12 +258,16 @@ export type QuestionBankSource = "server" | "local";
 const NO_SERVER_QUESTIONS: readonly CurriculumQuestionRow[] = [];
 
 /**
- * 取得正式題庫。後端有資料時使用後端資料；後端無法連線、查詢失敗或回傳空資料時，
- * 自動改用內建的 500 題題庫，因此回傳的 isLoading 永遠不會卡住操作、error 永遠為 null。
+ * 取得正式題庫。**本地內建題庫（2900 題）為主**；僅當本地載入失敗／為空時
+ * 才回頭抓伺服器 questionBank.list 當 fallback（見 useQuestionBank 的
+ * localState 閘）。因此 isLoading 永遠不會卡住操作、error 永遠為 null。
  *
- * 線上是純靜態部署（/trpc/* 一律被 SPA fallback 回 index.html），後端題庫 API 並不存在。
- * main.tsx 的 tRPC link 層已把這些請求直接擋掉（省下每次約 2 秒的往返等待與錯誤解析），
- * 這裡只保留 enabled 語意清楚；接上後端後 link 層自動恢復網路請求。
+ * 為什麼改為「伺服器 fallback-only」：本部署**有**後端（Express + tRPC），
+ * 但伺服器題庫與本地 runtime_bank chunk 是同一批資料，同時抓等於每次
+ * 答題頁重複下載 ~595KB（伺服器 279KB gzip ＋ 本地 315KB gzip），
+ * 合併去重後內容完全相同——白白吃掉行動頻寬（2026-09-29 覆核第③項）。
+ * 註：早年註解寫「線上是純靜態部署、後端 API 並不存在」是舊專案狀態，
+ * 已不適用本部署，特此更正。
  *
  * 選項展開（5000 題約 2 秒）已移到 Web Worker 執行：Worker 結果回來前，
  * 這裡回傳的是「未展開但已可作答」的 4 選題，學生可以馬上開始答；
@@ -279,8 +283,9 @@ const NO_SERVER_QUESTIONS: readonly CurriculumQuestionRow[] = [];
  */
 export function useQuestionBank(options?: { eager?: boolean }) {
   const eager = options?.eager ?? true;
-  const query = trpc.questionBank.list.useQuery({ limit: 1200 }, { retry: false });
   const [localRows, setLocalRows] = useState<CurriculumQuestionRow[]>([]);
+  /** 本地題庫載入進度：loading（下載中）→ ready（有題）／failed（失敗或空）。 */
+  const [localState, setLocalState] = useState<"loading" | "ready" | "failed">("loading");
   /** Worker 展開完成的題目；未完成前為 null，畫面先用未展開的 4 選題。 */
   const [expandedRows, setExpandedRows] = useState<CurriculumQuestionRow[] | null>(null);
 
@@ -288,13 +293,29 @@ export function useQuestionBank(options?: { eager?: boolean }) {
     let alive = true;
     // eager=false 的頁面（純看首屏、不出題）等首屏結束再下載 3MB 題庫。
     const start = eager ? loadLocalBank() : waitForIdleThenLoad();
-    start.then((rows) => {
-      if (alive) setLocalRows(rows);
-    });
+    start
+      .then((rows) => {
+        if (!alive) return;
+        setLocalRows(rows);
+        setLocalState(rows.length > 0 ? "ready" : "failed");
+      })
+      .catch(() => {
+        // 本地 chunk 下載失敗（動態 import reject）→ 標記失敗，讓下方伺服器 fallback 接手。
+        if (alive) setLocalState("failed");
+      });
     return () => {
       alive = false;
     };
   }, [eager]);
+
+  // 伺服器題庫只在「本地題庫載入失敗／為空」時才抓（fallback 語意）。
+  // 正常路徑下兩者是同一批資料：伺服器 limit=1200 實測 1.16MB 原始／279KB
+  // gzip ＋ 本地 runtime_bank chunk 315KB gzip，合併去重後等於每次答題頁
+  // 白下載 ~595KB 重複內容（2026-09-29 覆核第③項）。
+  const query = trpc.questionBank.list.useQuery(
+    { limit: 1200 },
+    { retry: false, enabled: localState === "failed" }
+  );
 
   const serverQuestions = (query.data?.questions ?? NO_SERVER_QUESTIONS) as CurriculumQuestionRow[];
   // 還沒有任何題目來源前不要排展開作業（否則會對空陣列排一次無意義的 Promise）。
@@ -302,8 +323,8 @@ export function useQuestionBank(options?: { eager?: boolean }) {
   const hasBank = localRows.length > 0 || serverQuestions.length > 0;
   const merged = useMemo(() => {
     if (!hasBank) return NO_SERVER_QUESTIONS;
-    // 後端題庫與本地題庫聯集合併（後端只收錄部分題目，本地才是完整的 2900 題），
-    // 以題幹去重避免同一題出現兩次；英語 seed 固定附加（後端 schema 未收錄英語）。
+    // 正常：本地 2900 題為主（英語 seed 由 mergeAcrossSources 附加）；
+    // fallback：本地載入失敗時由伺服器題庫接手。兩者以題幹去重避免重複。
     return mergedBank(serverQuestions, localRows);
   }, [serverQuestions, localRows, hasBank]);
 
