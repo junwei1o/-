@@ -16,6 +16,8 @@ import { OfflineBanner } from "@/components/OfflineBanner";
 // 而題庫對「只想登入看看首頁」的學生完全不需要。靜態 import 會讓 Home 的
 // 模組層級副作用在登入閘道顯示 LoginPage 時就被拉進來，徒增 3MB 下載。
 const Home = React.lazy(() => import("@/pages/Home"));
+/** 新首頁：選擇下一段學習航線（原首頁已副頁化為 /dashboard）。 */
+const RouteDeck = React.lazy(() => import("@/pages/RouteDeck"));
 const PaperExam = React.lazy(() => import("./pages/PaperExam"));
 const TriAxisPaper = React.lazy(() => import("./pages/TriAxisPaper"));
 const MatchingPage = React.lazy(() => import("./pages/MatchingPage"));
@@ -86,7 +88,7 @@ function Router() {
       <Suspense fallback={<PageLoader />}>
         <Switch>
         <Route path={"/map"} component={StudentMap} />
-        <Route path={"/"} component={Home} />
+        <Route path={"/"} component={RouteDeck} />
         {/* 副頁「航海儀表板」：原首頁內容。
             新首頁上線前 / 與 /dashboard 指向同一個 Home；新首頁接手 / 之後，
             本路由即為原首頁的唯一去處（見 homepage-redesign-proposal.md）。 */}
