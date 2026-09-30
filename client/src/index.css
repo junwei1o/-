@@ -2688,6 +2688,9 @@ nav { display:grid; gap:7px; }
    ═══════════════════════════════════════════════════════════════ */
 :root{
   --bx-gold:#F5A623; --bx-gold-2:#FFD86B; --bx-navy:#0A1628;
+  /* 無障礙：金色文字專用 token。--bx-gold 是裝飾金（底色上僅 2.0，不可當文字用）；
+     12px bold 不屬 large text，須 4.5:1，實測四主題底紙最差需 ≤ #9A5600。 */
+  --bx-gold-text:#9A5600;
   --bx-sea:#2D78A5;  --bx-ink:#2C3E50;   --bx-mute:#5A677A;
   --bx-bg:var(--white);   --bx-soft:#F4F8FB;  --bx-line:#E3EBF2;
   --bx-danger:#E2574C; --bx-ok:#3FA96B;
@@ -2748,8 +2751,12 @@ body.bx-tour-open{overflow:hidden}
 @keyframes bxCardIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 @keyframes bxCardCenter{from{opacity:0;transform:translate(-50%,-46%)}to{opacity:1;transform:translate(-50%,-50%)}}
 .bx-tour__skip{position:absolute;top:10px;right:12px;background:none;border:0;color:var(--bx-mute);
-  font-size:12px;cursor:pointer;opacity:.6;padding:4px;min-width:44px;min-height:44px;display:grid;place-items:center}
-.bx-tour__skip:hover{opacity:1;text-decoration:underline}
+  font-size:12px;cursor:pointer;padding:4px;min-width:44px;min-height:44px;display:grid;place-items:center;
+  /* 移除 opacity:.6 —— 色值雖已達 5.02，疊 60% 透明後實際渲染為 #949EAA，對比掉到 2.38。
+     次要層級改由 hover 變色表達（不靠降低對比）。 */
+  transition:color .16s var(--bx-ease)}
+.bx-tour__skip:hover{color:var(--bx-ink);text-decoration:underline}
+.bx-tour__skip:focus-visible{outline:2px solid var(--bx-ink);outline-offset:2px;border-radius:4px}
 .bx-tour__title{margin:0 0 8px;font-size:18px;color:var(--bx-ink);padding-right:56px}
 .bx-tour__body{margin:0 0 16px;font-size:14px;line-height:1.7;color:var(--bx-mute)}
 .bx-tour__body strong{color:var(--bx-gold)}
@@ -2759,7 +2766,7 @@ body.bx-tour-open{overflow:hidden}
 .bx-dot--on{background:var(--bx-gold);transform:scale(1.35)}
 .bx-tour__actions{display:flex;justify-content:flex-end}
 .bx-tour__actions .bx-btn{width:100%}
-.bx-tour__step{margin:0 0 6px;font-size:12px;font-weight:700;letter-spacing:.05em;color:var(--bx-gold)}
+.bx-tour__step{margin:0 0 6px;font-size:12px;font-weight:700;letter-spacing:.05em;color:var(--bx-gold-text)}
 .bx-tour__actions--row{justify-content:space-between;gap:10px;align-items:center}
 .bx-tour__actions--row .bx-btn{width:auto;flex:0 0 auto}
 .bx-tour__actions--row .bx-btn--primary{flex:1 1 auto}
