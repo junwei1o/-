@@ -48,6 +48,7 @@ import {
 import { getSession } from "@/game/session";
 import { LogoutButton } from "@/components/AuthGate";
 import BackupButton from "@/components/BackupButton";
+import { Skeleton } from "@/components/ui/skeleton";
 import "./SettingsDiagnostics.css";
 
 const RARE_CODEX = (["chinese", "math", "english", "science"] as const).flatMap((subject) => getRareMonsters(subject));
@@ -461,6 +462,7 @@ export default function Settings() {
   const [gateInput, setGateInput] = useState("");
   const [gateError, setGateError] = useState<string | null>(null);
   const [cloudExams, setCloudExams] = useState<Array<{ id: number; subject: string; difficulty: string | null; totalQuestions: number; correctCount: number; createdAt: number }>>([]);
+  const [cloudExamsLoading, setCloudExamsLoading] = useState(false);
   const clearTriggerRef = useRef<HTMLButtonElement>(null);
   const confirmClearRef = useRef<HTMLButtonElement>(null);
 
@@ -511,9 +513,11 @@ export default function Settings() {
     const mode = getCloudMode();
     if (mode.mode !== "cloud" || !mode.name) return;
     let cancelled = false;
+    setCloudExamsLoading(true);
     cloudApi.listExams({ name: mode.name, limit: 5 })
       .then((result) => { if (!cancelled) setCloudExams(result.records); })
-      .catch(() => { /* 離線時靜默 */ });
+      .catch(() => { /* 離線時靜默 */ })
+      .finally(() => { if (!cancelled) setCloudExamsLoading(false); });
     return () => { cancelled = true; };
   }, [diagUnlocked]);
 
@@ -787,7 +791,18 @@ export default function Settings() {
                   <h3 id="cloud-exam-records-title">最近試卷紀錄</h3>
                 </div>
               </div>
-              {cloudExams.length === 0 ? (
+              {cloudExamsLoading ? (
+                <ol className="diag-exam-list" aria-label="最近五筆雲端試卷紀錄載入中" aria-busy="true">
+                  {Array.from({ length: 3 }).map((_, i) => (
+                    <li key={i} className="diag-exam-item diag-exam-skel">
+                      <Skeleton className="diag-exam-skel-icon" />
+                      <Skeleton className="diag-exam-skel-subject" />
+                      <Skeleton className="diag-exam-skel-score" />
+                      <Skeleton className="diag-exam-skel-time" />
+                    </li>
+                  ))}
+                </ol>
+              ) : cloudExams.length === 0 ? (
                 <p className="settings-log-description">雲端尚無試卷紀錄（或目前離線）。完成一份試卷後會自動記在這裡。</p>
               ) : (
                 <ol className="diag-exam-list" aria-label="最近五筆雲端試卷紀錄">

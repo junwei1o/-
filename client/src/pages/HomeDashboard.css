@@ -1113,6 +1113,25 @@
 .answer-board-duration, .answer-board-time { white-space: nowrap; color: var(--muted); }
 .answer-board-back { align-self: flex-start; }
 
+/* 榜單載入骨架：模擬真表頭＋列表行，色走 token（不寫死色值）。 */
+.answer-board-skel { min-width: 720px; }
+.answer-board-skel-row {
+  display: grid;
+  grid-template-columns: 40px 132px 1fr 48px 48px 60px 84px 116px;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 10px;
+  border-bottom: 1px solid var(--line);
+}
+.answer-board-skel-row > [data-slot="skeleton"] {
+  height: 14px;
+  border-radius: 999px;
+  background: var(--line);
+}
+.answer-board-skel-head > [data-slot="skeleton"] { height: 10px; opacity: 0.65; }
+.answer-board-skel-dot { width: 30px; height: 30px !important; border-radius: 50% !important; }
+.answer-board-skel-lg { width: 78%; }
+
 @media (max-width: 768px) {
   .answer-board-hero h1 { font-size: 25px; }
   .answer-board-panel { padding: 14px; }

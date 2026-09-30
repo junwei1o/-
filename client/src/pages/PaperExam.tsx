@@ -6,6 +6,7 @@ import { loadStudentGradePreference } from "@/lib/studentGradePreference";
 import { getSubjectStudyTips, GENERAL_STUDY_TIPS } from "@/lib/studyTips";
 import { SpeechReadableText } from "@/components/SpeechReadableText";
 import { PaperWrongList } from "@/components/PaperWrongList";
+import { Skeleton } from "@/components/ui/skeleton";
 import { SpeechReadButton } from "@/components/SpeechReadButton";
 import { AiReviewPlanCard } from "@/components/AiReviewPlanCard";
 import { QuestionTransition } from "@/components/QuestionTransition";
@@ -239,6 +240,8 @@ export default function PaperExam() {
     return { after: result.percentage, encouragement, narration };
   }, [isQuickQuiz, quickQuizBaseline, result.percentage, result.total]);
   const paperReady = deck.length > 0;
+  /** 題庫 chunk 尚未下載完成、且尚未走到伺服器 fallback：此時快捷入口先給骨架。 */
+  const questionBankLoading = questions.length === 0 && !questionBankFallback;
   const currentAnswer = current ? answers[current.id] : undefined;
   const currentAnswered = currentAnswer !== undefined;
   const currentCorrect = currentAnswered && currentAnswer === current?.answer;
@@ -906,6 +909,14 @@ function pickPoolWithCooldown(nextScope: PaperScope): PaperQuestion[] {
         <h1 id="paper-exam-title">常規試卷答題</h1>
         <p>選擇試卷範圍後逐題作答。點選選項就會立即顯示正誤與解析，不需要交卷，也不會在作答中跳轉或重排；每題限時 30 秒，平常試卷會在題間加入 3 題配對連連看（配對成績獨立計算）。</p>
         {!paperReady && (
+          questionBankLoading ? (
+            <nav className="paper-home-launchpad" aria-hidden="true">
+              <Skeleton className="paper-launchpad-skel paper-launchpad-skel-primary" />
+              <Skeleton className="paper-launchpad-skel" />
+              <Skeleton className="paper-launchpad-skel" />
+              <Skeleton className="paper-launchpad-skel" />
+            </nav>
+          ) : (
           <nav className="paper-home-launchpad" aria-label="學習快速入口">
             <button type="button" className="paper-home-primary" onClick={() => requestPaperStart()} disabled={questions.length === 0 || questionBankExpanding}>
               <BookOpenCheck size={20} aria-hidden="true" />
@@ -924,7 +935,7 @@ function pickPoolWithCooldown(nextScope: PaperScope): PaperQuestion[] {
               <span><strong>配對連連看</strong><small>五學科 30 關互動題自由練習</small></span>
             </button>
           </nav>
-        )}
+        ))}
       </section>
 
       <section className="paper-exam-panel" aria-labelledby="paper-scope-title">

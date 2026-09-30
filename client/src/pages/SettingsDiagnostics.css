@@ -214,6 +214,16 @@
   font-size: 0.78rem;
 }
 
+/* 雲端試卷紀錄載入骨架：色走 token，不寫死色值。 */
+.diag-exam-skel > [data-slot="skeleton"] {
+  border-radius: 999px;
+  background: var(--line);
+}
+.diag-exam-skel-icon { width: 16px; height: 16px !important; border-radius: 50% !important; }
+.diag-exam-skel-subject { width: 90px; height: 13px; }
+.diag-exam-skel-score { width: 64px; height: 13px; }
+.diag-exam-skel-time { width: 110px; height: 12px; margin-left: auto; }
+
 @media (max-width: 640px) {
   .diag-gate { padding: 1.5rem 1rem; }
   .diag-gate-form { flex-direction: column; }

@@ -3,6 +3,7 @@ import { ArrowLeft, Trophy, Timer, Clock, User, Medal, RefreshCw, Sparkles } fro
 import { useLocation } from "wouter";
 import { cloudApi } from "@/game/cloudSync";
 import { getPlayerName, isGuest } from "@/game/identity";
+import { Skeleton } from "@/components/ui/skeleton";
 import "./HomeDashboard.css";
 
 type BoardRecord = {
@@ -144,7 +145,32 @@ export default function AnswerLeaderboard() {
         {failed ? (
           <p className="answer-board-message">榜單目前連不上，請按右上角重新整理再試一次。</p>
         ) : !records ? (
-          <p className="answer-board-message">榜單載入中…</p>
+          <div className="answer-board-table-wrap" aria-hidden="true">
+            <div className="answer-board-skel" role="status" aria-busy="true" aria-label="榜單載入中">
+              <div className="answer-board-skel-row answer-board-skel-head">
+                <Skeleton className="answer-board-skel-dot" />
+                <Skeleton className="answer-board-skel-lg" />
+                <Skeleton />
+                <Skeleton />
+                <Skeleton />
+                <Skeleton />
+                <Skeleton />
+                <Skeleton />
+              </div>
+              {Array.from({ length: 7 }).map((_, rowIndex) => (
+                <div className="answer-board-skel-row" key={rowIndex}>
+                  <Skeleton className="answer-board-skel-dot" />
+                  <Skeleton className="answer-board-skel-lg" />
+                  <Skeleton />
+                  <Skeleton />
+                  <Skeleton />
+                  <Skeleton />
+                  <Skeleton />
+                  <Skeleton />
+                </div>
+              ))}
+            </div>
+          </div>
         ) : rows.length === 0 ? (
           <p className="answer-board-message">
             {tab === "latest"

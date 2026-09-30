@@ -163,3 +163,11 @@
   color: #6a5c4a;
   font-weight: 700;
 }
+
+/* 題庫載入期間的快捷入口骨架：與真 launchpad 同網格、同按鈕高度，色走 token。 */
+.paper-launchpad-skel {
+  min-height: 64px;
+  border-radius: var(--radius-lg);
+  background: var(--line);
+}
+.paper-launchpad-skel-primary { min-height: 64px; }
