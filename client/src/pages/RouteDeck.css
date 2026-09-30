@@ -387,3 +387,50 @@
     transition: none;
   }
 }
+
+/* ── A4：第三屏（航海日誌／港口補給／今日天候）─────────── */
+
+.deck__log,
+.deck__supply,
+.deck__weather {
+  margin-top: 28px;
+}
+
+.deck__log h2,
+.deck__supply h2,
+.deck__weather h2 {
+  margin: 0 0 10px;
+  font-size: 18px;
+}
+
+.deck__log-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.deck__log-item {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: baseline;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--bx-line, #e3ebf2);
+}
+
+.deck__log-day {
+  font-weight: 700;
+}
+
+.deck__log-stat {
+  font-size: 13px;
+  color: var(--bx-mute, #657387);
+}
+
+.deck__supply-line,
+.deck__weather-line {
+  margin: 0 0 12px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--bx-mute, #657387);
+}

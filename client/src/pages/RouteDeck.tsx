@@ -17,13 +17,17 @@ import {
   collectRouteInput,
   consecutiveWrongStreak,
   loadResume,
+  recentVoyages,
   recommendRoute,
   routeById,
   shouldSuggestLowerGrade,
+  signInInfo,
+  todayWeather,
   weakestIslands,
   weeklyLights,
 } from "@/lib/routeDeck";
 import { clearTriAxisProgress } from "@/lib/triAxisProgress";
+import { requestOpenSignInPill } from "@/components/DailySignInPill";
 import "./RouteDeck.css";
 
 /** 本站服務國小 3–6 年級（不再提供國中）。 */
@@ -50,6 +54,9 @@ export default function RouteDeck() {
   const resume = useMemo(() => loadResume(), []);
   const lights = useMemo(() => weeklyLights(), []);
   const weakSpots = useMemo(() => weakestIslands(), []);
+  const voyages = useMemo(() => recentVoyages(), []);
+  const signIn = useMemo(() => signInInfo(), []);
+  const weather = useMemo(() => todayWeather(input), [input]);
   const [resumeDismissed, setResumeDismissed] = useState(false);
 
   // 年級閘門：不可跳過——沒有關閉鈕，也沒有「稍後再設」
@@ -218,6 +225,46 @@ export default function RouteDeck() {
             ))}
           </ul>
         )}
+      </section>
+
+      {/* B6 航海日誌 */}
+      {voyages.length > 0 ? (
+        <section className="deck__log" aria-label="航海日誌">
+          <h2>航海日誌</h2>
+          <ul className="deck__log-list">
+            {voyages.map((v) => (
+              <li key={v.day} className="deck__log-item">
+                <span className="deck__log-day">{v.day}</span>
+                <span className="deck__log-stat">
+                  答 {v.answered} 題 · 正確率 {Math.round(v.accuracy * 100)}%
+                </span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
+      {/* B7 港口補給（每日簽到；刻意放主 CTA 之下，不搶焦點） */}
+      <section className="deck__supply" aria-label="港口補給">
+        <h2>港口補給</h2>
+        {signIn.signedInToday ? (
+          <p className="deck__supply-line">
+            今天已補給 ✓ 連續 {signIn.streak} 天——出航前先領今天的補給。
+          </p>
+        ) : (
+          <p className="deck__supply-line">還沒補給——連續 {signIn.streak} 天，別斷了。</p>
+        )}
+        <button type="button" className="deck-cta deck-cta--ghost" onClick={() => requestOpenSignInPill()}>
+          {signIn.signedInToday ? "看補給紀錄" : "去港口補給"}
+        </button>
+      </section>
+
+      {/* B8 今日天候 */}
+      <section className="deck__weather" aria-label="今日天候">
+        <h2>今日天候</h2>
+        <p className="deck__weather-line">
+          <span aria-hidden="true">{weather.icon}</span> {weather.text}
+        </p>
       </section>
 
       <section className="deck__foot">

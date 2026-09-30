@@ -191,3 +191,64 @@ export function weakestIslands(limit = 3): WeakSpot[] {
       attemptCount: s.attemptCount,
     }));
 }
+
+/* ── A4：第三屏 ─────────────────────────────────────────── */
+
+export type VoyageDay = {
+  /** 本地日鍵（YYYY-MM-DD） */
+  day: string;
+  answered: number;
+  correct: number;
+  /** 0–1；無作答時為 0 */
+  accuracy: number;
+};
+
+/** 航海日誌（B6）：把既有學習紀錄按「本地日」聚合，取最近 limit 天。 */
+export function recentVoyages(limit = 3, now: number = Date.now()): VoyageDay[] {
+  const byDay = new Map<string, { answered: number; correct: number }>();
+  for (const r of getLearningRecord()) {
+    const d = new Date(r.timestamp);
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+    const cur = byDay.get(key) ?? { answered: 0, correct: 0 };
+    cur.answered += 1;
+    if (r.isCorrect) cur.correct += 1;
+    byDay.set(key, cur);
+  }
+  return Array.from(byDay.entries())
+    .sort((a, b) => (a[0] < b[0] ? 1 : -1))
+    .slice(0, limit)
+    .map(([day, v]) => ({
+      day,
+      answered: v.answered,
+      correct: v.correct,
+      accuracy: v.answered > 0 ? v.correct / v.answered : 0,
+    }));
+}
+
+/** 港口補給（B7）：沿用既有簽到資料，不新增儲存。 */
+export function signInInfo(): { streak: number; signedInToday: boolean } {
+  const signIn = getDailySignIn();
+  return { streak: signIn.streak, signedInToday: hasSignedInToday(signIn) };
+}
+
+export type Weather = { icon: string; text: string };
+
+/**
+ * 今日天候（B8）：把既有資料轉成一句不施壓的引導。
+ * 依序判斷——暗礁（錯題）優先於航行量。
+ */
+export function todayWeather(input: RouteInput): Weather {
+  if (input.totalCount === 0) {
+    return { icon: "🌊", text: "海面還很平靜——答對第一題，航海圖就會亮起第一盞燈。" };
+  }
+  if (input.wrongCount >= ROUTE_RULES.WRONG_ANSWER_TRIGGER) {
+    return { icon: "🪨", text: `暗礁變多了（${input.wrongCount} 題待複習）——先清暗礁再長航。` };
+  }
+  if (input.weeklyCount === 0) {
+    return { icon: "⛅", text: "本週還沒出航——今天風向不錯，適合短程。" };
+  }
+  if (input.weeklyCount < ROUTE_RULES.WEEKLY_ANSWER_TRIGGER) {
+    return { icon: "🌤️", text: `本週已答 ${input.weeklyCount} 題——穩定航行中。` };
+  }
+  return { icon: "☀️", text: "航行量充足——來測一次航速，留個紀錄。" };
+}
