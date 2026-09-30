@@ -75,7 +75,6 @@
   cursor: pointer;
 }
 .rc-card-icon-btn:hover { background: var(--rc-bubble); }
-.rc-workspace[data-theme="soft"] .rc-card-icon-btn:hover { transform: scale(1.12); transition: transform 220ms cubic-bezier(0.34, 1.56, 0.64, 1); }
 .rc-card-icon-btn:focus-visible,
 .rc-more:focus-visible,
 .rc-toolbar-btn:focus-visible { outline: 3px solid var(--rc-accent); outline-offset: 2px; }
@@ -101,7 +100,6 @@
   background: var(--rc-bubble);
   border: 1px solid var(--rc-card-border);
 }
-.rc-workspace[data-theme="mono"] .rc-bubble { border-radius: 0; }
 .rc-text { margin: 0; font-size: 0.86rem; line-height: 1.6; }
 .rc-source {
   display: inline-block;
@@ -114,7 +112,6 @@
 .rc-source.is-builtin, .rc-source.is-proxy { color: var(--rc-accent); }
 .rc-loading { margin: 0; font-size: 0.8rem; color: var(--rc-muted); }
 .rc-notice { margin: 0; font-size: 0.76rem; color: #b05a2e; }
-.rc-workspace[data-theme="dark"] .rc-notice { color: #ffb38a; }
 
 .rc-foot { display: flex; flex-direction: column; gap: 5px; padding-top: 10px; }
 .rc-more {
@@ -133,7 +130,6 @@
   cursor: pointer;
 }
 .rc-more:disabled { opacity: 0.55; cursor: default; }
-.rc-workspace[data-theme="mono"] .rc-more { border-radius: 0; }
 .rc-foot small { font-size: 0.68rem; line-height: 1.4; color: var(--rc-muted); }
 
 /* 縮放把手 */
