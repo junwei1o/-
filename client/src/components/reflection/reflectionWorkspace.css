@@ -1,6 +1,6 @@
 /* =====================================================================
    深度伴讀・可堆疊卡片工作台
-   六套主題以 data-theme 作用於 .rc-workspace，不影響全站其他元件。
+   2026-09-30 簡化：伴小星固定單一樣式（晨光 light），移除其餘五套主題。
    ===================================================================== */
 
 .rc-workspace {
@@ -12,7 +12,7 @@
 }
 .rc-workspace > * { pointer-events: auto; }
 
-/* ---------- 主題 tokens ---------- */
+/* ---------- 主題 tokens（固定 light）---------- */
 .rc-workspace[data-theme="light"] {
   --rc-card-bg: color-mix(in srgb, var(--white) 94%, transparent);
   --rc-card-border: rgba(70, 91, 80, 0.16);
@@ -24,70 +24,6 @@
   --rc-radius: 16px;
   --rc-blur: blur(14px);
   --rc-shadow: 0 18px 44px rgba(45, 64, 60, 0.22);
-}
-.rc-workspace[data-theme="dark"] {
-  --rc-card-bg: rgba(16, 24, 36, 0.94);
-  --rc-card-border: color-mix(in srgb, var(--white) 12%, transparent);
-  --rc-text: #e8eef5;
-  --rc-muted: #9fb0c0;
-  --rc-bubble: color-mix(in srgb, var(--white) 8%, transparent);
-  --rc-head-bg: linear-gradient(135deg, rgba(40, 56, 78, 0.9), rgba(16, 24, 36, 0.9));
-  --rc-accent: #5fa8d3;
-  --rc-accent-contrast: #0c1622;
-  --rc-radius: 14px;
-  --rc-blur: blur(14px);
-  --rc-shadow: 0 18px 44px rgba(0, 0, 0, 0.5);
-}
-.rc-workspace[data-theme="glass"] {
-  --rc-card-bg: color-mix(in srgb, var(--white) 20%, transparent);
-  --rc-card-border: color-mix(in srgb, var(--white) 45%, transparent);
-  --rc-text: #1f2d3a;
-  --rc-muted: #48606e;
-  --rc-bubble: color-mix(in srgb, var(--white) 34%, transparent);
-  --rc-head-bg: linear-gradient(135deg, color-mix(in srgb, var(--white) 34%, transparent), color-mix(in srgb, var(--white) 12%, transparent));
-  --rc-accent: #4f93c4;
-  --rc-accent-contrast: var(--white);
-  --rc-radius: 18px;
-  --rc-blur: blur(26px) saturate(1.5);
-  --rc-shadow: 0 20px 50px rgba(60, 90, 120, 0.28);
-}
-.rc-workspace[data-theme="soft"] {
-  --rc-card-bg: linear-gradient(160deg, rgba(255, 240, 244, 0.95), rgba(240, 244, 255, 0.95));
-  --rc-card-border: rgba(224, 122, 156, 0.18);
-  --rc-text: #4a3f46;
-  --rc-muted: #8a7682;
-  --rc-bubble: color-mix(in srgb, var(--white) 66%, transparent);
-  --rc-head-bg: linear-gradient(135deg, rgba(255, 222, 232, 0.9), rgba(232, 238, 255, 0.9));
-  --rc-accent: #e07a9c;
-  --rc-accent-contrast: var(--white);
-  --rc-radius: 22px;
-  --rc-blur: blur(12px);
-  --rc-shadow: 0 18px 44px rgba(214, 150, 170, 0.28);
-}
-.rc-workspace[data-theme="mono"] {
-  --rc-card-bg: var(--white);
-  --rc-card-border: #111111;
-  --rc-text: #111111;
-  --rc-muted: #555555;
-  --rc-bubble: #f2f2f2;
-  --rc-head-bg: var(--white);
-  --rc-accent: #111111;
-  --rc-accent-contrast: var(--white);
-  --rc-radius: 4px;
-  --rc-blur: none;
-  --rc-shadow: 6px 6px 0 rgba(0, 0, 0, 0.12);
-}
-.rc-workspace[data-theme="custom"] {
-  --rc-card-bg: color-mix(in srgb, var(--white) 95%, transparent);
-  --rc-card-border: color-mix(in srgb, var(--rc-accent) 32%, var(--white));
-  --rc-text: #2b2f36;
-  --rc-muted: #6a7078;
-  --rc-bubble: color-mix(in srgb, var(--rc-accent) 8%, var(--white));
-  --rc-head-bg: linear-gradient(135deg, color-mix(in srgb, var(--rc-accent) 16%, var(--white)), var(--white));
-  --rc-accent-contrast: var(--white);
-  --rc-radius: 16px;
-  --rc-blur: blur(14px);
-  --rc-shadow: 0 18px 44px color-mix(in srgb, var(--rc-accent) 26%, transparent);
 }
 
 /* ---------- 卡片 ---------- */
@@ -104,16 +40,6 @@
   backdrop-filter: var(--rc-blur);
   -webkit-backdrop-filter: var(--rc-blur);
   transition: background-color 240ms ease, border-color 240ms ease, color 240ms ease;
-}
-.rc-workspace[data-theme="mono"] .rc-card { transition: none; }
-
-/* 毛玻璃主題專屬：邊框流動光暈 */
-.rc-workspace[data-theme="glass"] .rc-card {
-  animation: rc-glass-sheen 3.2s ease-in-out infinite;
-}
-@keyframes rc-glass-sheen {
-  0%, 100% { box-shadow: var(--rc-shadow), inset 0 1px 0 color-mix(in srgb, var(--white) 50%, transparent); }
-  50% { box-shadow: var(--rc-shadow), inset 0 1px 0 color-mix(in srgb, var(--white) 85%, transparent), 0 0 0 1px color-mix(in srgb, var(--white) 25%, transparent); }
 }
 
 .rc-card-head {
@@ -152,8 +78,7 @@
 .rc-workspace[data-theme="soft"] .rc-card-icon-btn:hover { transform: scale(1.12); transition: transform 220ms cubic-bezier(0.34, 1.56, 0.64, 1); }
 .rc-card-icon-btn:focus-visible,
 .rc-more:focus-visible,
-.rc-toolbar-btn:focus-visible,
-.rc-theme-dot:focus-visible { outline: 3px solid var(--rc-accent); outline-offset: 2px; }
+.rc-toolbar-btn:focus-visible { outline: 3px solid var(--rc-accent); outline-offset: 2px; }
 
 .rc-card-body { flex: 1; min-height: 0; display: flex; flex-direction: column; padding: 12px 14px; overflow: hidden; }
 .rc-card.is-minimized .rc-card-head { border-bottom: 0; }
@@ -245,35 +170,6 @@
   box-shadow: 0 10px 30px rgba(45, 64, 60, 0.2);
 }
 .rc-toolbar-group { display: inline-flex; align-items: center; gap: 4px; flex-wrap: wrap; }
-.rc-theme-dot {
-  border: 1px solid rgba(0, 0, 0, 0.12);
-  border-radius:var(--radius-pill);
-  padding: 4px 10px;
-  background: var(--white);
-  color: #33433c;
-  font: inherit;
-  font-size: 0.72rem;
-  font-weight: 700;
-  cursor: pointer;
-}
-.rc-theme-dot--dark { background: #1a2636; color: #dce6f0; border-color: #000; }
-.rc-theme-dot--glass { background: rgba(180, 210, 235, 0.55); color: #234; backdrop-filter: blur(6px); }
-.rc-theme-dot--soft { background: linear-gradient(135deg, #ffe0ea, #e8eeff); }
-.rc-theme-dot--mono { background: var(--white); color: #000; border-color: #000; border-radius: 2px; }
-.rc-theme-dot--custom { background: conic-gradient(#ff6b35, #5fa8d3, #76a482, #8e7cc3, #ff6b35); color: var(--white); }
-.rc-theme-dot.is-active { outline: 2px solid #ff6b35; outline-offset: 1px; }
-
-.rc-accent-row { display: inline-flex; align-items: center; gap: 4px; margin-left: 4px; }
-.rc-accent-swatch {
-  width: 18px;
-  height: 18px;
-  border: 2px solid var(--white);
-  border-radius:var(--radius-pill);
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.15);
-  cursor: pointer;
-}
-.rc-accent-swatch.is-active { box-shadow: 0 0 0 2px #111; }
-.rc-accent-native { width: 22px; height: 22px; padding: 0; border: 0; background: none; cursor: pointer; }
 
 .rc-toolbar-btn {
   display: inline-flex;
@@ -292,58 +188,10 @@
 .rc-toolbar-btn:hover { background: #f4f8fb; }
 .rc-toolbar-closeall:hover { background: #ffece4; color: #b0431f; }
 
-.rc-toolbar-menu { position: relative; display: inline-flex; }
-.rc-toolbar-pop {
-  position: absolute;
-  top: calc(100% + 8px);
-  left: 0;
-  z-index: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  min-width: 180px;
-  max-height: 260px;
-  overflow-y: auto;
-  padding: 8px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius:var(--radius-md);
-  background: var(--white);
-  box-shadow: 0 14px 34px rgba(45, 64, 60, 0.22);
-}
-.rc-snap-save {
-  border: 0;
-  border-radius:var(--radius-sm);
-  padding: 7px 9px;
-  background: #eef5f1;
-  color: #2e5a4c;
-  font: inherit;
-  font-size: 0.76rem;
-  font-weight: 800;
-  text-align: left;
-  cursor: pointer;
-}
-.rc-snap-row { display: flex; align-items: center; gap: 4px; }
-.rc-snap-restore {
-  flex: 1;
-  border: 0;
-  border-radius:var(--radius-sm);
-  padding: 6px 8px;
-  background: transparent;
-  color: #33433c;
-  font: inherit;
-  font-size: 0.76rem;
-  text-align: left;
-  cursor: pointer;
-}
-.rc-snap-restore:hover { background: #f4f8fb; }
-.rc-snap-del { border: 0; background: transparent; color: #a3543a; cursor: pointer; padding: 4px; }
-.rc-snap-empty { font-size: 0.74rem; color: #8a978f; padding: 4px; }
-.rc-snap-hint { font-size: 0.66rem; color: #98a59d; line-height: 1.4; }
-
 /* ---------- 響應式 ---------- */
 @media (max-width: 768px) {
   .rc-toolbar { border-radius:var(--radius-lg); top: 8px; padding: 6px 8px; gap: 6px; }
-  .rc-theme-dot, .rc-toolbar-btn { padding: 4px 8px; font-size: 0.68rem; }
+  .rc-toolbar-btn { padding: 4px 8px; font-size: 0.68rem; }
 }
 
 /* ---------- 減少動畫（framer 進場在 JS 端一併關閉）---------- */

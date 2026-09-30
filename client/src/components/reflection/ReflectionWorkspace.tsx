@@ -66,16 +66,18 @@ export function ReflectionWorkspace() {
 
   if (typeof document === "undefined") return null;
 
-  const rootStyle = { "--rc-accent": ws.customAccent } as CSSProperties;
+  // 伴小星固定單一樣式（晨光 light + 預設珊瑚色 accent），不再隨偏好切換。
+  const rootStyle = { "--rc-accent": "#ff6b35" } as CSSProperties;
+  const THEME = "light" as const;
 
   return createPortal(
-    <div className="rc-workspace" data-theme={ws.theme} style={rootStyle}>
+    <div className="rc-workspace" data-theme={THEME} style={rootStyle}>
       <WorkspaceToolbar />
       {ws.cards.map((card) => (
         <StackedCard
           key={card.id}
           card={card}
-          theme={ws.theme}
+          theme={THEME}
           onFocus={() => reflectionWorkspace.focusCard(card.id)}
           onClose={() => reflectionWorkspace.closeCard(card.id)}
           onToggleMinimize={() => reflectionWorkspace.toggleMinimize(card.id)}
