@@ -87,6 +87,10 @@ function Router() {
         <Switch>
         <Route path={"/map"} component={StudentMap} />
         <Route path={"/"} component={Home} />
+        {/* 副頁「航海儀表板」：原首頁內容。
+            新首頁上線前 / 與 /dashboard 指向同一個 Home；新首頁接手 / 之後，
+            本路由即為原首頁的唯一去處（見 homepage-redesign-proposal.md）。 */}
+        <Route path={"/dashboard"} component={Home} />
         <Route path={"/quiz-room"} component={QuizRoom} />
         <Route path={"/classroom/:gameId"} component={ClassroomPlay} />
         <Route path={"/weekly-quiz"} component={WeeklyQuizPage} />
