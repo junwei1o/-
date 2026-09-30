@@ -188,7 +188,10 @@ export default function RouteDeck() {
         <p className="deck__lights-line">
           本週已點亮 {lights.lit} / {lights.goal} 盞燈——每答對一題，航海圖就永久亮起一盞。
         </p>
-        <ul className="deck__lights-dots" role="img" aria-label={`本週已點亮 ${lights.lit} 盞，目標 ${lights.goal} 盞`}>
+        {/* 注意：不可加 role="img"——那會覆蓋 ul 的 list 語意，
+            造成 aria-allowed-role ＋ 子項 listitem 違規（axe 實測 5 筆）。
+            改用 ul 自身的 aria-label 提供可存取名稱。 */}
+        <ul className="deck__lights-dots" aria-label={`本週已點亮 ${lights.lit} 盞，目標 ${lights.goal} 盞`}>
           {Array.from({ length: lights.goal }, (_, i) => (
             <li key={i} className={i < lights.lit ? "is-lit" : undefined}>
               {i < lights.lit ? "●" : "○"}

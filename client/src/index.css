@@ -2688,7 +2688,7 @@ nav { display:grid; gap:7px; }
    ═══════════════════════════════════════════════════════════════ */
 :root{
   --bx-gold:#F5A623; --bx-gold-2:#FFD86B; --bx-navy:#0A1628;
-  --bx-sea:#2D78A5;  --bx-ink:#2C3E50;   --bx-mute:#657387;
+  --bx-sea:#2D78A5;  --bx-ink:#2C3E50;   --bx-mute:#5A677A;
   --bx-bg:var(--white);   --bx-soft:#F4F8FB;  --bx-line:#E3EBF2;
   --bx-danger:#E2574C; --bx-ok:#3FA96B;
   --bx-r:16px; --bx-r-sm:10px;
