@@ -13,6 +13,11 @@ import {
   MAX_GRADE,
   type UserGradeLevel,
 } from "@/game/adaptiveLearning";
+import { loadTriAxisProgress } from "@/lib/triAxisProgress";
+import {
+  buildKnowledgeIslandSnapshots,
+  type KnowledgeIslandSubject,
+} from "@/lib/studentKnowledgeIslands";
 
 /** 推薦門檻：錯題數 100、本週答題數 300。硬門檻，不做遲滯緩衝帶。 */
 export const ROUTE_RULES = {
@@ -123,4 +128,66 @@ export function routeById(id: RouteId): RouteDef {
 /** 年級閘門用：已選則回傳，未選則退回全站最高難度（決議 5） */
 export function resolveGradeOrDefault(current: UserGradeLevel | null): UserGradeLevel {
   return current ?? MAX_GRADE;
+}
+
+/* ── A3：第二屏的條件區塊資料 ───────────────────────────────── */
+
+/** 本週燈塔目標（點亮的題數）。調這個常數即可改目標。 */
+export const WEEKLY_LIGHT_GOAL = 5;
+
+export type ResumeInfo = {
+  routeName: string;
+  routePath: string;
+  /** 1-based 目前題號 */
+  current: number;
+  total: number;
+};
+
+/**
+ * 繼續上一趟（B3）：讀三軸混編試卷的既有草稿。
+ * 沒有草稿、或已寫到最後一題（＝已完成）時回傳 null，區塊就不渲染。
+ */
+export function loadResume(): ResumeInfo | null {
+  const progress = loadTriAxisProgress();
+  if (!progress) return null;
+  const total = progress.deckIds.length;
+  if (total === 0) return null;
+  const answered = Object.keys(progress.answers).length;
+  if (answered === 0 || answered >= total) return null;
+  return {
+    routeName: "三軸混編試卷",
+    routePath: "/tri-axis-paper",
+    current: Math.min(progress.index + 1, total),
+    total,
+  };
+}
+
+/** 今日燈塔（B4）：本週已答對題數＝已點亮的燈。 */
+export function weeklyLights(now: number = Date.now()): { lit: number; goal: number } {
+  const lit = getLearningRecord().filter(
+    (r) => r.isCorrect && now - r.timestamp <= WEEK_MS,
+  ).length;
+  return { lit, goal: WEEKLY_LIGHT_GOAL };
+}
+
+export type WeakSpot = {
+  subject: KnowledgeIslandSubject;
+  shortTitle: string;
+  accuracy: number | null;
+  attemptCount: number;
+};
+
+/** 弱點海圖（B5）：只顯示真的有作答紀錄的科目，accuracy 低者排前。 */
+export function weakestIslands(limit = 3): WeakSpot[] {
+  const snapshots = buildKnowledgeIslandSnapshots(loadAdaptiveProfile());
+  return snapshots
+    .filter((s) => s.attemptCount > 0)
+    .sort((a, b) => (a.accuracy ?? 2) - (b.accuracy ?? 2))
+    .slice(0, limit)
+    .map((s) => ({
+      subject: s.subject,
+      shortTitle: s.shortTitle,
+      accuracy: s.accuracy,
+      attemptCount: s.attemptCount,
+    }));
 }

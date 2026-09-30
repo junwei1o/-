@@ -16,10 +16,14 @@ import {
   ROUTES,
   collectRouteInput,
   consecutiveWrongStreak,
+  loadResume,
   recommendRoute,
   routeById,
   shouldSuggestLowerGrade,
+  weakestIslands,
+  weeklyLights,
 } from "@/lib/routeDeck";
+import { clearTriAxisProgress } from "@/lib/triAxisProgress";
 import "./RouteDeck.css";
 
 /** 本站服務國小 3–6 年級（不再提供國中）。 */
@@ -66,6 +70,11 @@ export default function RouteDeck() {
 
   const route = routeById(recommended.id);
   const alternatives = ROUTES.filter((r) => r.id !== recommended.id);
+  // 第二屏：條件區塊（沒有資料就不渲染，不佔版位）
+  const resume = useMemo(() => loadResume(), []);
+  const lights = useMemo(() => weeklyLights(), []);
+  const weakSpots = useMemo(() => weakestIslands(), []);
+  const [resumeDismissed, setResumeDismissed] = useState(false);
 
   return (
     <div className="deck">
@@ -132,6 +141,81 @@ export default function RouteDeck() {
           </ul>
         </section>
       ) : null}
+
+      {/* B3 繼續上一趟：有未完成航程才出現 */}
+      {resume && !resumeDismissed ? (
+        <section className="deck__resume" aria-label="繼續上一趟">
+          <h2>繼續上一趟</h2>
+          <div className="deck__resume-box">
+            <p className="deck__resume-name">
+              {resume.routeName} · 第 {resume.current} / {resume.total} 題
+            </p>
+            <div className="deck__resume-bar" role="img" aria-label={`進度 ${resume.current} / ${resume.total}`}>
+              <span style={{ width: `${Math.round((resume.current / resume.total) * 100)}%` }} />
+            </div>
+            <div className="deck__resume-actions">
+              <button type="button" className="deck-cta" onClick={() => setLocation(resume.routePath)}>
+                繼續航行
+              </button>
+              <button
+                type="button"
+                className="deck-cta deck-cta--ghost"
+                onClick={() => {
+                  clearTriAxisProgress();
+                  setResumeDismissed(true);
+                }}
+              >
+                放棄這趟
+              </button>
+            </div>
+          </div>
+        </section>
+      ) : null}
+
+      {/* B4 今日燈塔 */}
+      <section className="deck__lights" aria-label="今日燈塔">
+        <h2>今日燈塔</h2>
+        <p className="deck__lights-line">
+          本週已點亮 {lights.lit} / {lights.goal} 盞燈——每答對一題，航海圖就永久亮起一盞。
+        </p>
+        <ul className="deck__lights-dots" role="img" aria-label={`本週已點亮 ${lights.lit} 盞，目標 ${lights.goal} 盞`}>
+          {Array.from({ length: lights.goal }, (_, i) => (
+            <li key={i} className={i < lights.lit ? "is-lit" : undefined}>
+              {i < lights.lit ? "●" : "○"}
+            </li>
+          ))}
+        </ul>
+        <button type="button" className="deck-cta" onClick={() => setLocation(route.path)}>
+          今天先答一題
+        </button>
+      </section>
+
+      {/* B5 弱點海圖 */}
+      <section className="deck__map" aria-label="弱點海圖">
+        <h2>弱點海圖</h2>
+        {weakSpots.length === 0 ? (
+          <p className="deck__map-empty">
+            還沒有作答紀錄——答完第一題，暗礁就會在海圖上浮現。
+          </p>
+        ) : (
+          <ul className="deck__map-list">
+            {weakSpots.map((w) => (
+              <li key={w.subject}>
+                <button
+                  type="button"
+                  className="deck__map-chip"
+                  onClick={() => setLocation(`/practice?subject=${encodeURIComponent(w.subject)}&source=route-deck`)}
+                >
+                  <span className="deck__map-subject">{w.shortTitle}</span>
+                  <span className="deck__map-acc">
+                    正確率 {w.accuracy === null ? "—" : `${Math.round(w.accuracy * 100)}%`}
+                  </span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
 
       <section className="deck__foot">
         <h2>其他去處</h2>
