@@ -3,13 +3,18 @@
 > **給所有 AGENT：設計任何與題目相關的功能前，先讀這份。**
 > 建立：2026-09-30｜維護：任何新增／修改題型者必須同步更新本檔與 `client/src/lib/questionTypes.ts`
 > 程式側註冊表：`client/src/lib/questionTypes.ts`（可程式化引用，勿只讀本文件）
+> 本文件即 `docs/question-types.md`，為題型規格的唯一權威來源。
+
+---
 
 ## 0. 為什麼要有這份文件
 
 站上所有功能——出題、組卷、批改、錯題整理、推薦、排行榜、UI 呈現——**都以題型為前提**。
 題型不同，可自動評分的程度、資料欄位、UI 互動、公平性風險全都不同。
 
-**規則：先確定題型，再設計功能。** 不要用「選擇題」的假設去套所有題目。
+**規則一：先確定題型，再設計功能。** 不要用「選擇題」的假設去套所有題目。
+
+**規則二：先查第 3 節的支援矩陣，再動手。** 矩陣會直接告訴你這個功能支援哪些題型、其餘題型如何降級。不要重新推導。
 
 ---
 
@@ -20,13 +25,24 @@
 | `single-choice` | 選擇題（單選） | ✅ **已實作**（3249 題） | 是 | `lib/questionBank.ts` |
 | `true-false` | 是非題 | ✅ **已實作**（517 題） | 是 | `lib/questionBank.ts` |
 | `matching` | 配對題 | ✅ **已實作**（獨立模組） | 是 | `lib/matchingBank.ts` |
-| `fill-blank` | 填空題 | ❌ 未實作 | 是（需正規化） | — |
+| `fill-blank` | 填空題 | ❌ 未實作（schema 已規劃） | 是（需正規化） | 待建 |
 | `short-answer` | 簡答題 | ❌ 未實作 | 部分（關鍵詞／需人工） | — |
 | `open-ended` | 申論・開放題 | ❌ 未實作 | 否（需人工／AI 輔助） | — |
-| `passage-group` | 題組題（共用素材） | ⚠️ 部分（試卷容器已有） | 依子題型 | `lib/paperExam.ts` |
-| `variant` | 變體題（同題幹不同問法） | ❌ 未實作 | 是 | 待建 |
+| `passage-group` | 題組題（共用素材） | ⚠️ 部分（見 1.1 細分） | 依子題型 | `lib/paperExam.ts` |
+| `variant` | 變體題（同題幹不同問法） | ❌ 未實作（schema 已規劃） | 是 | 待建 |
 
-**素材型態（正交維度，可與任何題型組合）**：文字 / 圖表 / 聽力（TTS 已接入，聽力題技術上已可行）。
+### 1.1 `passage-group` 狀態細分
+
+原「⚠️ 部分」過於模糊，以下為精確狀態：
+
+| 子能力 | 狀態 | 負責模組 |
+|---|---|---|
+| 試卷容器（組卷、題序、seed） | ✅ 已有 | `lib/paperExam.ts` |
+| 共用素材結構（`passage` + `subQuestions`） | ❌ 未建立 | 待建 |
+| 題組防拆散規則（同組子題須同卷同區） | ❌ 未實作 | 待建 |
+| 素材版權記錄 | ⚠️ 有先例可循 | 見 `docs/astronomy_sources.md` |
+
+**素材型態（正交維度，可與任何題型組合）**：文字 / 圖表 / 聽力（TTS 已接入，聽力題技術上已可行，但尚無 schema 與播放控制規範）。
 
 ---
 
@@ -63,42 +79,55 @@
 | 設計準則 | ① 左右項數量一致且**不得有一對一以外的歧義解** ② 配對關係必須唯一 ③ 打亂右項順序 |
 | 注意 | 與選擇題共用「洗牌」概念但**不共用資料 schema**——設計時不要假設 `options/answer` 存在 |
 
-### D. `fill-blank` 填空題 — 未實作（schema 已定案）
+### D. `fill-blank` 填空題 — 未實作（schema 已規劃）
 
-**Schema**
+#### D.1 Schema
 
-```ts
+```typescript
 interface FillBlankQuestion {
-  // 共用欄位（與其他題型一致）
-  id: string; grade: number; subject: string; questionType: "填空題";
+  // ── 共用欄位（與其他題型一致）──
+  id: string;
+  grade: number;                       // 1–6（國小）
+  subject: string;
+  questionType: "填空題";
   difficulty: "基礎" | "標準" | "挑戰";
-  curriculumDomain: string; learningTopic: string;
-  explanation: string; knowledge: string[]; area?: string; subjectCombination?: string;
-  // 填空題專屬
-  prompt: string;                 // 題幹，含佔位符 {{b1}}、{{b2}}…
-  blanks: BlankItem[];            // 空格定義，順序對應佔位符
-  caseSensitive?: boolean;        // 預設 false
+  curriculumDomain: string;
+  learningTopic: string;
+  explanation: string;
+  knowledge: string[];
+  area?: string;
+  subjectCombination?: string;
+
+  // ── 填空題專屬欄位 ──
+  prompt: string;                      // 題幹，含佔位符 {{b1}}、{{b2}}…
+  blanks: BlankItem[];                 // 空格定義，順序對應佔位符
+  caseSensitive?: boolean;             // 預設 false（英文不分大小寫）
   normalizationLevel?: "strict" | "standard" | "loose"; // 預設 "standard"
 }
 
 interface BlankItem {
-  id: string;                     // 對應 prompt 中的 {{id}}
-  answer: string;                 // 標準答案
-  acceptAlternatives?: string[];  // 可接受的替代答案（同義詞、異體字）
-  hint?: string;                  // 選用提示（顯示於輸入框旁）
-  maxLength?: number;             // 選用
+  id: string;                          // 對應 prompt 中的 {{id}}
+  answer: string;                      // 標準答案
+  acceptAlternatives?: string[];       // 可接受的替代答案（同義詞、異體字）
+  hint?: string;                       // 選用提示（顯示於輸入框旁）
+  maxLength?: number;                  // 選用，限制輸入長度
 }
 ```
 
-**範例**
+#### D.2 範例題目
 
 ```json
 {
-  "id": "fb-001", "grade": 3, "subject": "自然", "questionType": "填空題",
-  "difficulty": "基礎", "curriculumDomain": "地球科學", "learningTopic": "水的三態",
+  "id": "fb-001",
+  "grade": 3,
+  "subject": "自然",
+  "questionType": "填空題",
+  "difficulty": "基礎",
+  "curriculumDomain": "地球科學",
+  "learningTopic": "水的三態",
   "prompt": "水在攝氏 {{b1}} 度時會結冰，在攝氏 {{b2}} 度時會沸騰。",
   "blanks": [
-    { "id": "b1", "answer": "0",   "acceptAlternatives": ["零", "０"], "hint": "請填數字" },
+    { "id": "b1", "answer": "0", "acceptAlternatives": ["零", "０"], "hint": "請填數字" },
     { "id": "b2", "answer": "100", "acceptAlternatives": ["一百", "１００"], "hint": "請填數字" }
   ],
   "explanation": "在標準大氣壓下，水的凝固點為 0°C，沸點為 100°C。",
@@ -107,22 +136,22 @@ interface BlankItem {
 }
 ```
 
-**正規化三層級**（由 `normalizationLevel` 控制）
+#### D.3 正規化層級
 
 | 層級 | 處理項目 | 適用場景 |
-|---|---|---|
-| `strict` | 僅 trim ＋ 合併連續空白 | 需精確比對（程式碼、特定符號） |
-| `standard` | strict ＋ 全形→半形 ＋ 大小寫 ＋ 標點統一 | **預設**，大多數填空題 |
-| `loose` | standard ＋ 異體字 ＋ 中文數字 | 中文填空、容錯要求高 |
+|:---|:---|:---|
+| **strict** | 僅 trim + 合併空白 | 需要精確比對（如程式碼、特定符號） |
+| **standard** | strict + 全形→半形 + 大小寫 + 標點統一 | **預設**，大多數填空題 |
+| **loose** | standard + 異體字 + 同義詞展開 | 中文填空、容錯要求高 |
 
-**正規化對照表**
+#### D.4 正規化對照表
 
 | 類別 | 原始 | 正規化後 | 層級 |
-|---|---|---|---|
+|:---|:---|:---|:---:|
 | 全形字母 | ＡＢＣ | ABC | standard |
 | 全形數字 | １２３ | 123 | standard |
 | 全形標點 | ，。！？ | ,.!? | standard |
-| 全形空白 U+3000 | （全形空格） | （半形空格） | standard |
+| 全形空白 | （U+3000） | （半形空格） | standard |
 | 大小寫 | Apple | apple | standard |
 | 首尾空白 | `"  答案  "` | `"答案"` | strict |
 | 中間多空白 | `"甲  乙"` | `"甲 乙"` | strict |
@@ -130,18 +159,20 @@ interface BlankItem {
 | 異體字（臺/台） | 臺灣 | 台灣 | loose |
 | 異體字（裡/里） | 裡面 | 里面 | loose |
 | 異體字（著/着） | 著手 | 着手 | loose |
-| 中文數字 | 一百 | 100 | loose（需對照表） |
+| 異體字（為/为） | 因為 | 因为 | loose |
+| 數字中文 | 一百 | 100 | loose（需對照表） |
 | 單位空格 | `"0 度"` | `"0度"` | loose |
 
-> ⚠️ **異體字表必須雙向一致且不可過度展開**。「臺／台」在地名通常可互換，但部分專有名詞不應互換——
-> 只處理教育部標準字體中明確列為異體的組合。
+**注意**：異體字對照表必須**雙向一致**，且不可過度展開。僅處理教育部標準字體中明確列為異體的組合。中文數字轉換需在比對函式中保守處理，避免誤轉「一把手」等非數字用法。
 
-| 項目 | 內容 |
-|---|---|
-| 評分 | 自動：`normalize(輸入)` 比對 `normalize(答案)` 或 `acceptAlternatives`（皆先正規化） |
-| 設計準則 | ① 一個空格只考一個知識點 ② 提供 `acceptAlternatives` 容錯 ③ **避免需要主觀判斷的答案**（那屬於簡答題）④ 中文數字轉換僅在「標準答案本身是純數字」時才嘗試，避免誤轉（如「一把手」） |
-| 風險 | 中文輸入法誤差、異體字 → 需正規化表 ＋「答對卻被判錯」的回報管道 |
-| 實作狀態 | schema 已定案；`normalizeFillBlank()` / `gradeFillBlank()` **尚未實作** |
+#### D.5 設計準則
+
+① 一個空格只考一個知識點 ② 提供 `acceptAlternatives` 容錯（同義詞／異體字）③ **避免需要主觀判斷的答案**（那屬於簡答題）④ 中文輸入法誤差、異體字（臺／台）→ 需正規化表，且要有「答對卻被判錯」的回報管道
+
+#### D.6 實作狀態
+
+schema 已定案；`normalizeFillBlank()` / `gradeFillBlank()` **尚未實作**。
+建議先做 `standard` 層（全形／大小寫／標點／空白，邊界清晰可完整測試），再做 `loose` 層（異體字表與中文數字需逐條對照教育部標準字體，不可隨意擴充）。
 
 ### E. `short-answer` 簡答題 — 未實作
 
@@ -151,6 +182,7 @@ interface BlankItem {
 | 評分 | 關鍵詞命中（自動，但不精確）＋可選人工／AI 覆核 |
 | 設計準則 | ① 明確告知學生「要寫出哪些關鍵詞」② 不懲罰錯字以外的表達差異 ③ 分數應為區間而非精確值 |
 | 風險 | 自動評分公平性——**必須在 UI 標示這是輔助評分** |
+| 指標影響 | **不得計入正確率、排行榜**（見第 3 節降級規則） |
 
 ### F. `open-ended` 申論・開放題 — 未實作
 
@@ -159,8 +191,9 @@ interface BlankItem {
 | 評分 | **不可自動評分**；僅能人工或 AI 輔助產生回饋 |
 | 設計準則 | ① 不出現在排行榜／限時挑戰等需要即時計分的場景 ② 不得計入「正確率」等自動化指標（會污染數據）③ 若接 AI 導讀，題目內容可送 AI 但**不得含姓名／學校／班級**（見隱私框架） |
 | 現況關聯 | 站上「深度反思」已有 AI 服務商導讀機制，可作為載體 |
+| 指標影響 | 明確排除於所有自動化指標之外 |
 
-### G. `passage-group` 題組題 — 部分（容器已有）
+### G. `passage-group` 題組題 — 部分（狀態細分見 1.1）
 
 | 項目 | 內容 |
 |---|---|
@@ -168,8 +201,9 @@ interface BlankItem {
 | 建議 schema | `{ passage: { id, kind:"text"|"image"|"audio", content }, subQuestions: Question[] }` |
 | 評分 | 依子題型 |
 | 設計準則 | ① 子題必須**可獨立作答**（不依賴前一子題的答案）② 素材不得包含子題答案 ③ 組卷時題組**不可拆散**（同組子題須同卷同區） |
+| 版權 | 圖表／文章素材來源需記錄，沿用 `docs/astronomy_sources.md` 的做法 |
 
-### H. `variant` 變體題（變態題）— 未實作
+### H. `variant` 變體題（變態題）— 未實作（schema 已規劃）
 
 | 項目 | 內容 |
 |---|---|
@@ -177,15 +211,29 @@ interface BlankItem {
 | 建議 schema | `{ variantOf: questionId, variantKind: "wording"|"numbers"|"context"|"inverse" }` |
 | 設計準則 | ① 變體必須改變**考察角度**，不是換句話說 ② **防污染**：變體不可與原題同時出現在同一份試卷 ③ 反向題（問「何者錯誤」）需明確標記，避免與正向題混淆 |
 | 用途 | 擴充題庫而不重複、測「真懂 vs. 記答案」 |
+| 防污染實作 | 組卷層需加入「同 `variantOf` 只取一題」規則，尚未實作 |
 
 ---
 
-## 2.5 題型 × 功能 支援矩陣（設計功能時的第一道檢查）
+## 3. 題型 × 功能 支援矩陣
 
-先明確定義功能，避免歧義：
+**設計任何功能前，先查這張表。** 圖例：✅ 已支援｜🟡 待實作（schema 已規劃）｜⚠️ 有條件支援｜❌ 不應支援
+
+| 功能 \ 題型 | single-choice | true-false | matching | fill-blank | short-answer | open-ended | passage-group | variant |
+|:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| **出題** | ✅ | ✅ | ✅ | 🟡 | 🟡 | 🟡 | ⚠️ 容器已有 | 🟡 |
+| **組卷** | ✅ | ✅ | ✅ | 🟡 | 🟡 | ❌ | ⚠️ 容器已有 | 🟡 |
+| **自動批改** | ✅ | ✅ | ✅ | 🟡 | ⚠️ 輔助 | ❌ | 依子題 | ✅ |
+| **錯題整理** | ✅ | ✅ | ✅ | 🟡 | ⚠️ 僅關鍵詞 | ❌ | 依子題 | ✅ |
+| **排行榜** | ✅ | ✅ | ✅ | 🟡 | ❌ | ❌ | 依子題 | ✅ |
+| **進度同步** | ✅ | ✅ | ✅ | 🟡 | ⚠️ 僅記錄 | ⚠️ 僅記錄 | 依子題 | ✅ |
+| **AI 導讀** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **難度分佈** | ✅ | ✅ | ✅ | 🟡 | ❌ | ❌ | 依子題 | ✅ |
+
+### 3.1 功能定義
 
 | 功能 | 含義 |
-|---|---|
+|:---|:---|
 | **出題** | 題庫中存在此題型，可被抽題 |
 | **組卷** | 可被 `lib/paperExam.ts` 納入試卷 |
 | **自動批改** | 正解唯一且可程式化比對 |
@@ -195,36 +243,49 @@ interface BlankItem {
 | **AI 導讀** | 可送 AI 產生回饋（不含個資） |
 | **難度分佈** | 可統計難度並用於選題 |
 
-| 功能 ＼ 題型 | single-choice | true-false | matching | fill-blank | short-answer | open-ended | passage-group | variant |
-|---|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
-| 出題 | ✅ | ✅ | ✅ | 🟡 | 🟡 | 🟡 | ⚠️ 容器已有 | 🟡 |
-| 組卷 | ✅ | ✅ | ✅ | 🟡 | 🟡 | ❌ | ⚠️ 容器已有 | 🟡 |
-| 自動批改 | ✅ | ✅ | ✅ | 🟡 | ⚠️ 輔助 | ❌ | 依子題 | ✅ |
-| 錯題整理 | ✅ | ✅ | ✅ | 🟡 | ⚠️ 僅關鍵詞 | ❌ | 依子題 | ✅ |
-| 排行榜 | ✅ | ✅ | ✅ | 🟡 | ❌ | ❌ | 依子題 | ✅ |
-| 進度同步 | ✅ | ✅ | ✅ | 🟡 | ⚠️ 僅記錄 | ⚠️ 僅記錄 | 依子題 | ✅ |
-| AI 導讀 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| 難度分佈 | ✅ | ✅ | ✅ | 🟡 | ❌ | ❌ | 依子題 | ✅ |
+### 3.2 降級規則（Agent 必讀）
 
-**圖例**：✅ 已支援｜🟡 待實作（schema 已規劃）｜⚠️ 有條件支援｜❌ 不應支援
-
-> 程式側對應：`client/src/lib/questionTypes.ts` 的 `QUESTION_TYPES[].features`，
-> 可用 `supportsFeature(typeId, "排行榜")` 查詢——**不要自己重新推導這張表**。
-
-### 降級規則（必讀）
-
-某功能不支援某題型時，**必須明確降級，不能默默跳過**：
+當某功能不支援某題型時，**必須明確降級**，不能默默跳過：
 
 | 情境 | 降級做法 |
-|---|---|
+|:---|:---|
 | 排行榜遇到 `short-answer` | 該題不計入正確率，僅記錄作答；UI 標示「此題不計分」 |
 | 錯題整理遇到 `open-ended` | 不自動歸類，改為「待複習」清單，由學生自行標記 |
-| 組卷遇到未實作題型 | 不納入抽題池，並在組卷日誌記錄「跳過 N 題（題型未實作）」 |
-| 進度同步遇到 `short-answer` | 僅同步「已作答／未作答」，不同步分數 |
+| 組卷遇到未實作題型 | 該題型不納入抽題池，並在組卷日誌記錄「跳過 N 題（題型未實作）」 |
+| 進度同步遇到 `short-answer` | 僅同步「已作答／未作答」狀態，不同步分數 |
+| 難度分佈遇到 `short-answer` | 不納入統計，避免污染難度模型 |
+
+### 3.3 與 `questionTypes.ts` 的對應（**已實作：四態 API**）
+
+程式側**不只是 `features.includes(...)`**——因為「已規劃」與「有條件」必須分開，
+否則 Agent 會誤判「現在到底能不能依賴」。實際 API：
+
+```typescript
+import { supportsFeature, typesSupporting } from "@/lib/questionTypes";
+
+supportsFeature("single-choice", "排行榜");    // "yes"         ← 現在就能依賴
+supportsFeature("fill-blank",    "自動批改");   // "planned"     ← schema 已定案、尚未實作
+supportsFeature("passage-group", "組卷");       // "conditional" ← 有條件（容器已有）
+supportsFeature("short-answer",  "排行榜");     // "no"          ← 不應支援，設計時必須降級
+
+typesSupporting("排行榜");                      // 現在就能計入排行榜的題型 id 陣列
+```
+
+四態語意（對應矩陣符號）：
+
+| 回傳值 | 矩陣符號 | 意義 |
+|---|---|---|
+| `"yes"` | ✅ | 現在就能依賴 |
+| `"planned"` | 🟡 | schema 已規劃、尚未實作——可設計，但需先補實作 |
+| `"conditional"` | ⚠️ | 有條件支援（如「僅關鍵詞」「僅記錄」），語意被削弱 |
+| `"no"` | ❌ | 不應支援；**必須明確降級**（見 3.2） |
+
+> `docs/question-types.md` 與 `client/src/lib/questionTypes.ts` 互為表裡——
+> 文件給人讀，註冊表給程式與 Agent 查。**兩者必須同步更新**（見第 6 節流程）。
 
 ---
 
-## 3. 跨題型的共同規則（所有題型都適用）
+## 4. 跨題型的共同規則（所有題型都適用）
 
 1. **年級適配**：`grade` 必填；內容等級上限六年級（站服務國小）。未設年級時系統以最高難度出題（見首頁閘門決議）。
 2. **難度分級**：`difficulty ∈ {基礎, 標準, 挑戰}`；不得只靠題幹長度判難度。
@@ -234,15 +295,15 @@ interface BlankItem {
 6. **公平性**：不得出現需要課外知識、時事、或特定家庭背景才能作答的題目。
 7. **無障礙**：題目 UI 需符合既有規範——可點區 ≥44×44、色值走 token、標題層級不跳級、動畫納入 `prefers-reduced-motion`。
 8. **資料驗證**：新增題目必須通過 `scripts/qc-question-bank.mts`（`pnpm qc:bank`）與 `check-traditional.mjs`（繁體用字）。
-9. **指標一致性**：只有「可自動評分且正解唯一」的題型，才能計入正確率、排行榜、錯題魔王等自動化指標。
+9. **指標一致性**：只有「可自動評分且正解唯一」的題型，才能計入正確率、排行榜、錯題魔王等自動化指標。**查第 3 節矩陣確認。**
 
 ---
 
-## 4. 給 AGENT 的設計前檢查清單
+## 5. 給 AGENT 的設計前檢查清單
 
 設計任何功能前，逐項回答：
 
-- [ ] 這個功能**支援哪些題型**？其餘題型如何降級或排除？（不要默默假設全是選擇題）
+- [ ] 這個功能**支援哪些題型**？其餘題型如何降級或排除？（**先查第 3 節矩陣**，不要默默假設全是選擇題）
 - [ ] 該題型**可否自動評分**？若不可，這個功能是否還成立？
 - [ ] 需要哪些**欄位**？現有 schema 有嗎？沒有的話誰負責補（題庫產生器／資料遷移）？
 - [ ] **洗牌**需求？正解位置是否會被固定？與「上次排列」的比較是否正確（勿用 id 當快取鍵）？
@@ -253,22 +314,43 @@ interface BlankItem {
 
 ---
 
-## 5. 新增題型的流程
+## 6. 新增題型的流程
 
 1. 在本檔第 2 節新增規格（schema／評分／UI／準則）
-2. 在 `client/src/lib/questionTypes.ts` 的 `QUESTION_TYPES` 加一筆（`implemented: false` → 實作後改 true）
+2. 在本檔第 3 節矩陣與 `client/src/lib/questionTypes.ts` 的 `QUESTION_TYPES` 加一筆
+   （`implemented: false` → 實作後改 `true`），並設定 `features` / `plannedFeatures` / `conditionalFeatures`
 3. 在 `lib/questionBank.ts` 的 `isValidQuestion()` 補驗證規則（若有新欄位）
 4. 補題庫產生器與 `pnpm qc:bank` 檢查
 5. 更新 `docs/DATA_MODEL.md` 的資料模型段落
+6. 在 `client/src/lib/questionTypes.test.ts` 補契約測試
 
 ---
 
-## 6. 已知風險與未決問題
+## 7. 已知風險與未決問題
 
-| # | 議題 | 說明 |
-|---|---|---|
-| 1 | 是非題的陷阱措辭 | 目前無自動檢查「絕對化措辭」的規則，靠人工審 |
-| 2 | 簡答／申論的評分公平性 | 尚無設計；若要上線需先定義「輔助評分」的 UI 揭露方式 |
-| 3 | 聽力題 | TTS 已接入（`server/lineNotify.ts` 無關；見 speech 相關 commit），但尚無聽力題 schema 與播放控制規範 |
-| 4 | 變體題的防污染 | 需在組卷層加入「同 variantOf 只取一題」的規則，尚未實作 |
-| 5 | 題組素材的版權 | 圖表／文章素材來源需記錄（見 `docs/astronomy_sources.md` 的做法） |
+| # | 議題 | 影響範圍 | 優先級 | 說明 | 緩解措施 |
+|:---:|:---|:---|:---:|:---|:---|
+| 1 | 是非題的陷阱措辭 | 題庫品質 | 中 | 目前無自動檢查「絕對化措辭」的規則，靠人工審 | 加 `pnpm qc:bank` 正則檢查（如「一定」「永遠」「絕不」） |
+| 2 | 簡答／申論的評分公平性 | 全站指標 | 高 | 尚無設計；若要上線需先定義「輔助評分」的 UI 揭露方式 | 上線前先定 UI 揭露規範，且明確排除於排行榜 |
+| 3 | 聽力題 | 題型擴充 | 低 | TTS 已接入，但尚無聽力題 schema 與播放控制規範 | 待 `passage-group` 建立後，以 `kind:"audio"` 擴充 |
+| 4 | 變體題的防污染 | 組卷正確性 | 中 | 需在組卷層加入「同 variantOf 只取一題」的規則，尚未實作 | 組卷層加規則，並在 `pnpm qc:bank` 加入檢查 |
+| 5 | 題組素材的版權 | 法務 | 低 | 圖表／文章素材來源需記錄 | 沿用 `docs/astronomy_sources.md` 的做法 |
+| 6 | 填空題的中文正規化 | 批改正確性 | 中 | 異體字、中文數字轉換易誤判 | 採三層正規化（strict/standard/loose），並提供「答對卻被判錯」回報管道 |
+
+---
+
+## 8. 推薦實作順序
+
+根據網站現狀（已上線、題庫以選擇題／是非題為主、Render 部署），建議以下順序：
+
+| 順序 | 題型 | 理由 | 前置條件 |
+|:---:|:---|:---|:---|
+| 1 | `fill-blank` | 自動評分可靠、schema 簡單、對題庫擴充價值最大 | 正規化表與比對函式 |
+| 2 | `variant` | 能大幅擴充題庫而不重複，解決「記答案」問題 | 組卷層防污染規則 |
+| 3 | `passage-group` | 閱讀理解類題目的基礎 | 素材版權管理、題組不可拆散規則 |
+| 4 | `short-answer` | 需先解決評分公平性 | 第 7 節風險 #2 的 UI 揭露規範 |
+| 5 | `open-ended` | 不可自動評分，僅能 AI 輔助 | AI 導讀隱私框架 |
+
+---
+
+*本文件為題型規格的唯一權威來源。任何與題目相關的功能設計，都應先查閱本文件第 3 節矩陣與第 5 節檢查清單。*
