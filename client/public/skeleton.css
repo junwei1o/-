@@ -71,6 +71,50 @@
   100% { transform: translateX(180%); }
 }
 
+/* 主題覆蓋：JS 載入前 index.css 的 token 還不可用，因此這裡直接對照 index.css
+   各主題色板寫死色值，並用 html[data-theme="..."] 選擇器命中（index.html 首幀前
+   inline script 已依 localStorage 把 data-theme 掛到 <html>）。
+   預設潮境（<html> 不設 data-theme）沿用上方色，不在此覆蓋。 */
+
+/* 彩旗 festival：暖米紙底、潮藍標題（與潮境同主色，僅底紙換暖色） */
+html[data-theme="festival"] #app-skeleton {
+  background:
+    radial-gradient(120% 90% at 50% -10%, rgba(255, 253, 248, 0.95) 0%, rgba(249, 243, 232, 0.98) 62%, rgba(239, 230, 215, 1) 100%),
+    #F9F3E8;
+}
+html[data-theme="festival"] .skeleton-title { color: #0B6E8E; }
+html[data-theme="festival"] .skeleton-subtitle { color: #5F6E6A; }
+html[data-theme="festival"] .skeleton-progress { background: rgba(11, 110, 142, 0.14); }
+html[data-theme="festival"] .skeleton-progress-bar {
+  background: linear-gradient(90deg, #0B6E8E, #5E8577, #E8754A);
+}
+
+/* 藏書票 exlibris：米黃紙底、苔綠標題與進度條 */
+html[data-theme="exlibris"] #app-skeleton {
+  background:
+    radial-gradient(120% 90% at 50% -10%, rgba(251, 247, 236, 0.95) 0%, rgba(241, 236, 221, 0.98) 62%, rgba(230, 222, 200, 1) 100%),
+    #F1ECDD;
+}
+html[data-theme="exlibris"] .skeleton-title { color: #3F5143; }
+html[data-theme="exlibris"] .skeleton-subtitle { color: #6B6350; }
+html[data-theme="exlibris"] .skeleton-progress { background: rgba(79, 107, 82, 0.16); }
+html[data-theme="exlibris"] .skeleton-progress-bar {
+  background: linear-gradient(90deg, #4F6B52, #6C8460, #B0623A);
+}
+
+/* 晴光 sunny：暖金紙底、金棕標題與進度條 */
+html[data-theme="sunny"] #app-skeleton {
+  background:
+    radial-gradient(120% 90% at 50% -10%, rgba(255, 253, 246, 0.95) 0%, rgba(251, 246, 231, 0.98) 62%, rgba(244, 234, 208, 1) 100%),
+    #FBF6E7;
+}
+html[data-theme="sunny"] .skeleton-title { color: #A9741F; }
+html[data-theme="sunny"] .skeleton-subtitle { color: #7A6B4E; }
+html[data-theme="sunny"] .skeleton-progress { background: rgba(208, 147, 43, 0.16); }
+html[data-theme="sunny"] .skeleton-progress-bar {
+  background: linear-gradient(90deg, #D0932B, #E8B84B, #E8754A);
+}
+
 /* 低動效偏好：停止所有動畫，改為靜態進度條 */
 @media (prefers-reduced-motion: reduce) {
   #app-skeleton { transition: none; }
