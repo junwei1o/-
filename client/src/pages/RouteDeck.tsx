@@ -44,6 +44,14 @@ export default function RouteDeck() {
     setGrade(chosen);
   };
 
+  // ⚠️ 所有 hook 必須在年級閘門的 early return **之前**呼叫完畢。
+  // 曾因把 useMemo/useState 放在 return 之後，導致「閘門態 5 個 hook、選完年級 9 個」，
+  // React 直接丟 #310（Rendered more hooks than during the previous render）而白屏。
+  const resume = useMemo(() => loadResume(), []);
+  const lights = useMemo(() => weeklyLights(), []);
+  const weakSpots = useMemo(() => weakestIslands(), []);
+  const [resumeDismissed, setResumeDismissed] = useState(false);
+
   // 年級閘門：不可跳過——沒有關閉鈕，也沒有「稍後再設」
   if (grade === null) {
     return (
@@ -70,11 +78,6 @@ export default function RouteDeck() {
 
   const route = routeById(recommended.id);
   const alternatives = ROUTES.filter((r) => r.id !== recommended.id);
-  // 第二屏：條件區塊（沒有資料就不渲染，不佔版位）
-  const resume = useMemo(() => loadResume(), []);
-  const lights = useMemo(() => weeklyLights(), []);
-  const weakSpots = useMemo(() => weakestIslands(), []);
-  const [resumeDismissed, setResumeDismissed] = useState(false);
 
   return (
     <div className="deck">
