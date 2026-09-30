@@ -17,6 +17,7 @@
  */
 
 import type { LearningRecord } from "@/utils/storage";
+import { isAutoGradable } from "@/lib/subjectConfig";
 
 // ─────────────────────────────────────────────
 // 1. 型別定義
@@ -30,6 +31,8 @@ export interface AnswerRecord {
   knowledge: string[];
   /** 該題主要考察的知識點（若題庫有標註） */
   primaryKnowledge?: string;
+  /** 科目（與題庫一致：數學／自然／社會／國語／英語） */
+  subject: string;
   /** 課綱領域 */
   curriculumDomain: string;
   /** 學習主題 */
@@ -234,12 +237,20 @@ function roundTo(v: number, digits: number): number {
 export function buildDiagnosis(
   captainName: string,
   records: AnswerRecord[],
-  options: { minSampleSize?: number } = {},
+  options: { minSampleSize?: number; subject?: string } = {},
 ): StudentDiagnosis {
   const minSample = options.minSampleSize ?? 3;
 
+  // 指定科目時：只取該科紀錄，並排除該科「不可自動評分」的題型
+  // （題型→可自動評分與否由 subjectConfig 決定，與 docs/question-types.md §3 矩陣一致）
+  const scoped = options.subject
+    ? records.filter(
+        (r) => r.subject === options.subject && isAutoGradable(options.subject as string, r.questionType),
+      )
+    : records;
+
   // 1. 知識點統計
-  const byKnowledge = groupBy(records, (r) => r.knowledge);
+  const byKnowledge = groupBy(scoped, (r) => r.knowledge);
   const knowledgeStats: Record<string, KnowledgeStat> = {};
 
   for (const [knowledge, recs] of Object.entries(byKnowledge)) {
@@ -263,7 +274,7 @@ export function buildDiagnosis(
   }
 
   // 2. 課綱領域統計
-  const byDomain = groupBy(records, (r) => r.curriculumDomain);
+  const byDomain = groupBy(scoped, (r) => r.curriculumDomain);
   const domainStats: Record<string, DomainStat> = {};
 
   for (const [domain, recs] of Object.entries(byDomain)) {
@@ -289,7 +300,7 @@ export function buildDiagnosis(
   }
 
   // 3. 難度統計
-  const byDifficulty = groupBy(records, (r) => r.difficulty);
+  const byDifficulty = groupBy(scoped, (r) => r.difficulty);
   const difficultyStats: Record<string, DifficultyStat> = {};
   for (const [difficulty, recs] of Object.entries(byDifficulty)) {
     const valid = recs.filter((r) => !r.skipped);
@@ -304,7 +315,7 @@ export function buildDiagnosis(
   }
 
   // 4. 題型統計
-  const byType = groupBy(records, (r) => r.questionType);
+  const byType = groupBy(scoped, (r) => r.questionType);
   const questionTypeStats: Record<string, QuestionTypeStat> = {};
   for (const [type, recs] of Object.entries(byType)) {
     const valid = recs.filter((r) => !r.skipped);
@@ -319,7 +330,7 @@ export function buildDiagnosis(
   }
 
   // 5. 整體指標
-  const validAll = records.filter((r) => !r.skipped);
+  const validAll = scoped.filter((r) => !r.skipped);
   const overallAccuracy =
     validAll.length > 0
       ? roundTo(validAll.filter((r) => r.correct).length / validAll.length, 3)
@@ -495,6 +506,7 @@ export function answerRecordsFromLearningRecords(
     return {
       questionId: r.questionId,
       knowledge: m?.knowledge ?? [],
+      subject: r.subject,
       curriculumDomain: m?.curriculumDomain ?? r.subject,
       learningTopic: m?.learningTopic ?? "未分類",
       difficulty: m?.difficulty ?? "標準",

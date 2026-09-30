@@ -14,6 +14,7 @@ function rec(over: Partial<AnswerRecord> = {}): AnswerRecord {
   return {
     questionId: "q-1",
     knowledge: ["水的三態"],
+    subject: "自然",
     curriculumDomain: "地球科學",
     learningTopic: "水的三態",
     difficulty: "基礎",
