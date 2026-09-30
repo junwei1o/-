@@ -1,9 +1,11 @@
 import { describe, expect, it } from "vitest";
 import {
   answerRecordsFromLearningRecords,
+  averageGuessRate,
   buildDiagnosis,
   calculateConfidence,
   deserializeDiagnosis,
+  isDiagnosticallyValid,
   serializeDiagnosis,
   type AnswerRecord,
   type QuestionMeta,
@@ -223,5 +225,83 @@ describe("序列化", () => {
     expect(deserializeDiagnosis("{}")).toBeNull();
     expect(deserializeDiagnosis(JSON.stringify({ version: 99 }))).toBeNull();
     expect(deserializeDiagnosis("not-json")).toBeNull();
+  });
+});
+
+describe("猜對率修正（guessRate）", () => {
+  it("正確率等於猜對率時，信心歸零（代表毫無把握）", () => {
+    // 4 選 1：10 題對 2.5 題 ≈ 猜對率 0.25
+    const records = [
+      ...repeat(3, { correct: true, questionType: "single-choice" }),
+      ...repeat(7, { correct: false, questionType: "single-choice" }),
+    ];
+    // accuracy = 0.3，接近 0.25 → adjusted ≈ 0.067
+    const withGuess = calculateConfidence(records, 0.25);
+    const withoutGuess = calculateConfidence(records, 0);
+    expect(withGuess).toBeLessThan(withoutGuess);
+    expect(withGuess).toBeLessThan(0.1);
+  });
+
+  it("全對時信心為 1.0，且與猜對率無關（完美就是完美）", () => {
+    const perfect = repeat(10, { correct: true });
+    expect(calculateConfidence(perfect, 0.5)).toBeCloseTo(1, 5);
+    expect(calculateConfidence(perfect, 0.05)).toBeCloseTo(1, 5);
+  });
+
+  it("非滿分時，猜對率越高信心越低（是非題 0.5 vs 填空題 0.05）", () => {
+    // 10 題對 8 題
+    const imperfect = [
+      ...repeat(8, { correct: true, questionType: "true-false" }),
+      ...repeat(2, { correct: false, questionType: "true-false" }),
+    ];
+    const asTrueFalse = calculateConfidence(imperfect, 0.5);
+    const asFillBlank = calculateConfidence(imperfect, 0.05);
+    expect(asTrueFalse).toBeLessThan(asFillBlank);
+    // 是非題 8/10：adjusted = (0.8-0.5)/0.5 = 0.6；填空 8/10：adjusted = (0.8-0.05)/0.95 ≈ 0.789
+    expect(asTrueFalse).toBeCloseTo(0.6, 2);
+  });
+
+  it("averageGuessRate 依題型加權", () => {
+    expect(averageGuessRate(repeat(3, { questionType: "true-false" }))).toBeCloseTo(0.5, 5);
+    expect(averageGuessRate(repeat(3, { questionType: "fill-blank" }))).toBeCloseTo(0.05, 5);
+    const mixed = averageGuessRate([
+      ...repeat(1, { questionType: "true-false" }),
+      ...repeat(1, { questionType: "single-choice" }),
+    ]);
+    expect(mixed).toBeCloseTo(0.375, 5);
+  });
+});
+
+describe("診斷有效性過濾", () => {
+  it("申論題不可計入診斷", () => {
+    expect(isDiagnosticallyValid("open-ended")).toBe(false);
+  });
+
+  it("選擇／是非／配對可計入（是非題為 conditional＝納入但保守，不可排除）", () => {
+    expect(isDiagnosticallyValid("single-choice")).toBe(true);
+    expect(isDiagnosticallyValid("true-false")).toBe(true);
+    expect(isDiagnosticallyValid("matching")).toBe(true);
+  });
+
+  it("題庫標籤（中文）也能對應", () => {
+    expect(isDiagnosticallyValid("選擇題")).toBe(true);
+  });
+
+  it("未知題型不靜默丟棄（回 true，交由上層決定）", () => {
+    expect(isDiagnosticallyValid("__future-type__")).toBe(true);
+  });
+
+  it("buildDiagnosis 會排除申論題紀錄", () => {
+    const d = buildDiagnosis("小明", [
+      ...repeat(5, { questionType: "single-choice", correct: true }),
+      ...repeat(5, { questionType: "open-ended", correct: false }),
+    ]);
+    expect(d.totalAnswers).toBe(5);
+    expect(d.questionTypeStats["open-ended"]).toBeUndefined();
+  });
+
+  it("單科診斷會回填 subject", () => {
+    const d = buildDiagnosis("小明", repeat(3), { subject: "自然" });
+    expect(d.subject).toBe("自然");
   });
 });

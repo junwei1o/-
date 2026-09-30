@@ -18,6 +18,7 @@
 
 import type { LearningRecord } from "@/utils/storage";
 import { isAutoGradable } from "@/lib/subjectConfig";
+import { guessRateOf, questionTypeIdFromBankLabel, supportsFeature, type QuestionTypeId } from "@/lib/questionTypes";
 
 // ─────────────────────────────────────────────
 // 1. 型別定義
@@ -71,6 +72,8 @@ export interface KnowledgeStat {
   lastAttemptAt: number;
   /** 最近 5 次作答的對錯序列（1＝對、0＝錯），供趨勢圖使用 */
   recentAccuracy: number[];
+  /** 科目特殊維度（如英語的 recognition/spelling/application）；需資料具備才會出現 */
+  extraDimensions?: Record<string, number>;
 }
 
 /** 課綱領域統計 */
@@ -104,6 +107,8 @@ export interface QuestionTypeStat {
 /** 完整診斷結果 */
 export interface StudentDiagnosis {
   captainName: string;
+  /** 若為單科診斷則填入該科目 */
+  subject?: string;
   generatedAt: number;
   totalAnswers: number;
   overallAccuracy: number;
@@ -119,7 +124,14 @@ export interface StudentDiagnosis {
 
 /** 單條診斷洞察 */
 export interface DiagnosisInsight {
-  kind: "blindspot" | "unstable" | "difficulty-gap" | "type-gap" | "improving" | "mastered";
+  kind:
+    | "blindspot"
+    | "unstable"
+    | "difficulty-gap"
+    | "type-gap"
+    | "improving"
+    | "mastered"
+    | "subject-specific";
   severity: "high" | "medium" | "low" | "positive";
   title: string;
   description: string;
@@ -142,12 +154,20 @@ export const DIAGNOSIS_VERSION = 1;
  * - 用「用時 + 重做 + 修改」三維修正
  * - 樣本量不足時向 0.5 回歸（避免小樣本極端值）
  */
-export function calculateConfidence(records: AnswerRecord[]): number {
+export function calculateConfidence(records: AnswerRecord[], guessRate = 0.25): number {
   const valid = records.filter((r) => !r.skipped);
   if (valid.length === 0) return 0;
 
   // 1. 基礎正確率
   const accuracy = valid.filter((r) => r.correct).length / valid.length;
+
+  // 1b. 猜對率修正：正確率只略高於猜對率時，代表可能只是猜對
+  //     公式：adjusted = (accuracy - guessRate) / (1 - guessRate)
+  //     例：4 選 1 全對（1.0）→ 1.0；正確率 0.25（＝猜對率）→ 0（毫無把握）
+  const adjustedAccuracy =
+    guessRate > 0 && guessRate < 1
+      ? Math.max(0, (accuracy - guessRate) / (1 - guessRate))
+      : accuracy;
 
   // 2. 用時修正（未知用時→中性 1，不得視為「太快」）
   const timed = valid.filter((r) => r.timeSpentMs > 0);
@@ -163,10 +183,10 @@ export function calculateConfidence(records: AnswerRecord[]): number {
 
   // 5. 加權組合（用時／重做／修改只修正正確率，不獨立加分）
   const raw =
-    accuracy * 0.5 +
-    accuracy * timeFactor * 0.2 +
-    accuracy * retryFactor * 0.15 +
-    accuracy * changeFactor * 0.15;
+    adjustedAccuracy * 0.5 +
+    adjustedAccuracy * timeFactor * 0.2 +
+    adjustedAccuracy * retryFactor * 0.15 +
+    adjustedAccuracy * changeFactor * 0.15;
 
   // 6. 樣本量回歸：< 10 筆向 0.5 收斂
   const sampleFactor = Math.min(valid.length / 10, 1);
@@ -215,6 +235,45 @@ function detectTrend(records: AnswerRecord[]): KnowledgeStat["trend"] {
   return "stable";
 }
 
+/**
+ * 該題型是否可計入診斷（知識點統計）。
+ *
+ * 只排除四態中的 "no"（明確不應支援，如申論題）：
+ * - "yes"／"conditional" 都納入——是非題是 conditional（猜對率 50%），
+ *   規格要求「納入但信心保守」，**不是排除**（否則 517 道是非題全被丟掉）
+ * - "planned" 也納入（尚未實作不會有紀錄；真有紀錄時不該靜默丟棄）
+ * - 未知題型同樣保留，交由上層決定
+ */
+export function isDiagnosticallyValid(questionType: string): boolean {
+  const id =
+    questionTypeIdFromBankLabel(questionType) ?? (questionType as QuestionTypeId);
+  if (!QUESTION_TYPE_IDS.has(id)) return true;
+  return supportsFeature(id, "學生診斷") !== "no";
+}
+
+const QUESTION_TYPE_IDS: ReadonlySet<string> = new Set([
+  "single-choice",
+  "true-false",
+  "matching",
+  "fill-blank",
+  "short-answer",
+  "open-ended",
+  "passage-group",
+  "variant",
+]);
+
+/** 取一批紀錄的平均猜對率（依題型加權）。 */
+export function averageGuessRate(records: AnswerRecord[]): number {
+  const rates = records
+    .map((r) => {
+      const id =
+        questionTypeIdFromBankLabel(r.questionType) ?? (r.questionType as QuestionTypeId);
+      return QUESTION_TYPE_IDS.has(id) ? guessRateOf(id) : undefined;
+    })
+    .filter((v): v is number => typeof v === "number");
+  return rates.length > 0 ? mean(rates) : 0.25;
+}
+
 function mean(nums: number[]): number {
   if (nums.length === 0) return 0;
   return nums.reduce((a, b) => a + b, 0) / nums.length;
@@ -243,11 +302,13 @@ export function buildDiagnosis(
 
   // 指定科目時：只取該科紀錄，並排除該科「不可自動評分」的題型
   // （題型→可自動評分與否由 subjectConfig 決定，與 docs/question-types.md §3 矩陣一致）
+  // 先排除「不可計入診斷」的題型（如申論題），再依科目過濾
+  const diagnosable = records.filter((r) => isDiagnosticallyValid(r.questionType));
   const scoped = options.subject
-    ? records.filter(
+    ? diagnosable.filter(
         (r) => r.subject === options.subject && isAutoGradable(options.subject as string, r.questionType),
       )
-    : records;
+    : diagnosable;
 
   // 1. 知識點統計
   const byKnowledge = groupBy(scoped, (r) => r.knowledge);
@@ -257,7 +318,7 @@ export function buildDiagnosis(
     const valid = recs.filter((r) => !r.skipped);
     if (valid.length < minSample) continue;
 
-    const confidence = calculateConfidence(valid);
+    const confidence = calculateConfidence(valid, averageGuessRate(valid));
     const correctCount = valid.filter((r) => r.correct).length;
 
     knowledgeStats[knowledge] = {
@@ -293,7 +354,7 @@ export function buildDiagnosis(
       totalAttempts: valid.length,
       correctAttempts: correctCount,
       accuracy: roundTo(correctCount / valid.length, 3),
-      confidence: roundTo(calculateConfidence(valid), 3),
+      confidence: roundTo(calculateConfidence(valid, averageGuessRate(valid)), 3),
       knowledgeCount: domainKnowledge.size,
       weakKnowledge,
     };
@@ -346,10 +407,11 @@ export function buildDiagnosis(
 
   return {
     captainName,
+    subject: options.subject,
     generatedAt: Date.now(),
     totalAnswers: validAll.length,
     overallAccuracy,
-    overallConfidence: roundTo(calculateConfidence(validAll), 3),
+    overallConfidence: roundTo(calculateConfidence(validAll, averageGuessRate(validAll)), 3),
     knowledgeStats,
     domainStats,
     difficultyStats,

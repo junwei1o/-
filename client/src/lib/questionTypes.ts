@@ -48,7 +48,8 @@ export type FeatureId =
   | "排行榜"
   | "進度同步"
   | "AI導讀"
-  | "難度分佈";
+  | "難度分佈"
+  | "學生診斷";
 
 export const FEATURES: readonly FeatureId[] = [
   "出題",
@@ -59,6 +60,7 @@ export const FEATURES: readonly FeatureId[] = [
   "進度同步",
   "AI導讀",
   "難度分佈",
+  "學生診斷",
 ] as const;
 
 /** 支援程度：yes＝現在就能依賴；planned＝schema 已規劃未實作；conditional＝有條件；no＝不應支援。 */
@@ -85,6 +87,12 @@ export type QuestionTypeSpec = {
   plannedFeatures?: FeatureId[];
   /** 有條件支援的功能（矩陣中的 ⚠️，例如「僅關鍵詞」「僅記錄」）。 */
   conditionalFeatures?: FeatureId[];
+  /**
+   * 純猜測的期望正確率（0–1）。用於診斷的信心分數修正：
+   * 正確率只略高於猜對率時，代表「可能只是猜對」，信心應大幅下修。
+   * 0 表示沒有猜測空間（填空、申論、變體）。
+   */
+  guessRate: number;
   /** 設計時最容易踩的坑 */
   pitfalls: string[];
   /** 相關實作檔案（相對 repo 根目錄） */
@@ -96,7 +104,8 @@ export const QUESTION_TYPES: readonly QuestionTypeSpec[] = [
   {
     id: "single-choice",
     label: "選擇題",
-    features: ["出題", "組卷", "自動批改", "錯題整理", "排行榜", "進度同步", "AI導讀", "難度分佈"],
+    features: ["出題", "組卷", "自動批改", "錯題整理", "排行榜", "進度同步", "AI導讀", "難度分佈", "學生診斷"],
+    guessRate: 0.25, // 4 選 1
     implemented: true,
     autoGradable: true,
     answerShape: "option-index",
@@ -112,6 +121,8 @@ export const QUESTION_TYPES: readonly QuestionTypeSpec[] = [
     id: "true-false",
     label: "是非題",
     features: ["出題", "組卷", "自動批改", "錯題整理", "排行榜", "進度同步", "AI導讀", "難度分佈"],
+    conditionalFeatures: ["學生診斷"], // 猜對率 50%，不可單獨作為診斷依據
+    guessRate: 0.5,
     implemented: true,
     autoGradable: true,
     answerShape: "boolean-index",
@@ -126,7 +137,8 @@ export const QUESTION_TYPES: readonly QuestionTypeSpec[] = [
   {
     id: "matching",
     label: "配對題",
-    features: ["出題", "組卷", "自動批改", "錯題整理", "排行榜", "進度同步", "AI導讀", "難度分佈"],
+    features: ["出題", "組卷", "自動批改", "錯題整理", "排行榜", "進度同步", "AI導讀", "難度分佈", "學生診斷"],
+    guessRate: 0.1,
     implemented: true,
     autoGradable: true,
     answerShape: "pair-set",
@@ -142,6 +154,7 @@ export const QUESTION_TYPES: readonly QuestionTypeSpec[] = [
     id: "fill-blank",
     label: "填空題",
     features: ["AI導讀"],
+    guessRate: 0.05, // 幾乎無猜測空間，診斷價值高
     plannedFeatures: ["出題", "組卷", "自動批改", "錯題整理", "排行榜", "進度同步", "難度分佈"],
     implemented: false,
     autoGradable: true,
@@ -158,8 +171,9 @@ export const QUESTION_TYPES: readonly QuestionTypeSpec[] = [
     id: "short-answer",
     label: "簡答題",
     features: ["AI導讀"],
+    guessRate: 0, // 不可自動評分
     plannedFeatures: ["出題", "組卷"],
-    conditionalFeatures: ["自動批改", "錯題整理", "進度同步"],
+    conditionalFeatures: ["自動批改", "錯題整理", "進度同步", "學生診斷"], // 僅關鍵詞命中，不可計入正確率
     implemented: false,
     autoGradable: false,
     answerShape: "keyword-set",
@@ -175,8 +189,9 @@ export const QUESTION_TYPES: readonly QuestionTypeSpec[] = [
     id: "open-ended",
     label: "申論・開放題",
     features: ["AI導讀"],
+    guessRate: 0,
     plannedFeatures: ["出題"],
-    conditionalFeatures: ["進度同步"],
+    conditionalFeatures: ["進度同步"], // 學生診斷：明確排除（不應支援）
     implemented: false,
     autoGradable: false,
     answerShape: "human-or-ai",
@@ -193,7 +208,8 @@ export const QUESTION_TYPES: readonly QuestionTypeSpec[] = [
     id: "passage-group",
     label: "題組題",
     features: ["AI導讀"],
-    conditionalFeatures: ["出題", "組卷", "自動批改", "錯題整理", "排行榜", "進度同步", "難度分佈"],
+    guessRate: 0, // 依子題型
+    conditionalFeatures: ["出題", "組卷", "自動批改", "錯題整理", "排行榜", "進度同步", "難度分佈", "學生診斷"], // 依子題型
     implemented: false,
     autoGradable: true,
     answerShape: "composite",
@@ -208,7 +224,8 @@ export const QUESTION_TYPES: readonly QuestionTypeSpec[] = [
   {
     id: "variant",
     label: "變體題",
-    features: ["自動批改", "錯題整理", "排行榜", "進度同步", "AI導讀", "難度分佈"],
+    features: ["自動批改", "錯題整理", "排行榜", "進度同步", "AI導讀", "難度分佈", "學生診斷"],
+    guessRate: 0,
     plannedFeatures: ["出題", "組卷"],
     implemented: false,
     autoGradable: true,
@@ -261,4 +278,9 @@ export function supportsFeature(typeId: QuestionTypeId, feature: FeatureId): Fea
 /** 某功能現在就能支援的題型（設計功能的抽題池時使用）。 */
 export function typesSupporting(feature: FeatureId): QuestionTypeId[] {
   return QUESTION_TYPES.filter((t) => t.features.includes(feature)).map((t) => t.id);
+}
+
+/** 取得題型的純猜測期望正確率（供診斷的信心分數修正使用）。 */
+export function guessRateOf(typeId: QuestionTypeId): number {
+  return questionTypeById(typeId)?.guessRate ?? 0.25;
 }

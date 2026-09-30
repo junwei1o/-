@@ -18,6 +18,11 @@
 > 程式側註冊表：`client/src/lib/questionTypes.ts`（`QUESTION_TYPES` / `AUTO_GRADABLE_QUESTION_TYPES`）。
 > **規則：先確定題型，再設計功能。** 不要用「選擇題」的假設套所有題目。
 > 現況：已實作 選擇題／是非題／配對題；填空、簡答、申論、題組、變體尚未實作（設計時須處理降級）。
+>
+> **📌 診斷／批改／推薦類功能另有一份（2026-09-30 新增）**：`docs/diagnosis-system.md`
+> ——信心分數演算法（含猜對率修正）、四層統計、洞察、科目適配層、整合流程。
+> 程式側：`client/src/lib/studentDiagnosis.ts`、`client/src/lib/subjectConfig.ts`。
+> **兩份文件以交叉引用分工，不重複內容**（避免文件與程式漂移）。
 
 | 位置 | 文件原述 | 2026-09-29 實況 |
 |---|---|---|
