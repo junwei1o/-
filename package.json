@@ -15,6 +15,7 @@
     "catalog:onion": "tsx scripts/build-onion-catalog.mts",
     "qc:onion": "tsx scripts/qc-onion-lessons.mts",
     "qc:bank": "tsx scripts/qc-question-bank.mts",
+    "sec:adversary": "node scripts/security-adversary.mjs",
     "bank:rebuild": "node scripts/expand-question-bank.mjs && node scripts/build-runtime-bank.mjs"
   },
   "dependencies": {
