@@ -1,0 +1,424 @@
+/* 學生診斷儀表板：手機優先，max-width container 自動加寬。
+   色彩全部來自全站設計變數（--paper/--white/--ink/--tidal/--coral/--moss/--yellow），
+   半透明一律 color-mix；圓角/陰影/間距/字級對應既有 token。 */
+
+.sd-page {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-4) calc(var(--space-10) + 20px);
+  display: grid;
+  gap: var(--space-5);
+}
+
+@media (min-width: 768px) {
+  .sd-page { padding: var(--space-8) var(--space-6) var(--space-10); }
+}
+
+/* ── 頂列 ── */
+.sd-eyebrow {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--type-eyebrow);
+  font-weight: 800;
+  letter-spacing: 0.18em;
+}
+
+.sd-status-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  margin: var(--space-2) 0 0;
+}
+
+.sd-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  background: var(--paper-deep);
+  color: var(--ink);
+  font-size: var(--type-meta);
+  font-weight: 700;
+}
+
+.sd-chip--flame {
+  background: color-mix(in srgb, var(--yellow) 22%, var(--white));
+  color: var(--ink);
+}
+
+.sd-chip--star {
+  background: color-mix(in srgb, var(--tidal) 14%, var(--white));
+  color: var(--tidal-deep);
+}
+
+.sd-chip--moss {
+  background: color-mix(in srgb, var(--moss) 16%, var(--white));
+  color: var(--moss);
+}
+
+.sd-chip--yellow {
+  background: color-mix(in srgb, var(--yellow) 26%, var(--white));
+  color: var(--ink);
+}
+
+/* ── 通用 section / card ── */
+.sd-section { display: grid; gap: var(--space-3); }
+
+.sd-card { padding: var(--space-5); }
+
+.sd-section-title {
+  margin: 0;
+  color: var(--tidal-deep);
+  font-size: var(--type-section);
+  line-height: 1.3;
+}
+
+.sd-empty-note {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--type-support);
+  line-height: 1.7;
+}
+
+/* ── 歡迎列 ── */
+.sd-hero {
+  background: color-mix(in srgb, var(--tidal) 8%, var(--white));
+  border-color: color-mix(in srgb, var(--tidal) 22%, var(--line));
+}
+
+.sd-hello {
+  margin: 0;
+  color: var(--ink);
+  font-size: var(--type-lead);
+}
+
+.sd-hero-sub {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: var(--type-body);
+  line-height: 1.7;
+}
+
+/* ── 今日任務 ── */
+.sd-task-list {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sd-task-card {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--white);
+  box-shadow: var(--shadow-xs);
+}
+
+.sd-task-icon {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  flex: none;
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--tidal) 12%, var(--white));
+  color: var(--tidal);
+}
+
+.sd-task-body { flex: 1 1 auto; min-width: 0; }
+
+.sd-task-title-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.sd-task-title {
+  margin: 0;
+  font-size: var(--type-body);
+  color: var(--ink);
+}
+
+.sd-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 9px;
+  border-radius: var(--radius-pill);
+  background: var(--paper-deep);
+  color: var(--muted);
+  font-size: var(--type-micro);
+  font-weight: 700;
+}
+
+.sd-tag--done {
+  background: color-mix(in srgb, var(--moss) 18%, var(--white));
+  color: var(--moss);
+}
+
+.sd-tag--building {
+  background: color-mix(in srgb, var(--yellow) 28%, var(--white));
+  color: var(--ink);
+}
+
+.sd-task-reason {
+  margin: 6px 0 0;
+  color: var(--ink);
+  font-size: var(--type-support);
+  line-height: 1.6;
+}
+
+.sd-task-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px;
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: var(--type-meta);
+}
+
+.sd-task-time,
+.sd-task-reward,
+.sd-task-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.sd-task-cta { flex: none; min-width: 76px; }
+.sd-task-cta:disabled { opacity: 0.55; cursor: not-allowed; }
+
+/* ── 強項 / 需要加油 雙欄 ── */
+.sd-two-col {
+  display: grid;
+  gap: var(--space-3);
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+  .sd-two-col { grid-template-columns: 1fr 1fr; }
+}
+
+.sd-col { padding: var(--space-5); display: grid; gap: var(--space-3); align-content: start; }
+
+.sd-point-list {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sd-point-item {
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--paper);
+}
+
+.sd-point-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.sd-point-name {
+  font-weight: 800;
+  color: var(--ink);
+  font-size: var(--type-body);
+}
+
+.sd-point-msg {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: var(--type-support);
+  line-height: 1.6;
+}
+
+.sd-point-hint {
+  margin: 4px 0 0;
+  color: var(--tidal-deep);
+  font-size: var(--type-meta);
+  line-height: 1.6;
+}
+
+/* ── 進步 ── */
+.sd-accuracy-row { margin-top: var(--space-2); }
+
+.sd-progress {
+  width: 100%;
+  height: 14px;
+  border-radius: var(--radius-pill);
+  background: var(--paper-deep);
+  overflow: hidden;
+}
+
+.sd-progress-fill {
+  height: 100%;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(90deg, var(--tidal), var(--moss));
+  transition: width var(--dur-slow) var(--ease-out);
+}
+
+.sd-accuracy-num {
+  margin: 8px 0 0;
+  font-size: var(--type-lead);
+  font-weight: 800;
+  color: var(--tidal-deep);
+}
+
+.sd-weekly {
+  margin-top: var(--space-5);
+  padding-top: var(--space-4);
+  border-top: 1px dashed var(--line);
+}
+
+.sd-weekly-title {
+  margin: 0 0 var(--space-3);
+  font-size: var(--type-body);
+  color: var(--ink);
+}
+
+.sd-weekly-grid {
+  display: grid;
+  gap: var(--space-3);
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+  .sd-weekly-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+.sd-weekly-cell {
+  display: grid;
+  gap: 2px;
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--paper);
+}
+
+.sd-weekly-label {
+  color: var(--muted);
+  font-size: var(--type-meta);
+}
+
+.sd-weekly-num {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--type-lead);
+  font-weight: 800;
+  color: var(--ink);
+}
+
+.sd-weekly-sub {
+  color: var(--muted);
+  font-size: var(--type-meta);
+}
+
+.sd-up { color: var(--moss); }
+.sd-down { color: var(--coral-deep); }
+.sd-flat { color: var(--muted); }
+
+.sd-streak-cheer {
+  margin: var(--space-4) 0 0;
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--yellow) 18%, var(--white));
+  color: var(--ink);
+  font-size: var(--type-support);
+  line-height: 1.6;
+}
+
+/* ── 徽章牆 ── */
+.sd-badge-grid {
+  display: grid;
+  gap: var(--space-3);
+  grid-template-columns: repeat(2, 1fr);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 640px) {
+  .sd-badge-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+.sd-badge-card {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  text-align: center;
+  background: var(--white);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-xs);
+}
+
+.sd-badge-card.is-unlocked {
+  border-color: color-mix(in srgb, var(--yellow) 55%, var(--line));
+  background: color-mix(in srgb, var(--yellow) 12%, var(--white));
+}
+
+.sd-badge-card.is-locked {
+  opacity: 0.8;
+}
+
+.sd-badge-icon {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: var(--radius-pill);
+  background: var(--paper-deep);
+  font-size: var(--type-lead);
+  color: var(--tidal-deep);
+}
+
+.sd-badge-name {
+  margin: 0;
+  font-size: var(--type-body);
+  color: var(--ink);
+}
+
+.sd-badge-cond {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--type-micro);
+  line-height: 1.5;
+}
+
+/* ── 空狀態 ── */
+.sd-empty-card {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-2);
+  padding: var(--space-8) var(--space-5);
+  text-align: center;
+}
+
+.sd-empty-icon { color: var(--yellow); }
+
+.sd-empty-title {
+  margin: 0;
+  font-size: var(--type-lead);
+  color: var(--ink);
+}
+
+.sd-empty-sub {
+  margin: 0 0 var(--space-2);
+  max-width: 420px;
+  color: var(--muted);
+  font-size: var(--type-body);
+  line-height: 1.7;
+}

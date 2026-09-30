@@ -52,6 +52,7 @@ const ClassroomPlay = React.lazy(() => import("@/pages/ClassroomPlay"));
 const WeeklyQuizPage = React.lazy(() => import("@/pages/WeeklyQuizPage"));
 const Expedition = React.lazy(() => import("@/pages/Expedition"));
 const LearningHub = React.lazy(() => import("@/pages/LearningHub"));
+const StudentDashboard = React.lazy(() => import("@/pages/StudentDashboard"));
 const Gallery = React.lazy(() => import("@/pages/Gallery"));
 const TreasureHub = React.lazy(() => import("@/pages/TreasureHub"));
 const TeacherDashboard = React.lazy(() => import("@/pages/TeacherDashboard"));
@@ -98,6 +99,7 @@ function Router() {
         <Route path={"/weekly-quiz"} component={WeeklyQuizPage} />
         <Route path={"/expedition"} component={Expedition} />
         <Route path={"/learning"} component={LearningHub} />
+        <Route path={"/student-dashboard"} component={StudentDashboard} />
         <Route path={"/gallery"} component={Gallery} />
         <Route path={"/treasure"} component={TreasureHub} />
         <Route path={"/features"} component={FeaturesDirectory} />

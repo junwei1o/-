@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useLocation } from "wouter";
-import { AlarmClock, BarChart3, BookOpenText, BrainCircuit, RotateCcw, ScrollText, UsersRound } from "lucide-react";
+import { AlarmClock, BarChart3, BookOpenText, BrainCircuit, Gauge, RotateCcw, ScrollText, UsersRound } from "lucide-react";
 import "./HubPages.css";
 
 type TabId = "me" | "wrong" | "parent";
@@ -21,6 +21,7 @@ export default function LearningHub() {
 
   const entries: Record<TabId, Array<{ label: string; desc: string; href: string; icon: React.ElementType }>> = {
     me: [
+      { label: "學生診斷儀表板", desc: "連續天數、等級、徽章、強項與今日任務", href: "/student-dashboard", icon: Gauge },
       { label: "學習洞察", desc: "查看弱點知識點與練習建議", href: "/learning-insights", icon: BrainCircuit },
       { label: "學習報告", desc: "回顧答題數量與成長趨勢", href: "/learning-report", icon: BarChart3 },
       { label: "探險日誌", desc: "每日與歷史航海足跡", href: "/adventure-journal", icon: BookOpenText },
