@@ -39,6 +39,31 @@ export type UiKind =
   | "textarea" // 長文字
   | "passage-with-subquestions" // 素材＋子題
 
+/** 功能維度（對應 docs/question-types.md §2.5 支援矩陣的功能定義）。 */
+export type FeatureId =
+  | "出題"
+  | "組卷"
+  | "自動批改"
+  | "錯題整理"
+  | "排行榜"
+  | "進度同步"
+  | "AI導讀"
+  | "難度分佈";
+
+export const FEATURES: readonly FeatureId[] = [
+  "出題",
+  "組卷",
+  "自動批改",
+  "錯題整理",
+  "排行榜",
+  "進度同步",
+  "AI導讀",
+  "難度分佈",
+] as const;
+
+/** 支援程度：yes＝現在就能依賴；planned＝schema 已規劃未實作；conditional＝有條件；no＝不應支援。 */
+export type FeatureSupport = "yes" | "planned" | "conditional" | "no";
+
 export type QuestionTypeSpec = {
   id: QuestionTypeId;
   /** 站上實際使用的題型名稱（與題庫資料的 questionType 字串一致者標註） */
@@ -51,6 +76,15 @@ export type QuestionTypeSpec = {
   uiKind: UiKind;
   /** 題庫資料必填欄位（相對於共用欄位之外） */
   requiredFields: string[];
+  /**
+   * 現在就支援的功能（可依賴）。
+   * 未列於 features/plannedFeatures/conditionalFeatures 者＝不應支援（no）。
+   */
+  features: FeatureId[];
+  /** 已規劃、schema 就緒但尚未實作的功能（矩陣中的 🟡）。 */
+  plannedFeatures?: FeatureId[];
+  /** 有條件支援的功能（矩陣中的 ⚠️，例如「僅關鍵詞」「僅記錄」）。 */
+  conditionalFeatures?: FeatureId[];
   /** 設計時最容易踩的坑 */
   pitfalls: string[];
   /** 相關實作檔案（相對 repo 根目錄） */
@@ -62,6 +96,7 @@ export const QUESTION_TYPES: readonly QuestionTypeSpec[] = [
   {
     id: "single-choice",
     label: "選擇題",
+    features: ["出題", "組卷", "自動批改", "錯題整理", "排行榜", "進度同步", "AI導讀", "難度分佈"],
     implemented: true,
     autoGradable: true,
     answerShape: "option-index",
@@ -76,6 +111,7 @@ export const QUESTION_TYPES: readonly QuestionTypeSpec[] = [
   {
     id: "true-false",
     label: "是非題",
+    features: ["出題", "組卷", "自動批改", "錯題整理", "排行榜", "進度同步", "AI導讀", "難度分佈"],
     implemented: true,
     autoGradable: true,
     answerShape: "boolean-index",
@@ -90,6 +126,7 @@ export const QUESTION_TYPES: readonly QuestionTypeSpec[] = [
   {
     id: "matching",
     label: "配對題",
+    features: ["出題", "組卷", "自動批改", "錯題整理", "排行榜", "進度同步", "AI導讀", "難度分佈"],
     implemented: true,
     autoGradable: true,
     answerShape: "pair-set",
@@ -104,6 +141,8 @@ export const QUESTION_TYPES: readonly QuestionTypeSpec[] = [
   {
     id: "fill-blank",
     label: "填空題",
+    features: ["AI導讀"],
+    plannedFeatures: ["出題", "組卷", "自動批改", "錯題整理", "排行榜", "進度同步", "難度分佈"],
     implemented: false,
     autoGradable: true,
     answerShape: "text-normalized",
@@ -118,6 +157,9 @@ export const QUESTION_TYPES: readonly QuestionTypeSpec[] = [
   {
     id: "short-answer",
     label: "簡答題",
+    features: ["AI導讀"],
+    plannedFeatures: ["出題", "組卷"],
+    conditionalFeatures: ["自動批改", "錯題整理", "進度同步"],
     implemented: false,
     autoGradable: false,
     answerShape: "keyword-set",
@@ -132,6 +174,9 @@ export const QUESTION_TYPES: readonly QuestionTypeSpec[] = [
   {
     id: "open-ended",
     label: "申論・開放題",
+    features: ["AI導讀"],
+    plannedFeatures: ["出題"],
+    conditionalFeatures: ["進度同步"],
     implemented: false,
     autoGradable: false,
     answerShape: "human-or-ai",
@@ -147,6 +192,9 @@ export const QUESTION_TYPES: readonly QuestionTypeSpec[] = [
   {
     id: "passage-group",
     label: "題組題",
+    features: ["AI導讀"],
+    plannedFeatures: ["出題"],
+    conditionalFeatures: ["組卷", "自動批改", "錯題整理", "排行榜", "進度同步", "難度分佈"],
     implemented: false,
     autoGradable: true,
     answerShape: "composite",
@@ -161,6 +209,8 @@ export const QUESTION_TYPES: readonly QuestionTypeSpec[] = [
   {
     id: "variant",
     label: "變體題",
+    features: ["自動批改", "錯題整理", "排行榜", "進度同步", "AI導讀", "難度分佈"],
+    plannedFeatures: ["出題", "組卷"],
     implemented: false,
     autoGradable: true,
     answerShape: "option-index",
@@ -190,4 +240,26 @@ export function questionTypeIdFromBankLabel(label: string): QuestionTypeId | und
   if (label === "選擇題") return "single-choice";
   if (label === "是非題") return "true-false";
   return undefined;
+}
+
+/**
+ * 查詢某題型對某功能的支援程度。
+ * 設計功能時用它判斷，**不要自己重新推導支援矩陣**。
+ *
+ * @example
+ * supportsFeature("short-answer", "排行榜") // => "no"（該題不計分，UI 須標示）
+ * supportsFeature("fill-blank", "自動批改") // => "planned"（schema 已定案，尚未實作）
+ */
+export function supportsFeature(typeId: QuestionTypeId, feature: FeatureId): FeatureSupport {
+  const spec = questionTypeById(typeId);
+  if (!spec) return "no";
+  if (spec.features.includes(feature)) return "yes";
+  if (spec.plannedFeatures?.includes(feature)) return "planned";
+  if (spec.conditionalFeatures?.includes(feature)) return "conditional";
+  return "no";
+}
+
+/** 某功能現在就能支援的題型（設計功能的抽題池時使用）。 */
+export function typesSupporting(feature: FeatureId): QuestionTypeId[] {
+  return QUESTION_TYPES.filter((t) => t.features.includes(feature)).map((t) => t.id);
 }

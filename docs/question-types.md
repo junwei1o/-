@@ -63,14 +63,85 @@
 | 設計準則 | ① 左右項數量一致且**不得有一對一以外的歧義解** ② 配對關係必須唯一 ③ 打亂右項順序 |
 | 注意 | 與選擇題共用「洗牌」概念但**不共用資料 schema**——設計時不要假設 `options/answer` 存在 |
 
-### D. `fill-blank` 填空題 — 未實作
+### D. `fill-blank` 填空題 — 未實作（schema 已定案）
+
+**Schema**
+
+```ts
+interface FillBlankQuestion {
+  // 共用欄位（與其他題型一致）
+  id: string; grade: number; subject: string; questionType: "填空題";
+  difficulty: "基礎" | "標準" | "挑戰";
+  curriculumDomain: string; learningTopic: string;
+  explanation: string; knowledge: string[]; area?: string; subjectCombination?: string;
+  // 填空題專屬
+  prompt: string;                 // 題幹，含佔位符 {{b1}}、{{b2}}…
+  blanks: BlankItem[];            // 空格定義，順序對應佔位符
+  caseSensitive?: boolean;        // 預設 false
+  normalizationLevel?: "strict" | "standard" | "loose"; // 預設 "standard"
+}
+
+interface BlankItem {
+  id: string;                     // 對應 prompt 中的 {{id}}
+  answer: string;                 // 標準答案
+  acceptAlternatives?: string[];  // 可接受的替代答案（同義詞、異體字）
+  hint?: string;                  // 選用提示（顯示於輸入框旁）
+  maxLength?: number;             // 選用
+}
+```
+
+**範例**
+
+```json
+{
+  "id": "fb-001", "grade": 3, "subject": "自然", "questionType": "填空題",
+  "difficulty": "基礎", "curriculumDomain": "地球科學", "learningTopic": "水的三態",
+  "prompt": "水在攝氏 {{b1}} 度時會結冰，在攝氏 {{b2}} 度時會沸騰。",
+  "blanks": [
+    { "id": "b1", "answer": "0",   "acceptAlternatives": ["零", "０"], "hint": "請填數字" },
+    { "id": "b2", "answer": "100", "acceptAlternatives": ["一百", "１００"], "hint": "請填數字" }
+  ],
+  "explanation": "在標準大氣壓下，水的凝固點為 0°C，沸點為 100°C。",
+  "knowledge": ["水的三態", "凝固點", "沸點"],
+  "normalizationLevel": "standard"
+}
+```
+
+**正規化三層級**（由 `normalizationLevel` 控制）
+
+| 層級 | 處理項目 | 適用場景 |
+|---|---|---|
+| `strict` | 僅 trim ＋ 合併連續空白 | 需精確比對（程式碼、特定符號） |
+| `standard` | strict ＋ 全形→半形 ＋ 大小寫 ＋ 標點統一 | **預設**，大多數填空題 |
+| `loose` | standard ＋ 異體字 ＋ 中文數字 | 中文填空、容錯要求高 |
+
+**正規化對照表**
+
+| 類別 | 原始 | 正規化後 | 層級 |
+|---|---|---|---|
+| 全形字母 | ＡＢＣ | ABC | standard |
+| 全形數字 | １２３ | 123 | standard |
+| 全形標點 | ，。！？ | ,.!? | standard |
+| 全形空白 U+3000 | （全形空格） | （半形空格） | standard |
+| 大小寫 | Apple | apple | standard |
+| 首尾空白 | `"  答案  "` | `"答案"` | strict |
+| 中間多空白 | `"甲  乙"` | `"甲 乙"` | strict |
+| 中文標點 | `"答案，"` | `"答案,"` | standard |
+| 異體字（臺/台） | 臺灣 | 台灣 | loose |
+| 異體字（裡/里） | 裡面 | 里面 | loose |
+| 異體字（著/着） | 著手 | 着手 | loose |
+| 中文數字 | 一百 | 100 | loose（需對照表） |
+| 單位空格 | `"0 度"` | `"0度"` | loose |
+
+> ⚠️ **異體字表必須雙向一致且不可過度展開**。「臺／台」在地名通常可互換，但部分專有名詞不應互換——
+> 只處理教育部標準字體中明確列為異體的組合。
 
 | 項目 | 內容 |
 |---|---|
-| 建議 schema | `blanks: Array<{ id, answer: string, acceptAlternatives?: string[] }>`；`prompt` 以佔位符標記空格 |
-| 評分 | 自動，但**必須先正規化**：全形／半形、大小寫、前後空白、標點 |
-| 設計準則 | ① 一個空格只考一個知識點 ② 提供 `acceptAlternatives` 容錯（同義詞／異體字）③ **避免需要主觀判斷的答案**（那屬於簡答題） |
-| 風險 | 中文輸入法誤差、異體字（臺／台）→ 需正規化表，且要有「答對卻被判錯」的回報管道 |
+| 評分 | 自動：`normalize(輸入)` 比對 `normalize(答案)` 或 `acceptAlternatives`（皆先正規化） |
+| 設計準則 | ① 一個空格只考一個知識點 ② 提供 `acceptAlternatives` 容錯 ③ **避免需要主觀判斷的答案**（那屬於簡答題）④ 中文數字轉換僅在「標準答案本身是純數字」時才嘗試，避免誤轉（如「一把手」） |
+| 風險 | 中文輸入法誤差、異體字 → 需正規化表 ＋「答對卻被判錯」的回報管道 |
+| 實作狀態 | schema 已定案；`normalizeFillBlank()` / `gradeFillBlank()` **尚未實作** |
 
 ### E. `short-answer` 簡答題 — 未實作
 
@@ -106,6 +177,50 @@
 | 建議 schema | `{ variantOf: questionId, variantKind: "wording"|"numbers"|"context"|"inverse" }` |
 | 設計準則 | ① 變體必須改變**考察角度**，不是換句話說 ② **防污染**：變體不可與原題同時出現在同一份試卷 ③ 反向題（問「何者錯誤」）需明確標記，避免與正向題混淆 |
 | 用途 | 擴充題庫而不重複、測「真懂 vs. 記答案」 |
+
+---
+
+## 2.5 題型 × 功能 支援矩陣（設計功能時的第一道檢查）
+
+先明確定義功能，避免歧義：
+
+| 功能 | 含義 |
+|---|---|
+| **出題** | 題庫中存在此題型，可被抽題 |
+| **組卷** | 可被 `lib/paperExam.ts` 納入試卷 |
+| **自動批改** | 正解唯一且可程式化比對 |
+| **錯題整理** | 批改後可自動歸類錯題 |
+| **排行榜** | 可計入正確率、積分等自動化指標 |
+| **進度同步** | 可透過「船長名字」跨裝置同步 |
+| **AI 導讀** | 可送 AI 產生回饋（不含個資） |
+| **難度分佈** | 可統計難度並用於選題 |
+
+| 功能 ＼ 題型 | single-choice | true-false | matching | fill-blank | short-answer | open-ended | passage-group | variant |
+|---|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
+| 出題 | ✅ | ✅ | ✅ | 🟡 | 🟡 | 🟡 | ⚠️ 容器已有 | 🟡 |
+| 組卷 | ✅ | ✅ | ✅ | 🟡 | 🟡 | ❌ | ⚠️ 容器已有 | 🟡 |
+| 自動批改 | ✅ | ✅ | ✅ | 🟡 | ⚠️ 輔助 | ❌ | 依子題 | ✅ |
+| 錯題整理 | ✅ | ✅ | ✅ | 🟡 | ⚠️ 僅關鍵詞 | ❌ | 依子題 | ✅ |
+| 排行榜 | ✅ | ✅ | ✅ | 🟡 | ❌ | ❌ | 依子題 | ✅ |
+| 進度同步 | ✅ | ✅ | ✅ | 🟡 | ⚠️ 僅記錄 | ⚠️ 僅記錄 | 依子題 | ✅ |
+| AI 導讀 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| 難度分佈 | ✅ | ✅ | ✅ | 🟡 | ❌ | ❌ | 依子題 | ✅ |
+
+**圖例**：✅ 已支援｜🟡 待實作（schema 已規劃）｜⚠️ 有條件支援｜❌ 不應支援
+
+> 程式側對應：`client/src/lib/questionTypes.ts` 的 `QUESTION_TYPES[].features`，
+> 可用 `supportsFeature(typeId, "排行榜")` 查詢——**不要自己重新推導這張表**。
+
+### 降級規則（必讀）
+
+某功能不支援某題型時，**必須明確降級，不能默默跳過**：
+
+| 情境 | 降級做法 |
+|---|---|
+| 排行榜遇到 `short-answer` | 該題不計入正確率，僅記錄作答；UI 標示「此題不計分」 |
+| 錯題整理遇到 `open-ended` | 不自動歸類，改為「待複習」清單，由學生自行標記 |
+| 組卷遇到未實作題型 | 不納入抽題池，並在組卷日誌記錄「跳過 N 題（題型未實作）」 |
+| 進度同步遇到 `short-answer` | 僅同步「已作答／未作答」，不同步分數 |
 
 ---
 
