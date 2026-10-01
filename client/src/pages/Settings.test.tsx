@@ -21,19 +21,47 @@ vi.mock("wouter", () => ({ useLocation: () => ["/settings", setLocation] }));
 vi.mock("sonner", () => ({ toast: { success: vi.fn(), error: vi.fn() } }));
 
 const { testProxyMock } = vi.hoisted(() => ({ testProxyMock: vi.fn() }));
+/** 全站資源監控（2026-10-01）：預設回一份「正常」的快照，可個別測試覆寫。 */
+const { dbUsageMock } = vi.hoisted(() => ({ dbUsageMock: vi.fn() }));
 vi.mock("@/lib/trpc", () => ({
   trpc: {
     aiCompanion: {
       testProxy: { useMutation: () => ({ mutateAsync: testProxyMock, isPending: false }) },
     },
+    dbUsage: {
+      status: { useQuery: () => dbUsageMock() },
+    },
   },
 }));
+
+/** 產生一份 dbUsage.status 的假快照（只覆寫測試關心的欄位）。 */
+function dbUsageSnapshot(overrides: Record<string, unknown> = {}) {
+  return {
+    source: "estimate",
+    sourceNote: "由本站自行計量 DB 操作推估，非 TiDB Cloud 帳單數字。",
+    quota: { ruPerMonth: 50_000_000, label: "5000 萬 RU/月" },
+    uptimeMs: 3 * 3_600_000,
+    statements: 1_500,
+    failedStatements: 2,
+    rowsTouched: 42_000,
+    estimatedRu: 5_700,
+    percentOfQuota: 0.0114,
+    ruPerHour: 1_900,
+    projectedMonthlyRu: 1_368_000,
+    sustainableRuPerHour: 69_444.44,
+    level: "ok",
+    recentBuckets: [],
+    ...overrides,
+  };
+}
 
 describe("設定頁錯誤日誌", () => {
   beforeEach(() => {
     // 既有測試都針對解鎖後的船長室內容：先重置閘門狀態再標記此裝置已解鎖。
     bxStore.reset();
     storage.set("xue-debug-unlocked-v1", "1");
+    dbUsageMock.mockReset();
+    dbUsageMock.mockReturnValue({ data: dbUsageSnapshot(), isPending: false, isError: false });
   });
 
   afterEach(() => {
@@ -378,5 +406,87 @@ describe("設定頁伴小星雙腦代理", () => {
     render(<Settings />);
     fireEvent.click(screen.getByRole("button", { name: /清除代理/ }));
     expect(storage.has("companion-brain-config-v1")).toBe(false);
+  });
+});
+
+describe("全站資源監控卡片（船長室內）", () => {
+  beforeEach(() => {
+    // 這裡是獨立的 describe，不會繼承上面的 beforeEach——必須自己解鎖船長室，
+    // 否則監控卡片（放在解鎖後的區塊內）根本不會渲染。
+    bxStore.reset();
+    storage.set("xue-debug-unlocked-v1", "1");
+    dbUsageMock.mockReset();
+    dbUsageMock.mockReturnValue({ data: dbUsageSnapshot(), isPending: false, isError: false });
+  });
+
+  afterEach(() => {
+    cleanup();
+    storage.clear();
+  });
+
+  it("顯示 RU 限額與額度說明（含何時該擔心）", () => {
+    render(<Settings />);
+    expect(screen.getByText(/RU 限額/)).toBeInTheDocument();
+    expect(screen.getByText("5000 萬 RU/月")).toBeInTheDocument();
+    expect(screen.getByText(/小型網站或個人專案通常足夠/)).toBeInTheDocument();
+    expect(screen.getByText(/高頻 API 呼叫/)).toBeInTheDocument();
+    expect(screen.getByText(/大量寫入/)).toBeInTheDocument();
+  });
+
+  it("呈現「已使用 vs 額度」與「外推月用量」的對比", () => {
+    render(<Settings />);
+    // 5,700 RU 佔 5000 萬不到 1% → 應顯示 <1% 而不是 0%（避免誤以為沒用到）
+    expect(screen.getByText("<1%", { exact: false })).toBeInTheDocument();
+    // 外推月用量 136.8 萬 RU
+    expect(screen.getByText(/136\.8 萬/, { exact: false })).toBeInTheDocument();
+    expect(screen.getByRole("meter", { name: /本次實例已使用/ })).toBeInTheDocument();
+    expect(screen.getByRole("meter", { name: /外推月用量/ })).toBeInTheDocument();
+  });
+
+  it("消耗速度偏高時給出明確提示（role=alert）", () => {
+    dbUsageMock.mockReturnValue({
+      data: dbUsageSnapshot({ level: "high", ruPerHour: 600_000, projectedMonthlyRu: 432_000_000, percentOfQuota: 3.2 }),
+      isPending: false,
+      isError: false,
+    });
+    render(<Settings />);
+    const alert = screen.getByRole("alert");
+    expect(alert).toHaveTextContent("消耗偏高");
+    expect(alert).toHaveTextContent(/會用完本月額度/);
+    expect(alert).toHaveTextContent(/建議檢查/);
+  });
+
+  it("速度正常時不給多餘建議，且不是 alert", () => {
+    render(<Settings />);
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    expect(screen.getByText("正常")).toBeInTheDocument();
+  });
+
+  it("尚未累積足夠資料時說明原因（不要看起來像壞掉）", () => {
+    dbUsageMock.mockReturnValue({
+      data: dbUsageSnapshot({ level: "unknown", ruPerHour: null, projectedMonthlyRu: null }),
+      isPending: false,
+      isError: false,
+    });
+    render(<Settings />);
+    // 「資料累積中」會同時出現在狀態徽章、外推月用量與消耗速度三處
+    expect(screen.getAllByText("資料累積中").length).toBeGreaterThanOrEqual(2);
+    expect(screen.getByText(/5 分鐘/)).toBeInTheDocument();
+  });
+
+  it("載入中與失敗各有明確狀態", () => {
+    dbUsageMock.mockReturnValue({ data: undefined, isPending: true, isError: false });
+    const { unmount } = render(<Settings />);
+    expect(screen.getByText(/正在讀取資源用量/)).toBeInTheDocument();
+    unmount();
+
+    dbUsageMock.mockReturnValue({ data: undefined, isPending: false, isError: true });
+    render(<Settings />);
+    expect(screen.getByRole("alert")).toHaveTextContent(/無法取得資源用量/);
+  });
+
+  it("明確標示資料來源為推估值，不讓使用者誤以為是帳單數字", () => {
+    render(<Settings />);
+    expect(screen.getByText(/非 TiDB Cloud 帳單數字/)).toBeInTheDocument();
   });
 });

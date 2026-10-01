@@ -341,3 +341,142 @@
 .pin-cloud-status-error { color: #c0392b; }
 .pin-cloud-status-info { color: var(--muted-foreground); }
 @media (max-width: 640px) { .pin-cloud-form { grid-template-columns: 1fr; } }
+
+/* ══════════════════════════════════════════════════════════════
+   全站資源監控（2026-10-01）
+   顏色一律由品牌變數派生，不寫死色碼（依 index.css 開頭規範）。
+   語意：ok=苔綠、watch=芥黃、high=珊瑚、neutral=次文字。
+   ══════════════════════════════════════════════════════════════ */
+
+.diag-resource-warning {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  margin-bottom: 0.85rem;
+  padding: 0.7rem 0.8rem;
+  border-left: 4px solid var(--line);
+  border-radius:var(--radius-md);
+  background: color-mix(in srgb, var(--white) 78%, transparent);
+}
+
+.diag-resource-badge {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+.diag-resource-headline {
+  color: var(--ink);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.diag-resource-advice {
+  color: var(--muted);
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+/* 各級語意色（只動左側色條與徽章底色，內文維持高對比深墨） */
+.diag-resource-warning.is-ok { border-left-color: var(--moss); background: color-mix(in srgb, var(--moss) 12%, var(--white)); }
+.diag-resource-warning.is-ok .diag-resource-badge { color: color-mix(in srgb, var(--moss) 72%, var(--ink)); }
+.diag-resource-warning.is-watch { border-left-color: var(--yellow); background: color-mix(in srgb, var(--yellow) 16%, var(--white)); }
+.diag-resource-warning.is-watch .diag-resource-badge { color: color-mix(in srgb, var(--yellow) 52%, var(--ink)); }
+.diag-resource-warning.is-high { border-left-color: var(--coral); background: color-mix(in srgb, var(--coral) 14%, var(--white)); }
+.diag-resource-warning.is-high .diag-resource-badge { color: var(--coral-deep); }
+
+.diag-ru-block {
+  margin-bottom: 0.85rem;
+  padding: 0.85rem;
+  border: 1px solid color-mix(in srgb, var(--tidal) 22%, transparent);
+  border-radius:var(--radius-md);
+  background: color-mix(in srgb, var(--white) 82%, transparent);
+}
+
+.diag-ru-quota {
+  margin: 0;
+  color: var(--ink);
+  font-size: 0.95rem;
+}
+
+.diag-ru-quota strong {
+  color: var(--tidal-deep);
+  font-size: 1.1rem;
+}
+
+.diag-ru-note {
+  margin: 0.4rem 0 0.75rem;
+  color: var(--muted);
+  font-size: 0.75rem;
+  line-height: 1.6;
+}
+
+.diag-ru-meters {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.diag-ru-meter-row {
+  display: grid;
+  grid-template-columns: 5.5rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.diag-ru-meter-label {
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.diag-ru-meter {
+  width: 100%;
+  height: 0.6rem;
+  accent-color: var(--tidal);
+}
+
+.diag-ru-meter.is-high { accent-color: var(--coral); }
+.diag-ru-meter.is-watch { accent-color: var(--yellow); }
+.diag-ru-meter.is-ok { accent-color: var(--moss); }
+
+.diag-ru-meter-value {
+  color: var(--ink);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.diag-ru-source {
+  margin: 0.6rem 0 0;
+  color: var(--muted);
+  font-size: 0.72rem;
+  line-height: 1.55;
+}
+
+.diag-resource-loading,
+.diag-resource-error {
+  margin: 0;
+  padding: 0.6rem 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.diag-resource-error {
+  color: var(--coral-deep);
+  font-weight: 700;
+}
+
+/* 窄螢幕：meter 行的三欄改為兩列，避免數字被壓到換行 */
+@media (max-width: 560px) {
+  .diag-ru-meter-row {
+    grid-template-columns: 1fr auto;
+    row-gap: 0.2rem;
+  }
+  .diag-ru-meter { grid-column: 1 / -1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .diag-resource-warning,
+  .diag-ru-block { transition: none; }
+}

@@ -35,6 +35,7 @@ import {
 } from "../drizzle/schema";
 import questionSeed from "../data/taiwan_curriculum_500.json";
 import { ENV } from './_core/env';
+import { instrumentPool } from './dbUsage';
 
 function createDb(pool: mysql.Pool) {
   return drizzle(pool);
@@ -52,6 +53,9 @@ export async function getDb() {
         uri: process.env.DATABASE_URL,
         ssl: { rejectUnauthorized: false },
       });
+      // 全站資源監控：在 pool 上掛 DB 用量計量（純計數，不改變任何行為）。
+      // 這是全站唯一的 DB 連線收斂點，掛這裡才能覆蓋所有查詢路徑。
+      instrumentPool(pool);
       _db = createDb(pool);
     } catch (error) {
       console.warn("[Database] Failed to connect:", error);

@@ -67,6 +67,7 @@ import { TEACHER_OPEN_ID } from "./_core/context";
 import { sdk } from "./_core/sdk";
 import { systemRouter } from "./_core/systemRouter";
 import { TRPCError } from "@trpc/server";
+import { getDbUsageStatus } from "./dbUsage";
 import { publicProcedure, router, teacherProcedure } from "./_core/trpc";
 import {
   REFLECT_LIMIT_PER_MIN,
@@ -1537,6 +1538,16 @@ export const appRouter = router({
      * audio:null 的確切原因（缺 python／缺模組／僅熔斷中）。
      */
     health: publicProcedure.query(() => probeEdgeTtsSupply()),
+  }),
+  /**
+   * 全站資源監控（2026-10-01）：設定頁「全站資源監控」卡片用。
+   *
+   * ⚠️ 回傳的是**本站自行計量的推估值**，不是 TiDB Cloud 帳單上的 RU 數字
+   * （真實值需 TiDB Cloud API 憑證，本站 env 尚未配置）。
+   * 只回傳統計量與額度，**不含連線字串、表名、SQL 文字或任何個資**。
+   */
+  dbUsage: router({
+    status: publicProcedure.query(() => getDbUsageStatus()),
   }),
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
