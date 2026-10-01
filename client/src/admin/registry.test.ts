@@ -8,6 +8,7 @@ import {
   registerAdminModules,
 } from "./registry";
 import type { AdminModule } from "./types";
+import { ADMIN_MODULES } from "./modules";
 
 function mod(id: string, group: string, order = 0, extra: Partial<AdminModule> = {}): AdminModule {
   return { id, title: `標題-${id}`, group, order, render: () => null, ...extra };
@@ -100,5 +101,45 @@ describe("註冊表：span 與內容型態", () => {
   it("render 可回傳任意 ReactNode（型態不限）", () => {
     registerAdminModule(mod("a", "operations", 0, { render: () => "純字串也可以" }));
     expect(getAdminModules()[0].render()).toBe("純字串也可以");
+  });
+});
+
+describe("⭐ 不變式：真實模組集不得與分組同名（2026-10-01）", () => {
+  it("分組標題與模組標題不得重複——否則 getByRole 會多重匹配，畫面上也會讓站長混淆", () => {
+    const groupLabels = new Set(ADMIN_GROUPS.map((group) => group.label));
+    const collisions = ADMIN_MODULES.filter((module) => groupLabels.has(module.title)).map((module) => module.title);
+    expect(collisions).toEqual([]);
+  });
+
+  it("模組 id 不得重複", () => {
+    const ids = ADMIN_MODULES.map((module) => module.id);
+    expect(new Set(ids).size).toBe(ids.length);
+  });
+
+  it("每個模組的分組都已登記（未登記雖不會壞，但不該在正式模組集裡出現）", () => {
+    const known = new Set(ADMIN_GROUPS.map((group) => group.id));
+    const unregistered = ADMIN_MODULES.filter((module) => !known.has(module.group)).map((module) => module.id);
+    expect(unregistered).toEqual([]);
+  });
+});
+
+describe("⭐ 不變式：分組順序（2026-10-01 第二輪）", () => {
+  it("每個分組的 order 不得重複——重複會讓畫面順序變成未定義（依陣列順序），難以預期", () => {
+    const orders = ADMIN_GROUPS.map((group) => group.order);
+    expect(new Set(orders).size).toBe(orders.length);
+  });
+
+  it("分組必須依 order 遞增排列——陣列順序要等於顯示順序，否則讀原始碼會被誤導", () => {
+    const orders = ADMIN_GROUPS.map((group) => group.order);
+    expect(orders).toEqual([...orders].sort((a, b) => a - b));
+  });
+
+  it("巡檢動線正確：內容與題庫在成本與用量之前，成本與用量在存取與角色之前", () => {
+    const at = (id: string) => ADMIN_GROUPS.findIndex((group) => group.id === id);
+    expect(at("operations")).toBeLessThan(at("content"));
+    expect(at("content")).toBeLessThan(at("usage"));
+    expect(at("usage")).toBeLessThan(at("access"));
+    expect(at("access")).toBeLessThan(at("maintenance"));
+    expect(at("maintenance")).toBeLessThan(at("system"));
   });
 });

@@ -14,6 +14,7 @@ import { handleLineWebhook } from "./lineWebhook";
 import { serveStatic, setupVite } from "./vite";
 import { apiCacheControl } from "./apiCache";
 import { createCsrfOriginGuard } from "./csrfOrigin";
+import { recordRequest } from "./requestStats";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -110,6 +111,15 @@ async function startServer() {
   registerStorageProxy(app);
   registerOAuthRoutes(app);
   registerBackupRoute(app);
+  // 請求統計（2026-10-01，站長後台用）：只記聚合數字（狀態碼分級、方法、耗時），
+  // 不記路徑／IP／UA。掛在所有路由之前，於回應結束時結算。
+  app.use((req, res, next) => {
+    const startedAt = Date.now();
+    res.on("finish", () => {
+      recordRequest({ method: req.method, status: res.statusCode, durationMs: Date.now() - startedAt });
+    });
+    next();
+  });
   // API 速率限制（計劃 A Phase 4）：每 IP 每分鐘 300 次。
   // 取捨：計畫範例值為 60/min，但校園 Wi-Fi 常整校共用一個對外 IP（NAT），
   // 60/min 會把一間教室的正常作答整批誤殺；300/min 足以擋自動化洪水，

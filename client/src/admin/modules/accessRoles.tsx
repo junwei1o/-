@@ -71,7 +71,7 @@ function AccessRolesModule() {
       </div>
 
       <ul className="admin-note-list">
-        <li>老師與站長使用**不同**通關語：共用會讓老師實質取得營運權限。</li>
+        <li>老師與站長使用<strong>不同</strong>通關語：共用會讓老師實質取得營運權限。</li>
         <li>站長層級高於老師，因此站長可直接進入督學台，不需再登入一次。</li>
         <li>未設定站長通關語時，本站長後台一律無法登入（安全側降級），其他角色不受影響。</li>
       </ul>

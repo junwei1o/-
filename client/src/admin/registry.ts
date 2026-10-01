@@ -16,6 +16,18 @@ import type { AdminGroup, AdminGroupId, AdminModule } from "./types";
  * 分組定義。**新增分組不一定要改這裡**——未登記的分組會被自動附加到最後
  * （見 `groupAdminModules`）；但在這裡登記可以控制標題、說明與順序。
  */
+/**
+ * 分組順序刻意對應站長的**實際巡檢動線**，不是隨意排列：
+ *
+ *   站點現在忙不忙（營運與資源）
+ *     → 裡面裝了什麼（內容與題庫）
+ *     → 這些東西花多少錢（成本與用量）
+ *     → 誰能進來、以什麼身分（存取與角色）
+ *     → 我要動手做什麼（維護工具）
+ *     → 它跑在什麼上面（系統與部署）
+ *
+ * `order` 以 10 為間隔，方便日後在任兩組之間插入新分組而不必重編號。
+ */
 export const ADMIN_GROUPS: AdminGroup[] = [
   {
     id: "operations",
@@ -24,22 +36,34 @@ export const ADMIN_GROUPS: AdminGroup[] = [
     order: 10,
   },
   {
-    id: "access",
-    label: "存取與角色",
-    description: "三種角色的定位與憑證狀態，確認誰能進哪裡。",
-    order: 20,
-  },
-  {
     id: "content",
     label: "內容與題庫",
     description: "學習內容的規模與健康度。",
+    order: 20,
+  },
+  {
+    id: "usage",
+    label: "成本與用量",
+    description: "按次計費的外部資源用量。",
     order: 30,
+  },
+  {
+    id: "access",
+    label: "存取與角色",
+    description: "三種角色的定位與憑證狀態，確認誰能進哪裡。",
+    order: 40,
+  },
+  {
+    id: "maintenance",
+    label: "維護工具",
+    description: "會主動改變伺服器狀態的操作——請確認後再執行。",
+    order: 50,
   },
   {
     id: "system",
     label: "系統與部署",
     description: "版本、部署與前端執行環境資訊。",
-    order: 40,
+    order: 60,
   },
 ];
 

@@ -199,6 +199,19 @@ export function toEdgeRate(rate: number): string {
 let consecutiveFailures = 0;
 let brokenUntil = 0;
 
+/**
+ * 重設朗讀熔斷器（2026-10-01，站長後台維運操作）。
+ *
+ * 用途：遠端朗讀連續失敗達門檻後會熔斷 5 分鐘；若站長剛修好供應鏈
+ * （例如 edge-tts 裝好了），不必等冷卻結束——可直接手動重設立即恢復。
+ * 只動計數與冷卻時間，**不改變任何合成行為**。
+ */
+export function resetSpeechBreaker(): { failures: number; brokenForMs: number } {
+  consecutiveFailures = 0;
+  brokenUntil = 0;
+  return { failures: consecutiveFailures, brokenForMs: 0 };
+}
+
 function runEdgeTts(python: string, voice: string, rate: string, text: string, outPath: string): Promise<void> {
   return new Promise((resolve, reject) => {
     // 注意：--rate 必須用「=」連接（值可能是 "-8%"，分開寫會被 argparse 當成未知選項）

@@ -1,8 +1,14 @@
 import { registerAdminModules } from "../registry";
 import type { AdminModule } from "../types";
 import { accessRolesModule } from "./accessRoles";
+import { questionBankModule, siteDataModule } from "./content";
+import { maintenanceModule } from "./maintenance";
+import { requestStatsModule, speechSupplyModule } from "./operations";
 import { resourceMonitorModule } from "./resourceMonitor";
+import { runtimeModule } from "./runtime";
+import { securityModule } from "./security";
 import { systemInfoModule } from "./systemInfo";
+import { aiUsageModule } from "./usage";
 
 /**
  * ⬇️ **新增後台模組的唯一入口**。
@@ -15,9 +21,23 @@ import { systemInfoModule } from "./systemInfo";
  *  就算忘了補也不會遺失——未登記分組會自動附加在最後。）
  */
 export const ADMIN_MODULES: AdminModule[] = [
+  // 營運與資源
   resourceMonitorModule,
+  requestStatsModule,
+  speechSupplyModule,
+  // 內容與題庫
+  questionBankModule,
+  siteDataModule,
+  // 成本與用量
+  aiUsageModule,
+  // 存取與角色
   accessRolesModule,
+  securityModule,
+  // 系統與部署
+  runtimeModule,
   systemInfoModule,
+  // 維運操作
+  maintenanceModule,
 ];
 
 export function registerBuiltinAdminModules(): void {

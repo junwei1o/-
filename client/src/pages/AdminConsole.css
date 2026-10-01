@@ -529,3 +529,244 @@
   .admin-warning,
   .admin-ru-block { transition: none; }
 }
+
+/* ══════════════════════════════════════════════════════════════
+   擴充模組樣式（2026-10-01 第二輪：資料／統計／操作／設定模組）
+   ══════════════════════════════════════════════════════════════ */
+
+.admin-page code {
+  padding: 0.1rem 0.35rem;
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--paper-deep) 65%, transparent);
+  font-family: var(--font-mono, monospace);
+  font-size: 0.75rem;
+  overflow-wrap: anywhere;
+}
+
+/* 大數字（題庫總數） */
+.admin-big-number {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin: 0 0 0.85rem;
+  color: var(--ink);
+}
+
+.admin-big-number strong {
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--tidal-deep);
+}
+
+.admin-big-number > span {
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.admin-big-number small {
+  flex-basis: 100%;
+  color: var(--muted);
+  font-size: 0.72rem;
+  line-height: 1.5;
+}
+
+/* 分布區塊 */
+.admin-dist {
+  margin-top: 0.9rem;
+}
+
+.admin-dist-title {
+  margin: 0 0 0.45rem;
+  color: var(--tidal-deep);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+/* meter 清單（分布與比例） */
+.admin-meter-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.admin-meter-item {
+  display: grid;
+  grid-template-columns: 6.5rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.admin-meter-label {
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.admin-meter {
+  width: 100%;
+  height: 0.55rem;
+  accent-color: var(--tidal);
+}
+
+.admin-meter-item.is-ok .admin-meter { accent-color: var(--moss); }
+.admin-meter-item.is-watch .admin-meter { accent-color: var(--yellow); }
+.admin-meter-item.is-high .admin-meter { accent-color: var(--coral); }
+
+.admin-meter-value {
+  color: var(--ink);
+  font-size: 0.73rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+@media (max-width: 560px) {
+  .admin-meter-item {
+    grid-template-columns: 1fr auto;
+    row-gap: 0.2rem;
+  }
+  .admin-meter { grid-column: 1 / -1; }
+}
+
+/* 檢查清單（安全防線、健康檢查） */
+.admin-check-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.admin-check-item {
+  display: grid;
+  grid-template-columns: 1.5rem minmax(0, 1fr);
+  gap: 0.55rem;
+  padding: 0.6rem 0.7rem;
+  border-left: 4px solid var(--line);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--white) 72%, transparent);
+}
+
+.admin-check-item.is-ok { border-left-color: var(--moss); }
+.admin-check-item.is-watch { border-left-color: var(--yellow); }
+.admin-check-item.is-high { border-left-color: var(--coral); }
+
+.admin-check-mark {
+  display: grid;
+  place-items: center;
+  width: 1.4rem;
+  height: 1.4rem;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--ink) 8%, transparent);
+  color: var(--ink);
+  font-size: 0.8rem;
+  font-weight: 900;
+}
+
+.admin-check-item.is-ok .admin-check-mark { background: color-mix(in srgb, var(--moss) 22%, var(--white)); color: color-mix(in srgb, var(--moss) 70%, var(--ink)); }
+.admin-check-item.is-watch .admin-check-mark { background: color-mix(in srgb, var(--yellow) 28%, var(--white)); color: color-mix(in srgb, var(--yellow) 50%, var(--ink)); }
+
+.admin-check-body { min-width: 0; }
+
+.admin-check-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+  color: var(--ink);
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.admin-check-tag {
+  padding: 0.08rem 0.4rem;
+  border-radius: var(--radius-pill);
+  font-size: 0.68rem;
+  font-weight: 800;
+}
+
+.admin-check-tag.is-ok { background: color-mix(in srgb, var(--moss) 20%, var(--white)); color: color-mix(in srgb, var(--moss) 72%, var(--ink)); }
+.admin-check-tag.is-watch { background: color-mix(in srgb, var(--yellow) 26%, var(--white)); color: color-mix(in srgb, var(--yellow) 48%, var(--ink)); }
+.admin-check-tag.is-neutral { background: color-mix(in srgb, var(--tidal) 14%, var(--white)); color: var(--tidal-deep); }
+
+.admin-check-value {
+  margin: 0.2rem 0 0;
+  color: var(--muted);
+  font-family: var(--font-mono, monospace);
+  font-size: 0.7rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.admin-check-note {
+  margin: 0.2rem 0 0;
+  color: var(--muted);
+  font-size: 0.73rem;
+  line-height: 1.55;
+}
+
+/* 環境變數清單 */
+.admin-env-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.admin-env-item {
+  display: grid;
+  grid-template-columns: 1.2rem minmax(0, 15rem) minmax(0, 1fr);
+  align-items: baseline;
+  gap: 0.5rem;
+  padding: 0.35rem 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 55%, transparent);
+}
+
+.admin-env-item:last-child { border-bottom: 0; }
+
+.admin-env-mark {
+  color: var(--muted);
+  font-weight: 900;
+}
+
+.admin-env-item.is-ok .admin-env-mark { color: color-mix(in srgb, var(--moss) 72%, var(--ink)); }
+.admin-env-item.is-missing .admin-env-mark { color: var(--coral-deep); }
+
+.admin-env-name {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.admin-env-note {
+  color: var(--muted);
+  font-size: 0.73rem;
+  line-height: 1.5;
+}
+
+@media (max-width: 620px) {
+  .admin-env-item {
+    grid-template-columns: 1.2rem minmax(0, 1fr);
+    row-gap: 0.15rem;
+  }
+  .admin-env-note { grid-column: 2; }
+}
+
+/* 操作列 */
+.admin-action-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.85rem;
+}
+
+.admin-action-row .admin-primary-button { margin-top: 0; }

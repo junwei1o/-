@@ -1,4 +1,5 @@
-import { probeEdgeTtsSupply, synthesizeSpeech } from "./tts";
+import { sql } from "drizzle-orm";
+import { probeEdgeTtsSupply, resetSpeechBreaker, synthesizeSpeech } from "./tts";
 import {
   buildWeeklyQuiz,
   computeWeeklyRewards,
@@ -60,6 +61,7 @@ import {
   markWeeklyQuizDone,
   submitAssignment,
   updateCloudSave,
+  getDb
 } from "./db";
 import { timingSafeEqual } from "node:crypto";
 import { getSessionCookieOptions } from "./_core/cookies";
@@ -68,7 +70,9 @@ import { sdk } from "./_core/sdk";
 import { systemRouter } from "./_core/systemRouter";
 import { TRPCError } from "@trpc/server";
 import { getDbUsageStatus } from "./dbUsage";
+import { getAdminRuntimeInfo, getAdminSiteStats } from "./adminOverview";
 import { adminProcedure, hasRoleAtLeast, publicProcedure, router, teacherProcedure } from "./_core/trpc";
+import { getRequestStats } from "./_core/requestStats";
 import {
   REFLECT_LIMIT_PER_MIN,
   PROXY_TEST_LIMIT_PER_MIN,
@@ -134,9 +138,20 @@ export const appRouter = router({
      */
     tokenUsage: publicProcedure
       .input(z.object({ name: z.string().trim().max(24).optional() }).optional())
-      .query(async ({ input }) => {
+      .query(async ({ input, ctx }) => {
+        // 隱私修正（2026-10-01）：不帶 name 時原本回傳「全站」AI 用量，且是
+        // publicProcedure——任何訪客（含學生）都能讀到全站統計。
+        // 現在：**全站彙總需要教師以上**；帶 name 的個別查詢維持公開
+        // （學生在學習歷程頁看自己的用量）。
+        const requestedName = input?.name?.trim() || undefined;
+        if (!requestedName && !hasRoleAtLeast(ctx.user, "teacher")) {
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message: "查看全站 AI 用量需要教師身分；查詢個人用量請帶上船名",
+          });
+        }
         const usageDate = new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString().slice(0, 10);
-        const rows = await listAiTokenUsage(7, input?.name || undefined);
+        const rows = await listAiTokenUsage(7, requestedName);
         const todayRow = rows.find((row) => row.usageDate === usageDate);
         const totals = rows.reduce(
           (acc, row) => ({
@@ -1607,6 +1622,72 @@ export const appRouter = router({
       isAdmin: hasRoleAtLeast(ctx.user, "admin"),
       passphraseConfigured: Boolean(ENV.adminPassphrase),
     })),
+
+    /** 站點資料總覽：資料庫計數 ＋ 題庫分布（皆為真實量測）。 */
+    siteStats: adminProcedure.query(() => getAdminSiteStats()),
+
+    /** 執行環境：版本、記憶體、以及各環境變數「是否已設定」（不回傳值）。 */
+    runtime: adminProcedure.query(() => getAdminRuntimeInfo()),
+
+    /** 請求統計：狀態碼分級、方法分布、慢請求（只記聚合，不記路徑）。 */
+    requestStats: adminProcedure.query(() => getRequestStats()),
+
+    /** 朗讀供應鏈診斷（沿用既有探測，含 30 秒快取）。 */
+    speechHealth: adminProcedure.query(() => probeEdgeTtsSupply()),
+
+    /**
+     * 執行一次即時健康檢查（維運操作）。
+     * 與被動指標不同：這裡是「現在就打一次」拿當下狀態，適合修完東西後確認。
+     */
+    healthCheck: adminProcedure.mutation(async () => {
+      const steps: { name: string; ok: boolean; ms: number; detail: string }[] = [];
+
+      const dbStarted = Date.now();
+      let dbOk = false;
+      let dbDetail = "DATABASE_URL 未設定";
+      const db = await getDb();
+      if (db) {
+        try {
+          await db.execute(sql`SELECT 1`);
+          dbOk = true;
+          dbDetail = "連線正常";
+        } catch (error) {
+          dbDetail = error instanceof Error ? error.message.slice(0, 140) : "連線失敗";
+        }
+      }
+      steps.push({ name: "資料庫連線", ok: dbOk, ms: Date.now() - dbStarted, detail: dbDetail });
+
+      const bankStarted = Date.now();
+      let bankOk = false;
+      let bankDetail = "題庫為空";
+      try {
+        const bank = await getQuestionBank();
+        bankOk = bank.length > 0;
+        bankDetail = `${bank.length.toLocaleString("zh-TW")} 題`;
+      } catch (error) {
+        bankDetail = error instanceof Error ? error.message.slice(0, 140) : "讀取失敗";
+      }
+      steps.push({ name: "題庫載入", ok: bankOk, ms: Date.now() - bankStarted, detail: bankDetail });
+
+      const speechStarted = Date.now();
+      let speechOk = false;
+      let speechDetail = "無法判斷";
+      try {
+        const supply = await probeEdgeTtsSupply();
+        speechOk = supply.candidates.some((candidate) => candidate.edgeTts);
+        speechDetail = speechOk
+          ? "edge-tts 可用（遠端朗讀）"
+          : "未裝 edge-tts（朗讀退回瀏覽器內建語音）";
+      } catch (error) {
+        speechDetail = error instanceof Error ? error.message.slice(0, 140) : "探測失敗";
+      }
+      steps.push({ name: "朗讀供應鏈", ok: speechOk, ms: Date.now() - speechStarted, detail: speechDetail });
+
+      return { ok: steps.every((step) => step.ok), steps, ranAt: Date.now() };
+    }),
+
+    /** 重設朗讀熔斷器（維運操作）：修好供應鏈後不必等 5 分鐘冷卻。 */
+    resetSpeechBreaker: adminProcedure.mutation(() => resetSpeechBreaker()),
   }),
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
