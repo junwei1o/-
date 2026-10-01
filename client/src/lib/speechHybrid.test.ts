@@ -61,6 +61,31 @@ describe("speechSynthesis 混合引擎", () => {
     vi.restoreAllMocks();
   });
 
+  it("遠端取音期間先送出 preparing（回歸鎖：不可讓 3–6 秒的等待毫無回饋）", async () => {
+    // 讓取音「卡住」在 pending，觀察這段期間的狀態
+    let release!: (blob: Blob | null) => void;
+    const pending = new Promise<Blob | null>((resolve) => {
+      release = resolve;
+    });
+    setRemoteSpeechFetcher(() => pending);
+
+    const statuses: SpeechStatus[] = [];
+    const controller = createSpeechController();
+    expect(controller.speak("準備中測試", (status) => statuses.push(status))).toBe(true);
+
+    // 取音尚未完成，就應該已經送出 preparing
+    expect(statuses).toContain("preparing");
+    // 且此時還不該是 speaking（音檔還沒拿到）
+    expect(statuses).not.toContain("speaking");
+
+    release(blobOf());
+    await vi.waitFor(() => expect(StubAudio.instances.length).toBe(1));
+    await vi.waitFor(() => expect(StubAudio.instances[0].played).toBe(1));
+    expect(statuses).toContain("speaking");
+    // preparing 必須早於 speaking
+    expect(statuses.indexOf("preparing")).toBeLessThan(statuses.indexOf("speaking"));
+  });
+
   it("遠端成功：用 Audio 播放，狀態經過 speaking 再回到 idle", async () => {
     const fetcher = vi.fn(async () => blobOf());
     setRemoteSpeechFetcher(fetcher);

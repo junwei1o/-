@@ -22,6 +22,23 @@ beforeEach(() => {
 });
 
 describe("speechRemote：遠端朗讀取音的分頁級熔斷", () => {
+  it("超過 120 字的長文本 → 直接不送遠端（零請求），交回本機語音", async () => {
+    queryMock.mockResolvedValue({ audio: audioB64(), mime: "audio/mpeg" });
+    const longText = "光".repeat(121);
+    expect(await fetchRemoteSpeech(longText, 1)).toBeNull();
+    // 關鍵：連一次 query 都不該發生（送出去只會逼近逾時、白等一趟來回）
+    expect(queryMock).not.toHaveBeenCalled();
+    // 且不應因此觸發熔斷（這是策略性跳過，不是失敗）
+    expect(isRemoteSpeechDisabled()).toBe(false);
+  });
+
+  it("剛好 120 字仍在遠端範圍內（邊界值）", async () => {
+    queryMock.mockResolvedValue({ audio: audioB64(), mime: "audio/mpeg" });
+    const boundary = "光".repeat(120);
+    expect(await fetchRemoteSpeech(boundary, 1)).toBeTruthy();
+    expect(queryMock).toHaveBeenCalledTimes(1);
+  });
+
   it("拿到音檔 → 回傳 Blob，且不觸發熔斷", async () => {
     queryMock.mockResolvedValue({ audio: audioB64(), mime: "audio/mpeg" });
     const blob = await fetchRemoteSpeech("你好", 1);

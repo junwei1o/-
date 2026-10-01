@@ -1,4 +1,4 @@
-import { spawn, spawnSync } from "node:child_process";
+import { spawn } from "node:child_process";
 import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, renameSync, rmSync, statSync } from "node:fs";
 import os from "node:os";
@@ -313,35 +313,100 @@ export type TtsSupplyStatus = {
 };
 
 /**
+ * 非阻塞探測單一指令是否成功。
+ *
+ * ⚠️ **絕對不要改回 `spawnSync`**（2026-10-01 修復）：原本四道探測都用
+ * `spawnSync`，它會**同步阻塞 Node 單一事件迴圈**。線上實測單次
+ * `tts.health` 耗時 ~10 秒，且**阻塞期間整個伺服器都被凍住**——
+ * 同時打 `questionBank.list`（正常 ~0.1–0.3 s，且走記憶體快取）
+ * 變成 9.66 秒。而 `tts.health` 是 `publicProcedure`，限流 300 次/分，
+ * 因此「少量併發呼叫」即可讓全站癱瘓（DoS）。
+ */
+function runProbe(python: string, args: string[], timeoutMs: number): Promise<{ ok: boolean; stdout: string }> {
+  return new Promise((resolve) => {
+    let settled = false;
+    let stdout = "";
+    let timer: NodeJS.Timeout | null = null;
+    const done = (ok: boolean) => {
+      if (settled) return;
+      settled = true;
+      if (timer) clearTimeout(timer);
+      resolve({ ok, stdout });
+    };
+    let child: ReturnType<typeof spawn>;
+    try {
+      child = spawn(python, args, { stdio: ["ignore", "pipe", "ignore"] });
+    } catch {
+      settled = true;
+      resolve({ ok: false, stdout: "" });
+      return;
+    }
+    timer = setTimeout(() => {
+      try {
+        child.kill("SIGKILL");
+      } catch {
+        /* 已結束 */
+      }
+      done(false);
+    }, timeoutMs);
+    child.stdout?.on("data", (chunk: unknown) => {
+      stdout += String(chunk);
+    });
+    child.on("error", () => done(false));
+    child.on("close", (code) => done(code === 0));
+  });
+}
+
+/** 探測單一 python 候選（前三道可並行，全部非阻塞）。 */
+async function probeCandidate(python: string): Promise<TtsCandidateProbe> {
+  const existsProbe = await runProbe(python, ["-c", "print(1)"], 4_000);
+  if (!existsProbe.ok) return { python, exists: false, edgeTts: false, pip: false, userSite: false };
+  const [moduleProbe, pipProbe, userSiteProbe] = await Promise.all([
+    runProbe(python, ["-c", "import edge_tts"], 4_000),
+    runProbe(python, ["-m", "pip", "--version"], 4_000),
+    runProbe(python, ["-c", "import site;print(int(bool(site.ENABLE_USER_SITE)))"], 4_000),
+  ]);
+  return {
+    python,
+    exists: true,
+    edgeTts: moduleProbe.ok,
+    pip: pipProbe.ok,
+    userSite: userSiteProbe.ok && userSiteProbe.stdout.trim() === "1",
+  };
+}
+
+/** 候選探測結果快取：python 探測每次要數秒，短時間內反覆打不該重跑。 */
+const SUPPLY_CACHE_MS = 30_000;
+let supplyCandidatesCache: { at: number; value: TtsCandidateProbe[] } | null = null;
+let supplyCandidatesInflight: Promise<TtsCandidateProbe[]> | null = null;
+
+/** 只在「候選」層級快取（昂貴的部分）；breaker／install 狀態每次即時計算。 */
+function probeCandidatesCached(): Promise<TtsCandidateProbe[]> {
+  if (supplyCandidatesCache && Date.now() - supplyCandidatesCache.at < SUPPLY_CACHE_MS) {
+    return Promise.resolve(supplyCandidatesCache.value);
+  }
+  if (supplyCandidatesInflight) return supplyCandidatesInflight;
+  supplyCandidatesInflight = (async () => {
+    const value = await Promise.all(pythonCandidates().map(probeCandidate));
+    supplyCandidatesCache = { at: Date.now(), value };
+    return value;
+  })();
+  return supplyCandidatesInflight.finally(() => {
+    supplyCandidatesInflight = null;
+  });
+}
+
+/**
  * 遠端朗讀供應鏈診斷（供 tts.health 端點，2026-09-30 全接入輪新增）：
  * 逐一檢查 python 候選是否存在、pip 是否可用、能否載入 edge_tts 模組。
- * 純本地 spawnSync——不碰網路、不回傳任何機密；部署後 curl 一次即可
+ * 純本地探測——不碰網路、不回傳任何機密；部署後 curl 一次即可
  * 定位「為何 synthesize 回 audio:null」（缺 python／缺 pip／缺模組／熔斷中）。
+ *
+ * 2026-10-01：改為 async（原 spawnSync 會阻塞整個事件迴圈，見 runProbe 註解），
+ * 並對「候選探測」加 30 秒快取與併發去重——反覆呼叫不再重複 spawn python。
  */
-export function probeEdgeTtsSupply(): TtsSupplyStatus {
-  const candidates = pythonCandidates().map((python): TtsCandidateProbe => {
-    try {
-      const existsProbe = spawnSync(python, ["-c", "print(1)"], { timeout: 4_000, stdio: "ignore" });
-      if (existsProbe.error || existsProbe.status !== 0) {
-        return { python, exists: false, edgeTts: false, pip: false, userSite: false };
-      }
-      const moduleProbe = spawnSync(python, ["-c", "import edge_tts"], { timeout: 4_000, stdio: "ignore" });
-      const pipProbe = spawnSync(python, ["-m", "pip", "--version"], { timeout: 4_000, stdio: "ignore" });
-      const userSiteProbe = spawnSync(python, ["-c", "import site;print(int(bool(site.ENABLE_USER_SITE)))"], {
-        timeout: 4_000,
-        encoding: "utf8",
-      });
-      return {
-        python,
-        exists: true,
-        edgeTts: moduleProbe.status === 0,
-        pip: !pipProbe.error && pipProbe.status === 0,
-        userSite: userSiteProbe.status === 0 && String(userSiteProbe.stdout).trim() === "1",
-      };
-    } catch {
-      return { python, exists: false, edgeTts: false, pip: false, userSite: false };
-    }
-  });
+export async function probeEdgeTtsSupply(): Promise<TtsSupplyStatus> {
+  const candidates = await probeCandidatesCached();
   return {
     candidates,
     breaker: { failures: consecutiveFailures, brokenForMs: Math.max(0, brokenUntil - Date.now()) },

@@ -174,6 +174,37 @@ export function clearStorageErrorLogs(storage: StorageLike | null = browserStora
 }
 
 /**
+ * UTF-8 位元組長度——與 `new Blob([s]).size` 等價，但不配置 Blob 物件。
+ *
+ * 2026-10-01：原本每讀一個 key 就 `new Blob([key]).size + new Blob([value]).size`，
+ * 即每個 key 配置兩個 Blob。數十個 key 就是上百次配置，且全部發生在
+ * 掛載時的同步路徑上（`/settings` 診斷區）。改用純算術後行為完全相同
+ * （已由 `getStorageUsageSummary` 的等價測試鎖住），但不再產生垃圾。
+ *
+ * ⚠️ 注意：這是**嚴格改善、但不是 `/settings` 那個 ~70ms 阻塞的成因**。
+ * 實測把 localStorage 從 5 KB 灌到 571 KB，long task 仍固定 69–71 ms
+ * → 該阻塞與資料量／此處的配置數無關，真正來源待 React Profiler 定位。
+ */
+export function utf8ByteLength(value: string): number {
+  let bytes = 0;
+  for (let index = 0; index < value.length; index += 1) {
+    const code = value.charCodeAt(index);
+    if (code < 0x80) {
+      bytes += 1;
+    } else if (code < 0x800) {
+      bytes += 2;
+    } else if (code >= 0xd800 && code <= 0xdbff) {
+      // 代理對（emoji 等 BMP 外字元）佔 4 位元組，需一併跳過低位代理
+      bytes += 4;
+      index += 1;
+    } else {
+      bytes += 3;
+    }
+  }
+  return bytes;
+}
+
+/**
  * 供安全診斷畫面顯示的 localStorage 使用量。只回傳位元組與鍵數，絕不回傳鍵名或內容。
  * 若瀏覽器不支援列舉鍵名，仍保留可用狀態並以 null 表示無法估算。
  */
@@ -189,7 +220,7 @@ export function getStorageUsageSummary(storage: StorageLike | null = browserStor
       const key = storage.key(index);
       if (key === null) continue;
       const value = safeGet(storage, key, "估算 localStorage 使用量") ?? "";
-      usedBytes += new Blob([key]).size + new Blob([value]).size;
+      usedBytes += utf8ByteLength(key) + utf8ByteLength(value);
     }
     return { available: true, usedBytes, keyCount: storage.length };
   } catch (error) {

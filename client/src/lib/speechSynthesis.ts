@@ -1,6 +1,15 @@
 import { DEFAULT_SPEECH_PREFERENCES, normalizeSpeechPreferences, type SpeechPreferences } from "@/lib/speechPreferences";
 
-export type SpeechStatus = "idle" | "speaking" | "paused" | "unsupported" | "error";
+/**
+ * 朗讀狀態。
+ *
+ * `preparing`（2026-10-01 新增）：遠端朗讀（Edge TTS）取音需要 **3–6 秒**
+ * （實測：8 字 3.36s、34 字 4.22s、103 字 6.04s；固定成本約 3.1s ＝ spawn
+ * python ＋ 載入 edge_tts ＋ 連微軟服務）。先前這段等待**完全沒有狀態變化**，
+ * 學生按下朗讀後 3–6 秒「毫無反應」，體感像壞掉。現在取音期間送出
+ * `preparing`，UI 顯示「準備中」，讓等待可被理解。
+ */
+export type SpeechStatus = "idle" | "preparing" | "speaking" | "paused" | "unsupported" | "error";
 
 export type SpeechProgress = {
   charIndex: number;
@@ -195,6 +204,9 @@ export function createSpeechController(engine?: SpeechEngine | null): SpeechCont
     if (remoteFetcher) {
       const myGeneration = ++remoteGenerationCounter;
       activeRemoteGeneration = myGeneration;
+      // 取音可能要數秒（見 SpeechStatus.preparing 註解）→ 先讓 UI 進入「準備中」，
+      // 不要讓學生按下後面對一段無回饋的空白等待。
+      onStatus?.("preparing");
       remoteFetcher(normalized, myGeneration)
         .then(async (blob) => {
           // 被新請求或 stop 取代了 → 默默丟棄

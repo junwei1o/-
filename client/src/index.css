@@ -1823,6 +1823,16 @@ nav { display:grid; gap:7px; }
   .speech-read-control[data-speech-status="speaking"] .speech-read-button { box-shadow:none; }
 }
 
+/* 遠端取音中（2026-10-01）：Edge TTS 合成需 3–6 秒，先前這段完全沒有視覺回饋，
+   學生按下後像「壞掉」。加轉圈指示＋虛線邊框，讓等待可被理解；
+   同時用 aria-busy 讓輔助技術得知正在準備（不只靠顏色／動畫傳達）。 */
+.speech-read-control[data-speech-status="preparing"] .speech-read-button { border-style:dashed; color:var(--tidal-deep); cursor:progress; }
+.speech-spinner { display:inline-block; width:16px; height:16px; border-radius:50%; border:2px solid color-mix(in srgb, currentColor 28%, transparent); border-top-color:currentColor; animation:speech-spin 700ms linear infinite; }
+@keyframes speech-spin { to { transform:rotate(360deg); } }
+@media (prefers-reduced-motion:reduce) {
+  .speech-spinner { animation:none; border-top-color:color-mix(in srgb, currentColor 28%, transparent); opacity:.75; }
+}
+
 /* Sentence-level read-along feedback. */
 .speech-readable-content { min-width:0; }
 .speech-readable-sentence { border-radius:4px; color:inherit; box-decoration-break:clone; -webkit-box-decoration-break:clone; transition:background-color .16s var(--ease),box-shadow .16s var(--ease),color .16s var(--ease); }

@@ -1,0 +1,25 @@
+# 寶島探險家（hdmx）— 爬蟲政策
+#
+# 2026-10-01 補上：此前本站**完全沒有 robots.txt**，未命中時由 SPA fallback
+# 回應，對爬蟲而言是「什麼都沒說」。這裡明確宣告可爬與不可爬的範圍。
+#
+# 說明：本站多數頁面位於登入閘之後（以船名識別），爬蟲實際只會取得入口頁。
+# 因此這裡不列舉大量路徑，只排除「對外索引沒有意義、且不該被公開探索」的區塊。
+
+User-agent: *
+Allow: /
+
+# 私有／個人化區塊：對未登入者無內容，且屬個人資料範圍
+Disallow: /settings
+Disallow: /teacher
+Disallow: /class
+Disallow: /student-dashboard
+Disallow: /learning-report
+Disallow: /learning-summary
+Disallow: /wrong-answers
+Disallow: /adventure-journal
+
+# 後端 API 不供爬取（含 tRPC 與 webhook）
+Disallow: /api/
+
+Sitemap: https://xue-gr3a.onrender.com/sitemap.xml

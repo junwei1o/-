@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  寶島探險家（hdmx）網站地圖。
+
+  2026-10-01 補上。範圍刻意只列「入口頁」：本站其餘頁面位於登入閘之後，
+  爬蟲取得的是登入畫面而非實際內容；把那些路徑列進 sitemap 只會讓搜尋引擎
+  索引到一堆內容薄弱的頁面（對 SEO 反而有害）。因此這裡只宣告真正的
+  公開入口，並在 robots.txt 明確排除私有區塊。
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://xue-gr3a.onrender.com/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+</urlset>
