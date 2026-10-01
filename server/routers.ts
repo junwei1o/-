@@ -63,12 +63,12 @@ import {
 } from "./db";
 import { timingSafeEqual } from "node:crypto";
 import { getSessionCookieOptions } from "./_core/cookies";
-import { TEACHER_OPEN_ID } from "./_core/context";
+import { ADMIN_OPEN_ID, TEACHER_OPEN_ID } from "./_core/context";
 import { sdk } from "./_core/sdk";
 import { systemRouter } from "./_core/systemRouter";
 import { TRPCError } from "@trpc/server";
 import { getDbUsageStatus } from "./dbUsage";
-import { publicProcedure, router, teacherProcedure } from "./_core/trpc";
+import { adminProcedure, hasRoleAtLeast, publicProcedure, router, teacherProcedure } from "./_core/trpc";
 import {
   REFLECT_LIMIT_PER_MIN,
   PROXY_TEST_LIMIT_PER_MIN,
@@ -1540,14 +1540,73 @@ export const appRouter = router({
     health: publicProcedure.query(() => probeEdgeTtsSupply()),
   }),
   /**
-   * 全站資源監控（2026-10-01）：設定頁「全站資源監控」卡片用。
+   * 全站資源監控（2026-10-01）：站長後台「全站資源監控」模組用。
    *
    * ⚠️ 回傳的是**本站自行計量的推估值**，不是 TiDB Cloud 帳單上的 RU 數字
    * （真實值需 TiDB Cloud API 憑證，本站 env 尚未配置）。
    * 只回傳統計量與額度，**不含連線字串、表名、SQL 文字或任何個資**。
+   *
+   * 2026-10-01 由 publicProcedure 改為 adminProcedure：這是營運資訊，
+   * 不該讓任何訪客讀取。
    */
   dbUsage: router({
-    status: publicProcedure.query(() => getDbUsageStatus()),
+    status: adminProcedure.query(() => getDbUsageStatus()),
+  }),
+  /**
+   * 站長後台（/admin）：網站擁有者的營運控制台。
+   *
+   * 角色定位（三者互相獨立）：
+   * - 學生：學習內容，無管理面
+   * - 教師（teacher）：班級、學生進度、公告、LINE 通知——「教學」相關
+   * - 站長（admin）：全站營運與基礎設施——資源、部署、內容健康、存取——「把站開起來」相關
+   *
+   * 站長以**專屬** `ADMIN_PASSPHRASE` 登入（不與教師密語共用）；
+   * 未設定時一律拒絕（安全側降級）。
+   */
+  admin: router({
+    login: publicProcedure
+      .input(z.object({ passphrase: z.string().min(1).max(200) }))
+      .mutation(async ({ input, ctx }) => {
+        const SESSION_MS = 30 * 24 * 60 * 60 * 1000;
+        const expected = ENV.adminPassphrase;
+        if (!expected) return { ok: false as const, reason: "notConfigured" as const };
+
+        // 先比長度再定時比較（timingSafeEqual 要求等長，避免側信道洩漏長度以外的資訊）
+        const a = Buffer.from(input.passphrase);
+        const b = Buffer.from(expected);
+        if (a.length !== b.length || !timingSafeEqual(a, b)) {
+          return { ok: false as const, reason: "invalid" as const };
+        }
+
+        // 哨兵與 context.ts 的 ADMIN_OPEN_ID 共用同一常數
+        const token = await sdk.createSessionToken(ADMIN_OPEN_ID, {
+          expiresInMs: SESSION_MS,
+          name: "admin",
+        });
+        const cookieOptions = getSessionCookieOptions(ctx.req);
+        ctx.res.cookie(COOKIE_NAME, token, {
+          ...cookieOptions,
+          sameSite: cookieOptions.secure ? "none" : "lax",
+          maxAge: SESSION_MS,
+        });
+        return { ok: true as const };
+      }),
+
+    logout: publicProcedure.mutation(({ ctx }) => {
+      const cookieOptions = getSessionCookieOptions(ctx.req);
+      ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
+      return { ok: true as const };
+    }),
+
+    /**
+     * 目前身分與設定狀態（前端用來決定顯示登入閘或後台內容）。
+     * `passphraseConfigured === false` 時後台不可用，前端應顯示明確的設定指引，
+     * 而不是讓使用者對著一個永遠登入不了的畫面猜。
+     */
+    me: publicProcedure.query(({ ctx }) => ({
+      isAdmin: hasRoleAtLeast(ctx.user, "admin"),
+      passphraseConfigured: Boolean(ENV.adminPassphrase),
+    })),
   }),
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),

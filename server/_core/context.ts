@@ -17,6 +17,15 @@ export type TrpcContext = {
 export const TEACHER_OPEN_ID = "__teacher__";
 
 /**
+ * 站長哨兵 openId（2026-10-01）：admin.login 簽發 session 與本檔的映射必須一致。
+ *
+ * 站長＝網站擁有者，權限高於教師：老師管班級與教學，站長管全站營運與基礎設施。
+ * 沿用既有的 `admin` 角色（`adminProcedure` 早已存在，只是先前因 OAuth 登入被移除
+ * 而無人可達）；以專屬密語 `ADMIN_PASSPHRASE` 簽發，**不與教師密語共用**。
+ */
+export const ADMIN_OPEN_ID = "__admin__";
+
+/**
  * 解析真實會話（計劃 A Phase 1）。
  *
  * 訪客船長模式已移除：過去這裡硬編碼回傳永遠為真的 guestUser，
@@ -40,8 +49,29 @@ export async function createContext(
 
   try {
     const session = await sdk.verifySession(cookieValue);
-    // 無效／過期會話，或非教師哨兵的一般使用者會話：一律視為未登入。
-    if (!session || session.openId !== TEACHER_OPEN_ID) {
+    // 無效／過期會話，或非哨兵的一般使用者會話：一律視為未登入。
+    if (!session) {
+      return { req: opts.req, res: opts.res, user: null };
+    }
+
+    // 站長（admin）優先於教師判定：同一張 cookie 只會是其中一種哨兵，
+    // 但順序寫明可避免日後新增角色時誤判。
+    if (session.openId === ADMIN_OPEN_ID) {
+      const adminUser = {
+        id: 0,
+        openId: ADMIN_OPEN_ID,
+        name: session.name || "admin",
+        email: "",
+        loginMethod: "passphrase",
+        role: "admin",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        lastSignedIn: new Date(),
+      } as unknown as User;
+      return { req: opts.req, res: opts.res, user: adminUser };
+    }
+
+    if (session.openId !== TEACHER_OPEN_ID) {
       return { req: opts.req, res: opts.res, user: null };
     }
 

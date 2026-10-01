@@ -49,15 +49,6 @@ import { getSession } from "@/game/session";
 import { LogoutButton } from "@/components/AuthGate";
 import BackupButton from "@/components/BackupButton";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  RU_QUOTA_EXPLANATION,
-  formatPercent,
-  formatRu,
-  formatUptime,
-  projectedPercent,
-  warningPresentation,
-  type DbUsageStatusView,
-} from "@/lib/dbUsageStatus";
 import "./SettingsDiagnostics.css";
 
 const RARE_CODEX = (["chinese", "math", "english", "science"] as const).flatMap((subject) => getRareMonsters(subject));
@@ -472,14 +463,6 @@ export default function Settings() {
   const [gateError, setGateError] = useState<string | null>(null);
   const [cloudExams, setCloudExams] = useState<Array<{ id: number; subject: string; difficulty: string | null; totalQuestions: number; correctCount: number; createdAt: number }>>([]);
   const [cloudExamsLoading, setCloudExamsLoading] = useState(false);
-  // 全站資源監控（2026-10-01）：只在解鎖船長室後才查，避免對學生曝光營運資訊，
-  // 也省下不必要的請求。每分鐘重取一次，讓「消耗速度」是活的。
-  const dbUsageQuery = trpc.dbUsage.status.useQuery(undefined, {
-    enabled: diagUnlocked,
-    refetchInterval: diagUnlocked ? 60_000 : false,
-    staleTime: 30_000,
-    retry: false,
-  });
   const clearTriggerRef = useRef<HTMLButtonElement>(null);
   const confirmClearRef = useRef<HTMLButtonElement>(null);
 
@@ -800,105 +783,23 @@ export default function Settings() {
             </dl>
           </section>
 
-          {/* 全站資源監控（2026-10-01）：放在船長室內，只有家長／老師解鎖後看得到。
-              顯示的是本站自行計量的 RU 推估值，非 TiDB Cloud 帳單數字（見來源註記）。 */}
-          <section className="settings-diagnostic-status" aria-labelledby="site-resource-title">
-            <div className="settings-diagnostic-status-heading">
-              <div>
-                <p className="settings-eyebrow">給老師的營運資訊</p>
-                <h3 id="site-resource-title">全站資源監控</h3>
+          {/* 全站資源監控已於 2026-10-01 移至站長後台（/admin）。
+              理由：那是「營運」資訊，屬站長職責；且該端點已改為站長專屬，
+              放在學生也進得來的設定頁並不合理。這裡保留一個指路提示。 */}
+          {diagUnlocked && (
+            <section className="settings-diagnostic-status" aria-labelledby="site-resource-moved-title">
+              <div className="settings-diagnostic-status-heading">
+                <div>
+                  <p className="settings-eyebrow">已搬遷</p>
+                  <h3 id="site-resource-moved-title">全站資源監控已移至站長後台</h3>
+                </div>
               </div>
-            </div>
-
-            {dbUsageQuery.isPending ? (
-              <p className="diag-resource-loading" aria-busy="true">正在讀取資源用量…</p>
-            ) : dbUsageQuery.isError || !dbUsageQuery.data ? (
-              <p className="diag-resource-error" role="alert">目前無法取得資源用量，請稍後再試。</p>
-            ) : (
-              (() => {
-                const usage = dbUsageQuery.data as DbUsageStatusView;
-                const warning = warningPresentation(usage.level, usage.sustainableRuPerHour);
-                const projectedShare = projectedPercent(usage.projectedMonthlyRu, usage.quota.ruPerMonth);
-                const usedShare = usage.percentOfQuota;
-                return (
-                  <>
-                    <div className={`diag-resource-warning is-${warning.tone}`} role={usage.level === "high" ? "alert" : "status"}>
-                      <strong className="diag-resource-badge">{warning.badge}</strong>
-                      <span className="diag-resource-headline">{warning.headline}</span>
-                      {warning.advice && <small className="diag-resource-advice">{warning.advice}</small>}
-                    </div>
-
-                    <div className="diag-ru-block">
-                      <p className="diag-ru-quota">
-                        RU 限額：<strong>{usage.quota.label}</strong>
-                      </p>
-                      <p className="diag-ru-note">{RU_QUOTA_EXPLANATION}</p>
-
-                      <div className="diag-ru-meters">
-                        <div className="diag-ru-meter-row">
-                          <span className="diag-ru-meter-label">已使用</span>
-                          <meter
-                            className="diag-ru-meter"
-                            min={0}
-                            max={100}
-                            value={Math.min(100, usedShare)}
-                            aria-label={`本次實例已使用約 ${formatRu(usage.estimatedRu)} RU，佔月額度 ${formatPercent(usedShare)}`}
-                          />
-                          <span className="diag-ru-meter-value">
-                            {formatRu(usage.estimatedRu)} RU（{formatPercent(usedShare)}）
-                          </span>
-                        </div>
-                        <div className="diag-ru-meter-row">
-                          <span className="diag-ru-meter-label">外推月用量</span>
-                          <meter
-                            className={`diag-ru-meter is-${warning.tone}`}
-                            min={0}
-                            max={100}
-                            value={projectedShare === null ? 0 : Math.min(100, projectedShare)}
-                            aria-label={
-                              usage.projectedMonthlyRu === null
-                                ? "外推月用量：資料累積中"
-                                : `依目前速度外推月用量約 ${formatRu(usage.projectedMonthlyRu)} RU，佔月額度 ${formatPercent(projectedShare)}`
-                            }
-                          />
-                          <span className="diag-ru-meter-value">
-                            {usage.projectedMonthlyRu === null
-                              ? "資料累積中"
-                              : `${formatRu(usage.projectedMonthlyRu)} RU（${formatPercent(projectedShare)}）`}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <dl className="diag-status-grid">
-                      <div className="diag-stat-card">
-                        <dt>目前消耗速度</dt>
-                        <dd>{usage.ruPerHour === null ? "資料累積中" : `${formatRu(usage.ruPerHour)} RU/小時`}</dd>
-                        <small>可持續速度為 {formatRu(usage.sustainableRuPerHour)} RU/小時（月額度 ÷ 30 天 ÷ 24 小時）；超過就會用完額度。</small>
-                      </div>
-                      <div className="diag-stat-card">
-                        <dt>DB 語句數</dt>
-                        <dd>{usage.statements.toLocaleString("zh-TW")}</dd>
-                        <small>本次實例啟動以來累計；其中失敗 {usage.failedStatements} 次。</small>
-                      </div>
-                      <div className="diag-stat-card">
-                        <dt>觸及列數</dt>
-                        <dd>{formatRu(usage.rowsTouched)}</dd>
-                        <small>查詢回傳列數與寫入受影響列數的總和，是推估 RU 的主要依據。</small>
-                      </div>
-                      <div className="diag-stat-card">
-                        <dt>統計期間</dt>
-                        <dd>{formatUptime(usage.uptimeMs)}</dd>
-                        <small>計數器存在記憶體，重新部署即歸零，因此是「本次實例」而非「本月」。</small>
-                      </div>
-                    </dl>
-
-                    <p className="diag-ru-source">資料來源：{usage.sourceNote}</p>
-                  </>
-                );
-              })()
-            )}
-          </section>
+              <p className="settings-log-description">
+                資源用量、RU 額度與消耗速度屬於站點營運資訊，現在集中在站長後台（<code>/admin</code>），
+                需要站長通關語才能檢視。
+              </p>
+            </section>
+          )}
 
           {diagnosticSnapshot.cloud.mode === "cloud" && (
             <section className="settings-diagnostic-status" aria-labelledby="cloud-exam-records-title">

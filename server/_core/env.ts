@@ -18,11 +18,23 @@ if (isProduction && !process.env.TEACHER_PASSPHRASE) {
   );
 }
 
+// 站長通關語（2026-10-01）：站長後台（/admin）專用，與教師通關語**分開**——
+// 兩者定位不同（老師管班級與教學；站長管全站營運與基礎設施），權限也不同，
+// 共用一組密語會讓「老師」實質上取得站長權限。
+// 未設定時站長後台一律進不去（安全側降級），不影響其他角色。
+if (isProduction && !process.env.ADMIN_PASSPHRASE) {
+  console.warn(
+    "[env] ADMIN_PASSPHRASE 未設定：站長後台（/admin）將無法登入。請於 Render Dashboard 設定後重啟。"
+  );
+}
+
 export const ENV = {
   appId: process.env.VITE_APP_ID ?? "",
   cookieSecret: process.env.JWT_SECRET ?? "",
   /** 教師通關語（計劃 A）：空字串＝未配置，teacher.login 一律拒絕。 */
   teacherPassphrase: process.env.TEACHER_PASSPHRASE ?? "",
+  /** 站長通關語（2026-10-01）：空字串＝未配置，admin.login 一律拒絕。 */
+  adminPassphrase: process.env.ADMIN_PASSPHRASE ?? "",
   databaseUrl: process.env.DATABASE_URL ?? "",
   oAuthServerUrl: process.env.OAUTH_SERVER_URL ?? "",
   ownerOpenId: process.env.OWNER_OPEN_ID ?? "",

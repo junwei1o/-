@@ -56,6 +56,7 @@ const StudentDashboard = React.lazy(() => import("@/pages/StudentDashboard"));
 const Gallery = React.lazy(() => import("@/pages/Gallery"));
 const TreasureHub = React.lazy(() => import("@/pages/TreasureHub"));
 const TeacherDashboard = React.lazy(() => import("@/pages/TeacherDashboard"));
+const AdminConsole = React.lazy(() => import("@/pages/AdminConsole"));
 const StudentClass = React.lazy(() => import("@/pages/StudentClass"));
 const FeaturesDirectory = React.lazy(() => import("@/pages/FeaturesDirectory"));
 
@@ -131,6 +132,7 @@ function Router() {
         <Route path={"/settings"} component={Settings} />
         <Route path={"/study-tips"} component={StudyTips} />
         <Route path={"/teacher"} component={TeacherDashboard} />
+        <Route path={"/admin"} component={AdminConsole} />
         <Route path={"/class"} component={StudentClass} />
         <Route path={"/adventure-journal"} component={AdventureJournal} />
         <Route path={"/404"} component={NotFound} />

@@ -1,0 +1,531 @@
+/* ══════════════════════════════════════════════════════════════
+   站長後台（/admin）
+   顏色一律由品牌變數派生，不寫死色碼（依 index.css 開頭規範）。
+   語意色：ok=苔綠 --moss／watch=芥黃 --yellow／high=珊瑚 --coral。
+   ══════════════════════════════════════════════════════════════ */
+
+.admin-page {
+  min-height: 100vh;
+  padding: 1.5rem 1rem 3rem;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.admin-page-inner {
+  max-width: 1120px;
+  margin: 0 auto;
+}
+
+.admin-header {
+  margin-bottom: 1.25rem;
+}
+
+.admin-eyebrow {
+  margin: 0 0 0.3rem;
+  color: var(--tidal);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+
+.admin-header h1 {
+  margin: 0 0 0.5rem;
+  font-family: var(--font-display, inherit);
+  font-size: clamp(1.75rem, 4vw, 2.4rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.admin-lede {
+  max-width: 62ch;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+  line-height: 1.7;
+}
+
+/* ── 登入閘 ─────────────────────────────────────────────── */
+
+.admin-gate {
+  max-width: 560px;
+  padding: 1.25rem;
+  border: 1px solid color-mix(in srgb, var(--tidal) 24%, transparent);
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--white) 82%, transparent);
+}
+
+.admin-gate-icon {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  margin-bottom: 0.75rem;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--tidal) 12%, transparent);
+  color: var(--tidal-deep);
+}
+
+.admin-gate-copy {
+  margin: 0;
+  color: var(--ink);
+  font-size: 0.85rem;
+  line-height: 1.7;
+}
+
+.admin-gate-copy strong {
+  display: block;
+  margin-bottom: 0.2rem;
+  font-size: 0.95rem;
+}
+
+.admin-gate-hint {
+  margin: 0.6rem 0 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.6;
+}
+
+.admin-gate-hint code {
+  padding: 0.1rem 0.35rem;
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--paper-deep) 70%, transparent);
+  font-family: var(--font-mono, monospace);
+  font-size: 0.76rem;
+}
+
+.admin-gate-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-top: 0.9rem;
+}
+
+.admin-gate-label {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.admin-gate-input {
+  min-height: 44px;
+  padding: 0.5rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--white);
+  color: var(--ink);
+  font: inherit;
+}
+
+.admin-gate-input:focus-visible,
+.admin-primary-button:focus-visible,
+.admin-secondary-button:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--coral) 42%, transparent);
+  outline-offset: 2px;
+}
+
+.admin-primary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  min-height: 44px;
+  margin-top: 0.3rem;
+  padding: 0.5rem 1rem;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: var(--tidal);
+  color: var(--white);
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.admin-primary-button:disabled {
+  cursor: progress;
+  opacity: 0.72;
+}
+
+.admin-secondary-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  min-height: 40px;
+  padding: 0.4rem 0.85rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--white);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.admin-gate-error {
+  margin: 0.6rem 0 0;
+  color: var(--coral-deep);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+/* ── 工具列與分組 ───────────────────────────────────────── */
+
+.admin-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  margin-bottom: 1.1rem;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid color-mix(in srgb, var(--tidal) 18%, transparent);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--white) 76%, transparent);
+}
+
+.admin-toolbar-note {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+.admin-group {
+  margin-bottom: 1.5rem;
+}
+
+.admin-group-head {
+  margin-bottom: 0.7rem;
+}
+
+.admin-group-head h2 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+.admin-group-head p {
+  margin: 0.2rem 0 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.55;
+}
+
+.admin-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+
+@media (max-width: 720px) {
+  .admin-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.admin-card {
+  min-width: 0;
+  padding: 0.9rem;
+  border: 1px solid color-mix(in srgb, var(--tidal) 16%, transparent);
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--white) 84%, transparent);
+}
+
+.admin-card.is-full {
+  grid-column: 1 / -1;
+}
+
+.admin-card-head {
+  margin-bottom: 0.7rem;
+}
+
+.admin-card-head h3 {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
+.admin-card-summary {
+  margin: 0.2rem 0 0;
+  color: var(--muted);
+  font-size: 0.76rem;
+  line-height: 1.5;
+}
+
+/* ── 通用狀態文字 ───────────────────────────────────────── */
+
+.admin-muted {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.admin-error {
+  margin: 0;
+  color: var(--coral-deep);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.admin-source {
+  margin: 0.6rem 0 0;
+  color: var(--muted);
+  font-size: 0.72rem;
+  line-height: 1.55;
+}
+
+/* ── 警示條（資源監控用）───────────────────────────────── */
+
+.admin-warning {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  margin-bottom: 0.85rem;
+  padding: 0.7rem 0.8rem;
+  border-left: 4px solid var(--line);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--white) 78%, transparent);
+}
+
+.admin-warning-badge {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+.admin-warning-headline {
+  color: var(--ink);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.admin-warning-advice {
+  color: var(--muted);
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+.admin-warning.is-ok { border-left-color: var(--moss); background: color-mix(in srgb, var(--moss) 12%, var(--white)); }
+.admin-warning.is-ok .admin-warning-badge { color: color-mix(in srgb, var(--moss) 72%, var(--ink)); }
+.admin-warning.is-watch { border-left-color: var(--yellow); background: color-mix(in srgb, var(--yellow) 16%, var(--white)); }
+.admin-warning.is-watch .admin-warning-badge { color: color-mix(in srgb, var(--yellow) 52%, var(--ink)); }
+.admin-warning.is-high { border-left-color: var(--coral); background: color-mix(in srgb, var(--coral) 14%, var(--white)); }
+.admin-warning.is-high .admin-warning-badge { color: var(--coral-deep); }
+
+/* ── RU 額度區塊 ───────────────────────────────────────── */
+
+.admin-ru-block {
+  margin-bottom: 0.85rem;
+  padding: 0.85rem;
+  border: 1px solid color-mix(in srgb, var(--tidal) 22%, transparent);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--white) 82%, transparent);
+}
+
+.admin-ru-quota {
+  margin: 0;
+  color: var(--ink);
+  font-size: 0.95rem;
+}
+
+.admin-ru-quota strong {
+  color: var(--tidal-deep);
+  font-size: 1.1rem;
+}
+
+.admin-ru-note {
+  margin: 0.4rem 0 0.75rem;
+  color: var(--muted);
+  font-size: 0.75rem;
+  line-height: 1.6;
+}
+
+.admin-ru-meters {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.admin-ru-meter-row {
+  display: grid;
+  grid-template-columns: 5.5rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.admin-ru-meter-label {
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.admin-ru-meter {
+  width: 100%;
+  height: 0.6rem;
+  accent-color: var(--tidal);
+}
+
+.admin-ru-meter.is-high { accent-color: var(--coral); }
+.admin-ru-meter.is-watch { accent-color: var(--yellow); }
+.admin-ru-meter.is-ok { accent-color: var(--moss); }
+
+.admin-ru-meter-value {
+  color: var(--ink);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+@media (max-width: 560px) {
+  .admin-ru-meter-row {
+    grid-template-columns: 1fr auto;
+    row-gap: 0.2rem;
+  }
+  .admin-ru-meter { grid-column: 1 / -1; }
+}
+
+/* ── 統計格（資源監控）────────────────────────────────── */
+
+.admin-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.7rem;
+  margin: 0;
+}
+
+.admin-stat {
+  min-width: 0;
+  padding: 0.7rem;
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--white) 70%, transparent);
+}
+
+.admin-stat dt {
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.admin-stat dd {
+  margin: 0.2rem 0 0;
+  color: var(--ink);
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.admin-stat small {
+  display: block;
+  margin-top: 0.2rem;
+  color: var(--muted);
+  font-size: 0.7rem;
+  line-height: 1.45;
+}
+
+/* ── 表格（角色與存取）────────────────────────────────── */
+
+.admin-table-wrap {
+  overflow-x: auto;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+}
+
+.admin-table-caption {
+  margin-bottom: 0.5rem;
+  color: var(--muted);
+  font-size: 0.75rem;
+  text-align: left;
+  line-height: 1.5;
+}
+
+.admin-table th,
+.admin-table td {
+  padding: 0.5rem 0.6rem;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+  line-height: 1.5;
+}
+
+.admin-table thead th {
+  color: var(--tidal-deep);
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+}
+
+.admin-table tbody th {
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.admin-table td {
+  color: var(--muted);
+}
+
+.admin-note-list {
+  margin: 0.7rem 0 0;
+  padding-left: 1.1rem;
+  color: var(--muted);
+  font-size: 0.76rem;
+  line-height: 1.7;
+}
+
+/* ── key-value（系統與環境）───────────────────────────── */
+
+.admin-kv {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 0;
+}
+
+.admin-kv-row {
+  display: grid;
+  grid-template-columns: 8.5rem minmax(0, 1fr);
+  align-items: baseline;
+  gap: 0.5rem;
+  padding-bottom: 0.45rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 60%, transparent);
+}
+
+.admin-kv-row:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.admin-kv-row dt {
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.admin-kv-row dd {
+  margin: 0;
+  color: var(--ink);
+  font-size: 0.8rem;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.admin-kv-row small {
+  grid-column: 2;
+  color: var(--muted);
+  font-size: 0.7rem;
+  line-height: 1.45;
+}
+
+@media (max-width: 560px) {
+  .admin-kv-row {
+    grid-template-columns: 1fr;
+  }
+  .admin-kv-row small { grid-column: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-card,
+  .admin-warning,
+  .admin-ru-block { transition: none; }
+}
