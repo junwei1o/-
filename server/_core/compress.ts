@@ -71,16 +71,24 @@ export function httpCompression(
     cb?: (err?: Error) => void,
   ) => Response;
 
-  /** 第一次 write/end 時判定：回傳 true 代表「收進緩衝、之後壓縮」 */
-  function decide(): boolean {
-    if (decided) return !passthrough;
-    decided = true;
-    const status = res.statusCode;
-    if (status === 204 || status === 304 || status < 200 || status === 206) {
-      passthrough = true;
-      return false;
-    }
-    const type = String(res.getHeader("Content-Type") ?? "");
+    /** 第一次 write/end 時判定：回傳 true 代表「收進緩衝、之後壓縮」 */
+    function decide(): boolean {
+      if (decided) return !passthrough;
+      decided = true;
+      const status = res.statusCode;
+      if (status === 204 || status === 304 || status < 200 || status === 206) {
+        passthrough = true;
+        return false;
+      }
+      // ⚠️ 串流回應的 header **早就送出去了**（例如 /api/backup 用 archive.pipe(res)、
+      // 靜態檔用 stream）。此時呼叫 removeHeader/setHeader 會直接拋
+      // ERR_HTTP_HEADERS_SENT，讓**整個 process 崩潰**。
+      // 已經送出就沒辦法改 Content-Encoding，只能直通不壓縮。
+      if (res.headersSent) {
+        passthrough = true;
+        return false;
+      }
+      const type = String(res.getHeader("Content-Type") ?? "");
     const alreadyEncoded = String(res.getHeader("Content-Encoding") ?? "") !== "";
     const hasRange = res.getHeader("Content-Range") !== undefined;
     const rawLen = res.getHeader("Content-Length");
@@ -100,12 +108,32 @@ export function httpCompression(
     return true;
   }
 
-  function toBuffer(chunk: unknown, encoding?: unknown): Buffer {
-    if (Buffer.isBuffer(chunk)) return chunk;
-    const enc =
-      typeof encoding === "string" ? (encoding as BufferEncoding) : "utf8";
-    return Buffer.from(String(chunk), enc);
-  }
+    /**
+     * 把各種形態的 chunk 轉成 Buffer。
+     *
+     * ⚠️ 這裡踩過一個很隱蔽的坑（2026-10-02 實測）：
+     * **`Buffer.isBuffer(new Uint8Array(...))` 回傳 false**。
+     * 所以只判斷 isBuffer 的话，Uint8Array 會掉到 `String(chunk)` 那一支，
+     * 而 `String(new Uint8Array([91,123,34]))` 會變成字串 `"91,123,34"`——
+     * 也就是把位元組**列印成文字**送出去。症狀是回應標頭說 br、內容卻是
+     * `91,123,34,114,...` 這種數字清單，瀏覽器解壓後 JSON.parse 直接爆
+     * 「Unexpected non-whitespace character after JSON at position 2」。
+     *
+     * 所以必須用 `ArrayBuffer.isView` 涵蓋所有 TypedArray／DataView，
+     * 並另外處理純 ArrayBuffer。
+     */
+    function toBuffer(chunk: unknown, encoding?: unknown): Buffer {
+      if (Buffer.isBuffer(chunk)) return chunk;
+      // Buffer 之外的 TypedArray／DataView（Uint8Array、Uint16Array…）
+      if (ArrayBuffer.isView(chunk)) {
+        const view = chunk as ArrayBufferView;
+        return Buffer.from(view.buffer, view.byteOffset, view.byteLength);
+      }
+      if (chunk instanceof ArrayBuffer) return Buffer.from(chunk);
+      const enc =
+        typeof encoding === "string" ? (encoding as BufferEncoding) : "utf8";
+      return Buffer.from(String(chunk), enc);
+    }
 
   res.write = function overriddenWrite(
     chunk?: unknown,
