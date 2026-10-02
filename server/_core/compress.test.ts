@@ -365,3 +365,169 @@ describe("⭐ 回歸：Uint8Array chunk 不能被字串化（2026-10-02）", () 
     }
   });
 });
+
+describe("⭐ 審查修正：Vary 必須追加而不是覆蓋（2026-10-02）", () => {
+  /**
+   * 這個 bug 是審查時**實測重現**的，不是推論：
+   *   curl（不帶 trpc-accept） → `Vary: Accept-Encoding`
+   *   瀏覽器（帶 trpc-accept） → `Vary: trpc-accept, accept`（Accept-Encoding 消失）
+   *
+   * 原因是**後設的 setHeader 會整個覆蓋**，而 tRPC 在自己的中介層裡也設了 Vary。
+   * 後果：中間快取可能把 brotli 內容發給不支援 br 的客戶端。
+   */
+  function makeRes() {
+    const headers: Record<string, unknown> = { "Content-Type": "application/json" };
+    return {
+      statusCode: 200,
+      headersSent: false,
+      headers,
+      sent: [] as Buffer[],
+      removeHeader(k: string) {
+        if (this.headersSent) throw new Error("ERR_HTTP_HEADERS_SENT");
+        delete headers[k];
+      },
+      setHeader(k: string, v: unknown) {
+        if (this.headersSent) throw new Error("ERR_HTTP_HEADERS_SENT");
+        headers[k] = v;
+      },
+      getHeader: (k: string) => headers[k],
+      write(c: unknown) {
+        if (c) this.sent.push(Buffer.from(c as never));
+        return true;
+      },
+      end(c: unknown) {
+        if (c) this.sent.push(Buffer.from(c as never));
+        return undefined;
+      },
+      on() {
+        return undefined;
+      },
+      once() {
+        return undefined;
+      },
+      emit() {
+        return false;
+      },
+    };
+  }
+
+  const req = { method: "GET", headers: { "accept-encoding": "gzip" } } as never;
+  const json = '[{"result":{"data":{"json":{"ok":true}}}}]';
+
+  it("⭐ 後設的 Vary（模擬 tRPC）必須被追加，不是被覆蓋", () => {
+    const res = makeRes();
+    res.setHeader("Vary", "trpc-accept, accept"); // 模擬 tRPC 先設
+    httpCompression(req, res as never, () => {});
+    res.end(new Uint8Array(Buffer.from(json, "utf8")));
+
+    const vary = String(res.headers["Vary"] ?? "");
+    expect(vary, "Accept-Encoding 不能被覆蓋掉").toContain("Accept-Encoding");
+    expect(vary, "tRPC 自己的 Vary 也不能不見").toContain("trpc-accept");
+  });
+
+  it("不壓縮的回應同樣要保證 Vary 含 Accept-Encoding", () => {
+    const res = makeRes();
+    res.setHeader("Vary", "trpc-accept, accept");
+    httpCompression(req, res as never, () => {});
+    // 太小 → 不壓縮，但 Vary 仍必須正確
+    res.end(Buffer.from("{}", "utf8"));
+    expect(String(res.headers["Vary"] ?? "")).toContain("Accept-Encoding");
+  });
+
+  it("沒有既存 Vary 時就只加 Accept-Encoding（不重複）", () => {
+    const res = makeRes();
+    httpCompression(req, res as never, () => {});
+    res.end(Buffer.from(json, "utf8"));
+    const vary = String(res.headers["Vary"] ?? "");
+    expect(vary).toBe("Accept-Encoding");
+    expect(vary.toLowerCase().split("accept-encoding").length - 1).toBe(1);
+  });
+
+  it("已經有 Accept-Encoding 時不重複加", () => {
+    const res = makeRes();
+    res.setHeader("Vary", "Accept-Encoding, X-Other");
+    httpCompression(req, res as never, () => {});
+    res.end(Buffer.from(json, "utf8"));
+    const vary = String(res.headers["Vary"] ?? "");
+    expect(vary.toLowerCase().split("accept-encoding").length - 1).toBe(1);
+    expect(vary).toContain("X-Other");
+  });
+});
+
+describe("⭐ 審查：緩衝上限護欄（2026-10-02）", () => {
+  /**
+   * 這個中介層是緩衝式的（整份回應收進記憶體、end 時才壓縮）。
+   * 沒有上限的話，日後有人加一個會回傳大 JSON 的 GET 端點，
+   * 記憶體就會跟著回應大小線性成長——免費層只有 512 MB。
+   */
+  const CAP = 8 * 1024 * 1024;
+
+  function makeRes() {
+    const headers: Record<string, unknown> = { "Content-Type": "application/json" };
+    const sent: Buffer[] = [];
+    return {
+      statusCode: 200,
+      headersSent: false,
+      headers,
+      sent,
+      removeHeader(k: string) {
+        if (this.headersSent) throw new Error("ERR_HTTP_HEADERS_SENT");
+        delete headers[k];
+      },
+      setHeader(k: string, v: unknown) {
+        if (this.headersSent) throw new Error("ERR_HTTP_HEADERS_SENT");
+        headers[k] = v;
+      },
+      getHeader: (k: string) => headers[k],
+      write(c: unknown) {
+        if (c) sent.push(Buffer.from(c as never));
+        this.headersSent = true;
+        return true;
+      },
+      end(c: unknown) {
+        if (c) sent.push(Buffer.from(c as never));
+        return undefined;
+      },
+      on() {
+        return undefined;
+      },
+      once() {
+        return undefined;
+      },
+      emit() {
+        return false;
+      },
+    };
+  }
+
+  const req = { method: "GET", headers: { "accept-encoding": "gzip" } } as never;
+
+  it("⭐ 超過 8 MB 就放棄壓縮並原樣送出（記憶體有上限）", async () => {
+    const res = makeRes();
+    httpCompression(req, res as never, () => {});
+    const block = Buffer.alloc(1024 * 1024, 0x61); // 1 MB
+    for (let i = 0; i < 9; i += 1) res.write(block);
+    res.end();
+    await new Promise((r) => setTimeout(r, 80));
+
+    const out = Buffer.concat(res.sent);
+    // 內容必須完整（9 MB 全出來）
+    expect(out.length).toBe(9 * 1024 * 1024);
+    // 且不能宣稱壓縮
+    expect(res.headers["Content-Encoding"]).toBeUndefined();
+  });
+
+  it("在上限內的正常回應照常壓縮（護欄不影響既有行為）", async () => {
+    const res = makeRes();
+    httpCompression(req, res as never, () => {});
+    const payload = Buffer.from(JSON.stringify({ items: Array.from({ length: 200 }, (_, i) => ({ id: i, t: "字".repeat(20) })) }), "utf8");
+    res.end(payload);
+    await new Promise((r) => setTimeout(r, 80));
+    expect(res.headers["Content-Encoding"]).toBe("gzip");
+    expect(zlib.gunzipSync(Buffer.concat(res.sent)).toString("utf8")).toBe(payload.toString("utf8"));
+  });
+
+  it("上限常數與文件一致（8 MB）", () => {
+    expect(CAP).toBe(8 * 1024 * 1024);
+  });
+});

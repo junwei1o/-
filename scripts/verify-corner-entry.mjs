@@ -139,14 +139,14 @@ check("輸入框自動取得焦點", await page.locator("#corner-entry-input").e
 await page.screenshot({ path: `${SHOT_DIR}/corner-panel-open.png` });
 
 // ── 5. 三種輸入分支 ──
-// 5a. 其他輸入 → 錯誤、面板留著、沒跳轉
+// 5a. 其他輸入 → 前端不判斷，交後端；後端回不認得 → 錯誤、面板留著
 await page.fill("#corner-entry-input", "亂打的名字");
 await page.locator(".corner-entry-panel form").evaluate((f) => f.requestSubmit());
-await page.waitForTimeout(600);
+await page.waitForTimeout(1200);
 const errText = await page.locator(".corner-entry-error").count()
   ? await page.locator(".corner-entry-error").innerText()
   : "";
-check("⭐ 其他輸入顯示錯誤", /不是你的船名/.test(errText), errText.slice(0, 40));
+check("⭐ 其他輸入顯示錯誤", /認不出來/.test(errText), errText.slice(0, 40));
 check("⭐ 錯誤後面板仍開著（可直接改，不被清空）", (await panel.count()) === 1);
 check("其他輸入不會跳轉", page.url().endsWith("/") || page.url().includes("localhost:3000/"));
 
@@ -157,9 +157,13 @@ await page.waitForURL(/\/settings/, { timeout: 15000 }).catch(() => {});
 check("⭐ 輸入自己的船名 → 進設定頁", /\/settings/.test(page.url()), page.url().replace(BASE, ""));
 
 // 5c. 站長用戶名 → 後端登入 → 進後台
+// ⚠️ 前端**不知道**站長用戶名（這是刻意的收緊），所以這個值只能由測試端提供。
+// 若站長在部署環境設了 ADMIN_USERNAME，這裡要換成那個值——
+// 好處正是：換值不用重新部署前端。
+const ADMIN_NAME = process.env.ADMIN_USERNAME ?? "admin";
 await settleHome();
 await page.locator(".corner-entry-trigger").click();
-await page.fill("#corner-entry-input", "admin");
+await page.fill("#corner-entry-input", ADMIN_NAME);
 await page.locator(".corner-entry-panel form").evaluate((f) => f.requestSubmit());
 await page.waitForURL(/\/admin/, { timeout: 20000 }).catch(() => {});
 check("⭐ 輸入站長用戶名 → 進站長後台", /\/admin/.test(page.url()), page.url().replace(BASE, ""));
@@ -173,6 +177,23 @@ await settleHome();
 await page.locator(".corner-entry-trigger").click();
 await page.keyboard.press("Escape");
 check("Esc 可關閉面板", (await page.locator(".corner-entry-panel").count()) === 0);
+
+// ── 6b. ⭐ 安全屬性驗證：公開 bundle 裡不該出現站長用戶名 ──
+// 前端既然不認得站長用戶名，bundle 裡就不該有 `ADMIN_USERNAME` 這個常數名。
+// 這是「憑證不寫進會被散布的地方」的機械化守護。
+const bundleHasAdminConst = await page.evaluate(async () => {
+  const scripts = Array.from(document.querySelectorAll("script[src]")).map((s) => s.src);
+  const found = [];
+  for (const src of scripts.slice(0, 12)) {
+    try {
+      const text = await (await fetch(src)).text();
+      // 站長用戶名若在前端，會以 ADMIN_USERNAME 這個常數名出現
+      if (text.includes("ADMIN_USERNAME")) found.push(src.split("/").pop());
+    } catch {}
+  }
+  return found;
+});
+check("⭐ 公開 bundle 裡沒有站長用戶名常數", bundleHasAdminConst.length === 0, bundleHasAdminConst.join(", "));
 
 // ── 7. console 乾淨 ──
 const expected = /Database is not available|404|Failed to load resource/i;

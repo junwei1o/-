@@ -19,45 +19,58 @@ import { getSession } from "@/game/session";
  * - hover / focus 才提高對比 → 需要的人找得到，不需要的人忽略它
  * - `z-index` 遠低於任何對話框 → 永不蓋住隱私彈窗、導覽、測驗
  *
- * ## 三種輸入的處理
+ * ## 輸入的處理：前端**不知道**站長用戶名是什麼
  *
- * | 輸入 | 結果 | 為什麼這樣處理 |
- * | --- | --- | --- |
- * | 目前登入者自己的船名 | 進設定頁 | 捷徑；設定頁本來就能進，這裡只是省找路徑的時間 |
- * | 站長用戶名 | 先向後端換 session cookie，再進後台 | **必須真的呼叫後端**，不能只前端跳轉——���則等於前端自己宣告自己是站長 |
- * | 其他 | 顯示錯誤、停在輸入框 | 不跳轉、不清空，讓使用者直接改 |
+ * | 輸入 | 結果 |
+ * | --- | --- |
+ * | 目前登入者自己的船名 | 進設定頁（純前端判斷，不打後端） |
+ * | 其他任何輸入 | **一律交給後端判斷** |
+ *
+ * ⭐ 為什麼不再在前端比對站長用戶名（2026-10-02 收緊）：
+ * 前端要比對，就必須把用戶名寫進 bundle——而 **bundle 是公開的**，
+ * 任何人打開網頁看 JS 就讀得到 `admin`。那等於把憑證公佈在牆上，
+ * 「隱藏的入口」這時只剩心理作用。
+ *
+ * 改成「前端不認識站長用戶名、一律問後端」之後：
+ * - 用戶名**不在公開 bundle 裡**（與 2026-09 那次 PAT 洩漏同一類問題，這裡從根上避免）
+ * - 站長日後改 `ADMIN_USERNAME` **只改部署環境即可**，不必改程式、不必重新部署前端
+ * - 不需要在前端與後端「同步兩處常數」，也就不會有改一邊漏一邊的風險
+ *
+ * 代價只是「打錯字要多打一次後端請求」——可忽略，且 API 本來就有速率限制。
  *
  * ## ⚠️ 安全性說明（要誠實講）
  *
  * 純用戶名驗證**沒有第二道因子**。這是站長的知情決定。
- * 這裡的「隱藏」只是**降低被隨手試到的機率**，不是安全邊界——
- * 任何人只要在首頁右下角點一下、輸入 `admin`，就是站長。
+ * 「藏起來的入口」只是**降低被隨手試到的機率**，不是安全邊界。
  *
  * 因此這個元件**不做任何前端偽裝**：它一定真的打 `admin.login`，
- * 由後端決定要不要發 session cookie。
+ * 由後端決定要不要發 session cookie；而且每次嘗試（成功與失敗）都會寫入審計紀錄。
  */
-const ADMIN_USERNAME = "admin";
 
-type Verdict = "settings" | "admin" | "invalid";
+
+type Verdict = "settings" | "askServer";
 
 /**
- * 判斷輸入屬於哪一種情況——本元件的核心判斷。
+ * 判斷輸入該走哪條路——本元件的核心判斷。
  *
  * 刻意做成**模組層級的純函式**而不是寫在元件裡：
- * 這三種分支是整個功能的核心，必須能單獨測試，
- * 而不是只能「點畫面看對不對」——那種測試撐不起三個分支的組合。
+ * 這個分支是整個功能的核心，必須能單獨測，
+ * 而不是只能「點畫面看對不對」。
+ *
+ * ⚠️ 這裡**只認得「是不是自己的船名」**，不認得站長用戶名——
+ * 理由見上方說明：前端一旦知道站長用戶名，它就會出現在公開 bundle 裡。
  *
  * 規則：
- * - 站長用戶名優先於船名比對（萬一兩者撞名，站長身分才是對的）
- * - 船名比對**大小寫敏感**：船名是使用者自己取的，不該替他改大小寫
- * - 站長用戶名比對不敏感：避免大小寫差異擋住自己
+ * - 空白 → askServer（交給後端回錯誤，避免前端洩漏「站長用戶名是空的」這種資訊）
+ * - 等於自己���船名（大小寫敏感）→ settings
+ * - 其他 → askServer（後端會回 ok 或 invalid）
  */
 export function classifyCornerInput(input: string, sessionName: string | null): Verdict {
   const trimmed = input.trim();
-  if (!trimmed) return "invalid";
-  if (trimmed.toLowerCase() === ADMIN_USERNAME) return "admin";
+  if (!trimmed) return "askServer";
+  // 船名比對大小寫敏感：船名是使用者自己取的，不該替他改大小寫
   if (sessionName && trimmed === sessionName) return "settings";
-  return "invalid";
+  return "askServer";
 }
 
 type Props = {
@@ -124,16 +137,10 @@ export function CornerEntry({ onNavigate }: Props) {
       go("/settings");
       return;
     }
-    if (verdict === "invalid") {
-      setError(
-        sessionName
-          ? `「${value.trim()}」不是你的船名，也不是站長用戶名。`
-          : `「${value.trim()}」不是站長用戶名。如果這是你的船名，請先登入。`,
-      );
-      return;
-    }
 
-    // 站長：一定要真的問後端換 cookie，不能只前端跳轉
+    // ⭐ askServer：前端**不認得**站長用戶名，所以一律問後端。
+    // 這一條同時處理「對的站長用戶名」與「打錯的字」——
+    // 差別由後端回應決定，前端不預先知道。
     login.mutate(
       { username: value.trim() },
       {
@@ -144,7 +151,7 @@ export function CornerEntry({ onNavigate }: Props) {
             return;
           }
           setValue("");
-          setError("站長用戶名不正確，請再試一次。");
+          setError("這個名稱認不出來，請再試一次。");
           inputRef.current?.focus();
         },
         onError: () => {
@@ -221,5 +228,4 @@ export function CornerEntry({ onNavigate }: Props) {
   );
 }
 
-export { ADMIN_USERNAME };
 export type { Verdict };

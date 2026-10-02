@@ -29,7 +29,7 @@ type Feature = {
 const FEATURES: Feature[] = [
   { name: "學習內容與答題", env: null, effect: "不依賴任何環境變數", remedy: "題庫是靜態程式碼，永遠可用" },
   { name: "雲端存檔／班級／公告／試卷紀錄", env: "DATABASE_URL", effect: "降級：全部退回瀏覽器本機模式，資料不跨裝置", remedy: "到部署環境設定 DATABASE_URL" },
-  { name: "站長後台登入", env: "ADMIN_USERNAME", effect: "無此變數時用預設用戶名 admin（⚠️ 純用戶名驗證，無第二道因子）", remedy: "設一個更難猜的值，例如 ADMIN_USERNAME=<隨機長字串>（需同時改前端 CornerEntry 的 ADMIN_USERNAME）" },
+  { name: "站長後台登入", env: "ADMIN_USERNAME", effect: "無此變數時用預設用戶名 admin（⚠️ 純用戶名驗證，無第二道因子）", remedy: "設一個更難猜的值，例如 ADMIN_USERNAME=<隨機長字串>。⭐ 前端不知道這個值，改了不必重新部署前端" },
   { name: "督學台登入", env: "TEACHER_PASSPHRASE", effect: "不可用：教師端會顯示未設定", remedy: "設定 TEACHER_PASSPHRASE" },
   { name: "學生會話與存檔", env: "JWT_SECRET", effect: "不可用：會話簽不出來，等於登入永不通", remedy: "設定 JWT_SECRET（隨機長字串）" },
   { name: "AI 深度導讀", env: "GROQ_API_KEY", effect: "降級：深度反思題會失敗，其餘題型正常", remedy: "到 Groq 取免費層金鑰" },

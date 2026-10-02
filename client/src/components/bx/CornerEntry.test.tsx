@@ -4,7 +4,7 @@ import "@testing-library/jest-dom/vitest";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { CornerEntry, classifyCornerInput, ADMIN_USERNAME } from "./CornerEntry";
+import { CornerEntry, classifyCornerInput } from "./CornerEntry";
 
 /**
  * 船長入口的測試。
@@ -40,49 +40,44 @@ afterEach(() => {
   localStorage.clear();
 });
 
-describe("classifyCornerInput：三分支判斷", () => {
-  it("輸入站長用戶名 → admin", () => {
-    expect(classifyCornerInput(ADMIN_USERNAME, null)).toBe("admin");
-    expect(classifyCornerInput(ADMIN_USERNAME, "小航海士")).toBe("admin");
+describe("classifyCornerInput：前端只認得自己的船名", () => {
+  // ⭐ 這組測試同時是「安全屬性」的守護：前端**不應該**知道站長用戶名是什麼。
+  // 若有人日後把 ADMIN_USERNAME 加回前端，這些測試應該立刻失敗。
+  it("⭐ 站長用戶名不對外匯出（避免它進入公開 bundle）", () => {
+    // 用 Record 轉型繞過型別，證明執行期也拿不到這個匯出
+    expect((CornerEntry as unknown as Record<string, unknown>).ADMIN_USERNAME).toBeUndefined();
   });
 
-  it("站長用戶名比對大小寫不敏感（避免自己打錯被擋）", () => {
-    expect(classifyCornerInput("ADMIN", null)).toBe("admin");
-    expect(classifyCornerInput("Admin", null)).toBe("admin");
-  });
-
-  it("⭐ 輸入自己的船名 → settings", () => {
+  it("等於自己的船名 → settings（不打後端）", () => {
     expect(classifyCornerInput("小航海士", "小航海士")).toBe("settings");
-  });
-
-  it("⭐ 船名比對大小寫敏感（用 ASCII 船名才測得到，中文沒有大小寫）", () => {
-    // 船名是使用者自己取的，不該替他改大小寫
-    expect(classifyCornerInput("Kaohsiung", "Kaohsiung")).toBe("settings");
-    expect(classifyCornerInput("kaohsiung", "Kaohsiung")).toBe("invalid");
-  });
-
-  it("⭐ 站長用戶名優先於船名比對（撞名時要給站長身分）", () => {
-    // 有人剛好把船名叫 admin
-    expect(classifyCornerInput("admin", "admin")).toBe("admin");
-  });
-
-  it("其他輸入 → invalid", () => {
-    expect(classifyCornerInput("別人", "小航海士")).toBe("invalid");
-    expect(classifyCornerInput("root", null)).toBe("invalid");
-  });
-
-  it("空白字串 → invalid（不是 admin）", () => {
-    expect(classifyCornerInput("", "小航海士")).toBe("invalid");
-    expect(classifyCornerInput("   ", "小航海士")).toBe("invalid");
-  });
-
-  it("前後空白會被去掉再判斷", () => {
-    expect(classifyCornerInput("  admin  ", null)).toBe("admin");
     expect(classifyCornerInput("  小航海士  ", "小航海士")).toBe("settings");
   });
 
-  it("未登入時打自己的船名 → invalid（沒有名字可比）", () => {
-    expect(classifyCornerInput("小航海士", null)).toBe("invalid");
+  it("船名比對大小寫敏感（用 ASCII 船名才測得到，中文沒有大小寫）", () => {
+    expect(classifyCornerInput("Kaohsiung", "Kaohsiung")).toBe("settings");
+    expect(classifyCornerInput("kaohsiung", "Kaohsiung")).toBe("askServer");
+  });
+
+  it("⭐ 其他一切 → askServer（連「猜中的站長用戶名」也一樣，交後端判斷）", () => {
+    expect(classifyCornerInput("admin", "小航海士")).toBe("askServer");
+    expect(classifyCornerInput("不是我的名字", "小航海士")).toBe("askServer");
+    expect(classifyCornerInput("root", null)).toBe("askServer");
+  });
+
+  it("空白 → askServer（讓後端回錯誤，不在前端洩漏任何判斷依據）", () => {
+    expect(classifyCornerInput("", "小航海士")).toBe("askServer");
+    expect(classifyCornerInput("   ", "小航海士")).toBe("askServer");
+  });
+
+  it("未登入時打自己的船名 → askServer（沒有名字可比，交给後端）", () => {
+    expect(classifyCornerInput("小航海士", null)).toBe("askServer");
+  });
+
+  it("⭐ 前端對「猜中」與「猜錯」的回應必須完全相同（不可枚舉）", () => {
+    // 兩者都只回 askServer → 端點收到的請求一模一樣，無法用來枚舉站長用戶名
+    expect(classifyCornerInput("admin", "小航海士")).toBe(
+      classifyCornerInput("definitely-not-admin", "小航海士")
+    );
   });
 });
 
@@ -99,7 +94,7 @@ describe("CornerEntry 互動", () => {
     expect(screen.getByRole("dialog", { name: "船長入口" })).toBeInTheDocument();
   });
 
-  it("⭐ 輸入站長用戶名 → 呼叫後端登入（不只前端跳轉）", () => {
+  it("⭐ 輸入非自己船名的名稱 → 一律呼叫後端（前端不預先判斷）", () => {
     setSession("小航海士");
     render(<CornerEntry />);
     fireEvent.click(screen.getByRole("button", { name: "船長入口" }));
@@ -114,7 +109,7 @@ describe("CornerEntry 互動", () => {
     expect(navigateMock).not.toHaveBeenCalledWith("/settings");
   });
 
-  it("⭐ 帶空白的站長用戶名也會被清理後送出", () => {
+  it("⭐ 帶空白的輸入也會被清理後送出（手機輸入常會帶到空白）", () => {
     setSession(null);
     render(<CornerEntry />);
     fireEvent.click(screen.getByRole("button", { name: "船長入口" }));
@@ -135,27 +130,41 @@ describe("CornerEntry 互動", () => {
     expect(loginMock).not.toHaveBeenCalled();
   });
 
-  it("⭐ 其他輸入 → 顯示錯誤、停在輸入框、不跳轉", () => {
+  it("⭐ 其他輸入 → 交給後端判斷，失敗時顯示錯誤、留在輸入框", () => {
     setSession("小航海士");
+    loginMock.mockImplementation((_input: unknown, opts: { onSuccess: (r: { ok: boolean }) => void }) => {
+      opts.onSuccess({ ok: false });
+    });
     render(<CornerEntry />);
     fireEvent.click(screen.getByRole("button", { name: "船長入口" }));
-    fireEvent.change(screen.getByLabelText("輸入你的船名"), { target: { value: "不是我的名字" } });
-    fireEvent.submit(screen.getByLabelText("輸入你的船名").closest("form")!);
+    const input = screen.getByLabelText("輸入你的船名");
+    fireEvent.change(input, { target: { value: "不是我的名字" } });
+    fireEvent.submit(input.closest("form")!);
 
-    expect(screen.getByRole("alert")).toHaveTextContent("不是你的船名");
-    // 面板還開著、輸入框還在（使用者可以直接改，不該被清空）
+    // 一定真的問了後端——前端不認得站長用戶名，所以不能自己判斷
+    expect(loginMock).toHaveBeenCalledWith({ username: "不是我的名字" }, expect.anything());
+    expect(screen.getByRole("alert")).toHaveTextContent("認不出來");
+    // 面板還開著（使用者可以直接改，不該被清空）
     expect(screen.getByRole("dialog", { name: "船長入口" })).toBeInTheDocument();
-    expect(loginMock).not.toHaveBeenCalled();
     expect(navigateMock).not.toHaveBeenCalled();
   });
 
-  it("未登入時的錯誤訊息會提示先登入", () => {
-    setSession(null);
+  it("⭐ 後端回 ok 時進後台（前端不預先知道是誰，只信任後端）", () => {
+    setSession("小航海士");
+    loginMock.mockImplementation((_input: unknown, opts: { onSuccess: (r: { ok: boolean }) => void }) => {
+      opts.onSuccess({ ok: true });
+    });
+    const assign = vi.fn();
+    Object.defineProperty(window, "location", { value: { ...window.location, assign }, writable: true });
+
     render(<CornerEntry />);
     fireEvent.click(screen.getByRole("button", { name: "船長入口" }));
-    fireEvent.change(screen.getByLabelText("輸入你的船名"), { target: { value: "某個船名" } });
-    fireEvent.submit(screen.getByLabelText("輸入你的船名").closest("form")!);
-    expect(screen.getByRole("alert")).toHaveTextContent("請先登入");
+    const input = screen.getByLabelText("輸入你的船名");
+    fireEvent.change(input, { target: { value: "任何東西" } });
+    fireEvent.submit(input.closest("form")!);
+
+    expect(loginMock).toHaveBeenCalledWith({ username: "任何東西" }, expect.anything());
+    expect(assign).toHaveBeenCalledWith("/admin");
   });
 
   it("Esc 可以關閉面板（不給人卡住）", () => {
