@@ -27,6 +27,7 @@ import {
   PAPER_SCOPES,
   PAPER_MISTAKE_REASONS,
   PAPER_QUESTION_TIME_LIMIT_MS,
+  getPaperQuestionTimeLimitMs,
   filterWrongPaperQuestions,
   getPaperStrategyRecap,
   getPaperNextGroupStrategyHint,
@@ -725,14 +726,14 @@ function pickPoolWithCooldown(nextScope: PaperScope): PaperQuestion[] {
       knowledge: [question.learningTopic],
       difficulty,
       correct: false,
-      responseMs: PAPER_QUESTION_TIME_LIMIT_MS,
-      timeLimitMs: PAPER_QUESTION_TIME_LIMIT_MS,
+      responseMs: getPaperQuestionTimeLimitMs(question),
+      timeLimitMs: getPaperQuestionTimeLimitMs(question),
       timestamp,
       flagged: flaggedQuestions[question.id] === true,
       errorType: "memory",
     });
     saveAdaptiveProfile(profile);
-    recordAnalyticsEvent({ type: "answer", subject: question.subject, questionId: question.id, correct: false, responseMs: PAPER_QUESTION_TIME_LIMIT_MS, timestamp });
+    recordAnalyticsEvent({ type: "answer", subject: question.subject, questionId: question.id, correct: false, responseMs: getPaperQuestionTimeLimitMs(question), timestamp });
     setComboCount(0);
     setConsecutiveCorrectWithoutExplanation(0);
     setNotice("時間到，這一題先記為需要複習。看過正確答案與解析後，再繼續下一題。");
@@ -744,7 +745,7 @@ function pickPoolWithCooldown(nextScope: PaperScope): PaperQuestion[] {
     if (!question || question.questionType === "配對題") return;
     if (answersRef.current[question.id] !== undefined || timeoutsRef.current[question.id]) return;
     if (!deadlineRef.current[question.id]) {
-      deadlineRef.current[question.id] = Date.now() + PAPER_QUESTION_TIME_LIMIT_MS;
+      deadlineRef.current[question.id] = Date.now() + getPaperQuestionTimeLimitMs(question);
     }
     const update = () => {
       if (answersRef.current[question.id] !== undefined || timeoutsRef.current[question.id]) {
@@ -755,7 +756,7 @@ function pickPoolWithCooldown(nextScope: PaperScope): PaperQuestion[] {
       // 這裡若發現截止時間遺失就立即補算，避免倒數顯示 NaN。
       let deadline = deadlineRef.current[question.id];
       if (!Number.isFinite(deadline)) {
-        deadline = Date.now() + PAPER_QUESTION_TIME_LIMIT_MS;
+        deadline = Date.now() + getPaperQuestionTimeLimitMs(question);
         deadlineRef.current[question.id] = deadline;
       }
       const left = Math.max(0, Math.round((deadline - Date.now()) / 1000));

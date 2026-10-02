@@ -69,8 +69,10 @@ for (const q of rows) {
    * 硬砍反而會讓題意不清，所以放寬到題幹 200 字、選項 110 字。
    */
   const isCrossSubject = Array.isArray((q as { subjectCombination?: unknown }).subjectCombination);
-  const promptLimit = isCrossSubject ? 200 : 150;
-  const optionLimit = isCrossSubject ? 110 : 60;
+  // 深思題（180 秒）設計上就是多步驟推理／閱讀推論，題幹天然較長，給更高的上限
+  const isDeep = (q as { timeLimitSec?: number }).timeLimitSec === 180;
+  const promptLimit = isCrossSubject || isDeep ? 200 : 150;
+  const optionLimit = isCrossSubject ? 110 : isDeep ? 90 : 60;
   if (q.prompt.length > promptLimit) add("題幹過長", `${q.id}（${q.prompt.length} 字）`);
   if (Math.max(...q.options.map((o) => o.length)) > optionLimit) {
     add("選項過長", `${q.id}（${Math.max(...q.options.map((o) => o.length))} 字）`);
@@ -86,6 +88,25 @@ const crossSubject = rows.filter((row) => {
 }) as Array<{ subjectCombination: string[]; knowledge: string[]; subject: string }>;
 const three = crossSubject.filter((row) => row.subjectCombination.length === 3).length;
 const five = crossSubject.filter((row) => row.subjectCombination.length === 5).length;
+console.log("── 深思題（作答上限 180 秒）──");
+const deepReasoning = rows.filter((row) => (row as { timeLimitSec?: number }).timeLimitSec === 180);
+{
+  const bySubject = new Map<string, number>();
+  for (const row of deepReasoning) {
+    bySubject.set(row.subject, (bySubject.get(row.subject) ?? 0) + 1);
+  }
+  const subjectCounts = Array.from(bySubject.entries())
+    .sort((a, b) => b[1] - a[1])
+    .map(([subj, n]) => `${subj}:${n}`)
+    .join("、");
+  console.log(`總數：${deepReasoning.length}（各科：${subjectCounts}）`);
+  const expectedPerSubject = Math.floor(200 / 5);
+  for (const [subj, n] of bySubject) {
+    if (n < expectedPerSubject) add("深思題科目數量不足", `${subj} 應 ≥${expectedPerSubject}，實際 ${n}`);
+  }
+  if (deepReasoning.length !== 200) add("深思題數量不足", `應為 200，實際 ${deepReasoning.length}`);
+}
+
 console.log("── 跨學科結合題 ──");
 console.log(`總數：${crossSubject.length}（三科結合 ${three}、五科結合 ${five}）`);
 console.log(`主科分布：${JSON.stringify(

@@ -118,6 +118,8 @@ export function makeQuestion({
   questionType = "選擇題",
   /** 跨學科結合題會帶這欄：這題結合了哪幾個科目（單科題不帶）。 */
   subjectCombination,
+  /** 深思題（2026-10-03）：每題作答上限秒數；未帶＝使用各流程的預設上限。 */
+  timeLimitSec,
 }) {
   const opts = options.map((o) => String(o));
   const expected = questionType === "是非題" ? 2 : 4;
@@ -139,9 +141,10 @@ export function makeQuestion({
     answer,
     explanation: String(explanation),
     knowledge,
-    area: null,
-    ...(subjectCombination ? { subjectCombination } : {}),
-  };
+      area: null,
+      ...(subjectCombination ? { subjectCombination } : {}),
+      ...(timeLimitSec ? { timeLimitSec } : {}),
+    };
 }
 
 /** 四選一：從干擾池組選項並自動定位正解索引。 */

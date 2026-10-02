@@ -19,9 +19,14 @@ export type PaperQuestion = {
   strongDistractor?: { optionIndex: number; note: string };
   /** 配對題專用：試卷內嵌的迷你配對盤（4 對＋1 干擾）。成績獨立計星，不影響選擇/是非分數。 */
   matchingSet?: MatchingSet;
-  /** 排序題專用：由前到後的正確順序，作答時元件打亂呈現；答對寫 answer(=0)、答錯寫 -1。 */
-  orderItems?: string[];
-};
+    /** 排序題專用：由前到後的正確順序，作答時元件打亂呈現；答對寫 answer(=0)、答錯寫 -1。 */
+    orderItems?: string[];
+    /**
+     * 深思題專用（2026-10-03）：本題作答上限秒數。未帶＝預設 30 秒。
+     * 深思題（180 秒）設計為多步驟推理／綜合判斷，與一般題共用選擇題的作答與計分流程。
+     */
+    timeLimitSec?: number;
+  };
 
 export type PaperScope = "綜合課綱" | PaperSubject;
 export type PaperMistakeReason = "基礎題需重看" | "標準題需練習" | "挑戰題需拆解";
@@ -33,6 +38,14 @@ export const DEFAULT_PAPER_SIZE = 12;
 export const PAPER_MATCHING_COUNT = 3;
 /** 每題（含選擇、是非、配對）的作答時間上限。 */
 export const PAPER_QUESTION_TIME_LIMIT_MS = 30_000;
+
+/**
+ * 每題的實際作答上限：深思題（timeLimitSec）用自己的秒數，其餘用預設 30 秒。
+ * 2026-10-03 起支援深思題（180 秒、多步驟推理），其他流程零改動。
+ */
+export function getPaperQuestionTimeLimitMs(question?: Pick<PaperQuestion, "timeLimitSec">): number {
+  return question?.timeLimitSec ? question.timeLimitSec * 1000 : PAPER_QUESTION_TIME_LIMIT_MS;
+}
 
 export function isMatchingQuestion(question: PaperQuestion): boolean {
   return question.questionType === "配對題" && Boolean(question.matchingSet);
