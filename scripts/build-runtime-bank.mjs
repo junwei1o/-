@@ -60,6 +60,9 @@ let totalSlim = 0;
 
 for (const source of SOURCES) {
   const { to, from, generated: keepGenerated } = source;
+  // 沒有輸出檔的來源（例如國中档 runtime_bank_junior 移除後，只剩年級分流條件）
+  // 整個跳過。少了這行，腳本會在跑完第一個來源之後才崩，等於**建置到一半失敗**。
+  if (!to) continue;
   const questions = [];
   const seen = new Set();
   /**
@@ -76,8 +79,9 @@ for (const source of SOURCES) {
     seen.add(key);
     questions.push(question);
   };
-  let rawBytes = 0;
-  for (const file of from) {
+    let rawBytes = 0;
+    // `from ?? []`：來源可以只宣告篩選條件而沒有輸入檔，沒有就整個跳過
+    for (const file of from ?? []) {
     const raw = readFileSync(join(ROOT, file), "utf8");
     rawBytes += Buffer.byteLength(raw, "utf8");
     const parsed = JSON.parse(raw);

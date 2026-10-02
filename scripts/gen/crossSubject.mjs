@@ -1,20 +1,10 @@
 /**
  * 跨學科結合題產生器（三科結合 ＋ 五科結合，共 200 題）。
  *
- * 設計理念：**不做隨機拼貼，而是先設計「真實情境劇本」**。
- *
- * 一題跨科題要「巧妙、不硬湊」，關鍵在於情境本身是否真的同時需要那幾個科目。
- * 例如「營養午餐選在地食材」這個情境，數學負責算價差與總量、社會負責產地與運輸、
- * 自然負責碳足跡與食物里程、國語負責海報用字、英語負責雙語標示——五科各有其位，
- * 誰都拿不掉。因此本檔的每一條 recipe 都是一個這樣的情境，並具備兩個特徵：
- *
- *   1. 情境的資料（價格、雨量、人數…）由程式隨機產生，答案由程式算出，
- *      所以「數字一定對」；同一條 recipe 每次參數不同，就會長出不同的題目。
- *   2. 選項一律是「數據 ＋ 學科判斷」的組合，學生必須同時算對、也判斷對。
- *      錯誤選項都是學生真的會犯的錯（算錯、把因果顛倒、用錯字或英文）。
- *
- * 每題的 `knowledge` 會列出各科對應的知識點，`learningTopic` 標成「跨科結合：…」，
- * 讓題庫既能被單科篩選到，也看得出它結合了哪些科目。
+ * ⚠️ `grade` 只能落在 3–6（App 的 MIN_GRADE／MAX_GRADE）。
+ *    超出範圍的題目會在 `build-runtime-bank.mjs` 的 `grade <= 6` 篩選後被丟掉，
+ *    而且 App 本來就用不到那些年級——補了也一樣不見。
+ *    2026-10-02 曾因此讓 200 題只進了 120 題。
  */
 import { randInt, pick, shuffle, makeQuestion } from "./common.mjs";
 
@@ -32,7 +22,7 @@ const THREE_SUBJECT_SCENARIOS = [
   // ── 數學 ＋ 自然 ＋ 社會 ───────────────────────────────────────────
   {
     id: "lunch-mile",
-    grade: [5, 6, 7],
+    grade: [5, 6],
     subjects: ["數學", "自然", "社會"],
     topic: "營養午餐的在地食材",
     knowledge: ["乘法與單位換算", "食物里程與碳排放", "地方產業與運輸"],
@@ -59,7 +49,7 @@ const THREE_SUBJECT_SCENARIOS = [
   },
   {
     id: "reservoir",
-    grade: [5, 6, 7, 8],
+    grade: [5, 6],
     subjects: ["數學", "自然", "社會"],
     topic: "水庫水位與限水",
     knowledge: ["減法與百分比", "水循環與降雨", "水資源政策與民生用水"],
@@ -84,7 +74,7 @@ const THREE_SUBJECT_SCENARIOS = [
   },
   {
     id: "quake-distance",
-    grade: [6, 7, 8, 9],
+    grade: [6],
     subjects: ["數學", "自然", "社會"],
     topic: "地震與防災",
     knowledge: ["距離與時間計算", "地震波與震度", "防災演練與建築安全"],
@@ -106,7 +96,7 @@ const THREE_SUBJECT_SCENARIOS = [
   },
   {
     id: "solar-bill",
-    grade: [6, 7, 8],
+    grade: [6],
     subjects: ["數學", "自然", "社會"],
     topic: "太陽能與用電",
     knowledge: ["乘法與電費計算", "太陽能與能源轉換", "能源政策與節能"],
@@ -130,7 +120,7 @@ const THREE_SUBJECT_SCENARIOS = [
   },
   {
     id: "recycle-rate",
-    grade: [5, 6, 7],
+    grade: [5, 6],
     subjects: ["數學", "自然", "社會"],
     topic: "資源回收率",
     knowledge: ["百分比計算", "資源循環與分解", "環保政策與社區行動"],
@@ -153,7 +143,7 @@ const THREE_SUBJECT_SCENARIOS = [
   // ── 數學 ＋ 自然 ＋ 國語 ───────────────────────────────────────────
   {
     id: "rain-chance",
-    grade: [5, 6, 7],
+    grade: [5, 6],
     subjects: ["數學", "自然", "國語"],
     topic: "降雨機率的讀法",
     knowledge: ["機率的概念", "天氣預報與降雨", "詞語理解與語意"],
@@ -195,7 +185,7 @@ const THREE_SUBJECT_SCENARIOS = [
   },
   {
     id: "typhoon-word",
-    grade: [5, 6, 7],
+    grade: [5, 6],
     subjects: ["數學", "自然", "國語"],
     topic: "颱風警報的用語",
     knowledge: ["數據判讀", "颱風與豪雨", "新聞用語與語意強弱"],
@@ -265,7 +255,7 @@ const THREE_SUBJECT_SCENARIOS = [
   // ── 數學 ＋ 自然 ＋ 英語 ───────────────────────────────────────────
   {
     id: "sports-unit",
-    grade: [6, 7, 8],
+    grade: [6],
     subjects: ["數學", "自然", "英語"],
     topic: "運動成績的單位",
     knowledge: ["除法與平均", "速度的意義", "英文單位與說法"],
@@ -287,7 +277,7 @@ const THREE_SUBJECT_SCENARIOS = [
   },
   {
     id: "night-market",
-    grade: [5, 6, 7],
+    grade: [5, 6],
     subjects: ["數學", "社會", "英語"],
     topic: "夜市的消費",
     knowledge: ["加減與找錢", "消費與在地經濟", "英文數字與價格說法"],
@@ -332,7 +322,7 @@ const THREE_SUBJECT_SCENARIOS = [
   },
   {
     id: "weather-english",
-    grade: [6, 7, 8],
+    grade: [6],
     subjects: ["自然", "社會", "英語"],
     topic: "雙語氣象報告",
     knowledge: ["天氣要素與季風", "觀光與生活安排", "英文天氣用語"],
@@ -378,7 +368,7 @@ const THREE_SUBJECT_SCENARIOS = [
   // ── 語文 ＋ 資訊量 ────────────────────────────────────────────────
   {
     id: "reading-summary",
-    grade: [6, 7, 8],
+    grade: [6],
     subjects: ["數學", "國語", "英語"],
     topic: "摘要的字數與重點",
     knowledge: ["字數計算與比例", "摘要與重點擷取", "英文摘要用字"],
@@ -407,7 +397,7 @@ const THREE_SUBJECT_SCENARIOS = [
 const FIVE_SUBJECT_SCENARIOS = [
   {
     id: "bilingual-lunch",
-    grade: [5, 6, 7],
+    grade: [5, 6],
     subjects: ["數學", "自然", "社會", "國語", "英語"],
     topic: "雙語營養午餐海報",
     knowledge: ["乘法與比例", "營養均衡", "在地農業", "海報用字", "英文標示"],
@@ -430,7 +420,7 @@ const FIVE_SUBJECT_SCENARIOS = [
   },
   {
     id: "typhoon-day",
-    grade: [6, 7, 8, 9],
+    grade: [6],
     subjects: ["數學", "自然", "社會", "國語", "英語"],
     topic: "颱風停班停課的判斷",
     knowledge: ["數據判讀", "颱風與風雨", "停班停課規定", "公告用字", "英文公告"],
@@ -475,7 +465,7 @@ const FIVE_SUBJECT_SCENARIOS = [
   },
   {
     id: "energy-week",
-    grade: [5, 6, 7],
+    grade: [5, 6],
     subjects: ["數學", "自然", "社會", "國語", "英語"],
     topic: "校園節能減碳週",
     knowledge: ["用電量計算", "能源與發電", "節能政策", "宣導文案", "英文標語"],
@@ -499,7 +489,7 @@ const FIVE_SUBJECT_SCENARIOS = [
   },
   {
     id: "fruit-export",
-    grade: [6, 7, 8, 9],
+    grade: [6],
     subjects: ["數學", "自然", "社會", "國語", "英語"],
     topic: "臺灣水果外銷",
     knowledge: ["產量與百分比", "果樹生長與保鮮", "國際貿易", "新聞稿用字", "英文品名"],
@@ -543,7 +533,7 @@ const FIVE_SUBJECT_SCENARIOS = [
   },
   {
     id: "school-fair",
-    grade: [4, 5, 6, 7],
+    grade: [4, 5, 6],
     subjects: ["數學", "自然", "社會", "國語", "英語"],
     topic: "園遊會攤位規劃",
     knowledge: ["成本與利潤", "食品安全與保存", "消費與交易", "叫賣用語", "英文招牌"],
@@ -566,7 +556,7 @@ const FIVE_SUBJECT_SCENARIOS = [
   },
   {
     id: "river-check",
-    grade: [6, 7, 8, 9],
+    grade: [6],
     subjects: ["數學", "自然", "社會", "國語", "英語"],
     topic: "河川水質調查",
     knowledge: ["平均與數據整理", "溶氧與水質指標", "環保法規與監督", "調查報告用字", "英文報告標題"],
