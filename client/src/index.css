@@ -173,6 +173,20 @@
 /* 全站色板橋接：讓教室遊戲等子系統的 --cr-*（var(--sea)/var(--orange)…）繼承同一套品牌色。
    單一事實來源＝上行 --tidal/--coral/--moss/--yellow；改色只動上行。 */
 :root { --card: var(--white); --sea: var(--tidal); --sea-d: var(--tidal-deep); --orange: var(--coral); --orange-d: var(--coral-deep); --green: var(--moss); --red: #C8553D; --gold: var(--yellow); }
+/* shadcn 裸變數別名（與上方 @theme inline 的 --color-* 映射同源）：
+   手寫 CSS（.settings-* 等跨頁共用類）使用 var(--primary)/var(--border)… 時，
+   必須有對應裸變數才生效；否則 border 會回退 currentColor、focus ring 與 accent 失效。
+   一律由航海 token 派生，四主題自動連動，不得新定義色相。 */
+:root {
+  --background: var(--paper);
+  --foreground: var(--ink);
+  --primary: var(--tidal);
+  --primary-foreground: var(--white);
+  --border: var(--line);
+  --input: var(--line);
+  --ring: var(--coral);
+  --muted-foreground: var(--muted);
+}
 * { box-sizing:border-box; }
 
 /* ── 共用元件樣式（.app-*）：各頁按鈕／卡片／表單的統一基準 ──
