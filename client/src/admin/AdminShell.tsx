@@ -31,13 +31,20 @@ function AdminModuleCard({ module }: { module: AdminModule }) {
 type AdminShellProps = {
   /** 目前是否為站長身分。 */
   isAdmin: boolean;
-  /** 伺服器端是否已設定站長通關語；false 時後台不可能登入。 */
-  passphraseConfigured: boolean;
   onLogout: () => void;
 };
 
-export function AdminShell({ isAdmin, passphraseConfigured, onLogout }: AdminShellProps) {
-  const [passphrase, setPassphrase] = useState("");
+/**
+ * 站長用戶名。
+ *
+ * ⚠️ 與 `server/_core/env.ts` 的 `ENV.adminUsername` **必須同步**。
+ * 兩處不一致時，首頁入口會怎麼打都進不去。
+ * 站長可以在部署環境設 `ADMIN_USERNAME` 換一個更難猜的值。
+ */
+const ADMIN_USERNAME = "admin";
+
+export function AdminShell({ isAdmin, onLogout }: AdminShellProps) {
+  const [username, setUsername] = useState("");
   const [error, setError] = useState<string | null>(null);
   const login = trpc.admin.login.useMutation();
 
@@ -48,59 +55,47 @@ export function AdminShell({ isAdmin, passphraseConfigured, onLogout }: AdminShe
           <Lock size={26} />
         </span>
 
-        {!passphraseConfigured ? (
-          <>
-            <p className="admin-gate-copy">
-              <strong>站長後台尚未啟用。</strong>
-              伺服器端還沒有設定站長通關語，因此任何人都無法登入——
-              這是刻意的安全側降級，其他角色（老師／學生）完全不受影響。
-            </p>
-            <p className="admin-gate-hint">
-              請在部署環境的環境變數加上 <code>ADMIN_PASSPHRASE</code> 後重新部署，即可啟用本站長後台。
-            </p>
-          </>
-        ) : (
-          <>
-            <p className="admin-gate-copy">
-              <strong>這裡是站長專屬後台。</strong>
-              內容包含全站營運、資源用量與系統環境資訊，需要站長通關語才能進入。
-            </p>
+        <p className="admin-gate-copy">
+          <strong>這裡是站長專屬後台。</strong>
+          內容包含全站營運、學習實況、資源用量與系統環境資訊。
+        </p>
             <form
               className="admin-gate-form"
               onSubmit={(event) => {
                 event.preventDefault();
                 setError(null);
                 login.mutate(
-                  { passphrase },
+                  { username: username.trim() },
                   {
                     onSuccess: (result) => {
                       if (result.ok) {
-                        setPassphrase("");
+                        setUsername("");
                         // 重新載入以讓伺服器端會話生效（context 由 cookie 決定身分）
                         window.location.reload();
                         return;
                       }
-                      setError(
-                        result.reason === "notConfigured"
-                          ? "伺服器端尚未設定站長通關語（ADMIN_PASSPHRASE）。"
-                          : "通關語不正確，請再試一次。",
-                      );
+                      setUsername("");
+                      setError("站長用戶名不正確，請再試一次。");
                     },
                     onError: () => setError("登入時發生錯誤，請稍後再試。"),
                   },
                 );
               }}
             >
-              <label className="admin-gate-label" htmlFor="admin-passphrase">
-                站長通關語
+              <label className="admin-gate-label" htmlFor="admin-username">
+                站長用戶名
               </label>
               <input
-                id="admin-passphrase"
+                id="admin-username"
                 className="admin-gate-input"
-                type="password"
-                value={passphrase}
-                onChange={(event) => setPassphrase(event.target.value)}
-                autoComplete="current-password"
+                type="text"
+                value={username}
+                onChange={(event) => setUsername(event.target.value)}
+                autoComplete="username"
+                autoCapitalize="none"
+                autoCorrect="off"
+                spellCheck={false}
+                placeholder={ADMIN_USERNAME}
                 required
               />
               <button type="submit" className="admin-primary-button" disabled={login.isPending}>
@@ -112,8 +107,6 @@ export function AdminShell({ isAdmin, passphraseConfigured, onLogout }: AdminShe
                 {error}
               </p>
             )}
-          </>
-        )}
       </div>
     );
   }

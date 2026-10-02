@@ -43,7 +43,6 @@ export default function AdminConsole() {
         ) : (
           <AdminShell
             isAdmin={me.data.isAdmin}
-            passphraseConfigured={me.data.passphraseConfigured}
             onLogout={() =>
               logout.mutate(undefined, {
                 onSettled: () => window.location.reload(),

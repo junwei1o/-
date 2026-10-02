@@ -7,7 +7,7 @@
  * 專案本身零新增依賴。
  *
  * 跑法：
- *   BASE=http://localhost:3000 PASSPHRASE=local-admin \
+ *   BASE=http://localhost:3000 ADMIN_USERNAME=admin \
  *   node scripts/verify-admin-knowledge.mjs
  *
  * 解析 playwright 的方式：用 `createRequire` 指向隔離 workspace。
@@ -23,7 +23,8 @@ const require = createRequire(`${PLAYWRIGHT_HOME}/`);
 const { chromium } = require("playwright");
 
 const BASE = process.env.BASE ?? "http://localhost:3000";
-const PASSPHRASE = process.env.PASSPHRASE ?? "local-admin";
+// 2026-10-02 起後台改用「純用戶名」驗證，變數名沿用 PASSPHRASE 會誤導，故改名
+const ADMIN_USERNAME = process.env.ADMIN_USERNAME ?? "admin";
 const SHOT_DIR = process.env.SHOT_DIR ?? "/tmp/admin-kb-shots";
 mkdirSync(SHOT_DIR, { recursive: true });
 
@@ -90,29 +91,35 @@ await dismissOverlays();
 // ── 2. 進 /admin 並登入 ──
 await page.goto(`${BASE}/admin`, { waitUntil: "domcontentloaded" });
 await dismissOverlays();
-await page.waitForSelector("#admin-passphrase", { timeout: 20000 });
-check("後台登入閘出現（密語已設定）", true);
+await page.waitForSelector("#admin-username", { timeout: 20000 });
+check("後台登入閘出現（用戶名驗證）", true);
 
-await page.fill("#admin-passphrase", PASSPHRASE);
-await page.locator("#admin-passphrase").evaluate((el) => el.closest("form")?.querySelector("button")?.click());
-await page.waitForSelector("#admin-passphrase", { state: "detached", timeout: 25000 });
+await page.fill("#admin-username", ADMIN_USERNAME);
+await page.locator("#admin-username").evaluate((el) => el.closest("form")?.querySelector("button")?.click());
+await page.waitForSelector("#admin-username", { state: "detached", timeout: 25000 });
 check("站長登入成功（登入閘消失）", true);
 
 await page.waitForSelector(".admin-page", { timeout: 20000 });
 
 // ── 3. 分組與模組齊全 ──
 const headings = await page.locator(".admin-page h2, .admin-page h3").allInnerTexts();
-const groups = ["營運與資源", "內容與題庫", "成本與用量", "存取與角色", "維護工具", "系統與部署", "知識與文件"];
+const groups = ["站長總覽", "營運與資源", "內容與題庫", "成本與用量", "存取與角色", "維護工具", "系統與部署", "知識與文件"];
 const missingGroups = groups.filter((g) => !headings.includes(g));
 check("七個分組都渲染", missingGroups.length === 0, missingGroups.length ? `缺：${missingGroups.join("、")}` : `${groups.length} 組`);
 
-const modules = ["專案速覽", "知識文件中心", "全站資源監控", "安全防線", "維運操作"];
+const modules = ["專案速覽", "知識文件中心", "全站資源監控", "安全防線", "維運操作",
+  "健康總表", "學習活動實況", "功能降級狀態", "資料安全與備份", "維運操作審計", "部署與版本"];
 const missingModules = modules.filter((m) => !headings.includes(m));
 check("關鍵模組都渲染", missingModules.length === 0, missingModules.length ? `缺：${missingModules.join("、")}` : `${modules.length} 個`);
 
 const knowledgeIdx = headings.indexOf("知識與文件");
 const systemIdx = headings.indexOf("系統與部署");
 check("知識與文件排在巡檢動線之後", knowledgeIdx > systemIdx, `知識=${knowledgeIdx} 系統=${systemIdx}`);
+
+// 第四輪：站長總覽必須是「先看這裡」——排在所有巡檢分組之前
+const overviewIdx = headings.indexOf("站長總覽");
+const operationsIdx = headings.indexOf("營運與資源");
+check("⭐ 站長總覽排在所有巡檢分組之前", overviewIdx >= 0 && overviewIdx < operationsIdx, `總覽=${overviewIdx} 營運=${operationsIdx}`);
 
 // ── 4. 專案速覽：關鍵資訊要一眼看到 ──
 const mapText = await page.locator(".admin-page").innerText();
@@ -182,13 +189,53 @@ await page.waitForTimeout(400);
 md = await openDoc("專案總覽");
 check("表格被渲染成 table（非原始文字）", (await md.locator("table").count()) > 0, `${await md.locator("table").count()} 個`);
 
-// ── 8. 截圖（給人看，也給我自己日後比對）──
-const kbCard = page.locator(".admin-card", { has: page.locator("h3", { hasText: "知識文件中心" }) }).first();
+// ── 8. 第四輪：健康總表 / 功能降級 / 資料安全 / 審計 ──
+const overviewText = await page.locator(".admin-light-list").first().innerText().catch(() => "");
+check("健康總表有燈塔清單", overviewText.length > 40, `${overviewText.length} 字`);
+for (const light of ["資料庫", "請求健康", "題庫", "學習活躍", "部署"]) {
+  if (!overviewText.includes(light)) { check(`健康總表含「${light}」燈號`, false, "缺"); }
+}
+check("健康總表含六個子系統燈號",
+  ["資料庫", "請求健康", "題庫", "必要設定", "學習活躍", "部署"].every((k) => overviewText.includes(k)));
+check("健康總表把判斷門檻寫在畫面上（不只給紅黃綠）", /門檻|≥|%/.test(overviewText));
+const badgeCount = await page.locator(".admin-light-badge").count();
+check("燈號徽章數與燈號數一致", badgeCount >= 6, `${badgeCount} 個`);
+
+// 功能降級：每個 feature 都要能回答「少了會怎樣」
+const capsText = await page.locator(".admin-check-list").last().innerText().catch(() => "");
+check("功能降級狀態有內容", capsText.length > 60, `${capsText.length} 字`);
+check("功能降級明說「降級不等於壞掉」", (await page.locator(".admin-page").innerText()).includes("降級不等於壞掉"));
+
+// 資料安全：必須明白說出備份是公開的，且提供下載入口
+const pageText = await page.locator(".admin-page").innerText();
+check("⭐ 資料安全明白指出備份端點公開可下載", pageText.includes("公開可下載"));
+const dl = page.locator("a.admin-doc-download");
+check("資料安全提供備份下載入口", (await dl.count()) > 0 && (await dl.first().getAttribute("href")) === "/api/backup");
+check("資料安全列出排除清單（.env 不會被下載）", pageText.includes(".env"));
+
+// 審計：按一次維運操作後應該留下紀錄
+const auditBefore = await page.locator(".admin-audit-item").count();
+const healthBtn = page.locator("button", { hasText: /執行健康檢查/ }).first();
+if (await healthBtn.count()) {
+  await healthBtn.click();
+  await page.waitForTimeout(3500); // 等 mutation + refetchInterval
+  const auditAfter = await page.locator(".admin-audit-item").count();
+  check("⭐ 執行維運操作後會留下審計紀錄", auditAfter > auditBefore, `${auditBefore} → ${auditAfter}`);
+} else {
+  check("找到執行健康檢查按鈕", false, "找不到");
+}
+
+// 部署與版本：必須給可判定的訊號
+check("部署與版本說明『本次部署開始』", pageText.includes("本次部署開始"));
+check("部署與版本教怎麼確認版本（不只給雜湊）", pageText.includes("怎麼確認線上是我剛推的那版"));
+
+// ── 9. 截圖（給人看，也給我自己日後比對）──
+const kbCard = page.locator(".admin-card", { has: page.locator("h3", { hasText: "健康總表" }) }).first();
 await kbCard.scrollIntoViewIfNeeded();
-await page.screenshot({ path: `${SHOT_DIR}/knowledge-expanded.png` });
+await page.screenshot({ path: `${SHOT_DIR}/health-lighthouse.png` });
 await page.screenshot({ path: `${SHOT_DIR}/admin-full.png`, fullPage: true });
 
-// ── 9. console 乾淨 ──
+// ── 10. console 乾淨 ──
 // 本機沒有 DATABASE_URL，`admin.siteStats` 必然報「Database is not available」——
 // 那是**預期的降級行為**（模組會顯示錯誤態），不是缺陷。所以要把它分類出來，
 // 只對「真正的 JS 錯誤」與「知識庫相關錯誤」設門檻。

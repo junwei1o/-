@@ -23,7 +23,7 @@ const IDENTITY: Row[] = [
 const ROLES: Row[] = [
   { label: "學生", value: "全站學習頁", note: "以「船名」登入（localStorage）" },
   { label: "老師", value: "督學台 /teacher", note: "TEACHER_PASSPHRASE；班級、教學、公告、LINE" },
-  { label: "站長", value: "後台 /admin", note: "ADMIN_PASSPHRASE；全站營運、資源、知識庫" },
+  { label: "站長", value: "後台 /admin", note: "站長用戶名（預設 admin）；全站營運、學習實況、知識庫" },
 ];
 
 const ENTRY_POINTS: { file: string; what: string }[] = [
@@ -52,7 +52,7 @@ function MapModule() {
         ))}
       </dl>
 
-      <h4 className="admin-dist-title">三種角色（通關語刻意互不相同）</h4>
+      <h4 className="admin-dist-title">三種角色（憑證性質刻意不同）</h4>
       <dl className="admin-kv">
         {ROLES.map((row) => (
           <div className="admin-kv-row" key={row.label}>

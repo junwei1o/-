@@ -8,8 +8,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 const logoutMock = vi.fn();
 
 /** 由每個測試決定 admin.me 的回應。 */
-const meState: { data: { isAdmin: boolean; passphraseConfigured: boolean } | undefined; isPending: boolean; isError: boolean } = {
-  data: { isAdmin: false, passphraseConfigured: true },
+const meState: { data: { isAdmin: boolean; loginMethod: "username" } | undefined; isPending: boolean; isError: boolean } = {
+  data: { isAdmin: false, loginMethod: "username" },
   isPending: false,
   isError: false,
 };
@@ -182,7 +182,7 @@ import { clearAdminModulesForTest, registerAdminModule } from "@/admin/registry"
 import { ADMIN_MODULES } from "@/admin/modules";
 
 beforeEach(() => {
-  meState.data = { isAdmin: false, passphraseConfigured: true };
+  meState.data = { isAdmin: false, loginMethod: "username" };
   meState.isPending = false;
   meState.isError = false;
   logoutMock.mockClear();
@@ -194,19 +194,30 @@ afterEach(() => {
 });
 
 describe("站長後台：身分閘", () => {
-  it("尚未設定通關語時，明講原因與要設定的環境變數（不要讓人對著登不進去的畫面猜）", () => {
-    meState.data = { isAdmin: false, passphraseConfigured: false };
+  it("未登入時顯示站長用戶名輸入框（純用戶名驗證）", () => {
+    meState.data = { isAdmin: false, loginMethod: "username" };
     render(<AdminConsole />);
-    expect(screen.getByText(/站長後台尚未啟用/)).toBeInTheDocument();
-    expect(screen.getByText("ADMIN_PASSPHRASE")).toBeInTheDocument();
-    // 未設定時不該出現登入表單
-    expect(screen.queryByLabelText("站長通關語")).not.toBeInTheDocument();
+    expect(screen.getByLabelText("站長用戶名")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /進入後台/ })).toBeInTheDocument();
   });
 
-  it("已設定但未登入時顯示通關語輸入框", () => {
+  it("⭐ 閘門不再有「尚未啟用」狀態——用戶名一定有預設值", () => {
+    meState.data = { isAdmin: false, loginMethod: "username" };
     render(<AdminConsole />);
-    expect(screen.getByLabelText("站長通關語")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /進入後台/ })).toBeInTheDocument();
+    // 2026-10-02 移除 ADMIN_PASSPHRASE 後，沒有任何情況會顯示「尚未啟用」
+    expect(screen.queryByText(/站長後台尚未啟用/)).not.toBeInTheDocument();
+    expect(screen.queryByText("ADMIN_PASSPHRASE")).not.toBeInTheDocument();
+    // 而且輸入框一定要在（否則使用者會對著空畫面發呆）
+    expect(screen.getByLabelText("站長用戶名")).toBeInTheDocument();
+  });
+
+  it("用戶名欄位是文字而非密碼（純用戶名驗證的必然結果）", () => {
+    render(<AdminConsole />);
+    const input = screen.getByLabelText("站長用戶名") as HTMLInputElement;
+    expect(input).toHaveAttribute("type", "text");
+    // 不可關閉自動完成與自動大寫，否則手機輸入會出錯
+    expect(input).toHaveAttribute("autocapitalize", "none");
+    expect(input).toHaveAttribute("spellcheck", "false");
   });
 
   it("身分查詢失敗時給明確錯誤，而不是空白頁", () => {
@@ -219,7 +230,7 @@ describe("站長後台：身分閘", () => {
 
 describe("站長後台：模組渲染（由註冊表驅動）", () => {
   beforeEach(() => {
-    meState.data = { isAdmin: true, passphraseConfigured: true };
+    meState.data = { isAdmin: true, loginMethod: "username" };
     // 重新註冊內建模組（afterEach 會清空註冊表）
     for (const module of ADMIN_MODULES) registerAdminModule(module);
   });

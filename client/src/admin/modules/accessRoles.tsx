@@ -35,7 +35,7 @@ const ROLES: RoleRow[] = [
   {
     role: "站長",
     entry: "站長後台（/admin）",
-    credential: "站長通關語（ADMIN_PASSPHRASE）",
+    credential: "站長用戶名（ADMIN_USERNAME，預設 admin）",
     scope: "全站營運：資源監控、存取與角色、內容健康、系統環境。",
     canEnterAdmin: true,
   },
@@ -71,9 +71,9 @@ function AccessRolesModule() {
       </div>
 
       <ul className="admin-note-list">
-        <li>老師與站長使用<strong>不同</strong>通關語：共用會讓老師實質取得營運權限。</li>
+        <li>教師用<strong>通關語</strong>、站長用<strong>用戶名</strong>：兩者性質不同，教師無法只靠猜測取得站長權限。</li>
         <li>站長層級高於老師，因此站長可直接進入督學台，不需再登入一次。</li>
-        <li>未設定站長通關語時，本站長後台一律無法登入（安全側降級），其他角色不受影響。</li>
+        <li>⚠️ 站長後台目前是<strong>純用戶名驗證、沒有第二道因子</strong>（2026-10-02 站長知情決定）。每次登入都會寫入審計紀錄，可在「維護工具 → 維運操作審計」查看。</li>
       </ul>
     </>
   );

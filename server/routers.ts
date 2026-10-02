@@ -1593,17 +1593,30 @@ export const appRouter = router({
    * 未設定時一律拒絕（安全側降級）。
    */
   admin: router({
+    /**
+     * 站長登入（2026-10-02 改為純用戶名）。
+     *
+     * ## 這是安全性顯著下降的取捨，站長知情決定
+     *
+     * 原本要「站長通關語」，現在只要用戶名對就發 session cookie。
+     * 沒有第二道因子——**知道這個用戶名的人就是站長**。
+     *
+     * 既然安全性靠不住，就補上可觀察性作為補償：
+     * 每次登入都寫進審計紀錄（`admin.login` 與失敗嘗試），
+     * 站長在後台「維運操作審計」看得到「誰在什麼時候進了後台」。
+     * 這不能防禦，但能**事後知道**。
+     *
+     * 用 `timingSafeEqual` 比對：即使只剩一道因子，也別讓它洩漏長度以外的資訊。
+     */
     login: publicProcedure
-      .input(z.object({ passphrase: z.string().min(1).max(200) }))
+      .input(z.object({ username: z.string().min(1).max(64) }))
       .mutation(async ({ input, ctx }) => {
         const SESSION_MS = 30 * 24 * 60 * 60 * 1000;
-        const expected = ENV.adminPassphrase;
-        if (!expected) return { ok: false as const, reason: "notConfigured" as const };
-
-        // 先比長度再定時比較（timingSafeEqual 要求等長，避免側信道洩漏長度以外的資訊）
-        const a = Buffer.from(input.passphrase);
-        const b = Buffer.from(expected);
-        if (a.length !== b.length || !timingSafeEqual(a, b)) {
+        // 去除頭尾空白再比——使用者從手機輸入時常會帶到空白
+        const provided = Buffer.from(input.username.trim());
+        const expected = Buffer.from(ENV.adminUsername.trim());
+        if (provided.length !== expected.length || !timingSafeEqual(provided, expected)) {
+          recordAudit("admin.login", false, "站長登入失敗：用戶名不符");
           return { ok: false as const, reason: "invalid" as const };
         }
 
@@ -1618,6 +1631,7 @@ export const appRouter = router({
           sameSite: cookieOptions.secure ? "none" : "lax",
           maxAge: SESSION_MS,
         });
+        recordAudit("admin.login", true, "站長已登入後台（純用戶名驗證）");
         return { ok: true as const };
       }),
 
@@ -1628,13 +1642,15 @@ export const appRouter = router({
     }),
 
     /**
-     * 目前身分與設定狀態（前端用來決定顯示登入閘或後台內容）。
-     * `passphraseConfigured === false` 時後台不可用，前端應顯示明確的設定指引，
-     * 而不是讓使用者對著一個永遠登入不了的畫面猜。
+     * 目前身分與驗證方式（前端用來決定顯示登入閘或後台內容）。
+     *
+     * 2026-10-02 起不再有「未設定」狀態：站長用戶名一定有預設值，
+     * 所以閘門只有兩態（未登入／已登入）。
      */
     me: publicProcedure.query(({ ctx }) => ({
       isAdmin: hasRoleAtLeast(ctx.user, "admin"),
-      passphraseConfigured: Boolean(ENV.adminPassphrase),
+      /** 站長用戶名一定有值（預設 "admin"），所以不存在「尚未啟用」狀態。 */
+      loginMethod: "username" as const,
     })),
 
     /** 站點資料總覽：資料庫計數 ＋ 題庫分布（皆為真實量測）。 */

@@ -3011,3 +3011,139 @@ button:not(:disabled):active,
   .home-feature-directory-cta:active,
   .home-grade-chip:active { transform: none; }
 }
+
+/* ══════════════════════════════════════════════════════════════
+   船長入口（CornerEntry，2026-10-02）
+   ──────────────────────────────────────────────────────────────
+   設計約束：**不能干擾首頁**。所以：
+   1. position: fixed → 不佔版面，首頁排版完全不變
+   2. z-index: 40 → 高於一般內容（可點），但低於快速行動 FAB(61)、
+      側邊面板(62)、測驗(80) 與所有 aria-modal 對話框(9700+)，
+      **永遠不會蓋住任何東西，也不會被它們擋住**
+   3. 放在左下角 → 右邊已被快速行動 FAB 與滑出面板占用
+   4. 預設透明度 0.22 → 學生看不出它是什麼；hover/focus 才提高
+   ══════════════════════════════════════════════════════════════ */
+.corner-entry {
+  position: fixed;
+  left: 10px;
+  bottom: 10px;
+  z-index: 40;
+  font-family: var(--font-sans, inherit);
+}
+
+.corner-entry-trigger {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 1px solid color-mix(in srgb, var(--bx-ink, #2b2b2b) 18%, transparent);
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--bx-paper, #fff) 72%, transparent);
+  color: var(--bx-ink, #2b2b2b);
+  opacity: 0.22;
+  cursor: pointer;
+  transition: opacity 160ms ease, transform 160ms ease;
+}
+
+.corner-entry-trigger:hover,
+.corner-entry-trigger:focus-visible {
+  opacity: 0.9;
+  transform: scale(1.06);
+}
+
+.corner-entry-trigger:focus-visible {
+  outline: 2px solid var(--bx-tide, #2f6f6a);
+  outline-offset: 2px;
+  opacity: 1;
+}
+
+.corner-entry-panel {
+  position: absolute;
+  left: 0;
+  bottom: calc(100% + 8px);
+  width: 15rem;
+  max-width: calc(100vw - 24px);
+  padding: 0.7rem 0.8rem 0.8rem;
+  border: 1px solid color-mix(in srgb, var(--bx-ink, #2b2b2b) 14%, transparent);
+  border-radius: 12px;
+  background: var(--bx-paper, #fff);
+  box-shadow: 0 10px 28px color-mix(in srgb, var(--bx-ink, #2b2b2b) 18%, transparent);
+  opacity: 1;
+}
+
+.corner-entry-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.45rem;
+}
+
+.corner-entry-title {
+  margin: 0;
+  color: var(--bx-ink, #2b2b2b);
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+.corner-entry-close {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  color: var(--bx-ink, #2b2b2b);
+  opacity: 0.55;
+  cursor: pointer;
+}
+
+.corner-entry-close:hover { opacity: 1; }
+.corner-entry-close:focus-visible { outline: 2px solid var(--bx-tide, #2f6f6a); outline-offset: 1px; }
+
+.corner-entry-label {
+  display: block;
+  margin-bottom: 0.2rem;
+  color: color-mix(in srgb, var(--bx-ink, #2b2b2b) 66%, transparent);
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.corner-entry-input {
+  width: 100%;
+  padding: 0.38rem 0.5rem;
+  border: 1px solid color-mix(in srgb, var(--bx-ink, #2b2b2b) 22%, transparent);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--bx-paper, #fff) 88%, #f2efe7);
+  color: var(--bx-ink, #2b2b2b);
+  font-size: 0.85rem;
+}
+
+.corner-entry-input:focus-visible {
+  outline: 2px solid var(--bx-tide, #2f6f6a);
+  outline-offset: 1px;
+}
+
+.corner-entry-error {
+  margin: 0.35rem 0 0;
+  color: var(--bx-coral-deep, #a8452f);
+  font-size: 0.72rem;
+  line-height: 1.5;
+}
+
+.corner-entry-hint {
+  margin: 0.35rem 0 0;
+  color: color-mix(in srgb, var(--bx-ink, #2b2b2b) 58%, transparent);
+  font-size: 0.68rem;
+  line-height: 1.5;
+}
+
+/* 尊重「減少動態效果」偏好：這個入口不該有任何動畫負擔 */
+@media (prefers-reduced-motion: reduce) {
+  .corner-entry-trigger { transition: none; }
+  .corner-entry-trigger:hover,
+  .corner-entry-trigger:focus-visible { transform: none; }
+}

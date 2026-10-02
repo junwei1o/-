@@ -275,7 +275,7 @@ export function DiagnosticsSection() {
             </div>
             <p className="settings-log-description">
               資源用量、RU 額度與消耗速度屬於站點營運資訊，現在集中在站長後台（<code>/admin</code>），
-              需要站長通關語才能檢視。
+              需要站長身分才能檢視。
             </p>
           </section>
 

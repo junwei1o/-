@@ -28,6 +28,11 @@ vi.mock("@/lib/trpc", () => ({
       // P0：HomeContactCard 的教師閘會讀 auth.me；dashboard 測試預設非教師（null）
       me: { useQuery: () => ({ data: null, isLoading: false }) },
     },
+    // 首頁的「船長入口」會呼叫 admin.login（輸入站長用戶名時換 session cookie）。
+    // 這個 mock 必須跟著元件新增的依賴更新——**tsc 不會報錯，但執行時會炸**。
+    admin: {
+      login: { useMutation: () => ({ mutate: vi.fn(), isPending: false, isError: false }) },
+    },
     questionBank: {
       list: {
         useQuery: () => ({

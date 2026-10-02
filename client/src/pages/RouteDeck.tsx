@@ -10,6 +10,7 @@
 import React, { useMemo, useState } from "react";
 import { ArrowRight, Clock, Map, WifiOff } from "lucide-react";
 import { useLocation } from "wouter";
+import { CornerEntry } from "@/components/bx/CornerEntry";
 import { loadStudentGradePreference, type StudentGradePreference } from "@/lib/studentGradePreference";
 import { loadUserPreferences, saveUserPreferences } from "@/game/adaptiveLearning";
 import {
@@ -87,6 +88,8 @@ export default function RouteDeck() {
   const alternatives = ROUTES.filter((r) => r.id !== recommended.id);
 
   return (
+    <>
+    <CornerEntry />
     <div className="deck">
       <section className="deck__hero">
         <p className="deck__eyebrow">EXPEDITION MODES</p>
@@ -277,5 +280,6 @@ export default function RouteDeck() {
         </button>
       </section>
     </div>
+    </>
   );
 }

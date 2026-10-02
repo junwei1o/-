@@ -33,7 +33,19 @@ export const ENV = {
   cookieSecret: process.env.JWT_SECRET ?? "",
   /** 教師通關語（計劃 A）：空字串＝未配置，teacher.login 一律拒絕。 */
   teacherPassphrase: process.env.TEACHER_PASSPHRASE ?? "",
-  /** 站長通關語（2026-10-01）：空字串＝未配置，admin.login 一律拒絕。 */
+  /**
+   * 站長用戶名（2026-10-02）：站長後台改用「純用戶名」驗證，不再需要通關語。
+   *
+   * ⚠️ 這是**安全性顯著下降**的取捨，決定權在站長：
+   *   知道這個用戶名的人就能取得站長權限，沒有第二道因子。
+   *   維持 env 可設定，是為了日後想收緊時不必改程式——
+   *   設一個nobody 猜得到的值（例如 `ADMIN_USERNAME=<隨機長字串>`）。
+   *
+   * ⚠️ 若改了這裡，前端 `CornerEntry.tsx` 的 `ADMIN_USERNAME` 也要一起改，
+   *    否則首頁入口會怎麼打都進不去。兩處的耦合在兩邊都有註解標示。
+   */
+  adminUsername: process.env.ADMIN_USERNAME ?? "admin",
+  /** 站長通關語（2026-10-01 引入、2026-10-02 停用）：保留欄位以相容舊環境變數。 */
   adminPassphrase: process.env.ADMIN_PASSPHRASE ?? "",
   databaseUrl: process.env.DATABASE_URL ?? "",
   oAuthServerUrl: process.env.OAUTH_SERVER_URL ?? "",
