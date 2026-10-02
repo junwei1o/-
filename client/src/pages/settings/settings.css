@@ -5,6 +5,15 @@
      設定頁專屬的分區、導航、診斷、代理、PIN 雲端等樣式。
    ═══════════════════════════════════════════════════════════════ */
 
+/* ── sticky 導航修正 ──
+   index.css 的行動裝置修補在 .app-route-shell 上設了 overflow-x:hidden（≤768px），
+   overflow 非 visible 的祖先會成為 sticky 的「最近滾動容器」——.settings-nav 於是
+   吸附到這個不捲動的容器而非視口，頁面一捲動導航就跟著滾走（實測 y=-1641）。
+   改為 overflow-x:clip：視覺裁剪效果等價，但不建立滾動容器，sticky 恢復吸附視口；
+   且 clip 可與 overflow-y:visible 共存（hidden 會強制 visible 變 auto）。
+   只在設定頁生效（:has 限定），不影響其他路由既有的裁剪行為。 */
+.app-route-shell:has(.settings-page) { overflow-x: clip; overflow-y: visible; }
+
 /* ── 分區導航（sticky chips＋scroll-spy） ── */
 .settings-nav {
   position: sticky;
