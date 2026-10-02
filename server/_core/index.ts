@@ -15,6 +15,7 @@ import { serveStatic, setupVite } from "./vite";
 import { apiCacheControl } from "./apiCache";
 import { createCsrfOriginGuard } from "./csrfOrigin";
 import { recordRequest } from "./requestStats";
+import { httpCompression } from "./compress";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -94,6 +95,11 @@ async function startServer() {
     res.setHeader("Content-Security-Policy-Report-Only", CSP_REPORT_ONLY);
     next();
   });
+  // 傳輸壓縮（2026-10-02 全站體檢）：此前靜態資源與 API JSON 全部裸傳
+  // （index.css 572KB、題庫 1.7MB…）。用 Node 內建 zlib 手寫（零依賴，
+  // 慣例同上），brotli 優先、gzip 退路；CSS 實測 572KB→97KB。
+  // 必須掛在所有路由之前（含靜態與 tRPC），安全頭之後即可。
+  app.use(httpCompression);
   // 背景自動佈建題庫（建表＋匯入內建 500 題）；不阻擋開機，失敗也不影響服務。
   void ensureQuestionBankReady();
   // LINE webhook：必須在 express.json 之前用 raw parser，才能拿原文驗簽章。
