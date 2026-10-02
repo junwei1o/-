@@ -74,6 +74,28 @@ vi.mock("@/lib/trpc", () => {
         },
         healthCheck: { useMutation: noopMutation },
         resetSpeechBreaker: { useMutation: noopMutation },
+        knowledgeIndex: {
+          useQuery: okQuery({
+            builtAt: Date.now(),
+            stale: false,
+            docs: [
+              { id: "knowledge/README.md", title: "知識庫", category: "知識庫", bytes: 1400, summary: "這裡是給站長與 agent 看的專案知識。" },
+              { id: "knowledge/05-踩坑與陷阱.md", title: "05 · 踩坑與陷阱", category: "知識庫", bytes: 9800, summary: "症狀 → 根因 → 解法。" },
+              { id: "docs/handover.md", title: "handover", category: "專案文件", bytes: 141000, summary: "交接文件。" },
+            ],
+          }),
+        },
+        knowledgeDoc: {
+          useQuery: (input: { id: string }) => ({
+            isPending: false,
+            isError: false,
+            data: {
+              id: input?.id ?? "",
+              title: "05 · 踩坑與陷阱",
+              markdown: "# 踩坑與陷阱\n\n## SPA fallback\n\n**症狀**：回 200 但其實是 HTML。\n\n- 看 content-type\n- 不要只看狀態碼\n",
+            },
+          }),
+        },
       },
       dbUsage: {
         status: {
@@ -193,7 +215,7 @@ describe("站長後台：模組渲染（由註冊表驅動）", () => {
   it("擴充後的模組與分組都應該出現（涵蓋資料／統計／操作／設定）", () => {
     render(<AdminConsole />);
     // 六個分組
-    for (const group of ["營運與資源", "內容與題庫", "成本與用量", "存取與角色", "維護工具", "系統與部署"]) {
+    for (const group of ["營運與資源", "內容與題庫", "成本與用量", "存取與角色", "維護工具", "系統與部署", "知識與文件"]) {
       expect(screen.getByRole("heading", { name: group })).toBeInTheDocument();
     }
     // 十一個模組
@@ -201,9 +223,40 @@ describe("站長後台：模組渲染（由註冊表驅動）", () => {
       "全站資源監控", "請求與限流", "朗讀供應鏈",
       "題庫規模與分布", "站點資料總覽", "AI 用量",
       "角色與存取", "安全防線", "執行環境", "環境資訊", "維運操作",
+      "專案速覽", "知識文件中心",
     ]) {
       expect(screen.getByRole("heading", { name: module })).toBeInTheDocument();
     }
+  });
+
+  it("知識文件中心列出知識庫與專案文件，並可展開閱讀", async () => {
+    render(<AdminConsole />);
+    // 用文件 id 抓，不要用「知識庫」——它同時是分類標籤，每顆按鈕的
+    // accessible name 都包含它，會多重匹配。id 是唯一的。
+    expect(await screen.findByText("knowledge/README.md")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /05 · 踩坑與陷阱/ })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /handover/ })).toBeInTheDocument();
+
+    // 展開後應該看到 markdown 渲染出來的內容
+    fireEvent.click(screen.getByRole("button", { name: /05 · 踩坑與陷阱/ }));
+    expect(await screen.findByRole("heading", { name: "踩坑與陷阱" })).toBeInTheDocument();
+    // 表格與清單也被正確渲染（而不是原始 markdown 文字）
+    expect(screen.getByText("SPA fallback")).toBeInTheDocument();
+  });
+
+  it("搜尋可以篩掉不相關的文件", async () => {
+    render(<AdminConsole />);
+    const input = await screen.findByLabelText("搜尋文件");
+    fireEvent.change(input, { target: { value: "handover" } });
+    expect(screen.queryByRole("button", { name: /05 · 踩坑與陷阱/ })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /handover/ })).toBeInTheDocument();
+  });
+
+  it("⭐ 專案速覽要明確指向 repo 路徑與線上站點（agent 與站長都靠這幾行找路）", () => {
+    render(<AdminConsole />);
+    expect(screen.getByText("/Users/g/Documents/trae_projects/hdmx")).toBeInTheDocument();
+    expect(screen.getByText("xue-gr3a.onrender.com")).toBeInTheDocument();
+    expect(screen.getByText("督學台 /teacher")).toBeInTheDocument();
   });
 
   it("維運操作會真的觸發伺服器端動作", () => {

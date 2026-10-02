@@ -3,6 +3,8 @@ import type { AdminModule } from "../types";
 import { accessRolesModule } from "./accessRoles";
 import { questionBankModule, siteDataModule } from "./content";
 import { maintenanceModule } from "./maintenance";
+import { knowledgeCenterModule } from "./knowledge";
+import { projectMapModule } from "./knowledgeMap";
 import { requestStatsModule, speechSupplyModule } from "./operations";
 import { resourceMonitorModule } from "./resourceMonitor";
 import { runtimeModule } from "./runtime";
@@ -38,6 +40,9 @@ export const ADMIN_MODULES: AdminModule[] = [
   systemInfoModule,
   // 維運操作
   maintenanceModule,
+  // 知識與文件
+  projectMapModule,
+  knowledgeCenterModule,
 ];
 
 export function registerBuiltinAdminModules(): void {

@@ -71,6 +71,7 @@ import { systemRouter } from "./_core/systemRouter";
 import { TRPCError } from "@trpc/server";
 import { getDbUsageStatus } from "./dbUsage";
 import { getAdminRuntimeInfo, getAdminSiteStats } from "./adminOverview";
+import { listKnowledgeDocs, readKnowledgeDoc } from "./knowledgeBase";
 import { adminProcedure, hasRoleAtLeast, publicProcedure, router, teacherProcedure } from "./_core/trpc";
 import { getRequestStats } from "./_core/requestStats";
 import {
@@ -1688,6 +1689,25 @@ export const appRouter = router({
 
     /** 重設朗讀熔斷器（維運操作）：修好供應鏈後不必等 5 分鐘冷卻。 */
     resetSpeechBreaker: adminProcedure.mutation(() => resetSpeechBreaker()),
+
+    /**
+     * 知識庫目錄（站長專屬）。
+     *
+     * 內容是 repo 內 `docs/` 的 markdown——和 agent 讀的是**同一份檔案**，
+     * 所以站長在後台看到的、agent 在本機讀到的，不會有落差。
+     */
+    knowledgeIndex: adminProcedure.query(() => listKnowledgeDocs()),
+
+    /** 讀取單一份知識庫文件全文。`id` 必須命中目錄（見 knowledgeBase.ts 的安全說明）。 */
+    knowledgeDoc: adminProcedure
+      .input(z.object({ id: z.string().min(1).max(200) }))
+      .query(({ input }) => {
+        const doc = readKnowledgeDoc(input.id);
+        if (!doc) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "找不到這份文件（可能已改名或移除）" });
+        }
+        return doc;
+      }),
   }),
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),

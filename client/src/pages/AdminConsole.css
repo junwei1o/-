@@ -770,3 +770,309 @@
 }
 
 .admin-action-row .admin-primary-button { margin-top: 0; }
+
+/* ══════════════════════════════════════════════════════════════
+   知識與文件（2026-10-02 第三輪：專案速覽 ＋ 知識文件中心）
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── 路徑清單（維護時先讀哪幾份）── */
+.admin-path-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.admin-path-list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem;
+  padding: 0.45rem 0.6rem;
+  border-left: 3px solid var(--tidal);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--white) 70%, transparent);
+}
+
+.admin-path-file {
+  color: var(--ink);
+  font-family: var(--font-mono, monospace);
+  font-size: 0.72rem;
+  overflow-wrap: anywhere;
+}
+
+.admin-path-what {
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+/* ── 文件搜尋 ── */
+.admin-doc-search {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.75rem 0;
+}
+
+.admin-doc-search-label {
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.admin-doc-search-input {
+  flex: 1 1 16rem;
+  min-width: 0;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--white);
+  color: var(--ink);
+  font-size: 0.82rem;
+}
+
+.admin-doc-search-input:focus-visible {
+  outline: 2px solid var(--tidal);
+  outline-offset: 1px;
+}
+
+.admin-doc-search-clear {
+  padding: 0.35rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  background: var(--white);
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.admin-doc-search-clear:hover { color: var(--ink); }
+
+/* ── 文件清單（可展開）── */
+.admin-doc-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.admin-doc-item {
+  border: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--white) 72%, transparent);
+  overflow: hidden;
+}
+
+.admin-doc-item.is-open {
+  border-color: var(--tidal);
+}
+
+.admin-doc-head {
+  display: grid;
+  grid-template-columns: 1.1rem minmax(0, 1fr);
+  align-items: start;
+  gap: 0.4rem;
+  width: 100%;
+  padding: 0.55rem 0.65rem;
+  border: 0;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+.admin-doc-head:hover { background: color-mix(in srgb, var(--tidal) 6%, transparent); }
+
+.admin-doc-caret {
+  color: var(--muted);
+  font-size: 0.7rem;
+  line-height: 1.5;
+}
+
+.admin-doc-headings {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.admin-doc-title {
+  color: var(--ink);
+  font-size: 0.85rem;
+  font-weight: 800;
+  line-height: 1.4;
+}
+
+.admin-doc-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--muted);
+  font-size: 0.68rem;
+}
+
+.admin-doc-tag {
+  padding: 0.06rem 0.38rem;
+  border-radius: var(--radius-pill);
+  font-weight: 800;
+}
+
+.admin-doc-tag.is-kb { background: color-mix(in srgb, var(--tidal) 15%, var(--white)); color: var(--tidal-deep); }
+.admin-doc-tag.is-ref { background: color-mix(in srgb, var(--moss) 18%, var(--white)); color: color-mix(in srgb, var(--moss) 70%, var(--ink)); }
+
+.admin-doc-id {
+  font-family: var(--font-mono, monospace);
+  overflow-wrap: anywhere;
+}
+
+.admin-doc-size { font-variant-numeric: tabular-nums; }
+
+.admin-doc-summary {
+  margin: 0;
+  padding: 0 0.65rem 0.55rem 2.1rem;
+  color: var(--muted);
+  font-size: 0.75rem;
+  line-height: 1.55;
+}
+
+/* 文件內容：限高捲動，避免單一份長文把整頁推走 */
+.admin-doc-scroll {
+  max-height: 32rem;
+  margin: 0 0.65rem 0.65rem 2.1rem;
+  padding: 0.75rem 0.85rem;
+  border-top: 1px dashed color-mix(in srgb, var(--line) 80%, transparent);
+  overflow-y: auto;
+  background: color-mix(in srgb, var(--paper-deep) 45%, transparent);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+}
+
+.admin-doc-scroll:focus-visible { outline: 2px solid var(--tidal); outline-offset: 1px; }
+
+/* ── markdown 渲染樣式 ── */
+.admin-md {
+  color: var(--ink);
+  font-size: 0.82rem;
+  line-height: 1.75;
+}
+
+.admin-md > *:first-child { margin-top: 0; }
+.admin-md > *:last-child { margin-bottom: 0; }
+
+.admin-md p { margin: 0.55rem 0; }
+
+.admin-md-h {
+  margin: 1.1rem 0 0.4rem;
+  color: var(--tidal-deep);
+  font-weight: 800;
+  line-height: 1.4;
+}
+
+.admin-md-h1 { font-size: 1.05rem; }
+.admin-md-h2 { font-size: 0.95rem; }
+.admin-md-h3 { font-size: 0.88rem; }
+.admin-md-h4,
+.admin-md-h5,
+.admin-md-h6 { font-size: 0.83rem; color: var(--ink); }
+
+.admin-md-list {
+  margin: 0.5rem 0;
+  padding-left: 1.3rem;
+}
+
+.admin-md-list li { margin: 0.22rem 0; }
+.admin-md-list li::marker { color: var(--tidal); font-weight: 800; }
+
+.admin-md-quote {
+  margin: 0.7rem 0;
+  padding: 0.5rem 0.75rem;
+  border-left: 3px solid var(--tidal);
+  background: color-mix(in srgb, var(--tidal) 7%, transparent);
+  color: var(--muted);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+}
+
+.admin-md-quote p { margin: 0.2rem 0; }
+
+.admin-md-hr {
+  margin: 1rem 0;
+  border: 0;
+  border-top: 1px solid var(--line);
+}
+
+.admin-md-code {
+  padding: 0.08rem 0.32rem;
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--paper-deep) 70%, transparent);
+  color: color-mix(in srgb, var(--coral-deep) 78%, var(--ink));
+  font-family: var(--font-mono, monospace);
+  font-size: 0.9em;
+  overflow-wrap: anywhere;
+}
+
+.admin-md-pre {
+  position: relative;
+  margin: 0.7rem 0;
+  padding: 0.7rem 0.8rem;
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--ink) 92%, transparent);
+  color: var(--paper);
+  font-family: var(--font-mono, monospace);
+  font-size: 0.74rem;
+  line-height: 1.6;
+  overflow-x: auto;
+}
+
+.admin-md-pre code { background: none; color: inherit; padding: 0; }
+
+.admin-md-pre-lang {
+  position: absolute;
+  top: 0.3rem;
+  right: 0.5rem;
+  color: color-mix(in srgb, var(--paper) 55%, transparent);
+  font-size: 0.64rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* 表格：橫向捲動，不撐破版面 */
+.admin-md-table-wrap {
+  margin: 0.7rem 0;
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+}
+
+.admin-md-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.75rem;
+}
+
+.admin-md-table th,
+.admin-md-table td {
+  padding: 0.4rem 0.6rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 60%, transparent);
+  text-align: left;
+  vertical-align: top;
+}
+
+.admin-md-table th {
+  background: color-mix(in srgb, var(--tidal) 9%, transparent);
+  color: var(--tidal-deep);
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.admin-md-table tr:last-child td { border-bottom: 0; }
+
+.admin-md a {
+  color: var(--tidal-deep);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}

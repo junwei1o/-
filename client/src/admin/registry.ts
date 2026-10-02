@@ -65,6 +65,12 @@ export const ADMIN_GROUPS: AdminGroup[] = [
     description: "版本、部署與前端執行環境資訊。",
     order: 60,
   },
+  {
+    id: "knowledge",
+    label: "知識與文件",
+    description: "為什麼這樣做、做過什麼、踩過哪些坑——給站長與之後的 agent 查。",
+    order: 70,
+  },
 ];
 
 const modules = new Map<string, AdminModule>();
