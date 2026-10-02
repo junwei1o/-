@@ -30,6 +30,12 @@ import type { AdminGroup, AdminGroupId, AdminModule } from "./types";
  */
 export const ADMIN_GROUPS: AdminGroup[] = [
   {
+    id: "overview",
+    label: "站長總覽",
+    description: "先看這裡：現在健康嗎、有人在用嗎、哪個功能壞了。",
+    order: 5,
+  },
+  {
     id: "operations",
     label: "營運與資源",
     description: "站點本身的運作狀況：資料庫用量、額度與消耗速度。",

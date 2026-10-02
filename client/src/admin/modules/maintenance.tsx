@@ -21,12 +21,21 @@ function MaintenanceModule() {
   const resetBreaker = trpc.admin.resetSpeechBreaker.useMutation();
   const [resetAt, setResetAt] = React.useState<number | null>(null);
 
+  /**
+   * 每次維運操作都會寫一筆審計紀錄，所以成功後要讓「審計清單」與
+   * 「健康總表」立即重取——不能只靠 30 秒輪詢，否則站長按完轉頭看
+   * 會是空的，以為功能壞了。
+   */
+  const refreshAfterOperation = () => {
+    void utils.admin.auditLog.invalidate();
+    void utils.admin.speechHealth.invalidate();
+    void utils.admin.siteStats.invalidate();
+    void utils.admin.requestStats.invalidate();
+  };
+
   const runHealthCheck = () =>
     health.mutate(undefined, {
-      onSuccess: () => {
-        void utils.admin.speechHealth.invalidate();
-        void utils.admin.siteStats.invalidate();
-      },
+      onSuccess: refreshAfterOperation,
     });
 
   return (
@@ -43,7 +52,7 @@ function MaintenanceModule() {
             resetBreaker.mutate(undefined, {
               onSuccess: () => {
                 setResetAt(Date.now());
-                void utils.admin.speechHealth.invalidate();
+                refreshAfterOperation();
               },
             })
           }

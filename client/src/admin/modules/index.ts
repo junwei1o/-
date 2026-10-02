@@ -1,14 +1,20 @@
 import { registerAdminModules } from "../registry";
 import type { AdminModule } from "../types";
 import { accessRolesModule } from "./accessRoles";
+import { auditModule } from "./audit";
+import { capabilitiesModule } from "./capabilities";
 import { questionBankModule, siteDataModule } from "./content";
 import { maintenanceModule } from "./maintenance";
 import { knowledgeCenterModule } from "./knowledge";
 import { projectMapModule } from "./knowledgeMap";
+import { deployInfoModule } from "./deploy";
+import { learningActivityModule } from "./learning";
+import { healthLighthouseModule } from "./overview";
 import { requestStatsModule, speechSupplyModule } from "./operations";
 import { resourceMonitorModule } from "./resourceMonitor";
 import { runtimeModule } from "./runtime";
 import { securityModule } from "./security";
+import { dataSafetyModule } from "./safety";
 import { systemInfoModule } from "./systemInfo";
 import { aiUsageModule } from "./usage";
 
@@ -23,6 +29,11 @@ import { aiUsageModule } from "./usage";
  *  就算忘了補也不會遺失——未登記分組會自動附加在最後。）
  */
 export const ADMIN_MODULES: AdminModule[] = [
+  // 站長總覽（先看這裡）
+  healthLighthouseModule,
+  learningActivityModule,
+  capabilitiesModule,
+  dataSafetyModule,
   // 營運與資源
   resourceMonitorModule,
   requestStatsModule,
@@ -37,9 +48,11 @@ export const ADMIN_MODULES: AdminModule[] = [
   securityModule,
   // 系統與部署
   runtimeModule,
+  deployInfoModule,
   systemInfoModule,
   // 維運操作
   maintenanceModule,
+  auditModule,
   // 知識與文件
   projectMapModule,
   knowledgeCenterModule,

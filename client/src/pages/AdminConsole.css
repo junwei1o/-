@@ -1076,3 +1076,263 @@
   text-decoration: underline;
   text-underline-offset: 2px;
 }
+
+/* ══════════════════════════════════════════════════════════════
+   第四輪深化（2026-10-02）：站長總覽、學習活動、降級狀態、
+   資料安全、審計紀錄、部署版本
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── 健康總表燈塔 ── */
+.admin-light-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.admin-light-item {
+  display: grid;
+  grid-template-columns: 4.2rem minmax(0, 1fr);
+  gap: 0.6rem;
+  padding: 0.55rem 0.7rem;
+  border-left: 4px solid var(--line);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--white) 72%, transparent);
+}
+
+.admin-light-item.is-ok { border-left-color: var(--moss); }
+.admin-light-item.is-watch { border-left-color: var(--yellow); }
+.admin-light-item.is-high { border-left-color: var(--coral); }
+.admin-light-item.is-unknown { border-left-color: var(--line); }
+
+.admin-light-badge {
+  align-self: start;
+  padding: 0.12rem 0.3rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.admin-light-badge.is-ok { background: color-mix(in srgb, var(--moss) 20%, var(--white)); color: color-mix(in srgb, var(--moss) 72%, var(--ink)); }
+.admin-light-badge.is-watch { background: color-mix(in srgb, var(--yellow) 28%, var(--white)); color: color-mix(in srgb, var(--yellow) 48%, var(--ink)); }
+.admin-light-badge.is-high { background: color-mix(in srgb, var(--coral) 20%, var(--white)); color: var(--coral-deep); }
+.admin-light-badge.is-unknown { background: color-mix(in srgb, var(--ink) 8%, var(--white)); color: var(--muted); }
+
+.admin-light-body { min-width: 0; }
+
+.admin-light-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.45rem;
+  margin: 0;
+  color: var(--ink);
+  font-size: 0.83rem;
+  font-weight: 800;
+}
+
+.admin-light-value {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--tidal-deep);
+}
+
+.admin-light-rule,
+.admin-light-action {
+  margin: 0.2rem 0 0;
+  color: var(--muted);
+  font-size: 0.73rem;
+  line-height: 1.55;
+}
+
+.admin-light-action { color: color-mix(in srgb, var(--coral-deep) 70%, var(--ink)); }
+
+/* ── 學習趨勢（14 天）── */
+.admin-trend-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.admin-trend-item {
+  display: grid;
+  grid-template-columns: 2.6rem minmax(0, 1fr) 2.2rem;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.admin-trend-date {
+  color: var(--muted);
+  font-family: var(--font-mono, monospace);
+  font-size: 0.68rem;
+}
+
+.admin-trend-track {
+  height: 0.5rem;
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--ink) 8%, transparent);
+  overflow: hidden;
+}
+
+.admin-trend-fill {
+  display: block;
+  height: 100%;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(90deg, var(--tidal), var(--moss));
+}
+
+.admin-trend-item.is-zero .admin-trend-fill { background: color-mix(in srgb, var(--ink) 12%, transparent); }
+
+.admin-trend-value {
+  color: var(--ink);
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+/* ── 排行榜 ── */
+.admin-rank-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.admin-rank-item {
+  display: grid;
+  grid-template-columns: 1.4rem minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 0.5rem;
+  padding: 0.32rem 0.5rem;
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--white) 60%, transparent);
+}
+
+.admin-rank-index {
+  color: var(--tidal);
+  font-size: 0.72rem;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+}
+
+.admin-rank-name {
+  color: var(--ink);
+  font-size: 0.8rem;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.admin-rank-value {
+  color: var(--muted);
+  font-size: 0.7rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* ── 功能降級清單 ── */
+.admin-check-env {
+  padding: 0.05rem 0.3rem;
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--ink) 8%, transparent);
+  color: var(--muted);
+  font-family: var(--font-mono, monospace);
+  font-size: 0.66rem;
+  overflow-wrap: anywhere;
+}
+
+.admin-check-tag.is-high { background: color-mix(in srgb, var(--coral) 20%, var(--white)); color: var(--coral-deep); }
+
+.admin-check-neutral { color: var(--muted); font-size: 0.68rem; font-weight: 600; }
+
+.admin-source .is-bad { color: var(--coral-deep); }
+
+/* ── 資料安全 ── */
+.admin-doc-download {
+  display: inline-block;
+  margin-bottom: 0.25rem;
+  padding: 0.4rem 0.8rem;
+  border: 1px solid var(--tidal);
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--tidal) 10%, transparent);
+  color: var(--tidal-deep);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.admin-doc-download:hover { background: color-mix(in srgb, var(--tidal) 18%, transparent); }
+
+.admin-doc-note {
+  display: block;
+  margin-top: 0.2rem;
+  color: var(--muted);
+  font-size: 0.73rem;
+}
+
+.admin-exclude-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.22rem;
+  margin: 0.4rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.admin-exclude-item {
+  display: grid;
+  grid-template-columns: 1.1rem minmax(0, 1fr);
+  align-items: baseline;
+  gap: 0.4rem;
+  color: var(--muted);
+  font-size: 0.74rem;
+}
+
+.admin-exclude-mark { color: color-mix(in srgb, var(--moss) 75%, var(--ink)); font-weight: 900; }
+.admin-exclude-item code { overflow-wrap: anywhere; }
+
+/* ── 審計時間軸 ── */
+.admin-audit-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.22rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.admin-audit-item {
+  display: grid;
+  grid-template-columns: 7.5rem minmax(0, 9rem) 2.6rem minmax(0, 1fr);
+  align-items: baseline;
+  gap: 0.5rem;
+  padding: 0.32rem 0.5rem;
+  border-left: 3px solid var(--line);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  background: color-mix(in srgb, var(--white) 60%, transparent);
+  font-size: 0.73rem;
+}
+
+.admin-audit-item.is-ok { border-left-color: var(--moss); }
+.admin-audit-item.is-watch { border-left-color: var(--yellow); }
+
+.admin-audit-time { color: var(--muted); font-family: var(--font-mono, monospace); font-size: 0.68rem; }
+.admin-audit-action { color: var(--ink); font-weight: 700; }
+.admin-audit-actor { color: var(--tidal-deep); font-size: 0.68rem; }
+.admin-audit-detail { color: var(--muted); overflow-wrap: anywhere; }
+
+@media (max-width: 700px) {
+  .admin-audit-item {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 0.1rem;
+  }
+  .admin-light-item { grid-template-columns: 3.8rem minmax(0, 1fr); }
+}

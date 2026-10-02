@@ -71,9 +71,22 @@ import { systemRouter } from "./_core/systemRouter";
 import { TRPCError } from "@trpc/server";
 import { getDbUsageStatus } from "./dbUsage";
 import { getAdminRuntimeInfo, getAdminSiteStats } from "./adminOverview";
+import { getAdminDataSafety, getAdminDeployInfo, getAdminLearningActivity } from "./adminInsights";
+import { listAudit, recordAudit } from "./_core/auditLog";
 import { listKnowledgeDocs, readKnowledgeDoc } from "./knowledgeBase";
 import { adminProcedure, hasRoleAtLeast, publicProcedure, router, teacherProcedure } from "./_core/trpc";
 import { getRequestStats } from "./_core/requestStats";
+
+/**
+ * 本 process 的啟動時間。
+ *
+ * 用 `process.uptime()` 反推，而不是另設一個 module-level 的時間戳——
+ * 後者會在 module 被載入時就固定，但 dev 模式的 `tsx watch` 會重啟 process，
+ * 反推的方式才不會在熱重啟後說謊。
+ */
+function processStartTime(): number {
+  return Date.now() - Math.round(process.uptime() * 1000);
+}
 import {
   REFLECT_LIMIT_PER_MIN,
   PROXY_TEST_LIMIT_PER_MIN,
@@ -1684,11 +1697,18 @@ export const appRouter = router({
       }
       steps.push({ name: "朗讀供應鏈", ok: speechOk, ms: Date.now() - speechStarted, detail: speechDetail });
 
-      return { ok: steps.every((step) => step.ok), steps, ranAt: Date.now() };
+      const ok = steps.every((step) => step.ok);
+      const failed = steps.filter((step) => !step.ok).map((step) => step.name);
+      recordAudit("healthCheck", ok, ok ? "三項檢查全數正常" : `需留意：${failed.join("、")}`);
+      return { ok, steps, ranAt: Date.now() };
     }),
 
     /** 重設朗讀熔斷器（維運操作）：修好供應鏈後不必等 5 分鐘冷卻。 */
-    resetSpeechBreaker: adminProcedure.mutation(() => resetSpeechBreaker()),
+    resetSpeechBreaker: adminProcedure.mutation(() => {
+      const before = resetSpeechBreaker();
+      recordAudit("resetSpeechBreaker", true, "手動重設朗讀熔斷器（只影響計數與冷卻，不動資料）");
+      return before;
+    }),
 
     /**
      * 知識庫目錄（站長專屬）。
@@ -1697,6 +1717,24 @@ export const appRouter = router({
      * 所以站長在後台看到的、agent 在本機讀到的，不會有落差。
      */
     knowledgeIndex: adminProcedure.query(() => listKnowledgeDocs()),
+
+    /**
+     * 學習活動實況（站長專屬）。
+     *
+     * 這是後台原本**完全沒有**的一類資料：前面都是「站台怎麼樣」，
+     * 這一支是「有沒有人在用、學得怎麼樣」。兩者要處理的方向不同，
+     * 混在一起會讓「站台故障」和「沒人來用」看起來像同一件事。
+     */
+    learningActivity: adminProcedure.query(() => getAdminLearningActivity()),
+
+    /** 資料安全與備份：資料能不能救回來、原始碼的暴露範圍。 */
+    dataSafety: adminProcedure.query(() => getAdminDataSafety()),
+
+    /** 部署與版本：現在跑的是哪一版、從什麼時候開始跑。 */
+    deployInfo: adminProcedure.query(() => getAdminDeployInfo(processStartTime())),
+
+    /** 維運操作審計紀錄（由新到舊）。 */
+    auditLog: adminProcedure.query(() => listAudit(50)),
 
     /** 讀取單一份知識庫文件全文。`id` 必須命中目錄（見 knowledgeBase.ts 的安全說明）。 */
     knowledgeDoc: adminProcedure
