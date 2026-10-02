@@ -78,21 +78,6 @@
   font-size: 0.95rem;
 }
 
-.admin-gate-hint {
-  margin: 0.6rem 0 0;
-  color: var(--muted);
-  font-size: 0.78rem;
-  line-height: 1.6;
-}
-
-.admin-gate-hint code {
-  padding: 0.1rem 0.35rem;
-  border-radius: var(--radius-sm);
-  background: color-mix(in srgb, var(--paper-deep) 70%, transparent);
-  font-family: var(--font-mono, monospace);
-  font-size: 0.76rem;
-}
-
 .admin-gate-form {
   display: flex;
   flex-direction: column;
