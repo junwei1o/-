@@ -1,0 +1,523 @@
+/* ═══════════════════════════════════════════════════════════════
+   設定頁專屬樣式（/settings）
+   - 一律引用全站設計 token（var(--*)），不寫死色碼，四主題自動連動。
+   - 跨頁共用類（.settings-primary-button 等）定義於 index.css，此處只放
+     設定頁專屬的分區、導航、診斷、代理、PIN 雲端等樣式。
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── sticky 導航修正 ──
+   index.css 的行動裝置修補在 .app-route-shell 上設了 overflow-x:hidden（≤768px），
+   overflow 非 visible 的祖先會成為 sticky 的「最近滾動容器」——.settings-nav 於是
+   吸附到這個不捲動的容器而非視口，頁面一捲動導航就跟著滾走（實測 y=-1641）。
+   改為 overflow-x:clip：視覺裁剪效果等價，但不建立滾動容器，sticky 恢復吸附視口；
+   且 clip 可與 overflow-y:visible 共存（hidden 會強制 visible 變 auto）。
+   只在設定頁生效（:has 限定），不影響其他路由既有的裁剪行為。 */
+.app-route-shell:has(.settings-page) { overflow-x: clip; overflow-y: visible; }
+
+/* ── 分區導航（sticky chips＋scroll-spy） ── */
+.settings-nav {
+  position: sticky;
+  top: var(--global-nav-height, 0px);
+  z-index: calc(var(--z-nav) - 10);
+  display: flex;
+  gap: var(--space-2);
+  margin: 0 0 var(--space-4);
+  padding: var(--space-2) var(--space-1);
+  overflow-x: auto;
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 60%, transparent);
+  background: color-mix(in srgb, var(--paper) 90%, transparent);
+  backdrop-filter: blur(10px);
+  scrollbar-width: none;
+}
+.settings-nav::-webkit-scrollbar { display: none; }
+.settings-nav__chip {
+  flex: 0 0 auto;
+  min-height: 40px;
+  padding: var(--space-1) var(--space-4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  background: var(--white);
+  color: var(--muted);
+  font: inherit;
+  font-size: var(--type-meta);
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: border-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
+}
+.settings-nav__chip:hover { border-color: var(--tidal); color: var(--tidal-deep); }
+.settings-nav__chip.is-active { background: var(--tidal); border-color: var(--tidal); color: var(--white); }
+.settings-nav__chip:focus-visible { outline: var(--focus-ring); outline-offset: 2px; }
+
+/* ── 分組 ── */
+.settings-group {
+  display: grid;
+  gap: var(--space-4);
+  margin: var(--space-8) 0 var(--space-10);
+  scroll-margin-top: calc(var(--global-nav-height, 0px) + 72px);
+}
+.settings-group-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2) var(--space-3);
+  padding: 0 var(--space-1);
+}
+.settings-group-kicker {
+  position: relative;
+  margin: 0;
+  padding-left: var(--space-3);
+  font-family: var(--font-display);
+  font-size: var(--type-section);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+.settings-group-kicker::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 0.32rem;
+  height: 1.15rem;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(var(--tidal), var(--coral));
+  transform: translateY(-50%);
+}
+.settings-group-hint {
+  margin: 0;
+  font-size: var(--type-meta);
+  color: var(--muted);
+}
+/* 群組內卡片自帶 margin 歸零，間距交由 group gap 統一 */
+.settings-group > .settings-audio-card,
+.settings-group > .settings-log-card,
+.settings-group > .bx-panel { margin: 0; }
+
+.settings-choice-gap { height: var(--space-3); }
+.settings-learning-note { margin-top: calc(var(--space-2) * -1); }
+.settings-account-current { margin: var(--space-2) 0 var(--space-4); color: var(--muted); }
+.settings-account-current strong { color: var(--ink); }
+.settings-cloud-actions { display: flex; flex-wrap: wrap; gap: var(--space-3); }
+
+/* ── 回到頂部 ── */
+.settings-back-to-top {
+  position: fixed;
+  right: var(--space-5);
+  bottom: calc(var(--space-6) + env(safe-area-inset-bottom));
+  z-index: calc(var(--z-nav) - 5);
+  min-height: 44px;
+  padding: var(--space-2) var(--space-5);
+  border: 1px solid var(--tidal);
+  border-radius: var(--radius-pill);
+  background: var(--tidal);
+  color: var(--white);
+  font: inherit;
+  font-weight: 800;
+  box-shadow: var(--shadow-md);
+  cursor: pointer;
+}
+.settings-back-to-top:hover { background: var(--tidal-deep); }
+.settings-back-to-top:focus-visible { outline: var(--focus-ring); outline-offset: 2px; }
+
+/* ═══════════ 診斷：系統與學習摘要 ═══════════ */
+.settings-diagnostic-status {
+  margin: var(--space-4) 0;
+  padding: var(--space-4);
+  border: 1px solid color-mix(in srgb, var(--tidal) 18%, transparent);
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--paper) 72%, var(--white));
+}
+.settings-diagnostic-status-heading {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+.settings-diagnostic-status-heading h3 {
+  margin: 0;
+  color: var(--ink);
+  font-size: var(--type-lead);
+}
+.diag-status-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-3);
+  margin: 0;
+}
+.diag-stat-card {
+  min-width: 0;
+  padding: var(--space-3);
+  border: 1px solid color-mix(in srgb, var(--line) 55%, transparent);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--white) 82%, transparent);
+}
+.diag-stat-card dt {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--muted);
+  font-size: var(--type-micro);
+  font-weight: 700;
+}
+.diag-stat-card dd {
+  margin: var(--space-1) 0 0;
+  color: var(--ink);
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+.diag-stat-card small {
+  display: block;
+  margin-top: var(--space-1);
+  color: var(--muted);
+  font-size: var(--type-micro);
+  line-height: 1.45;
+}
+.diag-storage-meter {
+  display: block;
+  width: 100%;
+  height: 0.55rem;
+  margin-top: var(--space-2);
+  accent-color: var(--tidal);
+}
+.diag-log-list {
+  max-height: 28rem;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+.settings-clear-confirm button,
+.settings-log-actions button { min-height: 44px; }
+
+@media (max-width: 640px) {
+  .settings-diagnostic-status { padding: var(--space-3); }
+  .diag-status-grid { grid-template-columns: 1fr; gap: var(--space-2); }
+  .diag-log-list { max-height: 20rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .diag-log-list { scroll-behavior: auto; }
+}
+
+/* ═══════════ 船長室密語閘門 ═══════════ */
+.diag-gate {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-8) var(--space-5);
+  border: 1px dashed color-mix(in srgb, var(--tidal) 35%, transparent);
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--paper) 72%, var(--white));
+  text-align: center;
+}
+.diag-gate-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.25rem;
+  height: 3.25rem;
+  border-radius: 50%;
+  color: var(--tidal);
+  background: color-mix(in srgb, var(--tidal) 12%, var(--white));
+}
+.diag-gate-copy {
+  max-width: 34rem;
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--type-support);
+  line-height: 1.65;
+}
+.diag-gate-copy strong {
+  display: block;
+  margin-bottom: var(--space-1);
+  color: var(--ink);
+  font-size: var(--type-body);
+}
+.diag-gate-form {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-2);
+  width: 100%;
+  max-width: 26rem;
+}
+.diag-gate-input {
+  flex: 1 1 12rem;
+  min-height: 44px;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid color-mix(in srgb, var(--tidal) 30%, var(--line));
+  border-radius: var(--radius-md);
+  background: var(--white);
+  color: var(--ink);
+  font-size: 1rem;
+  text-align: center;
+  letter-spacing: 0.08em;
+}
+.diag-gate-input:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--tidal) 55%, transparent);
+  outline-offset: 2px;
+}
+.diag-gate-submit { flex-shrink: 0; }
+.diag-gate-error {
+  margin: 0;
+  color: var(--coral-deep);
+  font-size: var(--type-support);
+  font-weight: 700;
+}
+
+/* ═══════════ 雲端航行紀錄 ═══════════ */
+.diag-exam-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.diag-exam-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--white) 82%, transparent);
+  color: var(--muted);
+  font-size: var(--type-support);
+}
+.diag-exam-item svg { color: var(--tidal); flex-shrink: 0; }
+.diag-exam-subject { color: var(--ink); font-weight: 800; }
+.diag-exam-score { font-weight: 700; }
+.diag-exam-difficulty {
+  padding: 0.1rem 0.45rem;
+  border-radius: var(--radius-pill);
+  background: var(--paper-deep);
+  color: var(--muted);
+  font-size: var(--type-micro);
+  font-weight: 700;
+}
+.diag-exam-item time {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: var(--type-micro);
+}
+/* 雲端試卷紀錄載入骨架：色走 token */
+.diag-exam-skel > [data-slot="skeleton"] {
+  border-radius: 999px;
+  background: var(--line);
+}
+.diag-exam-skel-icon { width: 16px; height: 16px !important; border-radius: 50% !important; }
+.diag-exam-skel-subject { width: 90px; height: 13px; }
+.diag-exam-skel-score { width: 64px; height: 13px; }
+.diag-exam-skel-time { width: 110px; height: 12px; margin-left: auto; }
+
+@media (max-width: 640px) {
+  .diag-gate { padding: var(--space-6) var(--space-4); }
+  .diag-gate-form { flex-direction: column; }
+  .diag-gate-submit { width: 100%; }
+  .diag-exam-item time { margin-left: 0; width: 100%; }
+}
+
+/* ═══════════ 錯誤日誌分類徽章 ═══════════ */
+.diag-log-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1);
+}
+.diag-severity-badge,
+.diag-category-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.5rem;
+  padding: 0.15rem 0.45rem;
+  border-radius: var(--radius-pill);
+  font-size: var(--type-micro);
+  font-weight: 700;
+  line-height: 1.2;
+}
+.diag-severity-badge-critical {
+  color: var(--coral-deep);
+  background: color-mix(in srgb, var(--coral) 16%, var(--white));
+}
+.diag-severity-badge-warning {
+  color: color-mix(in srgb, var(--yellow) 52%, var(--ink));
+  background: color-mix(in srgb, var(--yellow) 26%, var(--white));
+}
+.diag-severity-badge-info {
+  color: var(--tidal-deep);
+  background: color-mix(in srgb, var(--tidal) 13%, var(--white));
+}
+.diag-category-badge {
+  color: var(--muted);
+  background: var(--paper-deep);
+}
+.diag-log-item small { color: var(--muted); font-size: var(--type-micro); }
+.diag-refresh-spinning { animation: diag-refresh-spin 0.8s linear infinite; }
+@keyframes diag-refresh-spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 640px) {
+  .settings-log-actions { gap: var(--space-3); }
+  .settings-log-actions button,
+  .settings-clear-confirm button { min-height: 48px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .diag-refresh-spinning { animation: none; }
+}
+
+/* ═══════════ 清除日誌確認對話框（modal） ═══════════ */
+.settings-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: calc(var(--z-overlay) - 1);
+  background: color-mix(in srgb, var(--ink) 45%, transparent);
+  backdrop-filter: blur(2px);
+}
+.settings-clear-confirm {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: min(92vw, 26rem);
+  margin: 0;
+  padding: var(--space-5);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--white);
+  box-shadow: var(--shadow-xl);
+  transform: translate(-50%, -50%);
+  z-index: var(--z-overlay);
+}
+.settings-clear-confirm strong {
+  display: block;
+  color: var(--ink);
+  font-size: var(--type-lead);
+}
+.settings-clear-confirm p { margin: var(--space-2) 0 var(--space-4); color: var(--muted); }
+.settings-clear-confirm .settings-confirm-actions { margin-top: 0; }
+
+/* ═══════════ 伴小星雙腦代理設定 ═══════════ */
+.settings-companion-grid {
+  display: grid;
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+}
+.settings-companion-item { display: grid; gap: 0.35rem; }
+.settings-companion-item span {
+  font-size: var(--type-micro);
+  font-weight: 700;
+  color: var(--muted);
+}
+.settings-companion-item input {
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--card);
+  color: var(--ink);
+  font: inherit;
+}
+.settings-companion-item input:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+}
+.settings-companion-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+.settings-companion-actions button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: var(--space-2) 1.05rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+.settings-companion-test { background: var(--tidal); color: var(--white); border-color: var(--tidal) !important; }
+.settings-companion-test:disabled { opacity: .55; cursor: not-allowed; }
+.settings-companion-save { background: var(--card); color: var(--ink); }
+.settings-companion-clear { background: transparent; color: var(--muted); }
+.settings-companion-state {
+  margin: var(--space-3) 0 0;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  font-size: var(--type-support);
+}
+.settings-companion-state.is-ok {
+  background: color-mix(in srgb, var(--moss) 18%, var(--white));
+  color: color-mix(in srgb, var(--moss) 55%, var(--ink));
+}
+.settings-companion-state.is-error {
+  background: color-mix(in srgb, var(--coral) 16%, var(--white));
+  color: var(--coral-deep);
+}
+.settings-companion-notes {
+  display: grid;
+  gap: 0.25rem;
+  margin: var(--space-3) 0 0;
+  padding-left: 1.1rem;
+  font-size: var(--type-micro);
+  color: var(--muted);
+}
+
+/* ═══════════ PIN 雲端備份 ═══════════ */
+.pin-cloud-form {
+  display: grid;
+  grid-template-columns: minmax(0, 9rem) auto;
+  gap: var(--space-2);
+  align-items: center;
+  margin-top: var(--space-3);
+}
+.pin-cloud-form input {
+  min-height: 44px;
+  padding: var(--space-2) var(--space-2);
+  border: 1px solid color-mix(in srgb, var(--ink) 22%, transparent);
+  border-radius: var(--radius-sm);
+  background: var(--card);
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 1rem;
+  letter-spacing: 0.35em;
+  text-align: center;
+}
+.pin-cloud-form input:focus-visible { outline: var(--focus-ring); outline-offset: 2px; }
+.pin-cloud-actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.pin-cloud-actions .settings-companion-save {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 44px;
+  padding: 0 0.9rem;
+  border: 1px solid color-mix(in srgb, var(--ink) 18%, transparent);
+  border-radius: var(--radius-sm);
+}
+.pin-cloud-actions .settings-companion-secondary { background: transparent; color: var(--ink); }
+.pin-cloud-status { margin-top: var(--space-2); font-size: var(--type-micro); line-height: 1.45; }
+.pin-cloud-status-ok { color: var(--moss); }
+.pin-cloud-status-error { color: var(--coral-deep); }
+.pin-cloud-status-info { color: var(--muted); }
+@media (max-width: 640px) { .pin-cloud-form { grid-template-columns: 1fr; } }
+
+/* ═══════════ 診斷日誌項微調（覆蓋 index.css 共享類） ═══════════ */
+/* 以柔和紙底取代偏深的 54% muted 灰底，維持卡片層級且不壓內文 */
+.settings-log-item.diag-log-item {
+  background: color-mix(in srgb, var(--paper) 78%, var(--white));
+  border: 1px solid color-mix(in srgb, var(--line) 55%, transparent);
+}
+/* 三角圖示依嚴重度走航海語意色（取代寫死的 #b45309） */
+.diag-log-item .settings-log-item-icon { color: var(--tidal); }
+.diag-log-item.diag-severity-critical .settings-log-item-icon { color: var(--coral-deep); }
+.diag-log-item.diag-severity-warning .settings-log-item-icon { color: color-mix(in srgb, var(--yellow) 58%, var(--ink)); }
+.diag-log-item.diag-severity-info .settings-log-item-icon { color: var(--tidal); }
+
+/* 危險按鈕（清除日誌）走 coral 語意色，與暖紙主題協調 */
+.settings-danger-button {
+  border-color: color-mix(in srgb, var(--coral-deep) 45%, var(--line));
+  background: color-mix(in srgb, var(--coral) 12%, var(--white));
+  color: var(--coral-deep);
+}
+.settings-danger-button:hover { background: color-mix(in srgb, var(--coral) 20%, var(--white)); }
+.settings-danger-button:focus-visible { outline: 3px solid color-mix(in srgb, var(--coral) 55%, transparent); outline-offset: 2px; }
