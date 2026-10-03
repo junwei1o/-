@@ -11,6 +11,7 @@ import CloudModePrompt from "@/components/CloudModePrompt";
 import AuthGate from "@/components/AuthGate";
 import { initGameData } from "@/utils/storage";
 import { OfflineBanner } from "@/components/OfflineBanner";
+import AdminOnlyRoute from "@/components/AdminOnlyRoute";
 
 // 路由懶加載：首頁也一併懶加載——它是唯一會帶入 2900 題內建題庫的頁面，
 // 而題庫對「只想登入看看首頁」的學生完全不需要。靜態 import 會讓 Home 的
@@ -128,10 +129,18 @@ function Router() {
         <Route path={"/learning-report"} component={LearningReport} />
         <Route path={"/community"} component={CommunityHub} />
         <Route path={"/error-statistics"} component={ErrorTypeStatistics} />
-        <Route path={"/learning-summary"} component={TeacherParentSummary} />
+        <Route path={"/learning-summary"} component={() => (
+          <AdminOnlyRoute>
+            <TeacherParentSummary />
+          </AdminOnlyRoute>
+        )} />
         <Route path={"/settings"} component={Settings} />
         <Route path={"/study-tips"} component={StudyTips} />
-        <Route path={"/teacher"} component={TeacherDashboard} />
+        <Route path={"/teacher"} component={() => (
+          <AdminOnlyRoute>
+            <TeacherDashboard />
+          </AdminOnlyRoute>
+        )} />
         <Route path={"/admin"} component={AdminConsole} />
         <Route path={"/class"} component={StudentClass} />
         <Route path={"/adventure-journal"} component={AdventureJournal} />

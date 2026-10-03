@@ -26,9 +26,9 @@ type NavGroup = { id: string; label: string; items: NavItem[] };
 const PRIMARY_ITEMS: NavItem[] = [
   { id: "home", label: "首頁", icon: Compass, href: "/", activePrefixes: ["/map", "/regions/"] },
   { id: "quiz-room", label: "我的教室", icon: BookOpenCheck, href: "/quiz-room", activePrefixes: ["/quiz-room", "/classroom", "/weekly-quiz", "/practice", "/wrong-answers", "/review-hub", "/community", "/expedition", "/camp"] },
-  { id: "learning", label: "學習歷程", icon: BarChart3, href: "/learning", activePrefixes: ["/learning", "/learning-insights", "/learning-report", "/error-statistics", "/learning-summary", "/adventure-journal"] },
-  { id: "treasure", label: "藏寶圖", icon: MapIcon, href: "/treasure", activePrefixes: ["/treasure", "/badges", "/gallery", "/wisdom", "/astronomy", "/principles", "/observatory", "/safety", "/study-tips"] },
-  { id: "settings", label: "設定", icon: Settings, href: "/settings", activePrefixes: ["/settings", "/teacher", "/class", "/features"] },
+    { id: "learning", label: "學習歷程", icon: BarChart3, href: "/learning", activePrefixes: ["/learning", "/learning-insights", "/learning-report", "/error-statistics", "/adventure-journal"] },
+    { id: "treasure", label: "藏寶圖", icon: MapIcon, href: "/treasure", activePrefixes: ["/treasure", "/badges", "/gallery", "/wisdom", "/astronomy", "/principles", "/observatory", "/safety", "/study-tips"] },
+    { id: "settings", label: "設定", icon: Settings, href: "/settings", activePrefixes: ["/settings", "/class", "/features"] },
 ];
 
 /** 手機版選單：直接展示五個頂層入口（Hub 頁內再展開細節）。 */

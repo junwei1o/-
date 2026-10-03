@@ -1,19 +1,18 @@
 import React, { useState } from "react";
 import { useLocation } from "wouter";
-import { AlarmClock, BarChart3, BookOpenText, BrainCircuit, Gauge, RotateCcw, ScrollText, UsersRound } from "lucide-react";
+import { AlarmClock, BarChart3, BookOpenText, BrainCircuit, Gauge, RotateCcw, ScrollText } from "lucide-react";
 import "./HubPages.css";
 
-type TabId = "me" | "wrong" | "parent";
+type TabId = "me" | "wrong";
 
 const TABS: Array<{ id: TabId; label: string }> = [
   { id: "me", label: "我的成績" },
   { id: "wrong", label: "錯題本" },
-  { id: "parent", label: "家長報告" },
 ];
 
 /**
  * 學習歷程：同一筆本地學習資料，三個視角（學生／錯題／家長），一個頁面分 Tab。
- * 收編原本的學習洞察、學習報告、錯題複習、錯題統計、陪讀專區、探險日誌。
+ * 收編原本的學習洞察、學習報告、錯題複習、錯題統計、探險日誌。
  */
 export default function LearningHub() {
   const [, setLocation] = useLocation();
@@ -31,9 +30,6 @@ export default function LearningHub() {
       { label: "錯題複習", desc: "整理並補強真實錯題", href: "/wrong-answers", icon: RotateCcw },
       { label: "錯題統計", desc: "依錯誤型態看分佈與建議", href: "/error-statistics", icon: ScrollText },
     ],
-    parent: [
-      { label: "陪讀專區", desc: "給家長看的學習報告與聊天建議", href: "/learning-summary", icon: UsersRound },
-    ],
   };
 
   return (
@@ -41,7 +37,7 @@ export default function LearningHub() {
       <header className="hub-header">
         <p className="hub-eyebrow">LEARNING LOG</p>
         <h1 className="hub-title" id="learning-title"><BarChart3 size={28} aria-hidden="true" /> 學習歷程</h1>
-        <p className="hub-sub">同一筆資料，三個視角：學生、錯題、家長。</p>
+        <p className="hub-sub">同一筆資料，兩個視角：學生、錯題。</p>
       </header>
       <div className="hub-tabs" role="tablist" aria-label="學習歷程視角">
         {TABS.map(({ id, label }) => (

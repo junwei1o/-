@@ -78,7 +78,9 @@ describe("TopNavigation（22 入口 → 7 → 5 頂層，P1 導航收斂）", ()
     expect(within(primary).getByRole("button", { name: "我的教室" })).toHaveAttribute("aria-current", "page");
     cleanup();
 
-    currentPath = "/learning-summary";
+    // 2026-10-03：/learning-summary（教師／家長摘要）已移入站長專屬（有守衛），
+    // 導航不再標記該路徑；同組改以 /error-statistics 驗證高亮。
+    currentPath = "/error-statistics";
     render(<TopNavigation />);
     const primary2 = screen.getByRole("navigation", { name: "主要功能選單" });
     expect(within(primary2).getByRole("button", { name: "學習歷程" })).toHaveAttribute("aria-current", "page");

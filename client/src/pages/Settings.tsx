@@ -145,14 +145,13 @@ export default function Settings() {
             titleId="classroom-link-title"
             description="老師可建立班級、指派作業並查看班級報表；學生用班級碼加入並完成作業。答題榜則記錄每場答題的時間、花費時間與作答者（含遊客）。"
           >
-            <div className="settings-cloud-actions">
-              <button type="button" className="settings-primary-button" onClick={() => setLocation("/class")}>我的教室（學生）</button>
-              <button type="button" className="settings-secondary-button" onClick={() => setLocation("/teacher")}>班級教室（老師）</button>
-              <button type="button" className="settings-secondary-button" onClick={() => setLocation("/answer-board")}>答題榜（含遊客）</button>
-            </div>
-          </SettingsSection>
+              <div className="settings-cloud-actions">
+                <button type="button" className="settings-primary-button" onClick={() => setLocation("/class")}>我的教室（學生）</button>
+                <button type="button" className="settings-secondary-button" onClick={() => setLocation("/answer-board")}>答題榜（含遊客）</button>
+              </div>
+            </SettingsSection>
 
-          <ParentLearningView />
+            <ParentLearningView />
         </SettingsGroup>
 
         <SettingsGroup id="group-advanced" label="帳號與進階" hint="帳號、離線架站、家長／老師除錯工具">

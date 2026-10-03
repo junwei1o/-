@@ -217,6 +217,37 @@ function HealthModule() {
         ))}
       </ul>
 
+      <section className="admin-teacher-tools" aria-label="教師工具入口">
+        <h3 className="admin-kv-row" style={{ margin: "1rem 0 0.5rem", fontWeight: 500 }}>
+          教師工具（自前台移入站長專屬，2026-10-03）
+        </h3>
+        <p className="admin-muted" style={{ margin: "0 0 0.75rem" }}>
+          這兩個頁面原本掛在公開路由、無權限驗證；現已加站長守衛，僅列出入口方便使用。
+        </p>
+        <ul className="admin-light-list">
+          <li className="admin-light-item is-ok">
+            <span className="admin-light-badge is-ok">入口</span>
+            <div className="admin-light-body">
+              <p className="admin-light-title">
+                <a href="/teacher" style={{ color: "inherit" }}>督學台（班級教室・老師版）</a>
+                <span className="admin-light-value">/teacher</span>
+              </p>
+              <p className="admin-light-rule">建立班級、指派作業、查看班級答題與錯誤原因報表。</p>
+            </div>
+          </li>
+          <li className="admin-light-item is-ok">
+            <span className="admin-light-badge is-ok">入口</span>
+            <div className="admin-light-body">
+              <p className="admin-light-title">
+                <a href="/learning-summary" style={{ color: "inherit" }}>教師／家長摘要</a>
+                <span className="admin-light-value">/learning-summary</span>
+              </p>
+              <p className="admin-light-rule">以老師視角檢視學生的學習概況與建議。</p>
+            </div>
+          </li>
+        </ul>
+      </section>
+
       <p className="admin-source">
         本表<strong>不提供新資料</strong>，只把其他模組已顯示的真實資料換成一眼能判讀的狀態。
         沒取到的項目會誠實標成「未取到」，不會假裝正常。

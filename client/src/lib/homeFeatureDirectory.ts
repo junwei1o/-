@@ -78,7 +78,6 @@ export const HOME_FEATURE_GROUPS: HomeFeatureGroup[] = [
     description: "管理設定、分析錯誤類型與查看摘要。",
     items: [
       { id: "error-statistics", label: "錯誤類型統計", description: "辨識概念、粗心與記憶弱點", href: "/error-statistics", icon: ShieldAlert },
-      { id: "learning-summary", label: "教師／家長摘要", description: "以 PIN 保護查看學習概況", href: "/learning-summary", icon: BarChart3 },
       { id: "settings", label: "設定與個人化", description: "調整主題、稱號、音效與無障礙選項", href: "/settings", icon: SettingsIcon },
     ],
   },

@@ -23,13 +23,14 @@ describe("LearningHub 學習歷程", () => {
     expect(setLocation).toHaveBeenCalledWith("/learning-insights");
     setLocation.mockClear();
 
-    fireEvent.click(screen.getByRole("tab", { name: "錯題本" }));
-    fireEvent.click(screen.getByRole("button", { name: /今日複習中心/ }));
-    expect(setLocation).toHaveBeenCalledWith("/review-hub");
-    setLocation.mockClear();
+      fireEvent.click(screen.getByRole("tab", { name: "錯題本" }));
+      fireEvent.click(screen.getByRole("button", { name: /今日複習中心/ }));
+      expect(setLocation).toHaveBeenCalledWith("/review-hub");
+      setLocation.mockClear();
 
-    fireEvent.click(screen.getByRole("tab", { name: "家長報告" }));
-    fireEvent.click(screen.getByRole("button", { name: /陪讀專區/ }));
-    expect(setLocation).toHaveBeenCalledWith("/learning-summary");
+      // 2026-10-03：「家長報告／陪讀專區」已隨 /learning-summary 移入站長專屬（有守衛），
+      // 前台 Tab 與入口一併移除——斷言它們確實不存在，防止回歸。
+      expect(screen.queryByRole("tab", { name: "家長報告" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: /陪讀專區/ })).not.toBeInTheDocument();
+    });
   });
-});
