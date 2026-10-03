@@ -127,3 +127,7 @@ shots-ui/
 
 # UI 設計技能運行目錄（原型/截圖，不進 repo）
 ui-design-runs/
+
+# Python venv（tts-service）
+**/.venv/
+__pycache__/

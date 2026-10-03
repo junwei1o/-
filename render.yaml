@@ -12,10 +12,11 @@ services:
     runtime: node
     plan: free
     region: oregon
-    # 遠端朗讀供應鏈（2026-09-30 全接入輪）：安裝 edge-tts 供 tts.synthesize。
-    # 容錯設計——映像若無 python3/pip 或 pypi 不通，僅警告並讓朗讀自動退回
-    # 瀏覽器內建語音（前端另有分頁級熔斷），絕不因此壞掉部署。
-    buildCommand: pnpm install --frozen-lockfile && (python3 -m pip install --user edge-tts 2>/dev/null || echo "[build] edge-tts install skipped: remote TTS disabled, browser voice fallback active") && pnpm build
+    # 朗讀架構（2026-10-04 v2）：edge-tts 已拆獨立服務 xue-tts（見下方），
+    # 主應用以 HTTP 呼叫 TTS_SERVICE_URL；不再在本實例裝 Python edge-tts。
+    # 未設 TTS_SERVICE_URL 或服務不可用時，synthesize 回 null、
+    # 前端退回瀏覽器內建語音——部署絕不因朗讀而壞。
+    buildCommand: pnpm install --frozen-lockfile && pnpm build
     startCommand: pnpm start
     healthCheckPath: /
     autoDeploy: true
@@ -25,6 +26,11 @@ services:
         value: production
       - key: DATABASE_URL
         sync: false  # TiDB Cloud 連線字串，在 Dashboard 設定
+      # ─── 朗讀（Edge TTS 獨立服務）───
+      # 值為 xue-tts 服務 URL（例如 https://xue-tts.onrender.com）；
+      # 未設則朗讀退回瀏覽器語音
+      - key: TTS_SERVICE_URL
+        sync: false
       # ─── 認證 ───
       - key: JWT_SECRET
         sync: false
@@ -61,3 +67,19 @@ services:
         sync: false
       - key: AWS_S3_BUCKET
         sync: false
+
+  # ─── Edge TTS 獨立朗讀服務（Python）───
+  # edge-tts 是 Python 庫，拆成獨立服務後主應用（Node）不再需要 Python 環境。
+  # 主應用透過 TTS_SERVICE_URL 呼叫；本服務不可用時前端退回瀏覽器內建語音。
+  - type: web
+    name: xue-tts
+    runtime: python
+    plan: free
+    region: oregon
+    buildCommand: pip install -r tts-service/requirements.txt
+    startCommand: python tts-service/app.py
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: TTS_CACHE_DIR
+        value: /tmp/tts-cache
