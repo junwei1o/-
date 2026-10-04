@@ -523,6 +523,7 @@
   padding: 0.1rem 0.35rem;
   border-radius: var(--radius-sm);
   background: color-mix(in srgb, var(--paper-deep) 65%, transparent);
+  color: var(--color-neutral-700);
   font-family: var(--font-mono, monospace);
   font-size: 0.75rem;
   overflow-wrap: anywhere;
@@ -994,7 +995,7 @@
   padding: 0.08rem 0.32rem;
   border-radius: var(--radius-sm);
   background: color-mix(in srgb, var(--paper-deep) 70%, transparent);
-  color: color-mix(in srgb, var(--coral-deep) 78%, var(--ink));
+  color: var(--color-danger-700);
   font-family: var(--font-mono, monospace);
   font-size: 0.9em;
   overflow-wrap: anywhere;
