@@ -31,6 +31,12 @@
       "bundle": "assets/index-CvQgBt6s.js",
       "axeVersion": "4.13.0",
       "note": "2026-10-04 第三批對比度修正後再次收緊；只收緊不放寬"
+    },
+    "classroomAddedAt": {
+      "date": "2026-10-04T11:55:31.417Z",
+      "bundle": "assets/index-Brx48mq4.js",
+      "axeVersion": "4.13.0",
+      "note": "2026-10-04 納入 14 條教室遊戲路由；同日修掉 /classroom/onion-academy 的 85 個對比度違規後收緊"
     }
   },
   "routes": {
@@ -239,6 +245,49 @@
     "/class": {
       "landmark-main-is-top-level": 1,
       "landmark-no-duplicate-main": 1
+    },
+    "/classroom/onion": {
+      "color-contrast": 1,
+      "page-has-heading-one": 1
+    },
+    "/classroom/onion-academy": {
+      "page-has-heading-one": 1
+    },
+    "/classroom/flip": {
+      "page-has-heading-one": 1
+    },
+    "/classroom/image": {
+      "page-has-heading-one": 1
+    },
+    "/classroom/bolt": {
+      "page-has-heading-one": 1
+    },
+    "/classroom/rush": {
+      "page-has-heading-one": 1
+    },
+    "/classroom/relay": {
+      "page-has-heading-one": 1
+    },
+    "/classroom/trap": {
+      "page-has-heading-one": 1
+    },
+    "/classroom/factor": {
+      "page-has-heading-one": 1
+    },
+    "/classroom/meteor": {
+      "page-has-heading-one": 1
+    },
+    "/classroom/rect": {
+      "page-has-heading-one": 1
+    },
+    "/classroom/duo": {
+      "page-has-heading-one": 1
+    },
+    "/classroom/flashrush": {
+      "page-has-heading-one": 1
+    },
+    "/classroom/flipdex": {
+      "page-has-heading-one": 1
     }
   }
 }
