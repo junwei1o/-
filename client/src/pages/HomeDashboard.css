@@ -1051,7 +1051,8 @@
   font-size: var(--type-micro); font-weight: 800; padding: 2px 7px; border-radius: 999px; white-space: nowrap;
 }
 .answer-board-guest-tag { background: var(--paper-deep); color: var(--muted); border: 1px solid var(--line); }
-.answer-board-named-tag { background: color-mix(in srgb, var(--moss) 15%, var(--white)); color: var(--moss); border: 1px solid color-mix(in srgb, var(--moss) 30%, var(--line)); }
+/* 2026-10-04：文字改 700 級。原本 --moss 對這個 15% 苔綠底只有 3.43（需 4.5）。 */
+.answer-board-named-tag { background: color-mix(in srgb, var(--moss) 15%, var(--white)); color: var(--color-success-700); border: 1px solid color-mix(in srgb, var(--moss) 30%, var(--line)); }
 .answer-board-me-tag { background: color-mix(in srgb, var(--tidal) 12%, var(--white)); color: var(--tidal-deep); border: 1px solid color-mix(in srgb, var(--tidal) 30%, var(--line)); }
 .answer-board-name-btn {
   display: inline-flex; align-items: center; gap: 5px; border: none; cursor: pointer;
@@ -1107,9 +1108,13 @@
 .answer-board-name { font-weight: 800; color: var(--ink); white-space: nowrap; }
 .answer-board-name .answer-board-guest-tag, .answer-board-name .answer-board-me-tag { margin-left: 5px; }
 .answer-board-rate { font-weight: 800; }
-.answer-board-rate.rate-high { color: var(--moss); }
-.answer-board-rate.rate-mid { color: var(--yellow); }
-.answer-board-rate.rate-low { color: var(--coral-deep); }
+/* 2026-10-04：這三個百分比是**一般文字**（14px 粗體，未達 18.66px 的 AA 大字門檻），
+   所以需 4.5:1。原本用 500 級（--moss／--yellow／--coral-deep），實測只有
+   4.08／1.90／4.30 —— 芥黃那個幾乎看不見。改用 600 級（docs/color-tokens.md §4.1：
+   一般文字用 600 起）。改完由 axe 巡檢複驗（docs/color-contrast-migration.md）。 */
+.answer-board-rate.rate-high { color: var(--color-success-600); }
+.answer-board-rate.rate-mid { color: var(--color-warning-600); }
+.answer-board-rate.rate-low { color: var(--color-danger-600); }
 .answer-board-duration, .answer-board-time { white-space: nowrap; color: var(--muted); }
 .answer-board-back { align-self: flex-start; }
 
