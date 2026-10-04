@@ -291,9 +291,9 @@
 }
 
 .admin-warning.is-ok { border-left-color: var(--moss); background: color-mix(in srgb, var(--moss) 12%, var(--white)); }
-.admin-warning.is-ok .admin-warning-badge { color: color-mix(in srgb, var(--moss) 72%, var(--ink)); }
+.admin-warning.is-ok .admin-warning-badge { color: var(--color-success-700); }
 .admin-warning.is-watch { border-left-color: var(--yellow); background: color-mix(in srgb, var(--yellow) 16%, var(--white)); }
-.admin-warning.is-watch .admin-warning-badge { color: color-mix(in srgb, var(--yellow) 52%, var(--ink)); }
+.admin-warning.is-watch .admin-warning-badge { color: var(--color-warning-700); }
 .admin-warning.is-high { border-left-color: var(--coral); background: color-mix(in srgb, var(--coral) 14%, var(--white)); }
 .admin-warning.is-high .admin-warning-badge { color: var(--coral-deep); }
 
@@ -655,8 +655,8 @@
   font-weight: 900;
 }
 
-.admin-check-item.is-ok .admin-check-mark { background: color-mix(in srgb, var(--moss) 22%, var(--white)); color: color-mix(in srgb, var(--moss) 70%, var(--ink)); }
-.admin-check-item.is-watch .admin-check-mark { background: color-mix(in srgb, var(--yellow) 28%, var(--white)); color: color-mix(in srgb, var(--yellow) 50%, var(--ink)); }
+.admin-check-item.is-ok .admin-check-mark { background: color-mix(in srgb, var(--moss) 22%, var(--white)); color: var(--color-success-700); }
+.admin-check-item.is-watch .admin-check-mark { background: color-mix(in srgb, var(--yellow) 28%, var(--white)); color: var(--color-warning-700); }
 
 .admin-check-body { min-width: 0; }
 
@@ -678,8 +678,8 @@
   font-weight: 800;
 }
 
-.admin-check-tag.is-ok { background: color-mix(in srgb, var(--moss) 20%, var(--white)); color: color-mix(in srgb, var(--moss) 72%, var(--ink)); }
-.admin-check-tag.is-watch { background: color-mix(in srgb, var(--yellow) 26%, var(--white)); color: color-mix(in srgb, var(--yellow) 48%, var(--ink)); }
+.admin-check-tag.is-ok { background: color-mix(in srgb, var(--moss) 20%, var(--white)); color: var(--color-success-700); }
+.admin-check-tag.is-watch { background: color-mix(in srgb, var(--yellow) 26%, var(--white)); color: var(--color-warning-700); }
 .admin-check-tag.is-neutral { background: color-mix(in srgb, var(--tidal) 14%, var(--white)); color: var(--tidal-deep); }
 
 .admin-check-value {
@@ -724,7 +724,7 @@
   font-weight: 900;
 }
 
-.admin-env-item.is-ok .admin-env-mark { color: color-mix(in srgb, var(--moss) 72%, var(--ink)); }
+.admin-env-item.is-ok .admin-env-mark { color: var(--color-success-700); }
 .admin-env-item.is-missing .admin-env-mark { color: var(--coral-deep); }
 
 .admin-env-name {
@@ -909,7 +909,7 @@
 }
 
 .admin-doc-tag.is-kb { background: color-mix(in srgb, var(--tidal) 15%, var(--white)); color: var(--tidal-deep); }
-.admin-doc-tag.is-ref { background: color-mix(in srgb, var(--moss) 18%, var(--white)); color: color-mix(in srgb, var(--moss) 70%, var(--ink)); }
+.admin-doc-tag.is-ref { background: color-mix(in srgb, var(--moss) 18%, var(--white)); color: var(--color-success-700); }
 
 .admin-doc-id {
   font-family: var(--font-mono, monospace);
@@ -1102,9 +1102,9 @@
   white-space: nowrap;
 }
 
-.admin-light-badge.is-ok { background: color-mix(in srgb, var(--moss) 20%, var(--white)); color: color-mix(in srgb, var(--moss) 72%, var(--ink)); }
-.admin-light-badge.is-watch { background: color-mix(in srgb, var(--yellow) 28%, var(--white)); color: color-mix(in srgb, var(--yellow) 48%, var(--ink)); }
-.admin-light-badge.is-high { background: color-mix(in srgb, var(--coral) 20%, var(--white)); color: var(--coral-deep); }
+.admin-light-badge.is-ok { background: color-mix(in srgb, var(--moss) 20%, var(--white)); color: var(--color-success-700); }
+.admin-light-badge.is-watch { background: color-mix(in srgb, var(--yellow) 28%, var(--white)); color: var(--color-warning-700); }
+.admin-light-badge.is-high { background: color-mix(in srgb, var(--coral) 20%, var(--white)); color: var(--color-danger-700); }
 .admin-light-badge.is-unknown { background: color-mix(in srgb, var(--ink) 8%, var(--white)); color: var(--muted); }
 
 .admin-light-body { min-width: 0; }
@@ -1134,7 +1134,7 @@
   line-height: 1.55;
 }
 
-.admin-light-action { color: color-mix(in srgb, var(--coral-deep) 70%, var(--ink)); }
+.admin-light-action { color: var(--color-danger-700); }
 
 /* ── 學習趨勢（14 天）── */
 .admin-trend-list {
@@ -1234,7 +1234,7 @@
   overflow-wrap: anywhere;
 }
 
-.admin-check-tag.is-high { background: color-mix(in srgb, var(--coral) 20%, var(--white)); color: var(--coral-deep); }
+.admin-check-tag.is-high { background: color-mix(in srgb, var(--coral) 20%, var(--white)); color: var(--color-danger-700); }
 
 .admin-check-neutral { color: var(--muted); font-size: 0.68rem; font-weight: 600; }
 
@@ -1281,7 +1281,7 @@
   font-size: 0.74rem;
 }
 
-.admin-exclude-mark { color: color-mix(in srgb, var(--moss) 75%, var(--ink)); font-weight: 900; }
+.admin-exclude-mark { color: var(--color-success-700); font-weight: 900; }
 .admin-exclude-item code { overflow-wrap: anywhere; }
 
 /* ── 審計時間軸 ── */
