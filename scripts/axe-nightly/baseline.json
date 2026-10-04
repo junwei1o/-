@@ -25,6 +25,12 @@
       "bundle": "assets/index-3CH27xmP.js",
       "axeVersion": "4.13.0",
       "note": "2026-10-04 對比度修正後收緊；只收緊不放寬"
+    },
+    "tightenedAt2": {
+      "date": "2026-10-04T11:36:53.573Z",
+      "bundle": "assets/index-CvQgBt6s.js",
+      "axeVersion": "4.13.0",
+      "note": "2026-10-04 第三批對比度修正後再次收緊；只收緊不放寬"
     }
   },
   "routes": {
@@ -50,7 +56,7 @@
       "landmark-unique": 1
     },
     "/settings": {
-      "color-contrast": 3,
+      "color-contrast": 2,
       "landmark-main-is-top-level": 1,
       "landmark-no-duplicate-main": 1
     },
@@ -65,7 +71,7 @@
       "landmark-no-duplicate-main": 1
     },
     "/badges": {
-      "color-contrast": 1,
+      "color-contrast": 0,
       "heading-order": 1,
       "landmark-main-is-top-level": 1,
       "landmark-no-duplicate-main": 1
@@ -151,7 +157,7 @@
       "landmark-unique": 1
     },
     "/adventure-journal": {
-      "color-contrast": 1,
+      "color-contrast": 0,
       "landmark-main-is-top-level": 1,
       "landmark-no-duplicate-main": 1
     },
@@ -171,13 +177,13 @@
       "landmark-unique": 1
     },
     "/principles": {
-      "color-contrast": 7,
+      "color-contrast": 4,
       "landmark-main-is-top-level": 1,
       "landmark-no-duplicate-main": 1,
       "landmark-unique": 1
     },
     "/astronomy": {
-      "color-contrast": 3,
+      "color-contrast": 2,
       "landmark-main-is-top-level": 1,
       "landmark-no-duplicate-main": 1,
       "landmark-unique": 1
@@ -189,25 +195,25 @@
       "landmark-unique": 1
     },
     "/safety": {
-      "color-contrast": 16,
+      "color-contrast": 6,
       "landmark-main-is-top-level": 1,
       "landmark-no-duplicate-main": 1,
       "landmark-unique": 1
     },
     "/regions/north": {
-      "color-contrast": 7,
+      "color-contrast": 6,
       "landmark-main-is-top-level": 1,
       "landmark-no-duplicate-main": 1,
       "landmark-unique": 1
     },
     "/observatory/nailong": {
-      "color-contrast": 2,
+      "color-contrast": 0,
       "landmark-main-is-top-level": 1,
       "landmark-no-duplicate-main": 1,
       "landmark-unique": 1
     },
     "/principles/relativity": {
-      "color-contrast": 11,
+      "color-contrast": 5,
       "landmark-main-is-top-level": 1,
       "landmark-no-duplicate-main": 1,
       "landmark-unique": 1
