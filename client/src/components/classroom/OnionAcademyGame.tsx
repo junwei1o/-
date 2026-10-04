@@ -568,11 +568,11 @@ function subjectColor(subject: string): string {
     case "數學":
       return "#8a5fb0";
     case "國語":
-      return "#3a7bbf";
+      return "#3877B9";
     case "自然":
-      return "#2f9e6e";
+      return "#27835C";
     case "社會":
-      return "#c0763f";
+      return "#A56536";
     case "思辨":
       return "#d6336c";
     default:

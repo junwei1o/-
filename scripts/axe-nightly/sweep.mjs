@@ -23,17 +23,21 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const BASE = process.env.AXE_BASE_URL || "https://xue-gr3a.onrender.com";
 const CAPTAIN = process.env.AXE_CAPTAIN || "稽查夜巡";
 /**
- * 巡檢路由清單（2026-10-04：由 10 條擴充到 40 條）。
+ * 巡檢路由清單（2026-10-04：由 10 條 → 40 條 → 54 條）。
  *
- * 全站共 44 條 `<Route>`（見 `client/src/App.tsx`）。本巡檢覆蓋 40 條，
- * 排除 4 條並註明理由：
+ * 全站共 44 條 `<Route>`（見 `client/src/App.tsx`）＋ `/classroom/:gameId` 底下
+ * 14 個具體遊戲（見 `ClassroomPlay.tsx` 的 `GAME_META`）。本巡檢覆蓋 54 條，
+ * 只排除 3 條並註明理由：
  *
  * - `/admin`、`/teacher`、`/learning-summary`：包在 `AdminOnlyRoute` 內，**需要站長身分**。
  *   本巡檢以學員船長登入，掃過去只會量到閘門／轉址，不是頁面本身
  *   → 需另一趟站長身分的巡檢（未做）。
  *   ⚠️ 舊清單裡的 `/teacher` 就屬於這種：它量到的是閘門，不是教師儀表板。
- * - `/classroom/:gameId`：需要**真實的班級遊戲 id**（由老師在課堂建立），
- *   無法從原始碼取得固定樣本。
+ *
+ * **`/classroom/:gameId` 已納入**（2026-10-04）：原本以為需要老師在課堂建立的真實 id，
+ * 但讀了 `ClassroomPlay.tsx` 才發現 `gameId` 只是前端常數 `GAME_META` 的鍵
+ * （`if (!match || !GAME_META[gameId])` 就轉 fallback）→ **不需要老師、不需要真實班級**，
+ * 用其中一個鍵就能進到真實的教室 UI。
  *
  * 參數化路由一律用「**資料來源的第一筆真實 key**」，不是隨手編的字串——
  * 假 key 會量到「找不到」的 fallback 頁面，那是另一種 UI，不是這個頁面。
@@ -62,6 +66,11 @@ const ROUTES = [
   "/astronomy/cosmic-scale",
   "/wisdom/draw-snake-add-feet",
   "/safety/food-safety",
+  // 教室遊戲（/classroom/:gameId 的 14 個具體鍵，來源 ClassroomPlay.tsx 的 GAME_META）
+  "/classroom/onion", "/classroom/onion-academy", "/classroom/flip", "/classroom/image",
+  "/classroom/bolt", "/classroom/rush", "/classroom/relay", "/classroom/trap",
+  "/classroom/factor", "/classroom/meteor", "/classroom/rect", "/classroom/duo",
+  "/classroom/flashrush", "/classroom/flipdex",
   // 其他
   "/settings", "/class", "/404",
 ];
