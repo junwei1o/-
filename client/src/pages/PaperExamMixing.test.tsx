@@ -118,12 +118,21 @@ describe("PaperExam 12 選擇＋填空/配對/排序混合試卷", () => {
     const title = (document.querySelector(".mg-title")?.textContent ?? "").trim();
     const matchingSet = MATCHING_SETS.find((item) => item.title === title);
     expect(matchingSet).toBeTruthy();
+    // 先等盤面渲染完成再開始點：以前直接開點，盤面還沒好就會找不到任何項目。
+    await waitFor(() => expect(document.querySelectorAll(".mg-left .mg-item").length).toBeGreaterThan(0), {
+      timeout: 10000,
+      interval: 25,
+    });
     const findItem = (selector: string, text: string) =>
       Array.from(document.querySelectorAll<HTMLElement>(selector)).find((el) =>
         Array.from(el.querySelectorAll("span")).some(
           (span) => !span.classList.contains("mg-badge") && !span.classList.contains("mg-mark") && span.textContent?.trim() === text,
         ),
       ) as HTMLElement | undefined;
+    // ⚠️ 盤面是 `sliceMatchingSet` 從整組裁出來的**隨機子集**（試卷內嵌的是迷你盤），
+    // 所以 `matchingSet.pairs` 會包含「根本不在盤上」的配對——找不到是正常的，不是漏點。
+    // （2026-10-04：一度把「找不到」當成漏點而加了斷言，每次固定誤報 2 對，才發現這件事。）
+    // 因此這裡只點「找得到的」；盤上的配對若真沒被點完，下面的 waitFor 會逾時——那才是真的漏點。
     for (const pair of matchingSet!.pairs) {
       const left = findItem(".mg-left .mg-item", pair.l);
       const right = findItem(".mg-right .mg-item", pair.r);
@@ -132,8 +141,11 @@ describe("PaperExam 12 選擇＋填空/配對/排序混合試卷", () => {
         fireEvent.click(right);
       }
     }
-    // 父層在配對完成時立即把 MatchingGame 換成「配對題完成卡」，底部導覽按鈕同時啟用。
-    await waitFor(() => expect(document.querySelector(".paper-matching-done")).toBeTruthy(), { timeout: 6000, interval: 50 });
+    // 最後一對配對成功後，元件還會等 420ms 才呼叫 onComplete（見 MatchingGame.tsx:325），
+    // 父層收到後才把 MatchingGame 換成「配對題完成卡」。
+    // ⚠️ 逾時給寬一點：CI 上 189 個測試檔並行搶 CPU，原本的 6 秒曾經不夠而偶發紅燈
+    // （2026-10-04 實測：同一版程式本地連跑 5 次全過、CI 卻在這一行的 6 秒逾時失敗）。
+    await waitFor(() => expect(document.querySelector(".paper-matching-done")).toBeTruthy(), { timeout: 20000, interval: 50 });
     fireEvent.click(screen.getByRole("button", { name: /下一題|查看結果總結/ }));
     expect(document.querySelectorAll(".paper-matching-summary-row")).toBeTruthy();
   }
