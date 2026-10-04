@@ -37,6 +37,12 @@
       "bundle": "assets/index-Brx48mq4.js",
       "axeVersion": "4.13.0",
       "note": "2026-10-04 納入 14 條教室遊戲路由；同日修掉 /classroom/onion-academy 的 85 個對比度違規後收緊"
+    },
+    "classroomH1At": {
+      "date": "2026-10-04T12:06:10.038Z",
+      "bundle": "assets/index-ElGwlkov.js",
+      "axeVersion": "4.13.0",
+      "note": "2026-10-04 教室 14 條路由補 h1 後收緊"
     }
   },
   "routes": {
@@ -248,46 +254,46 @@
     },
     "/classroom/onion": {
       "color-contrast": 1,
-      "page-has-heading-one": 1
+      "page-has-heading-one": 0
     },
     "/classroom/onion-academy": {
-      "page-has-heading-one": 1
+      "page-has-heading-one": 0
     },
     "/classroom/flip": {
-      "page-has-heading-one": 1
+      "page-has-heading-one": 0
     },
     "/classroom/image": {
-      "page-has-heading-one": 1
+      "page-has-heading-one": 0
     },
     "/classroom/bolt": {
-      "page-has-heading-one": 1
+      "page-has-heading-one": 0
     },
     "/classroom/rush": {
-      "page-has-heading-one": 1
+      "page-has-heading-one": 0
     },
     "/classroom/relay": {
-      "page-has-heading-one": 1
+      "page-has-heading-one": 0
     },
     "/classroom/trap": {
-      "page-has-heading-one": 1
+      "page-has-heading-one": 0
     },
     "/classroom/factor": {
-      "page-has-heading-one": 1
+      "page-has-heading-one": 0
     },
     "/classroom/meteor": {
-      "page-has-heading-one": 1
+      "page-has-heading-one": 0
     },
     "/classroom/rect": {
-      "page-has-heading-one": 1
+      "page-has-heading-one": 0
     },
     "/classroom/duo": {
-      "page-has-heading-one": 1
+      "page-has-heading-one": 0
     },
     "/classroom/flashrush": {
-      "page-has-heading-one": 1
+      "page-has-heading-one": 0
     },
     "/classroom/flipdex": {
-      "page-has-heading-one": 1
+      "page-has-heading-one": 0
     }
   }
 }
