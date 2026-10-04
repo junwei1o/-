@@ -53,6 +53,18 @@ color-contrast 節點  317 → 42
 **同一個 token 換個底色也可能失效**：`--muted-foreground` 在 `--paper` 上 4.58 達標，
 在 `--paper-deep` 上就不足。
 
+### 四主題實測（2026-10-04 完成）
+
+色階是**執行期由各主題基色派生**的，所以修正在不同主題上會算出不同值——
+先前只實測過預設主題。補測方式：用 `addInitScript` 在頁面載入前寫入
+`localStorage["xue-theme-v1"]`（見 `lib/useTheme.ts`），再跑 axe。
+
+**四個主題 × 七條代表路由（`/`、`/answer-board`、`/principles`、`/settings`、
+`/safety`、`/learning-report`、`/classroom/onion-academy`）→ 真違規全部為 0** ✅
+
+（`sunny` 每頁各 1 個假陽性，是共用導覽列的漸層底，與頁面內容無關。）
+
+
 
 
 
