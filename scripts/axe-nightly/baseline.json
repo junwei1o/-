@@ -49,6 +49,12 @@
       "bundle": "assets/index-DJSZr156.js",
       "axeVersion": "4.13.0",
       "note": "2026-10-04 第四批對比度修正後收緊"
+    },
+    "finalContrastAt": {
+      "date": "2026-10-04T12:29:25.853Z",
+      "bundle": "assets/index-DY0CX0fC.js",
+      "axeVersion": "4.13.0",
+      "note": "2026-10-04 對比度修正收尾後收緊"
     }
   },
   "routes": {
@@ -169,7 +175,7 @@
       "landmark-unique": 1
     },
     "/answer-board": {
-      "color-contrast": 3,
+      "color-contrast": 0,
       "landmark-main-is-top-level": 1,
       "landmark-no-duplicate-main": 1,
       "landmark-unique": 1
@@ -180,7 +186,7 @@
       "landmark-no-duplicate-main": 1
     },
     "/community": {
-      "color-contrast": 1,
+      "color-contrast": 0,
       "landmark-main-is-top-level": 1,
       "landmark-no-duplicate-main": 1
     },
@@ -213,7 +219,7 @@
       "landmark-unique": 1
     },
     "/safety": {
-      "color-contrast": 1,
+      "color-contrast": 0,
       "landmark-main-is-top-level": 1,
       "landmark-no-duplicate-main": 1,
       "landmark-unique": 1
