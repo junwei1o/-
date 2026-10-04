@@ -24,7 +24,7 @@ import path from "path";
 import { parse as parseCookieHeader } from "cookie";
 import { COOKIE_NAME } from "@shared/const";
 import { sdk } from "./sdk";
-import { hasRoleAtLeast } from "./trpc";
+import { ADMIN_OPEN_ID } from "./context";
 
 /** 要排除的目錄與檔案（glob 模式，相對於專案根目錄）。 */
 const EXCLUDE_PATTERNS = [
@@ -140,21 +140,32 @@ export function shouldExcludePath(entryPath: string): boolean {
 }
 
 /**
- * 站長鑑權（2026-10-04 新增）。
+ * 站長鑑權。
  *
- * 走的是與 `adminProcedure`（`trpc.ts`）**同一套**判斷：`sdk.verifySession` 驗
- * httpOnly cookie → `hasRoleAtLeast(user, "admin")`。沒有 cookie 就不驗 session
- * ——`context.ts` 早就踩過這個坑：`verifySession` 對空 cookie 會印 console.warn，
- * 而匿名學生流量佔多數，日誌會被灌爆。
+ * ⚠️ 2026-10-04 修正（初版寫錯，導致**連站長自己都下載不了**）：
+ *
+ * 初版寫成 `hasRoleAtLeast(await sdk.verifySession(cookie), "admin")`。但
+ * `verifySession` 回傳的是 session payload `{ openId, appId, name }`——**沒有 role 欄位**，
+ * 而 `hasRoleAtLeast` 第一行就是 `if (!role) return false` → **永遠回 false**。
+ * 症狀：站長登入成功（`admin.me` 回 `isAdmin: true`）卻仍被 401 擋下。
+ *
+ * 正確做法：比對哨兵 `openId`。這與 `context.ts` 把 `session.openId === ADMIN_OPEN_ID`
+ * 映射成 `role: "admin"` 是**同一件事**，只是不經過 ctx.user 那條路。
+ *
+ * 為什麼原本的測試沒抓到：只驗了「未授權 → 401」這個負面路徑，而**壞掉的實作也回 401**，
+ * 於是測試「因為錯的理由而通過」。→ 已補正面路徑測試（`backupAuth.test.ts`）。
+ *
+ * 沒有 cookie 就不驗 session——`context.ts` 早就踩過這個坑：`verifySession` 對空 cookie
+ * 會印 console.warn，而匿名學生流量佔多數，日誌會被灌爆。
  */
-async function isAdminRequest(req: express.Request): Promise<boolean> {
+export async function isAdminRequest(req: express.Request): Promise<boolean> {
   const rawCookie = req.headers.cookie;
   if (!rawCookie) return false;
   const cookieValue = parseCookieHeader(rawCookie)[COOKIE_NAME];
   if (!cookieValue) return false;
   try {
     const session = await sdk.verifySession(cookieValue);
-    return hasRoleAtLeast(session, "admin");
+    return session?.openId === ADMIN_OPEN_ID;
   } catch {
     return false;
   }
@@ -172,10 +183,22 @@ export function registerBackupRoute(app: express.Express) {
       return;
     }
 
+    /**
+     * ⚠️ 2026-10-04 修正：原本兩個分支寫成同一個表達式 `../..`，是**錯的**。
+     *
+     * `import.meta.dirname` 指的是「**執行中檔案**的所在目錄」，兩種跑法不同：
+     * - dev（tsx 跑 `server/_core/index.ts`）→ `<repo>/server/_core` → 上兩層才是專案根
+     * - prod（esbuild 打包成 `dist/index.js`）→ `<repo>/dist` → **上一層**就是專案根
+     *
+     * 原本 prod 用 `../..` 會指到**專案的上一層**，把整個上層目錄都打包進去。
+     * 本機實測證據：zip 內路徑是 `hdmx/.gitignore`（多了專案資料夾名），
+     * 甚至把我放在上層的 `axe-nightly-unpublished-*.bundle` 也包了進來。
+     * 在 Render 上 `../..` = `/opt/render/project`（含 `src/` 等非本專案內容）。
+     */
     const projectRoot =
       process.env.NODE_ENV === "development"
         ? path.resolve(import.meta.dirname, "../..")
-        : path.resolve(import.meta.dirname, "../..");
+        : path.resolve(import.meta.dirname, "..");
 
     const zipName = `baodao-expedition-backup-${new Date()
       .toISOString()
