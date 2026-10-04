@@ -1050,7 +1050,7 @@
 .answer-board-guest-tag, .answer-board-named-tag, .answer-board-me-tag {
   font-size: var(--type-micro); font-weight: 800; padding: 2px 7px; border-radius: 999px; white-space: nowrap;
 }
-.answer-board-guest-tag { background: var(--paper-deep); color: var(--muted); border: 1px solid var(--line); }
+.answer-board-guest-tag { background: var(--paper-deep); color: var(--color-neutral-700); border: 1px solid var(--line); }
 /* 2026-10-04：文字改 700 級。原本 --moss 對這個 15% 苔綠底只有 3.43（需 4.5）。 */
 .answer-board-named-tag { background: color-mix(in srgb, var(--moss) 15%, var(--white)); color: var(--color-success-700); border: 1px solid color-mix(in srgb, var(--moss) 30%, var(--line)); }
 .answer-board-me-tag { background: color-mix(in srgb, var(--tidal) 12%, var(--white)); color: var(--tidal-deep); border: 1px solid color-mix(in srgb, var(--tidal) 30%, var(--line)); }

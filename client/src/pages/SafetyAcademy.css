@@ -149,7 +149,7 @@
   display: flex; align-items: flex-start; gap: 10px;
   margin-top: 34px; padding: 16px 18px;
   border-radius:var(--radius-md); background: var(--paper-deep);
-  color: var(--muted); font-size: 12px; line-height: 1.8;
+  color: var(--color-neutral-700); font-size: 12px; line-height: 1.8;
 }
 .safety-footnote svg { flex: none; margin-top: 3px; color: var(--tidal); }
 
