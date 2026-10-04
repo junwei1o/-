@@ -251,6 +251,23 @@
   --shadow-inset:inset 0 1px 0 rgba(255,255,255,.8);
 }
 
+/* ── 無障礙工具類（全域）────────────────────────────────
+   2026-10-04：原本只存在於 FeaturesDirectory.css，但它是通用的，
+   教室頁也需要（`page-has-heading-one`：頁面必須有 <h1>，
+   而教室各遊戲的可見標題是 <h2>，改標籤會掉樣式 → 用視覺隱藏補一個）。
+   提升為全域，單一事實來源。 */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 /* 全站色板橋接：讓教室遊戲等子系統的 --cr-*（var(--sea)/var(--orange)…）繼承同一套品牌色。
    單一事實來源＝上行 --tidal/--coral/--moss/--yellow；改色只動上行。 */
 :root { --card: var(--white); --sea: var(--tidal); --sea-d: var(--tidal-deep); --orange: var(--coral); --orange-d: var(--coral-deep); --green: var(--moss); --red: #C8553D; --gold: var(--yellow); }
