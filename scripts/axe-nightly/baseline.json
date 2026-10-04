@@ -5,7 +5,21 @@
     "bundle": "index-qlXh-i0X.js / index-DA1S5k7E.css",
     "viewport": "1440x900",
     "axeVersion": "4.10.2",
-    "note": "量測時點+部署版本必須一併記錄（違規數隨渲染內容浮動）。基線來自 P7 第一批上線後的實測。"
+    "note": "量測時點+部署版本必須一併記錄（違規數隨渲染內容浮動）",
+    "note2": "⚠️ 各路由的量測出處不同：原有 10 條見 measuredAt，2026-10-04 新增的 31 條見 expandedAt。跨出處比較數字前先確認 bundle 是否相同。",
+    "measuredAt": {
+      "date": "2026-09-30T11:55:00+08:00",
+      "bundle": "index-qlXh-i0X.js / index-DA1S5k7E.css",
+      "axeVersion": "4.10.2",
+      "routes": 10
+    },
+    "expandedAt": {
+      "date": "2026-10-04T08:45:52.195Z",
+      "bundle": "assets/index-Co4Us4kl.js",
+      "axeVersion": "4.13.0",
+      "addedRoutes": 31
+    },
+    "coverage": "2026-10-04 由 10 條擴充到 40 條；既有路由基線未動（回歸保持可見），只新增首次量測的路由。已移出 /teacher（它量到的是站長閘門，非教師儀表板）"
   },
   "routes": {
     "/": {
@@ -44,16 +58,175 @@
       "landmark-main-is-top-level": 1,
       "landmark-no-duplicate-main": 1
     },
-    "/teacher": {
-      "landmark-main-is-top-level": 1,
-      "landmark-no-duplicate-main": 1
-    },
     "/badges": {
       "color-contrast": 1,
       "heading-order": 1,
       "landmark-main-is-top-level": 1,
       "landmark-no-duplicate-main": 1
     },
-    "/404": {}
+    "/404": {},
+    "/dashboard": {
+      "heading-order": 1,
+      "landmark-main-is-top-level": 1,
+      "landmark-no-duplicate-main": 1
+    },
+    "/features": {
+      "landmark-main-is-top-level": 1,
+      "landmark-no-duplicate-main": 1
+    },
+    "/weekly-quiz": {
+      "color-contrast": 10,
+      "landmark-main-is-top-level": 1,
+      "landmark-no-duplicate-main": 1
+    },
+    "/practice": {
+      "landmark-main-is-top-level": 1,
+      "landmark-no-duplicate-main": 1,
+      "landmark-unique": 1
+    },
+    "/tri-axis-paper": {
+      "landmark-main-is-top-level": 1,
+      "landmark-no-duplicate-main": 1
+    },
+    "/wrong-answers": {
+      "landmark-main-is-top-level": 1,
+      "landmark-no-duplicate-main": 1,
+      "landmark-unique": 1
+    },
+    "/review-hub": {
+      "landmark-main-is-top-level": 1,
+      "landmark-no-duplicate-main": 1
+    },
+    "/learning": {
+      "heading-order": 1,
+      "landmark-main-is-top-level": 1,
+      "landmark-no-duplicate-main": 1
+    },
+    "/learning-report": {
+      "aria-required-children": 1,
+      "color-contrast": 17,
+      "landmark-main-is-top-level": 1,
+      "landmark-no-duplicate-main": 1
+    },
+    "/study-tips": {
+      "color-contrast": 1,
+      "landmark-main-is-top-level": 1,
+      "landmark-no-duplicate-main": 1
+    },
+    "/error-statistics": {
+      "landmark-main-is-top-level": 1,
+      "landmark-no-duplicate-main": 1,
+      "landmark-unique": 1
+    },
+    "/camp": {
+      "aria-prohibited-attr": 12,
+      "landmark-main-is-top-level": 1,
+      "landmark-no-duplicate-main": 1
+    },
+    "/treasure": {
+      "heading-order": 1,
+      "landmark-main-is-top-level": 1,
+      "landmark-no-duplicate-main": 1
+    },
+    "/gallery": {
+      "heading-order": 1,
+      "landmark-main-is-top-level": 1,
+      "landmark-no-duplicate-main": 1
+    },
+    "/graduation": {
+      "landmark-main-is-top-level": 1,
+      "landmark-no-duplicate-main": 1,
+      "landmark-unique": 1
+    },
+    "/answer-board": {
+      "color-contrast": 75,
+      "landmark-main-is-top-level": 1,
+      "landmark-no-duplicate-main": 1,
+      "landmark-unique": 1
+    },
+    "/adventure-journal": {
+      "color-contrast": 1,
+      "landmark-main-is-top-level": 1,
+      "landmark-no-duplicate-main": 1
+    },
+    "/community": {
+      "color-contrast": 1,
+      "landmark-main-is-top-level": 1,
+      "landmark-no-duplicate-main": 1
+    },
+    "/student-dashboard": {
+      "landmark-main-is-top-level": 1,
+      "landmark-no-duplicate-main": 1
+    },
+    "/observatory": {
+      "color-contrast": 11,
+      "landmark-main-is-top-level": 1,
+      "landmark-no-duplicate-main": 1,
+      "landmark-unique": 1
+    },
+    "/principles": {
+      "color-contrast": 48,
+      "landmark-main-is-top-level": 1,
+      "landmark-no-duplicate-main": 1,
+      "landmark-unique": 1
+    },
+    "/astronomy": {
+      "color-contrast": 24,
+      "landmark-main-is-top-level": 1,
+      "landmark-no-duplicate-main": 1,
+      "landmark-unique": 1
+    },
+    "/wisdom": {
+      "color-contrast": 34,
+      "landmark-main-is-top-level": 1,
+      "landmark-no-duplicate-main": 1,
+      "landmark-unique": 1
+    },
+    "/safety": {
+      "color-contrast": 16,
+      "landmark-main-is-top-level": 1,
+      "landmark-no-duplicate-main": 1,
+      "landmark-unique": 1
+    },
+    "/regions/north": {
+      "color-contrast": 8,
+      "landmark-main-is-top-level": 1,
+      "landmark-no-duplicate-main": 1,
+      "landmark-unique": 1
+    },
+    "/observatory/nailong": {
+      "color-contrast": 4,
+      "landmark-main-is-top-level": 1,
+      "landmark-no-duplicate-main": 1,
+      "landmark-unique": 1
+    },
+    "/principles/relativity": {
+      "color-contrast": 13,
+      "landmark-main-is-top-level": 1,
+      "landmark-no-duplicate-main": 1,
+      "landmark-unique": 1
+    },
+    "/astronomy/cosmic-scale": {
+      "color-contrast": 1,
+      "landmark-main-is-top-level": 1,
+      "landmark-no-duplicate-main": 1,
+      "landmark-unique": 1
+    },
+    "/wisdom/draw-snake-add-feet": {
+      "color-contrast": 1,
+      "landmark-main-is-top-level": 1,
+      "landmark-no-duplicate-main": 1,
+      "landmark-unique": 1
+    },
+    "/safety/food-safety": {
+      "color-contrast": 1,
+      "landmark-main-is-top-level": 1,
+      "landmark-no-duplicate-main": 1,
+      "landmark-unique": 1
+    },
+    "/class": {
+      "landmark-main-is-top-level": 1,
+      "landmark-no-duplicate-main": 1
+    }
   }
 }

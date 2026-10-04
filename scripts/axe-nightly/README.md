@@ -1,7 +1,30 @@
 # axe-nightly 全站 a11y 夜間巡檢
 
-對 10 條主要路由（含登入流程）注入 axe-core 做無障礙回歸比對。
-口徑：1440×900、axe 4.10.2、登入「稽查夜巡」、跳過隱私/導覽彈窗。
+對 40 條路由（含登入流程）注入 axe-core 做無障礙回歸比對。
+口徑：1440×900、axe 4.13.0（由 `package-lock.json` 鎖定）、登入「稽查夜巡」、跳過隱私/導覽彈窗。
+
+## 覆蓋範圍（2026-10-04 由 10 條擴充到 40 條）
+
+全站共 44 條 `<Route>`（`client/src/App.tsx`），本巡檢覆蓋 **40 條**。排除 4 條：
+
+| 排除的路由 | 原因 |
+| --- | --- |
+| `/admin`、`/teacher`、`/learning-summary` | 包在 `AdminOnlyRoute` 內，**需站長身分**。以學員船長掃過去只會量到閘門／轉址，不是頁面本身 → 需另一趟站長身分的巡檢（**未做**） |
+| `/classroom/:gameId` | 需要**真實班級遊戲 id**（老師在課堂建立），無法從原始碼取得固定樣本 |
+
+參數化路由一律用「**資料來源的第一筆真實 key**」（`/regions/north`、`/observatory/nailong`、
+`/principles/relativity`、`/astronomy/cosmic-scale`、`/wisdom/draw-snake-add-feet`、
+`/safety/food-safety`）——假 key 會量到 fallback 頁面，那是另一種 UI。
+⚠️ 這些 key 是資料內容：若該筆資料被刪／改名，路由會變 fallback 頁面、基線數字跟著動。
+
+## ⚠️ 基線出處不同，比數字前先看 meta
+
+`baseline.json` 的 `meta` 分成兩塊：
+
+- `meta.measuredAt` — 原有 10 條的量測出處（2026-09-30、bundle `index-qlXh-i0X`、axe 4.10.2）
+- `meta.expandedAt` — 2026-10-04 新增 31 條的出處（bundle `assets/index-Co4Us4kl`、axe 4.13.0）
+
+**跨出處比較數字沒有意義**（bundle 與 axe 版本都不同）。要比較就得先同一版本重測。
 
 ## 比對政策
 - **新違規類型**（該路由 baseline 沒有的 id）→ ❌ 失敗

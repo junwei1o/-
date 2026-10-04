@@ -22,7 +22,49 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const BASE = process.env.AXE_BASE_URL || "https://xue-gr3a.onrender.com";
 const CAPTAIN = process.env.AXE_CAPTAIN || "稽查夜巡";
-const ROUTES = ["/", "/quiz-room", "/map", "/matching", "/settings", "/learning-insights", "/expedition", "/teacher", "/badges", "/404"];
+/**
+ * 巡檢路由清單（2026-10-04：由 10 條擴充到 40 條）。
+ *
+ * 全站共 44 條 `<Route>`（見 `client/src/App.tsx`）。本巡檢覆蓋 40 條，
+ * 排除 4 條並註明理由：
+ *
+ * - `/admin`、`/teacher`、`/learning-summary`：包在 `AdminOnlyRoute` 內，**需要站長身分**。
+ *   本巡檢以學員船長登入，掃過去只會量到閘門／轉址，不是頁面本身
+ *   → 需另一趟站長身分的巡檢（未做）。
+ *   ⚠️ 舊清單裡的 `/teacher` 就屬於這種：它量到的是閘門，不是教師儀表板。
+ * - `/classroom/:gameId`：需要**真實的班級遊戲 id**（由老師在課堂建立），
+ *   無法從原始碼取得固定樣本。
+ *
+ * 參數化路由一律用「**資料來源的第一筆真實 key**」，不是隨手編的字串——
+ * 假 key 會量到「找不到」的 fallback 頁面，那是另一種 UI，不是這個頁面。
+ * key 來源：@/lib/astronomy、@/lib/wisdomStories、@/lib/mapRegions、
+ *           @/lib/worldPrinciples、@/lib/mediaObservatory、@/lib/safetyAcademy
+ *
+ * ⚠️ 這些 key 是**資料內容**：若該筆資料被刪除／改名，路由會變成 fallback 頁面，
+ *    基線數字跟著變動 → 看到這幾條「改善」時，先確認資料還在，別急著收緊基線。
+ */
+const ROUTES = [
+  // 首頁與主要入口
+  "/", "/dashboard", "/map", "/features",
+  // 學習
+  "/quiz-room", "/weekly-quiz", "/practice", "/tri-axis-paper", "/matching",
+  "/wrong-answers", "/review-hub", "/learning", "/learning-insights", "/learning-report",
+  "/study-tips", "/error-statistics",
+  // 探索、收藏與社群
+  "/expedition", "/camp", "/treasure", "/gallery", "/badges", "/graduation",
+  "/answer-board", "/adventure-journal", "/community", "/student-dashboard",
+  // 館舍首頁
+  "/observatory", "/principles", "/astronomy", "/wisdom", "/safety",
+  // 館舍詳情（真實 key）
+  "/regions/north",
+  "/observatory/nailong",
+  "/principles/relativity",
+  "/astronomy/cosmic-scale",
+  "/wisdom/draw-snake-add-feet",
+  "/safety/food-safety",
+  // 其他
+  "/settings", "/class", "/404",
+];
 const UPDATE = process.argv.includes("--update-baseline");
 
 const baselinePath = path.join(__dirname, "baseline.json");
