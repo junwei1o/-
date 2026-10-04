@@ -88,23 +88,19 @@ function ResourceMonitorModule() {
       <dl className="admin-stat-grid">
         <div className="admin-stat">
           <dt>目前消耗速度</dt>
-          <dd>{usage.ruPerHour === null ? "資料累積中" : `${formatRu(usage.ruPerHour)} RU/小時`}</dd>
-          <small>可持續速度 {formatRu(usage.sustainableRuPerHour)} RU/小時（月額度 ÷ 30 天 ÷ 24 小時）。</small>
+          <dd>{usage.ruPerHour === null ? "資料累積中" : `${formatRu(usage.ruPerHour)} RU/小時`}<small>可持續速度 {formatRu(usage.sustainableRuPerHour)} RU/小時（月額度 ÷ 30 天 ÷ 24 小時）。</small></dd>
         </div>
         <div className="admin-stat">
           <dt>DB 語句數</dt>
-          <dd>{usage.statements.toLocaleString("zh-TW")}</dd>
-          <small>本次實例啟動以來，其中失敗 {usage.failedStatements} 次。</small>
+          <dd>{usage.statements.toLocaleString("zh-TW")}<small>本次實例啟動以來，其中失敗 {usage.failedStatements} 次。</small></dd>
         </div>
         <div className="admin-stat">
           <dt>觸及列數</dt>
-          <dd>{formatRu(usage.rowsTouched)}</dd>
-          <small>查詢回傳與寫入受影響列數之和，是推估 RU 的主要依據。</small>
+          <dd>{formatRu(usage.rowsTouched)}<small>查詢回傳與寫入受影響列數之和，是推估 RU 的主要依據。</small></dd>
         </div>
         <div className="admin-stat">
           <dt>統計期間</dt>
-          <dd>{formatUptime(usage.uptimeMs)}</dd>
-          <small>計數器存於記憶體，重新部署即歸零。</small>
+          <dd>{formatUptime(usage.uptimeMs)}<small>計數器存於記憶體，重新部署即歸零。</small></dd>
         </div>
       </dl>
 

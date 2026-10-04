@@ -28,21 +28,18 @@ function RuntimeModule() {
         </div>
         <div className="admin-kv-row">
           <dt>執行環境</dt>
-          <dd>{info.environment}</dd>
-          <small>與平台：{info.platform}</small>
+          <dd>{info.environment}<small>與平台：{info.platform}</small></dd>
         </div>
         <div className="admin-kv-row">
           <dt>本次啟動</dt>
-          <dd>{uptimeLabel}</dd>
-          <small>伺服器記憶體中的計數器都以這個時間為起點。</small>
+          <dd>{uptimeLabel}<small>伺服器記憶體中的計數器都以這個時間為起點。</small></dd>
         </div>
         <div className="admin-kv-row">
           <dt>記憶體</dt>
-          <dd>RSS {info.memory.rssMb} MB</dd>
-          <small>
+          <dd>RSS {info.memory.rssMb} MB<small>
             Heap 已用 {info.memory.heapUsedMb} / 總計 {info.memory.heapTotalMb} MB
             {info.memory.heapUsedMb / Math.max(1, info.memory.heapTotalMb) > 0.85 && "——已用比例偏高，可留意是否有洩漏"}
-          </small>
+          </small></dd>
         </div>
       </dl>
 

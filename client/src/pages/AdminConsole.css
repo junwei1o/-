@@ -495,8 +495,12 @@
   overflow-wrap: anywhere;
 }
 
+/* 2026-10-04：<small> 已移進 <dd> 內（原本當 <div> 的直接子項，破壞 <dl> 結構，
+   被 axe 的 definition-list 規則標記）。移入後會繼承 <dd> 的 font-weight:700，
+   故明確設回 400；並改 display:block 維持原本「另起一行」的外觀。 */
 .admin-kv-row small {
-  grid-column: 2;
+  display: block;
+  font-weight: 400;
   color: var(--muted);
   font-size: 0.7rem;
   line-height: 1.45;

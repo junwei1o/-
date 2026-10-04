@@ -31,13 +31,11 @@ function AiUsageModule() {
       <dl className="admin-stat-grid">
         <div className="admin-stat">
           <dt>今日呼叫</dt>
-          <dd>{(today?.calls ?? 0).toLocaleString("zh-TW")}</dd>
-          <small>每成功呼叫一次 AI 才計數。</small>
+          <dd>{(today?.calls ?? 0).toLocaleString("zh-TW")}<small>每成功呼叫一次 AI 才計數。</small></dd>
         </div>
         <div className="admin-stat">
           <dt>今日 Token</dt>
-          <dd>{(today?.totalTokens ?? 0).toLocaleString("zh-TW")}</dd>
-          <small>輸入與輸出合計；供應商未回報時不計。</small>
+          <dd>{(today?.totalTokens ?? 0).toLocaleString("zh-TW")}<small>輸入與輸出合計；供應商未回報時不計。</small></dd>
         </div>
         <div className="admin-stat">
           <dt>近 7 日呼叫</dt>
@@ -45,8 +43,7 @@ function AiUsageModule() {
         </div>
         <div className="admin-stat">
           <dt>近 7 日 Token</dt>
-          <dd>{(last7Days?.totalTokens ?? 0).toLocaleString("zh-TW")}</dd>
-          <small>用來判斷用量趨勢是否異常。</small>
+          <dd>{(last7Days?.totalTokens ?? 0).toLocaleString("zh-TW")}<small>用來判斷用量趨勢是否異常。</small></dd>
         </div>
       </dl>
 
@@ -57,10 +54,9 @@ function AiUsageModule() {
           {days.map((row: { usageDate: string; calls: number; promptTokens: number; completionTokens: number; totalTokens: number }) => (
             <div className="admin-kv-row" key={row.usageDate}>
               <dt>{row.usageDate}</dt>
-              <dd>{row.calls} 次／{row.totalTokens.toLocaleString("zh-TW")} tokens</dd>
-              <small>
+              <dd>{row.calls} 次／{row.totalTokens.toLocaleString("zh-TW")} tokens<small>
                 輸入 {row.promptTokens.toLocaleString("zh-TW")}、輸出 {row.completionTokens.toLocaleString("zh-TW")}
-              </small>
+              </small></dd>
             </div>
           ))}
         </dl>

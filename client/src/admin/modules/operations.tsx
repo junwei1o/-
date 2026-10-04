@@ -39,23 +39,19 @@ function RequestStatsModule() {
       <dl className="admin-stat-grid">
         <div className="admin-stat">
           <dt>總請求數</dt>
-          <dd>{stats.total.toLocaleString("zh-TW")}</dd>
-          <small>本次實例啟動以來（重新部署即歸零）。</small>
+          <dd>{stats.total.toLocaleString("zh-TW")}<small>本次實例啟動以來（重新部署即歸零）。</small></dd>
         </div>
         <div className="admin-stat">
           <dt>錯誤率</dt>
-          <dd>{stats.total === 0 ? "—" : `${Math.round(errorRate * 10) / 10}%`}</dd>
-          <small>4xx ＋ 5xx 佔全部請求的比例。</small>
+          <dd>{stats.total === 0 ? "—" : `${Math.round(errorRate * 10) / 10}%`}<small>4xx ＋ 5xx 佔全部請求的比例。</small></dd>
         </div>
         <div className="admin-stat">
           <dt>最慢一次</dt>
-          <dd>{stats.total === 0 ? "—" : `${stats.slowestMs} ms`}</dd>
-          <small>用來抓偶發卡頓；正常請求多在數十毫秒內。</small>
+          <dd>{stats.total === 0 ? "—" : `${stats.slowestMs} ms`}<small>用來抓偶發卡頓；正常請求多在數十毫秒內。</small></dd>
         </div>
         <div className="admin-stat">
           <dt>慢請求（≥1 秒）</dt>
-          <dd>{stats.slowRequests.toLocaleString("zh-TW")}</dd>
-          <small>累計次數；少數幾次多為冷啟動或遠端朗讀。</small>
+          <dd>{stats.slowRequests.toLocaleString("zh-TW")}<small>累計次數；少數幾次多為冷啟動或遠端朗讀。</small></dd>
         </div>
       </dl>
 
@@ -128,8 +124,7 @@ function SpeechSupplyModule() {
         ))}
         <div className="admin-kv-row">
           <dt>連續失敗</dt>
-          <dd>{supply.breaker.failures} 次</dd>
-          <small>達 3 次會熔斷 5 分鐘，避免持續白等；可在「維運操作」手動重設。</small>
+          <dd>{supply.breaker.failures} 次<small>達 3 次會熔斷 5 分鐘，避免持續白等；可在「維運操作」手動重設。</small></dd>
         </div>
       </dl>
 

@@ -29,21 +29,18 @@ function DeployModule() {
       <dl className="admin-kv">
         <div className="admin-kv-row">
           <dt>本次部署開始</dt>
-          <dd>{startedLabel}</dd>
-          <small>
+          <dd>{startedLabel}<small>
             這是本 process 啟動的時間，也是「記憶體統計歸零」的時間點。
             {justDeployed && " 剛啟動，數字小是正常的。"}
-          </small>
+          </small></dd>
         </div>
         <div className="admin-kv-row">
           <dt>已運行</dt>
-          <dd>{hours > 0 ? `${hours} 小時 ${minutes} 分` : `${minutes} 分鐘`}</dd>
-          <small>免費層閒置 15 分鐘會休眠，所以長時間沒有請求時這個數字會重來。</small>
+          <dd>{hours > 0 ? `${hours} 小時 ${minutes} 分` : `${minutes} 分鐘`}<small>免費層閒置 15 分鐘會休眠，所以長時間沒有請求時這個數字會重來。</small></dd>
         </div>
         <div className="admin-kv-row">
           <dt>部署平台</dt>
-          <dd>{info.platform}</dd>
-          <small>由環境推斷，不是寫死的。</small>
+          <dd>{info.platform}<small>由環境推斷，不是寫死的。</small></dd>
         </div>
         <div className="admin-kv-row">
           <dt>Node / 環境</dt>
@@ -53,12 +50,11 @@ function DeployModule() {
         </div>
         <div className="admin-kv-row">
           <dt>原始碼 commit</dt>
-          <dd>{info.gitCommit ? <code>{info.gitCommit.short}</code> : "讀不到"}</dd>
-          <small>
+          <dd>{info.gitCommit ? <code>{info.gitCommit.short}</code> : "讀不到"}<small>
             {info.gitCommit
               ? info.gitCommit.subject ?? "（讀不到 commit 說明）"
               : "這個部署環境不含 .git 目錄，所以無法確認版本。**不知道比猜一個版本號誠實。**"}
-          </small>
+          </small></dd>
         </div>
       </dl>
 

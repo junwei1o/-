@@ -174,16 +174,14 @@ function SecurityModule() {
       <dl className="admin-kv">
         <div className="admin-kv-row">
           <dt>API 限流</dt>
-          <dd>{rateLimitPolicy ?? "未回報"}</dd>
-          <small>
+          <dd>{rateLimitPolicy ?? "未回報"}<small>
             來自回應標頭 <code>ratelimit-policy</code>；由實際請求讀取，非寫死的設定值。
             限流掛在 <code>/api/trpc</code> 這條中介層上，因此是打一支 API 才讀得到的。
-          </small>
+          </small></dd>
         </div>
         <div className="admin-kv-row">
           <dt>內容協商</dt>
-          <dd>{vary ?? "未回報"}</dd>
-          <small>伺服器快取依這些標頭變化，避免把不同格式回應混用。</small>
+          <dd>{vary ?? "未回報"}<small>伺服器快取依這些標頭變化，避免把不同格式回應混用。</small></dd>
         </div>
       </dl>
 

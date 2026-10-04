@@ -61,14 +61,12 @@ function LearningModule() {
         {data.windows.map((row) => (
           <div className="admin-stat" key={row.days}>
             <dt>{row.label}</dt>
-            <dd>{row.sessions.toLocaleString("zh-TW")}</dd>
-            <small>場次／{row.students} 位學生</small>
+            <dd>{row.sessions.toLocaleString("zh-TW")}<small>場次／{row.students} 位學生</small></dd>
           </div>
         ))}
         <div className="admin-stat">
           <dt>活躍學生（90 天）</dt>
-          <dd>{data.activeStudents?.toLocaleString("zh-TW") ?? "—"}</dd>
-          <small>有答題紀錄的去重人數；帳號共 {data.registeredStudents ?? "—"} 筆</small>
+          <dd>{data.activeStudents?.toLocaleString("zh-TW") ?? "—"}<small>有答題紀錄的去重人數；帳號共 {data.registeredStudents ?? "—"} 筆</small></dd>
         </div>
       </dl>
 
