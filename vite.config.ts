@@ -27,7 +27,7 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          "react-vendor": ["react", "react-dom", "react-hook-form", "@tanstack/react-query"],
+          "react-vendor": ["react", "react-dom", "@tanstack/react-query"],
           "trpc-vendor": ["@trpc/client", "@trpc/react-query", "@trpc/server", "superjson", "zod"],
           "ui-vendor": [
             "class-variance-authority",
