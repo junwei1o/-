@@ -1,0 +1,14 @@
+{
+  "name": "axe-nightly",
+  "private": true,
+  "type": "module",
+  "description": "全站 a11y 夜間巡檢（獨立工具鏈，不動主專案 package.json/lockfile）",
+  "scripts": {
+    "sweep": "node sweep.mjs",
+    "update-baseline": "node sweep.mjs --update-baseline"
+  },
+  "dependencies": {
+    "axe-core": "^4.10.2",
+    "playwright": "^1.49.0"
+  }
+}

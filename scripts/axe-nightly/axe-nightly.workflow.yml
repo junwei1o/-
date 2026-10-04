@@ -1,0 +1,52 @@
+# ⚠️ 這份 workflow 目前放在 scripts/axe-nightly/，**不是** .github/workflows/。
+#
+# 原因：建立／更新 .github/workflows/ 下的檔案，需要 PAT 具備 `workflow` scope，
+# 而目前的 token 沒有 → push 會被 GitHub 拒絕。實測訊息：
+#   refusing to allow a Personal Access Token to create or update workflow
+#   `.github/workflows/axe-nightly.yml` without `workflow` scope
+# 為了不讓這份設定只存在於未推送的分支／bundle 裡，先放在這裡保存。
+#
+# 啟用方式（補上 scope 後兩步）：
+#   git mv scripts/axe-nightly/axe-nightly.workflow.yml .github/workflows/axe-nightly.yml
+#   git commit -m "ci(a11y): 啟用 axe 夜間巡檢排程" && git push
+#
+# 全站 a11y 夜間巡檢——axe 十頁回歸（口徑同 2026-09-29/30 人工巡檢）
+# 政策：新違規類型或已知類型數量惡化 = 失敗；baseline 更新需簽核（--update-baseline）
+# 注意：本 workflow 只讀線上站，不部署；排程需本檔已在 origin/main 才會生效
+name: axe-nightly
+
+on:
+  schedule:
+    - cron: "30 21 * * *" # UTC 21:30 = GMT+8 05:30，避開使用高峰
+  workflow_dispatch: {}
+
+jobs:
+  sweep:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # 獨立工具鏈：不碰主專案 package.json / lockfile（平行 agent 衝突隔離）
+      - name: 安裝巡檢依賴
+        working-directory: scripts/axe-nightly
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+
+      - name: 喚醒站點並巡檢
+        working-directory: scripts/axe-nightly
+        env:
+          AXE_CAPTAIN: 稽查夜巡
+        run: node sweep.mjs
+
+      - name: 上傳報告
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: axe-report
+          path: scripts/axe-nightly/axe-report.json
