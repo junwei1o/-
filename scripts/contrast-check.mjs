@@ -3,12 +3,18 @@
 //   退出碼 0 = 全數通過；1 = 有項目不達標
 //
 // 檢查項目（見 docs/color-tokens.md §4.2/§4.3）：
-//   1. 預設主題下 §4.2 的配對組合
-//   2. 四個主題下每個類別的 600 檔白字 ≥ 4.5（§4.3）
-//   3. 圖形元素用的 500 檔對 neutral-100 ≥ 3.0
+//   1.  預設主題下 §4.2 的配對組合
+//   1a. 語義色階文字 token × 四主題（2026-10-04 新增；修正實際用到的組合）
+//   1b. focus ring 雙層環 × 四主題
+//   1d. 原始 base token 被當文字色用（**警示，不計入失敗**）
+//   2.  四個主題下每個類別的 600 檔白字 ≥ 4.5（§4.3）
+//   3.  圖形元素用的 500 檔對 neutral-100 ≥ 3.0
+//
+// ⚠️ 界線：本腳本驗的是「**色階本身站得住**」，不是「CSS 有沒有真的用它」——
+// 使用層的守門員是 axe 巡檢（scripts/axe-nightly），它才看得到實際渲染結果。
 //
 // 本腳本不動 CSS，只讀與驗算，可安全接在 CI。
-import { readFile } from "node:fs/promises";
+import { readFile, readdir } from "node:fs/promises";
 
 const STRICT = process.argv.includes("--strict");
 
@@ -143,6 +149,88 @@ const check = (label, value, min, note = "") => {
 
 console.log("═══ 檢查 1：預設主題配對組合（§4.2）═══");
 for (const p of PAIRS) check(p.label, contrast(p.fg, p.bg), p.min);
+
+console.log("\n═══ 檢查 1a：語義色階文字 token × 四主題（2026-10-04 新增）═══");
+/*
+ * 為什麼要加這一組：原本只驗「token 層的 §4.2 配對」，驗不到實際發生的錯誤——
+ * 把 `*-500` 或原始 base token 當一般文字用。axe 巡檢因此在全站抓到 317 個
+ * color-contrast 節點（見 docs/color-contrast-migration.md）。
+ *
+ * 這組就是 2026-10-04 修正實際用到的組合，且**逐主題重算**：
+ * 色階是執行期由各主題基色派生的，只驗 default 會漏掉其他三個主題的退化。
+ * 門檻一律 4.5（一般文字），因為這些都是 <18.66px 粗體的小字。
+ */
+const THEME_SURFACES = [
+  { name: "default",  paper: "#EAF1F2", white: "#FCFEFE", muted: "#587079" },
+  { name: "festival", paper: "#F9F3E8", white: "#FFFDF8", muted: "#5F6E6A" },
+  { name: "exlibris", paper: "#F1ECDD", white: "#FBF7EC", muted: "#6B6350" },
+  { name: "sunny",    paper: "#FBF6E7", white: "#FFFDF6", muted: "#7A6B4E" },
+];
+/** index.css 的 --color-neutral-700 是固定值（不隨主題派生） */
+const NEUTRAL_700 = hex2rgb("37505A");
+
+for (const s of THEME_SURFACES) {
+  const i = THEME_NAMES.indexOf(s.name);
+  const paper = hex2rgb(s.paper);
+  const white = hex2rgb(s.white);
+  const token = (cat, step) => mixBlack(hex2rgb(CATEGORIES[cat].themes[i]), CATEGORIES[cat].black[step]);
+  const cases = [
+    ["neutral-600（--muted）/ paper", hex2rgb(s.muted), paper],
+    ["neutral-700 / paper", NEUTRAL_700, paper],
+    ["success-600 / paper", token("success", 600), paper],
+    ["success-600 / white", token("success", 600), white],
+    ["warning-600 / paper", token("warning", 600), paper],
+    ["danger-600 / paper", token("danger", 600), paper],
+    ["accent-600 / paper", token("accent", 600), paper],
+    ["accent-600 / white", token("accent", 600), white],
+    ["primary-600 / paper", token("primary", 600), paper],
+  ];
+  for (const [label, fg, bg] of cases) check(`[${s.name}] ${label}`, contrast(fg, bg), 4.5);
+}
+
+console.log("\n═══ 檢查 1d：原始 base token 被當文字色用（警示，不計入失敗）═══");
+/*
+ * 「把 *-500／原始 base token 當一般文字」是 2026-10-04 那批違規的根因
+ * （axe 巡檢在全站抓到 317 個 color-contrast 節點）。這道掃描補上 axe 的盲區：
+ * 未涵蓋的路由、收合的區塊、以及還沒跑到巡檢的新程式碼。
+ *
+ * 只警示、不計入失敗：在**深色底**上使用它們是合法的，而靜態掃描看不到底色，
+ * 硬性失敗會誤判。真正的判準仍是 axe 巡檢（scripts/axe-nightly）。
+ */
+/**
+ * 真正**不能當一般文字**的原始 token（各主題底紙上實測都 <4.5）：
+ *   --moss（success-500）3.60／--yellow（warning-500）1.91／
+ *   --coral（accent-500）2.60／--coral-deep（danger-500）3.79／--bx-gold 2.0
+ *
+ * ⚠️ `--tidal`（primary-500）**不在名單內**：它對底紙 5.05 是達標的，
+ * 列進來只會製造雜訊。
+ */
+const RAW_AS_TEXT = ["--yellow", "--moss", "--coral", "--coral-deep", "--bx-gold"];
+async function walkCss(dir, out = []) {
+  for (const e of await readdir(dir, { withFileTypes: true })) {
+    if (e.name === "node_modules" || e.name === "dist") continue;
+    const p = `${dir}/${e.name}`;
+    if (e.isDirectory()) await walkCss(p, out);
+    else if (e.name.endsWith(".css")) out.push(p);
+  }
+  return out;
+}
+const suspects = [];
+for (const f of await walkCss("client/src")) {
+  const lines = (await readFile(f, "utf8")).split("\n");
+  lines.forEach((line, i) => {
+    for (const tok of RAW_AS_TEXT) {
+      if (new RegExp(`(^|[;{\\s])color\\s*:\\s*var\\(${tok}\\)`).test(line)) suspects.push(`${f}:${i + 1}  color: var(${tok})`);
+    }
+  });
+}
+if (suspects.length) {
+  console.log(`  ⚠ ${suspects.length} 處把原始 base token 當文字色（需人工確認該處底色深淺）：`);
+  suspects.slice(0, 25).forEach((s) => console.log(`      ${s}`));
+  if (suspects.length > 25) console.log(`      …另有 ${suspects.length - 25} 處`);
+} else {
+  console.log("  ✓ 未發現「color: var(--原始 base token)」的寫法");
+}
 
 console.log("\n═══ 檢查 1b：focus ring 雙層環 × 四主題 × 四種相鄰背景（§4.2）═══");
 for (const t of THEMES_RING) {
