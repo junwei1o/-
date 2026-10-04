@@ -105,11 +105,13 @@ describe("TopNavigation（22 入口 → 7 → 5 頂層，P1 導航收斂）", ()
     expect(within(primary5).getByRole("button", { name: "藏寶圖" })).toHaveAttribute("aria-current", "page");
   });
 
-  it("卡牌決鬥已下架，搜尋卡牌只會顯示找不到提示", () => {
+  // 搜尋面板是懶加載的（cmdk 移出首屏），開啟後需等非同步載入完成再斷言。
+  it("卡牌決鬥已下架，搜尋卡牌只會顯示找不到提示", async () => {
     render(<TopNavigation />);
 
     fireEvent.click(screen.getByRole("button", { name: "搜尋功能" }));
-    fireEvent.change(screen.getByPlaceholderText("搜尋演練、錯題、遠征…"), { target: { value: "卡牌" } });
+    const input = await screen.findByPlaceholderText("搜尋演練、錯題、遠征…");
+    fireEvent.change(input, { target: { value: "卡牌" } });
 
     expect(screen.queryByText("知識決鬥／卡牌對戰")).not.toBeInTheDocument();
     expect(screen.getByRole("status")).toHaveTextContent("找不到");

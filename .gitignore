@@ -8,11 +8,23 @@ build/
 *.dist
 
 # Environment variables
+# ⚠️ 2026-10-04：原本只擋「有 .local 尾」的變體，裸的 .env.production／.env.staging
+# 會進 repo。而 /api/backup 這條無驗證端點的 .env.* 排除規則當時是死規則，
+# 兩者疊加 = 一旦落地就會被匿名下載。入口端已加站長鑑權，這裡是縱深防禦。
+#
+# ⚠️ 縮排陷阱：這些 pattern 前面**絕對不可以有空白**。gitignore 的前導空白是
+# pattern 的一部分，`  .env` 只會匹配檔名真的叫「  .env」的東西 → 規則全數失效。
+# （本檔曾一度被縮排 2 格，導致 .env／.env.local／.env.production 全部不再被忽略，
+#  已於同日修正。驗法：`git check-ignore -v .env.production` 必須有輸出。）
 .env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
+.env.production
+.env.staging
+.env.backup
+.env.*.local
 
 # IDE and editor files
 .vscode/

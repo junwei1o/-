@@ -1,11 +1,15 @@
 import * as React from "react";
 import { BarChart3, BookOpenCheck, Compass, LogOut, Map as MapIcon, Menu, Search, Settings, X, type LucideIcon } from "lucide-react";
 import { useLocation } from "wouter";
-import { Command, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { findFeatureSearchResults } from "@/lib/featureSearch";
 import { getSession } from "@/game/session";
 import { logout } from "@/game/session";
+
+/**
+ * 功能搜尋面板懶加載：cmdk 只在使用者按 ⌘K／Ctrl+K（或點「搜尋功能」）時才下載，
+ * 不再拖進首屏 entry chunk。占位沿用既有的品牌色載入指示器。
+ */
+const FeatureSearchPanel = React.lazy(() => import("@/components/FeatureSearchPanel"));
 
 type NavItem = {
   id: string;
@@ -50,6 +54,16 @@ function findActiveItem(pathname: string): NavItem | null {
   return PRIMARY_ITEMS.find((item) => isItemActive(item, pathname)) ?? null;
 }
 
+// 搜尋面板尚未下載完成時的占位：沿用既有的品牌色載入指示器，避免彈窗內閃白。
+function FeatureSearchPanelFallback() {
+  return (
+    <div className="app-page-loader" style={{ minHeight: 172 }} aria-busy="true">
+      <span className="app-page-loader-spinner" aria-hidden="true" />
+      <span>載入搜尋功能…</span>
+    </div>
+  );
+}
+
 export default function TopNavigation() {
   const [location, setLocation] = useLocation();
   const pathname = location.split("?")[0];
@@ -58,7 +72,6 @@ export default function TopNavigation() {
   const [searchOpen, setSearchOpen] = React.useState(false);
   const [searchQuery, setSearchQuery] = React.useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
-  const searchResults = React.useMemo(() => findFeatureSearchResults(searchQuery), [searchQuery]);
 
   React.useEffect(() => {
     function handleShortcut(event: KeyboardEvent) {
@@ -152,41 +165,17 @@ export default function TopNavigation() {
             <DialogTitle>搜尋學習功能</DialogTitle>
             <DialogDescription>輸入功能、玩法或學習需求的關鍵字。</DialogDescription>
           </DialogHeader>
-          <Command shouldFilter={false}>
-            <CommandInput
-              autoFocus
-              value={searchQuery}
-              onValueChange={setSearchQuery}
-              placeholder="搜尋演練、錯題、遠征…"
-              aria-label="搜尋學習功能"
+          <React.Suspense fallback={<FeatureSearchPanelFallback />}>
+            <FeatureSearchPanel
+              query={searchQuery}
+              onQueryChange={setSearchQuery}
+              onSelect={(href) => {
+                setSearchOpen(false);
+                setSearchQuery("");
+                setLocation(href);
+              }}
             />
-            <CommandList>
-              {searchResults.length ? (
-                <CommandGroup heading={searchQuery ? `符合「${searchQuery}」的功能` : "熱門功能入口"}>
-                  {searchResults.map((item) => {
-                    const Icon = item.icon;
-                    return (
-                      <CommandItem
-                        key={item.id}
-                        value={item.id}
-                        onSelect={() => {
-                          setSearchOpen(false);
-                          setSearchQuery("");
-                          setLocation(item.href);
-                        }}
-                        className="global-feature-search-item"
-                      >
-                        <span className="global-feature-search-icon"><Icon size={19} aria-hidden="true" /></span>
-                        <span className="global-feature-search-copy"><strong>{item.label}</strong><small>{item.description}</small></span>
-                      </CommandItem>
-                    );
-                  })}
-                </CommandGroup>
-              ) : (
-                <p className="global-feature-search-empty" role="status">找不到「{searchQuery}」；可嘗試「演練」、「錯題」或「遠征」。</p>
-              )}
-            </CommandList>
-          </Command>
+          </React.Suspense>
         </DialogContent>
       </Dialog>
       <Dialog open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
