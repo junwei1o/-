@@ -81,7 +81,7 @@
   padding: 7px 14px;
   border-radius: var(--radius-pill);
   background: color-mix(in srgb, var(--coral) 13%, var(--white));
-  color: var(--coral-deep);
+  color: var(--color-accent-600);
   font-size: .82rem;
   font-weight: 700;
 }

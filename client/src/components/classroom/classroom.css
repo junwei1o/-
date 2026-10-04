@@ -1398,7 +1398,7 @@
   background: linear-gradient(135deg, var(--tidal), var(--tidal-deep));
 }
 .mc-page[data-skin="concise"] .mc-lesson-badge {
-  color: var(--coral-deep);
+  color: var(--color-accent-600);
   background: color-mix(in srgb, var(--coral) 14%, var(--white));
 }
 .mc-page[data-skin="concise"] .mc-lesson-go { background: var(--tidal); }
