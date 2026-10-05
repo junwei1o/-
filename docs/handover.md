@@ -41,7 +41,7 @@
 
 ### 現行待辦（2026-09-29；詳細證據見 `outputs/` 內的覆核報告）
 1. **【P0 安全】撤銷 GitHub PAT 並清理 `.git/config`** —— 本機兩個 clone 的 remote URL 仍內嵌明文 `ghp_…`（本文件 §6 自己就寫著「切勿把 PAT 寫進任何檔案」）。
-2. 補最小 CI（`.github/workflows/`）——本 repo 目前**完全沒有 CI**。
+2. ~~補最小 CI（`.github/workflows/`）——本 repo 目前**完全沒有 CI**。~~ ✅ **已完成**（commit `95d19af`：tsc → vitest → 六道品質閘門 → build，push/PR 觸發）。**殘餘缺口（2026-10-05 實測）**：第七道「孤兒 CSS」`qc:orphan` 未在 CI 閘門名單（本機實跑全綠、腳本可用）；bundle 體積閾值未建。
 3. 冷啟動（Render 免費層 15 分鐘休眠）——需先定義可接受閾值。
 4. 清理生產 DB 的測試班 `TNUC8E`（刪除端點已下線，需手動操作 DB）。
 5. 元件層色值（`--bx-*`／`--rc-*`／`--mg-*`／`--cr-*`）收斂回 design token（解 axe 對比度違規）。
@@ -300,6 +300,7 @@ git push 'https://x-access-token:<你的PAT>@github.com/junwei1o/-.git' HEAD:mai
 # ⚠️ 不要用入口 index-*.js 的檔名 hash 比對：同一份源碼在不同環境（本機 vs Render）
 #    構建出的入口與部分 chunk 檔名 hash 會不同（2026-10-05 實測：同一 commit 的兩次構建
 #    入口差 43 bytes、chunk 名單互異），hash 相等只能證明「相同」，不能證明「未部署」。
+#    雙向指標：成因、實測數據與證偽過程見「維護者譜系與並行風險」節末的 hash 警告。
 # 6a. 部署完成判定：首頁 last-modified 頭變化（舊版也活著，不能用「網站還開著」當證據）
 curl -sI https://xue-gr3a.onrender.com/ | grep -i last-modified
 # 6b. 內容級驗證：首頁 HTML → 入口 JS → 從 __vite__mapDeps 找目標 lazy chunk 檔名
