@@ -100,3 +100,44 @@ describe("展開不破壞作答正確性", () => {
     expect([a(), a(), a()]).toEqual([b(), b(), b()]);
   });
 });
+
+describe("標籤式選項守衛貫穿排程層（gen-國語-deep019/deep023 回歸）", () => {
+  // 取自 data/runtime_bank_elementary.json 的真實題型：句子以 A. B. C. D. 列舉在題幹，options 是洗牌後的字母
+  const deepLike: Q = {
+    id: "gen-國語-deep019",
+    prompt:
+      "下列哪一句話中畫引號的詞是**動詞**（表示動作）？\nA「他把房間打掃得乾乾淨淨。」\nB「這個問題非常簡單。」\nC「她的笑容很甜美。」\nD「圖書館安安靜靜的。」",
+    options: ["A", "B", "D", "C"],
+    answer: 0,
+    explanation: "「打掃」表示動作，是動詞。",
+    subject: "國語",
+    learningTopic: "詞義與詞性",
+  };
+
+  it("同步路徑：標籤式選題維持原 4 選項，不補出題幹沒有的 E、F", () => {
+    const out = expandQuestionsSync([{ ...deepLike }]);
+    expect(out[0].options).toEqual(["A", "B", "D", "C"]);
+    expect(out[0].answer).toBe(0);
+  });
+
+  it("Worker 排程路徑（jsdom 降級同步）：deep023 形同樣維持 4 選項", async () => {
+    const out = await expandQuestions([{ ...deepLike, id: "gen-國語-deep023", options: ["D", "C", "B", "A"] }]);
+    expect(out[0].options).toEqual(["D", "C", "B", "A"]);
+    expect(out[0].answer).toBe(0);
+  });
+
+  it("同一批混入一般題：一般題照常擴充成 6 選，標籤題維持原樣（守衛不誤傷）", async () => {
+    const normal: Q = {
+      ...makeQuestion("mix-normal-1", ["4.0公里", "4.5公里", "5.0公里", "3.9公里"]),
+      answer: 1,
+      prompt: "小明跑步 3.6 公里，爸爸跑的距離是小明的 1 又 1/4 倍。爸爸跑了多少公里？",
+      explanation: "3.6 × 1.25 = 4.5。",
+      subject: "數學",
+      learningTopic: "小數乘法",
+    };
+    const out = await expandQuestions([{ ...deepLike }, normal]);
+    expect(out[0].options).toEqual(["A", "B", "D", "C"]);
+    expect(out[1].options).toHaveLength(6);
+    expect(out[1].options[out[1].answer]).toBe("4.5公里");
+  });
+});
