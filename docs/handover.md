@@ -81,6 +81,24 @@ hdmx/
 └─ data/                題庫 JSON
 ```
 
+### 維護者譜系與並行風險（2026-10-05 由 ZCode agent 補記）
+
+main 的推送者分三段，`git log` 風格混雜即源於此：
+
+| 時段 | 環境／作者 | 範圍 |
+|---|---|---|
+| ～2026-10-04 中午 | zai agent（`~/Documents/deepseek-harness/default-workspace/ie-main`） | 至 `38f29de`（tts 服務源碼） |
+| 2026-10-04～05 | hdmx-bot（Doubao 環境，`bot@hdmx.local`） | a11y 對比度流、P3-3 夥伴怪獸、`e416db1` handover、`e322f0e` |
+| 2026-10-05 起 | ZCode agent（`~/.zcode/workspace/default/xue-adventure`） | `3c6be15`（q116 修復）起 |
+
+**每輪開工前必做**：
+
+1. `git fetch origin && git log HEAD..origin/main --oneline`——同步上游、確認沒有他人新推送。
+2. `git -C ~/Documents/deepseek-harness/default-workspace/ie-main log -1 --format=%ci`——舊工作區最後活動時間。
+3. ⚠️ **ie-main 有未提交修改**（`expeditionContent.ts`、`index.css` 等）且 detached HEAD 停在 10-01 的 `62027d9`。它本身不推 main，但**若有人/agent 進去看到未提交修改就直接 commit+push，會從 10-01 的位置分叉、把 main 拉回 40+ 個 commit 之前**。發現該工作區有活動時，先確認那些修改是有意保留的成果還是殘留實驗，再決定清理或採納——禁止視為可推送的現成工作。
+
+> 另：入口 `index-*.js` 的檔名 hash **跨構建環境不可比**（同一 commit 本機與 Render 構建的入口不同、部分 chunk 名單互異），部署驗證一律用第 5 節步驟 6 的內容級方法，不要用 hash 比對（2026-10-05 曾因此誤判「部署停滯」，後以 chunk 內容證據證偽）。
+
 ---
 
 ## 1. 已完成工作（依時間順序）
