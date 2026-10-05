@@ -179,7 +179,7 @@ hdmx/
 
 ### P3-2 卡牌系統收尾
 - [ ] 最終全量測試通過 → commit（建議訊息 `feat(cards): 48張卡牌+屬性相克+聯盟限定卡`）→ push。
-- [ ] 等 Render 部署，確認線上 bundle hash 與本地 `dist/public/assets/` 一致。
+- [x] 等 Render 部署，以內容級驗證確認上線（見第 5 節步驟 6；入口 hash 跨環境不可比）。
 - [ ] Playwright 線上驗收：卡冊五主題分組、48 張、對決頁、相克提示、0 JS 錯誤。
 - [ ]（可選）卡牌美術素材、開卡機率調校、卡牌詳情彈窗動畫。
 
@@ -278,15 +278,22 @@ git commit -m "feat(模組): 描述"
 # 5. 推送（使用 GitHub PAT 作為 remote 認證；切勿把 PAT 寫進任何檔案或 commit，用後建議輪換）
 git push 'https://x-access-token:<你的PAT>@github.com/junwei1o/-.git' HEAD:main
 
-# 6. 等 Render 部署（約 2 分鐘），比對 bundle hash
-LOCAL=$(ls dist/public/assets/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | head -1)
-curl -s https://xue-gr3a.onrender.com/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | head -1
-# 兩者相同 = 部署完成
+# 6. 等 Render 部署（約 2 分鐘），做「內容級」驗證
+# ⚠️ 不要用入口 index-*.js 的檔名 hash 比對：同一份源碼在不同環境（本機 vs Render）
+#    構建出的入口與部分 chunk 檔名 hash 會不同（2026-10-05 實測：同一 commit 的兩次構建
+#    入口差 43 bytes、chunk 名單互異），hash 相等只能證明「相同」，不能證明「未部署」。
+# 6a. 部署完成判定：首頁 last-modified 頭變化（舊版也活著，不能用「網站還開著」當證據）
+curl -sI https://xue-gr3a.onrender.com/ | grep -i last-modified
+# 6b. 內容級驗證：首頁 HTML → 入口 JS → 從 __vite__mapDeps 找目標 lazy chunk 檔名
+#     → 下載該 chunk → grep 本次變更特有的字串/正則字面量（minifier 不會改掉字面量）
+curl -s https://xue-gr3a.onrender.com/ | grep -oE 'assets/index-[A-Za-z0-9_-]+\.js'
+curl -s "https://xue-gr3a.onrender.com/assets/<該次變更的chunk>.js" | grep -c "<變更特徵字串>"
+# 次數 > 0 = 本次變更已上線（例：深思題用 timeLimitSec × 200 驗證）
 
 # 7. Playwright 線上驗收（見第 6 節）
 ```
 
-**門檻**：tsc 0 錯 → 全量測試全綠 → build 成功 → push → 線上 bundle 一致 → Playwright 線上回歸通過，才可對使用者宣告完成。
+**門檻**：tsc 0 錯 → 全量測試全綠 → build 成功 → push → 線上內容級驗證通過 → Playwright 線上回歸通過，才可對使用者宣告完成。
 
 ---
 
