@@ -811,6 +811,19 @@ export function borrowingCandidates(
  * 3. 文字題：文段事件抽取 → 封閉類別概念庫 → 加嚴關聯過濾的跨題借用。
  * 找不到像樣干擾項時維持 4 選題，絕對不硬塞「以上皆非」湊滿六個。
  */
+/** 單一標籤選項（A–H、甲–癸）：實際內容嵌在題幹裡的列舉題，標籤只是作答代號。 */
+const BARE_LABEL_PATTERN = /^[A-H]$|^[甲乙丙丁戊己庚辛壬癸]$/;
+
+/** 判斷單一選項文字本身是否就是位置標籤（供渲染層決定要不要顯示字母晶片）。 */
+export function isBareLabelOption(option: string): boolean {
+  return BARE_LABEL_PATTERN.test(option.trim());
+}
+
+/** 整題是否為標籤式選項（如 q116、t431：每個選項都是單一標籤）。 */
+export function hasBareLabelOptions(options: readonly string[]): boolean {
+  return Array.isArray(options) && options.length > 0 && options.every((option) => isBareLabelOption(option));
+}
+
 export function expandQuestionBankToSix<T extends ExpandableQuestion>(questions: readonly T[]): T[] {
   const pools = buildBankPools(questions);
   return questions.map((question) => expandOne(question, pools));
@@ -819,6 +832,9 @@ export function expandQuestionBankToSix<T extends ExpandableQuestion>(questions:
 function expandOne<T extends ExpandableQuestion>(question: T, pools: BankPools): T {
   if (!Array.isArray(question?.options) || question.options.length !== 4) return question;
   if (!Number.isInteger(question.answer) || question.answer < 0 || question.answer >= 4) return question;
+  // 標籤式選項（句子列舉在題幹裡）：擴充只會產生題幹不存在的幽靈標籤（E、F），
+  // 讓學生看到兩組互相矛盾的字母；維持原 4 標籤，由渲染層隱藏重複的字母晶片。
+  if (hasBareLabelOptions(question.options)) return question;
   const correct = question.options[question.answer];
   if (typeof correct !== "string" || !correct.trim()) return question;
 

@@ -110,6 +110,34 @@ describe("PaperExam mobile-first launchpad and result summary", () => {
     expect(setLocation).toHaveBeenLastCalledWith("/astronomy");
   });
 
+  it("標籤式選項題（選項本身是 A/B/C/D）不渲染重複的字母晶片（q116 回歸）", () => {
+    const bareLabelQuestion = {
+      id: "paper-bare-label-1",
+      grade: 5,
+      subject: "國語" as const,
+      difficulty: "基礎",
+      learningTopic: "修辭與意象",
+      prompt: "閱讀下列句子，請問哪一句使用了擬人法？A. 河水像銀鏡。B. 山巒靜默。C. 風輕聲說話。D. 石頭堅硬。",
+      options: ["A", "B", "C", "D"],
+      answer: 2,
+      explanation: "C 把風當作人來寫，是擬人。",
+    };
+    const previousQuestions = bankState.questions;
+    bankState.questions = [bareLabelQuestion];
+    try {
+      const { container } = render(<PaperExam />);
+      fireEvent.click(screen.getByRole("button", { name: /開始今日試卷/ }));
+      confirmNextGroupStrategy();
+
+      // 四個選項列都存在，且不再出現「位置晶片＋內容字母」的雙重字母
+      expect(container.querySelectorAll(".paper-option").length).toBe(4);
+      expect(container.querySelectorAll(".paper-option > span[aria-hidden='true']").length).toBe(0);
+      expect(screen.getByRole("radio", { name: "C" })).toBeInTheDocument();
+    } finally {
+      bankState.questions = previousQuestions;
+    }
+  });
+
   it("錯題重練：題庫分階段補齊後，會重新組卷把錯題找出來", async () => {
     const wrongMath = {
       id: "staged-wrong-math",

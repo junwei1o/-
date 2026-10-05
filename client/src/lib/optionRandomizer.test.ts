@@ -485,3 +485,45 @@ describe("q201 長方體體積判定（設計稿 Bug 3 回歸）", () => {
     }
   });
 });
+
+describe("expandQuestionBankToSix：標籤式選項守衛（q116 回歸）", () => {
+  const bareLabelQuestion = {
+    id: "q116",
+    prompt: "閱讀下列句子，請問哪一句使用了擬人法？A. 河水像銀鏡，映出月光的臉。B. 山巒靜默，彷彿穿著藍色的外衣。C. 慢慢走來的風，跟我們輕聲說話。D. 石頭堅硬，經年累月不變形。",
+    options: ["A", "B", "C", "D"],
+    answer: 2,
+    explanation: "C 把風當作人來寫，是擬人。",
+    subject: "國語",
+    learningTopic: "修辭與意象",
+    grade: 6,
+    curriculumDomain: "語文領域",
+    difficulty: "標準",
+  };
+
+  it("選項皆為單一標籤的列舉題維持 4 個選項，不補出題幹沒有的 E、F", () => {
+    const expanded = expandQuestionBankToSix([bareLabelQuestion])[0];
+    expect(expanded.options).toEqual(["A", "B", "C", "D"]);
+    expect(expanded.answer).toBe(2);
+  });
+
+  it("守衛後仍可安全 shuffle：不出現幽靈標籤，answer 指向原正解標籤", () => {
+    const expanded = expandQuestionBankToSix([bareLabelQuestion])[0];
+    for (let salt = 1; salt <= 50; salt += 1) {
+      const shuffled = shuffleQuestionOptions(expanded, seededRandom((hashStringToSeed(bareLabelQuestion.id) ^ salt) >>> 0));
+      expect(new Set(shuffled.options)).toEqual(new Set(["A", "B", "C", "D"]));
+      expect(shuffled.options[shuffled.answer]).toBe("C");
+    }
+  });
+
+  it("t431 形（標籤在表格資料裡、非列舉記號）同樣不擴充", () => {
+    const t431Like = { ...bareLabelQuestion, id: "t431", prompt: "下表是四種植物每天澆水後一週長高的公分數：A 2、B 5、C 1、D 3。長得最高的是哪一種？", options: ["B", "D", "A", "C"], answer: 0 };
+    const expanded = expandQuestionBankToSix([t431Like])[0];
+    expect(expanded.options).toEqual(["B", "D", "A", "C"]);
+  });
+
+  it("一般 4 選題不受守衛影響，仍擴充成 6 選題", () => {
+    const expanded = expandQuestionBankToSix([{ ...bareLabelQuestion, id: "q-math", subject: "數學", prompt: "小明跑步 3.6 公里，爸爸跑的距離是小明的 1 又 1/4 倍。爸爸跑了多少公里？", options: ["4.0公里", "4.5公里", "5.0公里", "3.9公里"], answer: 1, explanation: "3.6 × 1.25 = 4.5。" }])[0];
+    expect(expanded.options.length).toBe(6);
+    expect(expanded.options[expanded.answer]).toBe("4.5公里");
+  });
+});

@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { BookOpenCheck, ChevronLeft, ChevronRight, CircleAlert, ClipboardList, Flag, Lightbulb, MapPinned, Mountain, Orbit, Puzzle, RotateCcw, Timer, Volume2, VolumeX, X } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { useQuestionBank } from "@/lib/questionBank";
+import { hasBareLabelOptions } from "@/lib/optionRandomizer";
 import { loadStudentGradePreference } from "@/lib/studentGradePreference";
 import { getSubjectStudyTips, GENERAL_STUDY_TIPS } from "@/lib/studyTips";
 import { SpeechReadableText } from "@/components/SpeechReadableText";
@@ -1493,10 +1494,12 @@ function pickPoolWithCooldown(nextScope: PaperScope): PaperQuestion[] {
               const isCorrectOption = currentAnswered && index === current.answer;
               const isTrueFalse = current.questionType === "是非題";
               const label = isTrueFalse ? (index === 0 ? "○" : "✕") : String.fromCharCode(65 + index);
+              // 標籤式選項（選項本身就是 A/B/C/D）：位置晶片會跟內容重複成「A A」，直接隱藏。
+              const hideLetterChip = !isTrueFalse && hasBareLabelOptions(current.options);
               return (
                 <label key={`${current.id}-${index}`} className={`paper-option ${isSelected ? "is-selected" : ""} ${isCorrectOption ? "is-correct" : ""} ${currentAnswered && isSelected && !currentCorrect ? "is-wrong" : ""} ${isTrueFalse ? "is-true-false" : ""}`}>
                   <input type="radio" name={`question-${current.id}`} checked={isSelected} disabled={currentAnswered} onChange={() => answerQuestion(current, index)} />
-                  <span aria-hidden="true">{label}</span><SpeechReadableText as="b" text={option} label={`選項 ${label}`} className="paper-option-copy" compact />
+                  {hideLetterChip ? null : <span aria-hidden="true">{label}</span>}<SpeechReadableText as="b" text={option} label={`選項 ${label}`} className="paper-option-copy" compact />
                 </label>
               );
             })}
