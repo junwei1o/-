@@ -17,7 +17,8 @@
     "qc:bank": "tsx scripts/qc-question-bank.mts",
     "sec:adversary": "node scripts/security-adversary.mjs",
     "bank:rebuild": "node scripts/expand-question-bank.mjs && node scripts/build-runtime-bank.mjs",
-    "qc:orphan": "node scripts/qc-orphan-css.mjs"
+    "qc:orphan": "node scripts/qc-orphan-css.mjs",
+    "qc:bundle": "node scripts/qc-bundle-size.mjs"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.12",

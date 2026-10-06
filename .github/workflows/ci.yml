@@ -4,7 +4,7 @@
 # 「什麼都跑」，而是把專案已經寫好、但只有人工記得跑的那些閘門，變成 push/PR
 # 時自動執行——避免「本地忘了跑 → 壞的東西進 main → Render 部署失敗」。
 #
-# 六個品質閘門都能在本機直接跑（scripts/*.mjs 與 package.json 的 qc:*），
+# 八個品質閘門都能在本機直接跑（scripts/*.mjs 與 package.json 的 qc:*），
 # 全部為既有工具，沒有新增任何依賴。
 #
 # ⚠️ 這裡**不**跑 deploy。部署由 Render 的 autoDeploy 負責（見 render.yaml）。
@@ -53,7 +53,7 @@ jobs:
       - name: 單元測試（vitest run）
         run: pnpm test
 
-      # 以下六個閘門都是既有腳本，全部在本機實測為 PASS
+      # 以下八個閘門都是既有腳本，全部在本機實測為 PASS
       - name: 品質閘門
         run: |
           echo '── CSS 結構（選擇器有沒有被改壞）──'
@@ -73,6 +73,12 @@ jobs:
 
           echo '── 答案位置分布（防止正解又固定在同一格）──'
           node scripts/qc-answer-distribution.mjs
+
+          echo '── 孤兒 CSS（AdminConsole.css only）──'
+          pnpm qc:orphan
+
+          echo '── Bundle 體積（入口關鍵路徑 / runtime_bank / JS 總量）──'
+          pnpm qc:bundle
 
       # 在 CI 建置一次，讓「建置壞掉」在合併前就發現，而不是等 Render 部署失敗
       - name: Build

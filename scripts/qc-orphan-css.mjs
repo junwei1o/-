@@ -12,6 +12,15 @@
 //
 // 用法：node scripts/qc-orphan-css.mjs
 // 退出碼：0 = 沒有孤兒；1 = 有孤兒（CI 應該會擋住）
+//
+// scope: AdminConsole.css only
+// ─────────────────────────────────────────────────────────────
+// ⚠️ 範圍限定：本閘門只掃 `client/src/pages/AdminConsole.css`。
+// 「泛化到全部 CSS」是 ③.5 之後的獨立任務，不混進本閘門——
+// 貿然擴大範圍會把誤報率（動態 class、第三方庫 class）拉高，
+// 讓閘門因誤報被關掉。先守住 AdminConsole 這個確定可驗證的範圍。
+//
+// 掃描範圍：client/src/admin/**/*（.tsx 不含 .test）＋ client/src/pages/AdminConsole.tsx
 
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import path from "node:path";

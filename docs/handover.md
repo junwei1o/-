@@ -1053,3 +1053,10 @@ curl -s "https://xue-gr3a.onrender.com/assets/<該次變更的chunk>.js" | grep 
 - **測試同步**：24 個契約失敗全數修復——路由/導向類（App/MobileBottomNav/TopNavigation/QuizRoom/StudentMap/Expedition/FeaturesDirectory）改斷言下架後行為；遊戲邏輯類（academyExpansion 只留 1 例、academyQuestProgress 只留 1 例、academyQuestData 斷言改 domain/color、titleCatalog 17→16、Settings 刪戰鬥音量例、featureSearch 刪 battle 用例）；`expeditionObservations.test` 靠修 production bug 自然轉綠（未改測試）。新增 `QuizRunner.test.tsx`（quizRunner lockedRef 重設修復）。
 - **驗證**：`tsc --noEmit` 0 錯；`npx vitest run` 153 檔案 / **1054 tests 全綠**；`vite build` 成功。已 push（觸發 Render 自動部署）。
 - 本輪 commit 將一併帶上工作區既有的下架刪除與上述測試修改。
+
+## 2026-10-06 P2「七個渲染點統一」正式關閉
+
+- **關閉原因是上游下架，非「做完了」**：BattleScene/RpgAdventure/TrumpDuelBoard 已於上游大改版下架，吃 runtime 題庫的字母晶片介面只剩 PaperExam/TriAxisPaper/ReviewHub 三處，皆已於 `e30da9a` 收口（晶片隱藏＋ReviewHub 答錯回饋引述字母原文＋TTS 標籤式不冠「A、」）。
+- 其餘 13 個 `fromCharCode(65)` 檔案皆為靜態題庫或 AI 生成，不可能出現字母選項。
+- 線上驗證錨點：新分支 inline-join 模板（`選項：${var.join("；")}`，變數名無關正則）＋舊路徑形態共存作對照，入口 hash 已換新。
+- **教訓**：「變數名 a/o 跨環境一致」屬觀察到的巧合，非穩定保證，不得當穩定錨點或「逐字相同」的強化證據。
