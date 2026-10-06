@@ -53,7 +53,9 @@ jobs:
       - name: 單元測試（vitest run）
         run: pnpm test
 
-      # 以下八個閘門都是既有腳本，全部在本機實測為 PASS
+      # 以下七個閘門都是既有腳本，全部在本機實測為 PASS；第八道（qc:bundle）需要
+      # build 產物，放在下方 Build 之後的獨立步驟——閘門步驟先於建置時 dist 尚不存在，
+      # qc-bundle-size.mjs 會因找不到 index.html 直接 exit 1（2026-10-07 修正）。
       - name: 品質閘門
         run: |
           echo '── CSS 結構（選擇器有沒有被改壞）──'
@@ -77,9 +79,10 @@ jobs:
           echo '── 孤兒 CSS（AdminConsole.css only）──'
           pnpm qc:orphan
 
-          echo '── Bundle 體積（入口關鍵路徑 / runtime_bank / JS 總量）──'
-          pnpm qc:bundle
-
       # 在 CI 建置一次，讓「建置壞掉」在合併前就發現，而不是等 Render 部署失敗
       - name: Build
         run: pnpm build
+
+      # 第八道閘門需要 build 產物（dist/public/assets），必須排在 Build 之後
+      - name: Bundle 體積（入口關鍵路徑 / runtime_bank / JS 總量）
+        run: pnpm qc:bundle
