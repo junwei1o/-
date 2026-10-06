@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useLocation } from "wouter";
 import { ArrowLeft, ChevronRight, RotateCcw, Sparkles, Trash2 } from "lucide-react";
 import { useQuestionBank } from "@/lib/questionBank";
+import { hasBareLabelOptions } from "@/lib/optionRandomizer";
 import type { PaperQuestion } from "@/lib/paperExam";
 import { loadUserPreferences } from "@/game/adaptiveLearning";
 import { recordExamCloud } from "@/game/cloudSync";
@@ -362,7 +363,8 @@ export default function TriAxisPaper() {
                   aria-pressed={isPicked}
                   onClick={() => handlePick(optionIndex)}
                 >
-                  <span className="tri-q-letter" aria-hidden="true">{optionLabel(optionIndex, current)}</span>
+                  {/* 標籤式選項（選項本身是 A/B/C…）：位置晶片會跟內容重複成「A A」，隱藏。 */}
+                  {hasBareLabelOptions(current.options) ? null : <span className="tri-q-letter" aria-hidden="true">{optionLabel(optionIndex, current)}</span>}
                   <span>{option}</span>
                 </button>
               );

@@ -29,6 +29,12 @@ describe("speech synthesis controller", () => {
     );
   });
 
+  it("標籤式選項（選項本身就是字母）不再冠「A、」前綴，避免唸成「A、A」", () => {
+    expect(buildQuestionSpeechText("哪一句使用擬人法？（句子列於選項）", ["A", "B", "C", "D"])).toBe(
+      "題目：哪一句使用擬人法？（句子列於選項） 選項：A；B；C；D",
+    );
+  });
+
   it("selects a zh-TW voice and prevents immediate duplicate playback", () => {
     const speak = vi.fn();
     const cancel = vi.fn();

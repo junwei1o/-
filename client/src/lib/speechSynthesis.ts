@@ -1,4 +1,5 @@
 import { DEFAULT_SPEECH_PREFERENCES, normalizeSpeechPreferences, type SpeechPreferences } from "@/lib/speechPreferences";
+import { hasBareLabelOptions } from "@/lib/optionRandomizer";
 
 /**
  * 朗讀狀態。
@@ -283,6 +284,10 @@ export function createSpeechController(engine?: SpeechEngine | null): SpeechCont
 }
 
 export function buildQuestionSpeechText(prompt: string, options: string[]) {
+  // 標籤式選項（選項本身就是 A/B/C…）：逐項再冠「A、」會唸成「A、A；B、B」，直接唸內容。
+  if (hasBareLabelOptions(options)) {
+    return `題目：${prompt} 選項：${options.join("；")}`;
+  }
   const choices = options.map((option, index) => `${String.fromCharCode(65 + index)}、${option}`).join("；");
   return `題目：${prompt} 選項：${choices}`;
 }

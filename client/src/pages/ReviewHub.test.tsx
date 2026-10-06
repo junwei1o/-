@@ -140,6 +140,55 @@ describe("今日複習中心", () => {
     expect(saved.spacedReviews[0].intervalIndex).toBe(0);
   });
 
+  it("標籤式選項題不渲染位置字母晶片，答錯回饋直接引述選項字母（deep019 回歸）", () => {
+    // 題型取自 runtime_bank_elementary：句子以 A「…」內嵌在題幹，options 是字母
+    const bareLabel = {
+      ...MOCK_QUESTIONS[0],
+      id: "q-bare",
+      subject: "國語",
+      learningTopic: "詞義與詞性",
+      prompt: "下列哪一句畫引號的詞是動詞？A「他把房間打掃得乾乾淨淨。」B「這個問題非常簡單。」C「她的笑容很甜美。」D「圖書館安安靜靜的。」",
+      options: ["A", "B", "D", "C"],
+      answer: 0,
+      explanation: "「打掃」表示動作，是動詞。",
+    };
+    seedProfile([{ questionId: "q-bare", intervalIndex: 1, dueAt: Date.now() - 1000, updatedAt: Date.now() - 2000 }]);
+    // 直接覆寫 mock 陣列內容（同一個陣列參考被 useQuestionBank 回傳）
+    MOCK_QUESTIONS.length = 0;
+    MOCK_QUESTIONS.push(bareLabel);
+    try {
+      const { container } = render(<ReviewHub />);
+      // 位置晶片隱藏：不再出現 review-hub-opt-letter
+      expect(container.querySelectorAll(".review-hub-opt-letter")).toHaveLength(0);
+      // 四個字母選項列都在
+      expect(container.querySelectorAll(".review-hub-opt")).toHaveLength(4);
+
+      // 答錯（選 B）→ 回饋引述字母本身，而不是「你選了 B，正解是 A」的位置字母疊加
+      fireEvent.click(screen.getByRole("button", { name: "B" }));
+      expect(screen.getByText(/你選了 B，正解是 A/)).toBeInTheDocument();
+    } finally {
+      MOCK_QUESTIONS.length = 0;
+      MOCK_QUESTIONS.push({
+        id: "q1",
+        grade: 4,
+        subject: "數學",
+        questionType: "選擇題",
+        difficulty: "標準",
+        curriculumDomain: "數學領域",
+        learningTopic: "面積",
+        learningPerformance: "",
+        learningContent: "",
+        competency: "",
+        prompt: "一個長方形長 5 公分、寬 3 公分，面積是多少？",
+        options: ["8 平方公分", "15 平方公分", "16 平方公分", "20 平方公分"],
+        answer: 1,
+        explanation: "長 × 寬 = 5 × 3",
+        knowledge: ["面積"],
+        area: null,
+      } as never);
+    }
+  });
+
   it("玩家資源一併寫入", () => {
     seedProfile([{ questionId: "q1", intervalIndex: 1, dueAt: Date.now() - 1000, updatedAt: Date.now() - 2000 }]);
     render(<ReviewHub />);

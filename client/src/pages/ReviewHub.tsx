@@ -3,6 +3,7 @@ import { useLocation } from "wouter";
 import { AlarmClock, CheckCircle2, Coins, RotateCcw, ShieldAlert, Sparkles, TrendingUp } from "lucide-react";
 import { toast } from "sonner";
 import { useQuestionBank } from "@/lib/questionBank";
+import { hasBareLabelOptions } from "@/lib/optionRandomizer";
 import { useQuestionLookup, type LookupQuestion } from "@/lib/questionLookup";
 import { loadAdaptiveProfile, recordAdaptiveAttempt, saveAdaptiveProfile, type AdaptiveDifficulty } from "@/game/adaptiveLearning";
 import { getPlayerData, updatePlayerData } from "@/utils/storage";
@@ -242,6 +243,8 @@ export default function ReviewHub() {
               const userPick = answers[item.key];
               const answered = userPick !== undefined;
               const isRight = answered && userPick === item.display.answer;
+              // 標籤式選項（選項本身是 A/B/C…）：位置晶片會跟內容重複成「A A」，隱藏。
+              const hideLetterChip = hasBareLabelOptions(item.display.options);
               return (
                 <article key={item.key} className="review-hub-question" aria-label={`第 ${index + 1} 題`}>
                   <header className="review-hub-q-head">
@@ -266,19 +269,22 @@ export default function ReviewHub() {
                             onClick={() => pick(item, optionIndex)}
                             disabled={answered || !!summary}
                           >
-                            <span className="review-hub-opt-letter">{String.fromCharCode(65 + optionIndex)}</span>
+                            {hideLetterChip ? null : <span className="review-hub-opt-letter">{String.fromCharCode(65 + optionIndex)}</span>}
                             <span className="review-hub-opt-text">{option}</span>
                           </button>
                         </li>
                       );
                     })}
                   </ul>
-                  {answered ? (
+                      {answered ? (
                     <p className={`review-hub-feedback ${isRight ? "ok" : "err"}`}>
                       {isRight ? (
                         "✓ 答對了，線索有接上！"
                       ) : (
-                        `✗ 你選了 ${String.fromCharCode(65 + (userPick ?? 0))}，正解是 ${String.fromCharCode(65 + item.display.answer)}`
+                        // 標籤式選項：選項文字本身就是字母，回饋直接引述原文，不再疊位置字母。
+                        hasBareLabelOptions(item.display.options)
+                          ? `✗ 你選了 ${item.display.options[userPick ?? 0]}，正解是 ${item.display.options[item.display.answer]}`
+                          : `✗ 你選了 ${String.fromCharCode(65 + (userPick ?? 0))}，正解是 ${String.fromCharCode(65 + item.display.answer)}`
                       )}
                       {item.display.explanation ? (
                         <span className="review-hub-explanation"> {item.display.explanation}</span>
