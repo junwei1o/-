@@ -13,9 +13,8 @@ import { initGameData } from "@/utils/storage";
 import { OfflineBanner } from "@/components/OfflineBanner";
 import AdminOnlyRoute from "@/components/AdminOnlyRoute";
 
-// 路由懶加載：首頁也一併懶加載——它是唯一會帶入內建題庫（規模見 questionBank.ts 檔首註解）的頁面，
-// 而題庫對「只想登入看看首頁」的學生完全不需要。靜態 import 會讓 Home 的
-// 模組層級副作用在登入閘道顯示 LoginPage 時就被拉進來，徒增 3MB 下載。
+// ⚠️ 勿把 Home 改回靜態 import：AuthGate 未登入只渲染 LoginPage，
+//    靜態 import 會讓題庫 chunk（344KB gzip）進登入頁首包。
 const Home = React.lazy(() => import("@/pages/Home"));
 /** 新首頁：選擇下一段學習航線（原首頁已副頁化為 /dashboard）。 */
 const RouteDeck = React.lazy(() => import("@/pages/RouteDeck"));
@@ -161,13 +160,6 @@ function Router() {
 function App() {
   useEffect(() => {
     initGameData();
-    // 註：這裡刻意「不」預載內建題庫（規模見 questionBank.ts 檔首註解）。
-    // 舊實作會在 requestIdleCallback(2.5s) 後無條件 import 題庫，但：
-    //   1) 未登入時 AuthGate 只顯示 LoginPage，學生根本沒有要答題，
-    //      卻照樣吃掉 3MB 下載（實測登入頁也會載入，徒佔行動頻寬）。
-    //   2) 登入後首頁 Home 的 useQuestionBank({ eager: false }) 已經會在
-    //      load 事件後自行下載；學生主動點答題時 ensureLocalBank() 更會立即拉。
-    // 題庫載入的唯一入口因此集中在 lib/questionBank，行為一致且不會多載。
   }, []);
 
   return (

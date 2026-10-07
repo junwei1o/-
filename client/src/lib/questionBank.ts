@@ -285,7 +285,7 @@ const NO_SERVER_QUESTIONS: readonly CurriculumQuestionRow[] = [];
  *
  * options.eager：預設 true＝一進頁面就下載題庫（答題頁需要立刻能出題）。
  * 傳 false＝等首屏完全結束才下載（首頁這類「要看畫面、不急著出題」的頁面用），
- * 省下首屏的 3MB 網路用量。學生若在等待期間就點了要出題的入口，
+ * 避免題庫（344KB gzip）與首屏資源搶頻寬。學生若在等待期間就點了要出題的入口，
  * 呼叫 ensureLocalBank() 會立刻下載，不必等排程。
  */
 export function useQuestionBank(options?: { eager?: boolean }) {
@@ -298,7 +298,7 @@ export function useQuestionBank(options?: { eager?: boolean }) {
 
   useEffect(() => {
     let alive = true;
-    // eager=false 的頁面（純看首屏、不出題）等首屏結束再下載 3MB 題庫。
+    // eager=false 的頁面（純看首屏、不出題）等首屏結束再下載題庫（344KB gzip）。
     const start = eager ? loadLocalBank() : waitForIdleThenLoad();
     // 逾時退路（覆核第③項殘餘風險）：本地 chunk 若「卡住」（hang，非 reject），
     // 下面的 catch 永遠不觸發、fallback 永不啟用、學生無限等待。
