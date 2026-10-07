@@ -90,15 +90,20 @@ main 的推送者分三段，`git log` 風格混雜即源於此：
 | ～2026-10-04 中午 | zai agent（`~/Documents/deepseek-harness/default-workspace/ie-main`） | 至 `38f29de`（tts 服務源碼） |
 | 2026-10-04～05 | hdmx-bot（Doubao 環境，`bot@hdmx.local`） | a11y 對比度流、P3-3 夥伴怪獸、`e416db1` handover、`e322f0e` |
 | 2026-10-05 起 | ZCode agent（`~/.zcode/workspace/default/xue-adventure`） | `3c6be15`（q116 修復）起 |
+| 2026-10-07 | **第四位 writer**（同一個 clone，作者身份與本機 git 配置相同 ∴ 不可辨） | `d5277ab`（CI 順序修復）、`d1a17f9`、`31e79c0` |
 
 **每輪開工前必做**：
 
 1. `git fetch origin && git log HEAD..origin/main --oneline`——同步上游、確認沒有他人新推送。
 2. `git -C ~/Documents/deepseek-harness/default-workspace/ie-main log -1 --format=%ci`——舊工作區最後活動時間。
 3. ⚠️ **ie-main 有未提交修改**（`expeditionContent.ts`、`index.css` 等）且 detached HEAD 停在 10-01 的 `62027d9`。它本身不推 main，但**若有人/agent 進去看到未提交修改就直接 commit+push，會從 10-01 的位置分叉、把 main 拉回 40+ 個 commit 之前**。發現該工作區有活動時，先確認那些修改是有意保留的成果還是殘留實驗，再決定清理或採納——禁止視為可推送的現成工作。
-4. `git log @{u}..HEAD --oneline`——**檢查本地有沒有別人的未推送 commit**。2026-10-07 實證「共享工作副本」形態：另一 agent 在**同一個 clone** 於深夜提交了 `0c39dd3`（③ 閘門收尾，訊息引用共用佇列的編號），作者身份與本機 git 配置相同——**歷史上無法區分誰做的**。push 會把本地所有未推送 commit 一起送上去；若不先檢查，未經審查的他人工作會被誤推。發現陌生未推送 commit 時，先依閘門紀律審查（門禁全綠＋內容無夾帶）再推，或與提交者確認。
+4. `git log @{u}..HEAD --oneline`——**檢查本地有沒有別人的未推送 commit**。2026-10-07 實證「共享工作副本」形態：另一 writer 在**同一個 clone** 提交了 `d5277ab`／`d1a17f9`／`31e79c0`，作者身份與本機 git 配置相同——**歷史上無法區分誰做的**。push 會把本地所有未推送 commit 一起送上去；若不先檢查，未經審查的他人工作會被誤推。發現陌生未推送 commit 時，先依閘門紀律審查（門禁全綠＋內容無夾帶）再推，或與提交者確認。
 
-**第四種協作形態：共享工作副本的並發寫入**（2026-10-07 立案）。此前已知三段式各自環境推 main（zai／hdmx-bot／ZCode agent）；「共享工作副本」是第四種——同一 clone 多 writer，症狀包括：本地冒出陌生未推送 commit、檔案「modified since read」衝突（另一 writer 改了同一批文檔，含 repo 外的共用記憶檔與 `~/1zz` 索引）。應對：動手前後各跑一次第 1、4 點的檢查；對共用文檔（記憶檔、1zz 索引）編輯失敗時先重讀現文再改，不要憑舊內容覆寫。**在此 clone 提交時，commit message 標明來源**（如 `[agent-X]` 前綴或署名）——作者身份失效後，這是事後唯一可辨識來源的手段。
+> ⚠️ **更正（2026-10-07，[ZCode agent]）**：`d1a17f9` 原記「另一 agent 在同一 clone 深夜提交了 `0c39dd3`」——**歸因錯誤**。`0c39dd3`（③ 閘門自動化收尾）由 **ZCode agent 本 session（接手輪）** 所做，是 ③ 的正式交付；真正由第四位 writer 所做的是 `d5277ab`／`d1a17f9`／`31e79c0` 三筆。當時雙方**互指對方為陌生人**，正是本節自身預言的「共享工作副本」症狀——**理論風險在此有了第一個實際危害的實證：不是檔案被踩壞，而是歸因錯亂**。
+>
+> **教訓（給後人）**：作者身份欄位在共享 clone 下失效，`git log` 不可作為歸因依據。`31e79c0` 立的「commit message 標明來源」規矩是對的方向，但**它自己就沒署名**（同批的 `d1a17f9` 也沒有）——**規矩寫進文檔不等於會被執行；真正的落點是把署名放進物理流程**（如 commit-msg hook 檢查），文檔管不住的，工具可以。此項列為「待評估」。
+
+**第四種協作形態：共享工作副本的並發寫入**（2026-10-07 立案）。此前已知三段式各自環境推 main（zai／hdmx-bot／ZCode agent）；「共享工作副本」是第四種——同一 clone 多 writer，症狀包括：本地冒出陌生未推送 commit、**歸因錯亂**（見上方更正：雙方互指對方為陌生人）、檔案「modified since read」衝突（另一 writer 改了同一批文檔，含 repo 外的共用記憶檔與 `~/1zz` 索引）。應對：動手前後各跑一次第 1、4 點的檢查；對共用文檔（記憶檔、1zz 索引）編輯失敗時先重讀現文再改，不要憑舊內容覆寫。**在此 clone 提交時，commit message 標明來源**（如 `[agent-X]` 前綴或署名）——作者身份失效後，這是事後唯一可辨識來源的手段；**惟本例已證「寫進文檔不等於會被執行」，故此規矩需以工具（commit-msg hook）落地才算成立**（待評估）。
 
 > 另：入口 `index-*.js` 的檔名 hash **跨構建環境不可比**（同一 commit 本機與 Render 構建的入口不同、部分 chunk 名單互異），部署驗證一律用第 5 節步驟 6 的內容級方法，不要用 hash 比對（2026-10-05 曾因此誤判「部署停滯」，後以 chunk 內容證據證偽）。
 
