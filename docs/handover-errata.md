@@ -127,7 +127,10 @@
 
 ## 待辦
 
-> 這些是**缺失項**（該有而無），非勘誤（原述錯）——故不進對照表。
+> **本節為待辦的權威來源（single source of truth）。**
+> `memory` 與 `~/1zz` 的對應條目僅留**指針**（指向本節），不複寫內容——
+> 三處各寫一份必然漂移（本 session 已在其他項目上修過同一結構）。
+> 另有非本專案範圍的待辦，見 `~/1zz` 專案索引。
 
 | # | 事項 | 說明 | 建議動作 |
 |---|---|---|---|
@@ -135,6 +138,7 @@
 | T-02 | `commit-msg hook` 待評估 | 防 commit message 不標來源——`31e79c0` 立的規矩，**它自己就沒署名**（同批 `d1a17f9` 也沒有）。文檔管不住的，工具可以。 | 評估加 `commit-msg` hook 檢查署名前綴 |
 | T-03 | 測試 mock 值設計 | `AdminConsole.test.tsx` 的 mock 題數用 `2895`（**看起來像真實值**），故需加註解說明。 | 改用明顯假數字（`9999`）——從源頭消除歧義勝過事後加註解 |
 | T-04 | errata 定期重驗機制 | 本表是活文件，但仍會過時（只是明說了）。 | CI 檢查「最後驗證日期距今 > N 天 → 警告」 |
+| T-05 | 下一階段工作 | 本輪（②③③.5）已完成並收尾。 | ④ P3-4 文字冒險 → ⑤ P3-5 夜間觀測 |
 
 ---
 
@@ -144,4 +148,14 @@
 |---|---|---|---|
 | R-01 | **push 間歇失敗**（2026-10-07） | 連續 6 次 `git push` 失敗，git 報 `Internal Server Error`。後續同一 token 推送成功（`fd23598`）。**真因未知**——三次假說（GitHub 端故障／token 失效／殭屍憑證取用）**均已由實驗推翻**，不再編新理論。<br>⚠️ **防誤判（本條最有價值處）**：**git 認證流程本身包含 401**——無憑證試探 → 401、帶憑證 → 可能 401 → 200。<br>**看到 401 不等於故障，必須看最終是否 200。** 本事件前三次誤判（GitHub 故障／token 失效／殭屍憑證）**均源於把正常握手當成異常**。 | **先看最終結果，再看中間過程**：<br>`GIT_CURL_VERBOSE=1 git push origin main 2>&1 \| grep -oE "Recv header: HTTP/2 [0-9]+\|Server auth using Basic with user '[^']+'"`<br>→ 序列結尾若為 `200` 即正常（中間的 401 是握手）。<br>→ 若結尾非 200，才需查實際使用的 acct。<br>⚠️ 別信 git 的錯誤文案（它會把 401 報成 Internal Server Error）。<br>⚠️ 上列 pattern 不要寫 `^< HTTP`——trace 行首有時間戳，該 pattern **零命中**（初版即犯此錯）。 |
 | R-02 | Keychain 失效憑證殘留 | `junwei1o`（指紋 `e48296425b0c`）已失效：**GitHub 側已無此 token**（token 頁面僅列 `xue-adventure-push` 一顆），但本地 Keychain 仍在——撤銷不會同步清除本地快取。<br>**實際危害（實測）**：remote URL **不含 username** 的 clone（如 `~/Documents/trae_projects/hdmx`）以 host-only 查詢時**取到這顆**（`/user` → 401）→ 該 clone 任何需認證的操作都會失敗。<br>⚠️ 與 push 失敗**無關**（push URL 為 `x-access-token@…`，精確匹配，取不到這顆）——R-01 的殭屍假說已推翻。<br>**已於 2026-10-07 清除並驗證**（條目 2→1、host-only 改回有效顆、push 正常）。 | 清除指令（明確指定 acct）：<br>`security delete-internet-password -s github.com -a junwei1o`<br>清除前先跑：`printf 'protocol=https\nhost=github.com\n\n' \| git credential fill \| grep '^username='` → 確認 host-only 查詢不再回 `junwei1o`。 |
-| **R-03** | **接手前的 CI 失敗通知（規則式）** | **觸發時間在本輪接手（2026-10-05）之前的 CI 失敗，一律視為歷史、已修復、不重查。**<br>**判據**：該筆失敗的 commit hash **早於 `63e012c`**（本 session 首筆 commit）。<br>**為何立此規則**：GitHub 通知會聚合歷史失敗（`cancelled` 與 `failure` 混雜），未來的讀者可能重複調查——**2026-10-08 已實際發生一次**（當時誤判為「別的 repo」，實為本 repo 舊 run）。<br>**規則式而非列舉**：舊失敗會持續被發現（本 repo 累計 10 筆非 success，其中 7 筆 `cancelled`、3 筆 `failure`），逐條列必然不完整；定義判據則所有舊失敗自動涵蓋。<br>已查證之代表案例：#55（`e51e56bf`，Build 紅）／#56（`16cf5f3f`，Build 紅）／#60（`554e8235`，vitest 紅），皆 2026-10-04，**各自在下一筆 commit 即修復**（`16cf5f3`／`fe4d9bd`／`50cf23e`）。 | 判別指令：<br>`gh run list --limit 50`（或 GitHub Actions 頁）→ 看該筆 `head_sha` 是否為 `63e012c` 的祖先：<br>`git merge-base --is-ancestor <sha> 63e012c && echo "接手前，略過"`<br>⚠️ **別用 run# 判斷新舊**——run# 低只代表較早，不代表別 repo（2026-10-08 曾因此誤判）。<br>⚠️ 附註：本 repo `ci.yml` 的 `node-version` 自建 CI（`95d19af`）起即為 `'22'`、**從未改動**——若見「Node.js 20 is deprecated」，那是 GitHub Actions **action 內建執行環境**的警告，與本 repo 設定無關（**勿據此推論版本漂移**）。 |
+
+---
+
+## 已關閉的風險記錄（非未解，為已結案）
+
+> ⚠️ **本節與上方「未解風險」語義不同**：R 系列是**待處理／真因未知**；
+> 本節是**已查明、已修復、已結案**的記錄——保留是為了**防止重複調查**，不是待辦。
+
+| # | 事件 | 結論 |
+|---|---|---|
+| **C-01** | **接手前的 CI 失敗通知**（2026-10-08 調查） | **已結案**。<br>**規則（可執行判據）**：失敗的 commit hash **早於 `63e012c`**（本輪接手首筆）→ 一律視為歷史。<br>**處理流程**：先查是否有修復 commit（**通常是緊接的下一筆**），有則**不重查**。<br>**為何立規則而非列清單**：舊失敗會持續被發現（本 repo 累計 10 筆非 success：7 筆 `cancelled`、3 筆 `failure`），逐條列必然不完整；定義判據則全部自動涵蓋。<br>**為何需要**：GitHub 通知會聚合歷史失敗，2026-10-08 已實際造成一次重複調查（且當時誤判為「別的 repo」）。<br>**已查證案例（固定、完整，不會成長）**：<br>・#55（`e51e56bf`，**Build 紅**）→ 修復於 `16cf5f3`（fix(deploy): render.yaml 的 `pnpm@10.4.1` 無效指令名）<br>・#56（`16cf5f3f`，**Build 紅**）→ 修復於 `fe4d9bd`（fix(build): 移依賴漏改 vite.config.ts manualChunks）<br>・#60（`554e8235`，**vitest 紅**）→ 修復於 `50cf23e`（test(paper-exam): 修 PaperExamMixing 偶發紅燈，6 秒逾時在 CI 不夠）<br>三者皆 2026-10-04，**各自在下一筆 commit 即閉合**。<br>**判別指令**：`gh run list --limit 50` → 對該筆 `head_sha` 跑 `git merge-base --is-ancestor <sha> 63e012c && echo "接手前，略過"`。<br>⚠️ **別用 run# 判斷新舊**——run# 在每個 repo 內獨立遞增，低編號只代表**較早**，不代表另一個 repo（2026-10-08 曾因此誤判）。 |
