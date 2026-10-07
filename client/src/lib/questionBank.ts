@@ -1,7 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
 import { trpc } from "@/lib/trpc";
 /**
- * 題庫為國小 2900 題（數學／自然／社會／國語 ＋ 英語 seed），國中／高中已於 2026-09-28 移除。
+ * 題庫為國小題庫（數學／自然／社會／國語 ＋ 英語 seed），國中／高中已於 2026-09-28 移除。
+ *
+ * ⚠️ 精確題數**以 `data/runtime_bank_elementary.json` 為準**（2026-10-07 實測 3175 題，
+ *    加 `data/taiwan_english_seed.json` 24 題、兩者零重疊，合計 3199 題）。
+ *    本註解不複寫精確數字——題庫會成長（948→1090→2895→3175），寫死只會再漂移一次。
+ *    同一原則適用於 UI 文案：學生端一律用保守下界「3100+」，**與此處規模描述不矛盾**
+ *    （註解面向開發者、要接近真實；UI 面向學生、要抗漂移），看到兩者不一致時請勿互改。
+ *
  * 若繼續用靜態 import，會整包塞進 index 主包（從 1.6MB 爆到近 4MB），
  * 首屏在手機上會明顯變慢。改成動態 import：主包只留英語 seed（很小），
  * 國小題庫在掛載後背景載入，載入前照常使用後端題庫，不會卡住任何操作。
@@ -80,7 +87,7 @@ let localPending: Promise<CurriculumQuestionRow[]> | null = null;
 
 /**
  * 內建題庫的「活陣列」。
- * 2900 題的精簡檔約 1.7MB，靜態 import 會整包塞進主 bundle，首屏在手機上會卡。
+ * 題庫精簡檔約 1.9MB（2026-10-07 實測 1,940,661 bytes），靜態 import 會整包塞進主 bundle，首屏在手機上會卡。
  * 改成動態 import 之後，這裡先用空陣列占位，載入完成後「就地填入同一個陣列」：
  * 所有拿到這個參考的人都看得到題目（classroomBank 等同步消費端才不會開天窗）。
  */
@@ -258,7 +265,7 @@ export type QuestionBankSource = "server" | "local";
 const NO_SERVER_QUESTIONS: readonly CurriculumQuestionRow[] = [];
 
 /**
- * 取得正式題庫。**本地內建題庫（2900 題）為主**；僅當本地載入失敗／為空時
+ * 取得正式題庫。**本地內建題庫為主**（規模見檔首註解，權威來源 `data/runtime_bank_elementary.json`）；僅當本地載入失敗／為空時
  * 才回頭抓伺服器 questionBank.list 當 fallback（見 useQuestionBank 的
  * localState 閘）。因此 isLoading 永遠不會卡住操作、error 永遠為 null。
  *
@@ -332,8 +339,9 @@ export function useQuestionBank(options?: { eager?: boolean }) {
   const hasBank = localRows.length > 0 || serverQuestions.length > 0;
   const merged = useMemo(() => {
     if (!hasBank) return NO_SERVER_QUESTIONS;
-    // 正常：本地 2900 題為主（英語 seed 由 mergeAcrossSources 附加）；
+    // 正常：本地內建題庫為主（英語 seed 由 mergeAcrossSources 附加）；
     // fallback：本地載入失敗時由伺服器題庫接手。兩者以題幹去重避免重複。
+    // ⚠️ 去重鍵只能跨來源比對，同源內不可用——見 dedupeKey 的警告。
     return mergedBank(serverQuestions, localRows);
   }, [serverQuestions, localRows, hasBank]);
 

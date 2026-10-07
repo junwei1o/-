@@ -2,7 +2,7 @@
  * 洋蔥題庫劇場：近三千題內建題庫 × 洋蔥動畫演出。
  *
  * 這是洋蔥學院的第三種學習形式——動畫課與分數工坊的題目都是寫死的內容，
- * 題庫劇場則是「庫存互相利用」：每次開演都從 2900 題的內建題庫依「基礎→標準→挑戰」
+ * 題庫劇場則是「庫存互相利用」：每次開演都從內建題庫（規模見 `lib/questionBank.ts` 檔首註解）依「基礎→標準→挑戰」
  * 難度梯度抽一組題（配合學生的年級偏好與選定的科目），洋蔥吉祥物全程演出：
  * 出題時指著題目（point）、答對跳起來歡呼（cheer）、答錯歪頭想（think）。
  *
@@ -155,7 +155,7 @@ export default function OnionBankTheater({ bestStars, onBest, onExit }: Props) {
 
   const startShow = async () => {
     setPhase("loading");
-    // 題庫是動態載入的活陣列：第一次開演前確保 2900 題都讀進來了。
+    // 題庫是動態載入的活陣列：第一次開演前確保題庫都讀進來了。
     if (LOCAL_QUESTION_BANK.length === 0) {
       await loadLocalBank();
     }
@@ -250,9 +250,9 @@ export default function OnionBankTheater({ bestStars, onBest, onExit }: Props) {
             <OnionMascot action="wave" frame={3} size={78} />
           </div>
           <span className="ol-tag"><Clapperboard size={14} /> 題庫劇場</span>
-          <h2>2900 題庫存，每次開演都不同</h2>
+          <h2>3100+ 題庫存，每次開演都不同</h2>
           <p className="ob-intro">
-            這裡的題目不是寫死的——每一場都從全站 2900 題的題庫，按「基礎→標準→挑戰」循序抽出來，
+            這裡的題目不是寫死的——每一場都從全站 3100+ 題的題庫，按「基礎→標準→挑戰」循序抽出來，
             {grade ? `並且配合你的年級（${grade} 年級）選題。` : "難度會一題題往上加。"}
             答錯有兩次提示引導，答完每一題，洋蔥都會把「為什麼」演給你看。
           </p>

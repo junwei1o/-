@@ -78,7 +78,7 @@ describe("洋蔥題庫劇場 OnionBankTheater", () => {
     const onExit = vi.fn();
     render(<OnionBankTheater onBest={onBest} onExit={onExit} />);
 
-    expect(screen.getByText("2900 題庫存，每次開演都不同")).toBeInTheDocument();
+    expect(screen.getByText("3100+ 題庫存，每次開演都不同")).toBeInTheDocument();
     for (const subject of ["全部", "數學", "自然", "社會", "國語", "英語"]) {
       expect(screen.getByRole("button", { name: new RegExp(`^${subject}`) })).toBeInTheDocument();
     }

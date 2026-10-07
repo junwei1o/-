@@ -10,8 +10,10 @@ beforeAll(async () => {
 });
 
 describe("內建題庫：國小", () => {
-  it("國小題庫＋英語 seed 合計約 2900 題，五科皆有份量", () => {
+  it("題庫規模足夠，五科皆有份量（刻意不斷言精確題數）", () => {
     // 2026-09-28：國中／高中題庫已移除，改為國小單一學段。
+    // ⚠️ 這裡刻意不寫死精確題數：題庫會成長（948→1090→2895→3199），
+    //    寫死數字只會製造下一次漂移。精確值以 data/runtime_bank_elementary.json 為準。
     const all = [...LOCAL_QUESTION_BANK, ...LOCAL_ENGLISH_BANK];
     expect(all.length).toBeGreaterThanOrEqual(2000);
     const counts = new Map<string, number>();
