@@ -16,7 +16,7 @@ vi.mock("wouter", () => ({
   useLocation: () => ["/student-dashboard", setLocation],
 }));
 
-// 題庫查找表：測試不載入 3MB 題庫，給空 Map 即可（buildStudentDashboard 已被 mock）。
+// 題庫查找表：測試不載入題庫，給空 Map 即可（buildStudentDashboard 已被 mock）。
 vi.mock("@/lib/questionLookup", () => ({
   useQuestionLookup: () => new Map(),
 }));

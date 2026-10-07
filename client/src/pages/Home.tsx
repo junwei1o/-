@@ -60,7 +60,7 @@ export function buildWeeklySuggestion(records: LearningRecord[], now = Date.now(
 export default function Home() {
   const [, setLocation] = useLocation();
   // 首頁只需要在「隨機冒險」與小測試被點下去時才要有題目，
-  // 因此延到瀏覽器空閒才下載 3MB 題庫，不跟首屏的 JS／CSS 搶頻寬。
+  // 因此延到瀏覽器空閒才下載題庫（344KB gzip），不跟首屏的 JS／CSS 搶頻寬。
   const { questions: questionBankRows, isExpanding: bankExpanding } = useQuestionBank({ eager: false });
   /** 題庫還沒下載／展開完成前，會出題的按鈕先顯示準備中。 */
   const bankLoading = bankExpanding || questionBankRows.length === 0;

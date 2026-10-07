@@ -41,6 +41,8 @@ vi.mock("@/lib/trpc", () => {
               assignments: 5, announcements: 4, weeklyQuizzes: 6, aiUsageRows: 12,
             },
             bank: {
+              // ⚠️ 以下皆為 mock 值，非真實題數——真實規模見 data/runtime_bank_elementary.json。
+              // 本測試驗的是「AdminConsole 如何渲染後端給的數字」，數字本身可任意。
               total: 2895,
               bySubject: { 國語: 700, 數學: 800, 自然: 700, 社會: 695 },
               byGrade: { "3": 700, "4": 700, "5": 750, "6": 745 },

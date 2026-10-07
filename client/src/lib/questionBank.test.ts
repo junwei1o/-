@@ -4,7 +4,7 @@ import { loadLocalBank, LOCAL_ENGLISH_BANK, LOCAL_QUESTION_BANK, mergeAcrossSour
 import type { CurriculumQuestionRow } from "./questionBank";
 import { loadStudentGradePreference, STUDENT_GRADE_PREFERENCE_STORAGE_KEY } from "./studentGradePreference";
 
-// 題庫 2.7MB 採動態載入，測試必須等它讀進來才能看到內容。
+// 題庫採動態載入，測試必須等它讀進來才能看到內容。
 beforeAll(async () => {
   await loadLocalBank();
 });
