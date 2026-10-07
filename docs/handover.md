@@ -43,7 +43,7 @@
 | 程式碼根目錄 | `/home/user/Doubao/chats/38441428970787074/hdmx` ⚠️ 已過期，見頂部勘誤 |
 | GitHub | 私有 repo `junwei1o/-`，主分支 `main` ⚠️ 「私有」已過期（現為公開），見頂部勘誤 |
 | 線上環境 | Render：`https://xue-gr3a.onrender.com`（push main 後約 2 分鐘自動部署） |
-| 前端 | Vite + React + TypeScript + wouter（路由）+ tRPC client + Tailwind/自訂 CSS |
+| 前端 | Vite + React + TypeScript + wouter（路由）+ tRPC client + Tailwind/自訂 CSS。**版本（2026-10-07 實測，權威來源 `package.json`）：React 19.2.1／Vite 7.1.9／tRPC 11.18.0／TypeScript 5.9.3／wouter 3.7.1** |
 | 後端 | Node + Express + tRPC（`server/routers.ts`，全部 publicProcedure，**無登入系統**）⚠️ 已過期：現有 `teacherProcedure` 與教師登入，見頂部勘誤 |
 | 資料庫 | **MySQL**（Drizzle ORM，`mysqlTable`；不是 PostgreSQL） |
 | 使用者身份 | 無帳密登入，以「船名」（2–6 字）識別，存於 localStorage `xue-cloud-mode-v1`，雲端同步 |
