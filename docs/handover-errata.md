@@ -122,3 +122,12 @@
 
 > **未加指標者及其理由**：§3 章名（E-16）——只改章名會製造「章名說已完成、小節標題說尚未 push」的新矛盾；
 > 連小節標題一起改則超出本表範圍。故僅於本表記錄，不加指標。
+
+---
+
+## 未解風險（非勘誤，為待觀察項）
+
+| # | 風險 | 現況 | 若復發的診斷步驟 |
+|---|---|---|---|
+| R-01 | **push 間歇失敗**（2026-10-07） | 連續 6 次 `git push` 失敗，git 報 `Internal Server Error`，**實為 HTTP 401 重試耗盡**。後續同一 token 推送成功（`fd23598`）。**真因未確定**——不排除 GitHub 端短暫異常、憑證鏈間歇問題，或 Keychain 雙條目導致的查詢不一致。<br>**疑似來源**：Keychain 存有失效的 `junwei1o` 憑證（與有效的 `x-access-token` 並存）；部分 git 路徑（無 username 查詢）可能取用失效那顆。 | `GIT_CURL_VERBOSE=1 git push origin main 2>&1 \| grep -E "Server auth using Basic with user\|^< HTTP"`<br>→ 若顯示 `user 'junwei1o'` 即確證為元凶；若顯示 `x-access-token` 仍失敗，則另有原因。<br>⚠️ 別信 git 的錯誤文案（401 會被報成 Internal Server Error），一律看 HTTP 狀態碼。 |
+| R-02 | Keychain 失效憑證殘留 | `junwei1o`（指紋 `e48296425b0c`）已失效（`/user` → 401）；`x-access-token`（`754eb5663f46`）有效（200）。**刻意保留失效顆一週**（至 2026-10-14）——保留即可觀測性：若 R-01 復發，可用上述指令驗證因果；清除則永久失去驗證機會。 | 一週無復發後再評估清除。清除指令需明確指定 acct：`security delete-internet-password -s github.com -a junwei1o` |
