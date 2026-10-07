@@ -51,7 +51,7 @@
 | E-14 | §3:231 | 「### 題庫設計優化 P0（本機 commit `05615bf`，**尚未 push**）」 | **已上線**——`05615bf` 已在 `main` | `git merge-base --is-ancestor 05615bf HEAD && echo yes` | 已勘誤 |
 | E-15 | §3:239 | 「### 題庫擴充＋題型豐富化（本機 commit `9b88ef3`、`590cbaf`，**尚未 push**）」 | **已上線**——兩 commit 均已在 `main` | `git merge-base --is-ancestor 9b88ef3 HEAD && git merge-base --is-ancestor 590cbaf HEAD` | 已勘誤 |
 | E-16 | §3:189 | 「## 3. 尚未完成的工作（建議順序）」 | **章名已過時**——本章 7 小節現況如下（讀者一次取得整章地圖）：<br>・**P3-2 卡牌系統收尾**：已完成（checkbox 狀態見 E-17）<br>・**P3-3 夥伴怪獸多樣化**：已上線（`d05f44f`，驗收 6/6）<br>・**P3-4 文字冒險擴充**：已上線（`e9cb41d`，驗收 12/12）<br>・**P3-5 夜間觀測深化**：已上線（`ebf9c4b`，驗收 6/6）<br>・**題庫設計優化 P0**：已上線（`05615bf`，見 E-14）<br>・**題庫擴充＋題型豐富化**：已上線（`9b88ef3`、`590cbaf`，見 E-15）<br>・**獨立待辦：LINE 推播**：已完成（見 E-06）<br>⚠️ 章名**不改**——只改章名會製造「章名說已完成、小節標題說尚未 push」的新矛盾；連小節標題一起改則超出本表範圍。 | 各 commit：`git merge-base --is-ancestor <sha> HEAD`（7 個全數在 main） | 已勘誤 |
-| E-17 | §2:194-197 | 「- [ ] 最終全量測試通過 → commit…→ push。」／「- [x] 等 Render 部署…」／「- [ ] Playwright 線上驗收…」／「- [ ]（可選）卡牌美術素材…」 | **checkbox 已失效**——4 項中 3 項未打勾，但實際均已完成：<br>・「最終全量測試 → commit → push」：**已完成**（`4731c13` 已在 main，§2 標題自載「已上線，線上驗收 8/8」）<br>・「Playwright 線上驗收」：**已驗收**（同上，8/8）<br>・「（可選）卡牌美術素材」：**未做**（可選項，非缺陷）<br>・唯一打勾者為「等 Render 部署」（第 195 行）<br>⚠️ checkbox **不改**；已於 `handover.md` §2 該區塊前加一行行內指標（見下方「正文指標」）。 | `git merge-base --is-ancestor 4731c13 HEAD` | 已勘誤 |
+| E-17 | §2:194-197 | 「- [ ] 最終全量測試通過 → commit…→ push。」／「- [x] 等 Render 部署…」／「- [ ] Playwright 線上驗收…」／「- [ ]（可選）卡牌美術素材…」 | **checkbox 已失效**——逐項現況：<br>・194「最終全量測試 → commit → push」：**已完成**（`4731c13` 已在 main，§2 標題自載「已上線，線上驗收 8/8」）<br>・195「等 Render 部署」：**已勾**（4 項中唯二打勾者）<br>・196「Playwright 線上驗收」：**已完成**（同上，8/8）<br>・197「（可選）卡牌美術素材、開卡機率調校、卡牌詳情彈窗動畫」：**未做**——⚠️ 此為**可選項**，非「已完成」亦非「遺漏」；untouched 不影響 P3-2 上線（此三項在前端無實作痕跡：`grep -rn '卡牌美術\|CardDetail\|packOdds' client/src` 為空）。<br>⚠️ 勿將 197 概括為「已完成」——「可選」與「已完成」是兩種狀態，errata 如實記錄。<br>⚠️ checkbox **不改**；已於 `handover.md` §2 該區塊前加一行行內指標（見下方「正文指標」）。 | `git merge-base --is-ancestor 4731c13 HEAD`；197 現況：`grep -rn '卡牌美術\|CardDetail\|packOdds' client/src`（空=未實作） | 已勘誤 |
 | E-18 | §5:293-295 | 「`npx vitest run --maxWorkers=4 --pool=forks`」／「`npx vitest run server/league.test.ts --maxWorkers=2 --pool=forks`」 | **指令已失效**——`--maxWorkers` 在本機會報 tinypool 衝突（EXIT=124）。正確用法：`npx vitest run --pool=forks --poolOptions.forks.maxForks=4 --poolOptions.forks.minForks=1` | 直接執行 `npx vitest run --maxWorkers=4` → 失敗；改用上列參數 → 全綠 | 待修 |
 | E-19 | §5:304 | 「推送（使用 GitHub PAT 作為 remote 認證；切勿把 PAT 寫進任何檔案或 commit，**用後建議輪換**）」 | **已完成輪換**——細粒度 token 已入 macOS Keychain；舊 token 已撤銷（401）。⚠️ 現行 token **含 `workflow` scope**（推送 `.github/workflows/` 所需；缺它 GitHub 會拒絕，本輪曾因此 push 失敗一次） | 見 E-08 | 已上線 |
 
@@ -80,14 +80,25 @@
 
 ### 凍結維度（規則式）
 
-| 維度 | 範圍 | 理由 | 驗證 |
+**凍結基線：`194e696`**（本規則生效之 commit）。驗證一律以此基線做 diff，**不掃全歷史**。
+
+| 維度 | 範圍 | 理由 | 驗證（相對基線 `194e696`） |
 |---|---|---|---|
-| 全量測試數（檔數／測試數） | `handover.md` 內文全部（§1～§8 及日期章節） | 當時驗收記錄，帶 commit 語境即為歷史 | `git log -p -- docs/handover.md \| grep -E '^\+.*[0-9]{3,4} (測試\|tests)'` 應為空（改動即違規） |
-| bundle hash（`index-*.js`） | 內文全部 | 構建產物，**跨環境不可比**（§108 已警告） | 同上，grep `index-[A-Za-z0-9_-]+\.js` |
-| 題數（948／1090／2895 等） | 內文全部 | 題庫演進史，改寫會失真 | 同上，grep `948\|1090\|2895`（**§0 表格除外**，該處已列 E-04 勘誤） |
+| 全量測試數（檔數／測試數） | `handover.md` 內文全部（§1～§8 及日期章節） | 當時驗收記錄，帶 commit 語境即為歷史 | `git diff 194e696 -- docs/handover.md \| grep -E '^[-+].*[0-9]{3,4} (測試\|tests)'` → 應為空 |
+| bundle hash（`index-*.js`） | 內文全部 | 構建產物，**跨環境不可比**（§108 已警告） | `git diff 194e696 -- docs/handover.md \| grep -E '^[-+].*index-[A-Za-z0-9_-]+\.js'` → 應為空 |
+| 題數（948／1090／2895 等） | 內文全部 | 題庫演進史，改寫會失真 | `git diff 194e696 -- docs/handover.md \| grep -E '^[-+].*(948\|1090\|2895)'` → 應為空（**§0 表格除外**，該處已列 E-04 勘誤） |
 
 > **驗證欄的用途**：規則式凍結的風險是「規則存在但無人執行」。
 > 未來任何 PR 若改了這些行，reviewer 可依此拒絕——否則規則只是宣告。
+>
+> ⚠️ **為何用「基線 diff」而非「全歷史 grep」**：初版寫法是 `git log -p | grep '^\+…'`，
+> 實測**命中 28 筆且永遠非空**——它抓到的是「歷史上新增這些行的 commit」，不是「違規修改」。
+> 一道永遠紅的檢查等於沒有檢查。正確做法是相對**凍結生效的那個 commit** 做 diff：
+> 基線之前怎麼寫是歷史，基線之後才叫違規。
+>
+> ⚠️ **grep 方言**：上列指令用 `grep -E`（ERE）。ERE 中 `|` 直接寫、**不要寫 `\|`**
+> （`\|` 在 ERE 是**字面管道符**，會讓整個 pattern 零命中——初版即犯此錯，
+> 且因與 `{3,4}` 的疑問混在一起而未被察覺；`{3,4}` 在 ERE 下本身有效）。
 
 ### 逐條凍結項（規則未覆蓋者）
 
