@@ -1,10 +1,12 @@
 import { describe, expect, it } from "vitest";
+import extraBankRaw from "../../../data/matching_bank_extra.json";
 import {
   IMAGE_MATCHING_SETS,
   MATCHING_SETS,
   MATCHING_SUBJECTS,
   buildMatchingBoard,
   formatMatchingTime,
+  gradeRangeCeiling,
   buildRushQuestions,
   matchingStars,
   pickMatchingSet,
@@ -23,12 +25,27 @@ function seeded(seed: number) {
 }
 
 describe("配對題庫資料", () => {
-  it("擴充後各科都有十幾組以上的內容配對（不再只有 6 組）", () => {
-    expect(MATCHING_SETS).toHaveLength(99);
+  it("過濾國中內容後各科仍有十幾組以上的內容配對（不再只有 6 組）", () => {
+    // 2026-10-16（05 的 E2f）：99 → 85。原基線含 matching_bank_extra 的 14 組
+    // 「7-9年級」國中內容，違反產品決策（內容等級上限六年級，MAX_GRADE=6），
+    // 已在 MATCHING_SETS 源頭過濾。這是**設計變更**不是測試寫錯——
+    // 舊斷言 `>=18` 鎖的是「含國中組」的舊基線，同步下調為 `>=15`。
+    expect(MATCHING_SETS).toHaveLength(85);
     for (const subject of MATCHING_SUBJECTS) {
       const count = MATCHING_SETS.filter((set) => set.subject === subject).length;
-      expect(count, `${subject} 配對組數`).toBeGreaterThanOrEqual(18);
+      expect(count, `${subject} 配對組數`).toBeGreaterThanOrEqual(15);
     }
+  });
+
+  it("⭐ 國小池不得含 7-9 年級內容（E2f 回歸鎖）", () => {
+    // 這 14 組曾是「到不了使用者」（誤報），實為會混進國小試卷；源頭過濾後必須缺席。
+    for (const set of MATCHING_SETS) {
+      const ceiling = gradeRangeCeiling(set.grade);
+      expect(ceiling === null || ceiling <= 6, `${set.id} grade=${set.grade}`).toBe(true);
+    }
+    // 資料檔本身仍有這些組（保留、未刪除）——過濾只發生在池構建處。
+    const rawExtra = (extraBankRaw as { sets: MatchingSet[] }).sets;
+    expect(rawExtra.filter((set) => gradeRangeCeiling(set.grade) === 9)).toHaveLength(14);
   });
 
   it("每組 id 唯一、含 6 對與 2 個干擾，且左右值不重複", () => {
@@ -69,6 +86,14 @@ describe("buildMatchingBoard", () => {
 });
 
 describe("純函式", () => {
+  it("gradeRangeCeiling 解析範圍／單年級，無法解析回 null", () => {
+    expect(gradeRangeCeiling("3-4年級")).toBe(4);
+    expect(gradeRangeCeiling("7-9年級")).toBe(9);
+    expect(gradeRangeCeiling("6年級")).toBe(6);
+    expect(gradeRangeCeiling(" 4 - 5 年級 ")).toBe(5);
+    expect(gradeRangeCeiling("unknown")).toBeNull();
+  });
+
   it("shuffleArray 不改變元素集合，且可由亂數重現", () => {
     const source = [1, 2, 3, 4, 5];
     expect(shuffleArray(source, seeded(1)).slice().sort((a, b) => a - b)).toEqual(source);

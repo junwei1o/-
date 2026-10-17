@@ -6,7 +6,7 @@
 > 本表條目背後的方法論教訓見 1zz 歸檔：`~/1zz/數字與註解漂移_方法論_20261007.md`
 > （掃描維度漏洞、註解數字三分類、commit message 同句兩數、單一記錄點紀律等）。
 >
-> **本表最後更新：2026-10-07**；所有條目驗證於該日期。此日期之後的變動未反映於本表。
+> **本表最後更新：2026-10-16**（新增 E-20）；舊條目驗證日期見各欄量測註記。此日期之後的變動未反映於本表。
 
 ---
 
@@ -63,6 +63,7 @@
 | E-17 | §2:194-197 | 「- [ ] 最終全量測試通過 → commit…→ push。」／「- [x] 等 Render 部署…」／「- [ ] Playwright 線上驗收…」／「- [ ]（可選）卡牌美術素材…」 | **checkbox 已失效**——逐項現況：<br>・194「最終全量測試 → commit → push」：**已完成**（`4731c13` 已在 main，§2 標題自載「已上線，線上驗收 8/8」）<br>・195「等 Render 部署」：**已勾**（4 項中唯二打勾者）<br>・196「Playwright 線上驗收」：**已完成**（同上，8/8）<br>・197「（可選）卡牌美術素材、開卡機率調校、卡牌詳情彈窗動畫」：**未做**——⚠️ 此為**可選項**，非「已完成」亦非「遺漏」；untouched 不影響 P3-2 上線（此三項在前端無實作痕跡：`grep -rn '卡牌美術\|CardDetail\|packOdds' client/src` 為空）。<br>⚠️ 勿將 197 概括為「已完成」——「可選」與「已完成」是兩種狀態，errata 如實記錄。<br>⚠️ checkbox **不改**；已於 `handover.md` §2 該區塊前加一行行內指標（見下方「正文指標」）。 | `git merge-base --is-ancestor 4731c13 HEAD`；197 現況：`grep -rn '卡牌美術\|CardDetail\|packOdds' client/src`（空=未實作） | 已勘誤 |
 | E-18 | §5:293-295 | 「`npx vitest run --maxWorkers=4 --pool=forks`」／「`npx vitest run server/league.test.ts --maxWorkers=2 --pool=forks`」 | **指令已失效**——`--maxWorkers` 在本機會報 tinypool 衝突（EXIT=124）。正確用法：`npx vitest run --pool=forks --poolOptions.forks.maxForks=4 --poolOptions.forks.minForks=1` | 直接執行 `npx vitest run --maxWorkers=4` → 失敗；改用上列參數 → 全綠 | 待修 |
 | E-19 | §5:304 | 「推送（使用 GitHub PAT 作為 remote 認證；切勿把 PAT 寫進任何檔案或 commit，**用後建議輪換**）」 | **已完成輪換**——細粒度 token 已入 macOS Keychain；舊 token 已撤銷（401）。⚠️ 現行 token **含 `workflow` scope**（推送 `.github/workflows/` 所需；缺它 GitHub 會拒絕，本輪曾因此 push 失敗一次） | 見 E-08 | 已上線 |
+| E-20 | §「2026-09-20（深夜）」:818 | 「配對題：`data/matching_bank_extra.json`（+66 組），全站 33 → 99 組、594 筆配對；各科 6 組 → 18–22 組。」 | **執行期池已不再是 99 組**（2026-10-16，根因見 05 的 E2f）：`MATCHING_SETS` 源頭依 `gradeRangeCeiling(set.grade) <= MAX_GRADE(6)` 過濾掉 `matching_bank_extra` 的 14 組「7-9年級」國中內容 → **85 組**；各科 18–22 → **15–19**（量測 2026-10-16：社會 19／英語 17／自然 18／數學 16／國語 15）。⚠️ **資料檔仍是 99 組**——14 筆 `7-9年級` 保留未刪，只擋在池構建處；日後翻案（恢復國中版）改這一行門檻即可解鎖。<br>⚠️ 附帶澄清 §「2026-09-21」:873「配對關係題 170 題：把配對題庫 99 組的庫存轉成選擇題」**未被本次改動波及**：生成腳本 `scripts/gen/matchingRelation.mjs` 讀的仍是 99 組資料檔，其 `gradeOf()` 把「7-9年級」夾到 7–9，但 `grade >= 7` 的輸出由 `build-runtime-bank.mjs` 的 `<= 6` 篩掉——實測 runtime bank 內 `learningTopic=內容配對：*` 共 148 題，grade 全落在 3–6、無一組國中主題混入。<br>原述「99 組」「170 題」為當時歷史量測值，依本表規則**凍結不改**（改寫使紀錄失真） | `npx vitest run client/src/lib/matchingBank.test.ts`（含斷言 85 與「⭐ 國小池不得含 7-9 年級內容」回歸鎖）；資料檔現值 `grep -c '7-9年級' data/matching_bank_extra.json` → `14`；池過濾邏輯 `client/src/lib/matchingBank.ts:99` | 已修未上線 |
 
 > **E-08～E-12 說明**：這 5 項原為 `handover.md` 的「現行待辦」。
 > 遷入本表而非留在 handover，理由是**單一記錄點**——待辦留在 handover、狀態記在本表，

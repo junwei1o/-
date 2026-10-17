@@ -4,6 +4,7 @@ import bank from "../../../data/matching_bank.json";
 // 擴充配對組：各科更多的「內容配對」（原本只有 30 組，一科 6 組太少）。
 import extraBank from "../../../data/matching_bank_extra.json";
 import imageBank from "../../../data/image_bank.json";
+import { MAX_GRADE } from "@/game/adaptiveLearning";
 import type { PaperSubject } from "./paperExam";
 
 export type MatchingPair = {
@@ -65,11 +66,39 @@ function isValidSet(value: unknown): value is MatchingSet {
 const rawSets = (bank as { sets?: unknown }).sets;
 const rawExtraSets = (extraBank as { sets?: unknown }).sets;
 const rawImageSets = (imageBank as { sets?: unknown }).sets;
-export const MATCHING_SETS: MatchingSet[] = [
+
+/**
+ * 解析配對題庫的字串年級範圍（"3-4年級"／"6年級"／"7-9年級"）→ 最高年級。
+ * 無法解析時回 null，呼叫端一律**保留**（宁可多給，不要靜默吃掉內容；
+ * 對齊 05-E3「資料不足標示『無法取得』，不要假裝沒有」）。
+ */
+export function gradeRangeCeiling(label: string): number | null {
+  const match = /^\s*(\d+)(?:\s*-\s*(\d+))?\s*年級\s*$/.exec(label);
+  if (!match) return null;
+  return Number(match[2] ?? match[1]);
+}
+
+/**
+ * 本池的唯一真相過濾（2026-10-16，05 的 E2f）：產品定位為國小
+ * （「內容等級上限六年級」見 `adaptiveLearning.ts` 的 `MAX_GRADE`），
+ * 但 `matching_bank_extra` 有 14 組「7-9年級」的國中內容（國中代數／文言字義／世界史）。
+ * 配對池过去完全不做年級過濾——所有消費端只按「有無圖片」「科目」篩——
+ * 低年級學生會在平常試卷與 /matching 抽到國中題。
+ * 在源頭（MATCHING_SETS 常數）擋掉，而不是逐消費端補：
+ * 消費端有 5 處（mixPaperMatching／mixPaperVariants／buildRelayRounds／
+ * pickMatchingSet／MatchingPage 索引循環），逐處補必漏其一。
+ * 資料檔**保留不動**：日後恢復國中版（如 06 的「洋蔥學院 90 堂僅國小」翻案）
+ * 只改這一行門檻即可解鎖。
+ */
+const allParsedSets: MatchingSet[] = [
   ...(Array.isArray(rawSets) ? ((rawSets as unknown[]).filter(isValidSet) as MatchingSet[]) : []),
   ...(Array.isArray(rawExtraSets) ? ((rawExtraSets as unknown[]).filter(isValidSet) as MatchingSet[]) : []),
   ...(Array.isArray(rawImageSets) ? ((rawImageSets as unknown[]).filter(isValidSet) as MatchingSet[]) : []),
 ];
+export const MATCHING_SETS: MatchingSet[] = allParsedSets.filter((set) => {
+  const ceiling = gradeRangeCeiling(set.grade);
+  return ceiling === null || ceiling <= MAX_GRADE;
+});
 
 /** 圖片配對組（G）：任一配對帶 img 即屬於圖片題。 */
 export const IMAGE_MATCHING_SETS: MatchingSet[] = MATCHING_SETS.filter((set) =>
