@@ -17,19 +17,107 @@
  *  5. **新增「接線狀態」檢查**：找出有資料但沒有任何程式引用的死題庫。
  */
 
-import { readFileSync, writeFileSync, existsSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 
 const ROOT = process.cwd();
+
+// ── 接線狀態：由掃描原始碼推導，不採信寫死的旗標 ──────────────
+// 2026-10-15 修正：先前 BANKS 內的 wired 是手寫布林值，宣稱「找出沒有任何程式
+// 引用的死題庫」，實際上程式碼完全沒有掃描任何檔案——它只是把寫死的 false
+// 原樣回報。order/sort/image 三個題庫當時早就被 import，卻長期被判為死資料。
+//
+// 現在改成真的去原始碼裡找 `data/<檔名>` 字串。排除項：
+//   · 本檔自己（BANKS 清單裡就寫著檔名，不排除會全部自我命中）
+//   · data/ 目錄本身（資料檔互相提及不算接線）
+//   · **scripts/（2026-10-15 決定）**——只被產生腳本引用的題庫，
+//     App 端永遠看不到，對使用者而言仍是死資料。判定「有沒有接上 UI」
+//     必須看 client/server/shared，不是看工具鏈有沒有提到它。
+const SOURCE_DIRS = ["client/src", "server", "shared"];
+const SELF_FILE = "audit-question-bank-v2.mts";
+const SOURCE_EXT = /\.(?:ts|tsx|mts|mjs|js|jsx)$/;
+
+function collectSourceFiles(dir: string, out: string[] = []): string[] {
+  const abs = join(ROOT, dir);
+  if (!existsSync(abs)) return out;
+
+  let entries: string[];
+  try {
+    entries = readdirSync(abs);
+  } catch {
+    return out;
+  }
+
+  for (const name of entries) {
+    if (name === "node_modules" || name.startsWith(".")) continue;
+    const rel = `${dir}/${name}`;
+    // 單一 try：任何 IO 例外（權限、競態）都直接跳過該項，不讓巡檢中斷
+    let isDir: boolean;
+    try {
+      isDir = statSync(join(ROOT, rel)).isDirectory();
+    } catch {
+      continue;
+    }
+    if (isDir) collectSourceFiles(rel, out);
+    else if (SOURCE_EXT.test(name) && name !== SELF_FILE) out.push(rel);
+  }
+  return out;
+}
+
+/** 回傳「被原始碼引用」的題庫檔名集合（只取 basename，例如 "sort_bank.json"）。 */
+function scanWired(): Set<string> {
+  const referenced = new Set<string>();
+  const files = SOURCE_DIRS.flatMap((d) => collectSourceFiles(d));
+  for (const rel of files) {
+    let content: string;
+    try {
+      content = readFileSync(join(ROOT, rel), "utf8");
+    } catch {
+      continue;
+    }
+    for (const bank of BANKS) {
+      const base = bank.file.replace(/^data\//, "");
+      // 比對 `data/<檔名>`，避免只寫檔名就命中的寬鬆誤判
+      if (content.includes(`data/${base}`)) referenced.add(base);
+    }
+  }
+  return referenced;
+}
+
+/** 取題幹文字。題庫有兩種 schema：
+ *    一般題   → prompt
+ *    title 型 → title（＋instruction）  例如 matching / sort / image / 跨科題
+ *  2026-10-15 修正：先前只認 prompt，導致 104 筆 title 型題目被誤報為「缺 prompt」。 */
+function stemOf(q: Row): string {
+  const s = q.prompt ?? q.title ?? q.instruction;
+  return typeof s === "string" ? s : "";
+}
+
+/** 去重用的題幹指紋。
+ *  ⚠️ 2026-10-15：title 型題目**不能只用 title 當指紋**——同一主題的變體
+ *  （基礎版／加干擾項版）本來就共用標題，只比 title 會憑空生出重複組。
+ *  實測：`sort-liangci`（分類歸位）與 `mx-chi-3`（配對）都叫「量詞搭配」、
+ *  但 instruction 不同，是兩種不同練習。故 title 型併入 instruction。 */
+function stemKeyOf(q: Row): string {
+  if (typeof q.prompt === "string") return q.prompt;
+  return `${q.title ?? ""}｜${q.instruction ?? ""}`;
+}
 
 // ── 資料來源（含題型與 grade 正規化規則）──────────────────
 type BankFile = {
   file: string;
   /** 該檔實際的題型（用來補 questionType；檔名常與實際題型不符） */
   type: string;
-  /** grade 為字串範圍（如 "3-4年級"）時，取代表年級 */
+  /** 該檔 grade 是**字串範圍標籤**（"3-4年級"／"7-9年級"），不是數字年級。
+   *  ⚠️ 2026-10-16（05 的 E2f）：此旗標過去**只有宣告、從未被讀取**——與 E2d 的
+   *  `wired` 是同型失效（宣告與實作不一致）。後果：`parseInt("7-9年級")` 讀出 7，
+   *  14 題配對組被誤報「grade=7 越界」。現在 loadBanks 真的讀它：
+   *  range 列**不做 1–6 數值邊界檢查**、不計入年級覆蓋矩陣（範圍≠單一年級）。 */
   gradeFromRange?: boolean;
-  /** 是否已被程式引用（false＝死資料） */
+  /** 是否已被程式引用（false＝死資料）
+   *  ⚠️ 2026-10-15：此欄位**僅為歷史註記，不再作為判斷依據**。
+   *  實際接線狀態改由 scanWired() 掃描原始碼推導——因為這裡曾是寫死的值，
+   *  而 order/sort/image 三個題庫早就被 import 了，寫死的 false 造成長期誤報。 */
   wired: boolean;
 };
 
@@ -43,6 +131,9 @@ const BANKS: BankFile[] = [
   { file: "data/matching_bank.json", type: "matching", gradeFromRange: true, wired: true },
   { file: "data/matching_bank_extra.json", type: "matching", gradeFromRange: true, wired: true },
 ];
+
+// 必須在 BANKS 之後呼叫（scanWired 內部會讀 BANKS）
+const WIRED_FILES = scanWired();
 
 const SUBJECTS = ["數學", "自然", "社會", "國語", "英語"] as const;
 const DIFFICULTIES = ["基礎", "標準", "挑戰"] as const;
@@ -70,6 +161,9 @@ type Row = Record<string, unknown> & {
   subject?: string;
   difficulty?: string;
   prompt?: string;
+  /** title 型 schema 的題幹（matching / sort / image / 跨科題），與 prompt 二擇一 */
+  title?: string;
+  instruction?: string;
   options?: string[];
   answer?: number;
   knowledge?: string[];
@@ -78,6 +172,8 @@ type Row = Record<string, unknown> & {
   _type: string;
   _grade: number | null;
   _gradeRaw: string;
+  /** 該列的 grade 是字串範圍標籤（見 BankFile.gradeFromRange），不適用 1–6 數值檢查 */
+  _gradeFromRange: boolean;
 };
 
 function loadBanks(): { rows: Row[]; files: Array<{ file: string; count: number; wired: boolean; type: string }> } {
@@ -87,7 +183,7 @@ function loadBanks(): { rows: Row[]; files: Array<{ file: string; count: number;
   for (const bank of BANKS) {
     const path = join(ROOT, bank.file);
     if (!existsSync(path)) {
-      files.push({ file: bank.file, count: -1, wired: bank.wired, type: bank.type });
+      files.push({ file: bank.file, count: -1, wired: WIRED_FILES.has(bank.file.replace(/^data\//, "")), type: bank.type });
       continue;
     }
     const parsed = JSON.parse(readFileSync(path, "utf8"));
@@ -98,15 +194,22 @@ function loadBanks(): { rows: Row[]; files: Array<{ file: string; count: number;
     for (const raw of items) {
       const gradeRaw = String(raw.grade ?? "");
       const numeric = typeof raw.grade === "number" ? raw.grade : Number.parseInt(gradeRaw, 10);
+      // 範圍標籤（"3-4年級"）的 parseInt 只讀到開頭數字，**不代表單一一年級**。
+      // E2f：以檔案旗標為主，輔以逐列探測（純數字字串以外的字串都算範圍），
+      // 這樣即使資料混入另一種格式也不會誤報。
+      const fromRange =
+        bank.gradeFromRange === true ||
+        (typeof raw.grade === "string" && !/^\s*\d+\s*$/.test(gradeRaw));
       rows.push({
         ...raw,
         _bank: bank.file,
         _type: (raw.questionType as string) ?? bank.type,
         _grade: Number.isFinite(numeric) ? numeric : null,
         _gradeRaw: gradeRaw,
+        _gradeFromRange: fromRange,
       });
     }
-    files.push({ file: bank.file, count: items.length, wired: bank.wired, type: bank.type });
+    files.push({ file: bank.file, count: items.length, wired: WIRED_FILES.has(bank.file.replace(/^data\//, "")), type: bank.type });
   }
   return { rows, files };
 }
@@ -166,8 +269,9 @@ function dimStructure(rows: Row[], issues: Issue[]) {
 
     let ok = true;
     if (!q.id) { issues.push({ severity: "critical", dimension: "structure", category: "缺 id", message: "缺少 id" }); ok = false; }
-    if (q._grade === null) { issues.push({ severity: "error", dimension: "structure", category: "grade 無法解析", message: `grade="${q._gradeRaw}"`, questionId: q.id }); ok = false; }
-    else if (q._grade < 1 || q._grade > 6) { issues.push({ severity: "error", dimension: "structure", category: "grade 越界", message: `grade=${q._grade}`, questionId: q.id }); ok = false; }
+    if (q._grade === null && !q._gradeFromRange) { issues.push({ severity: "error", dimension: "structure", category: "grade 無法解析", message: `grade="${q._gradeRaw}"`, questionId: q.id }); ok = false; }
+    else if (q._grade !== null && !q._gradeFromRange && (q._grade < 1 || q._grade > 6)) { issues.push({ severity: "error", dimension: "structure", category: "grade 越界", message: `grade=${q._grade}`, questionId: q.id }); ok = false; }
+    // 範圍標籤不做 1–6 檢查（E2f：配對／排序題庫用 "3-4年級" 字串，parseInt 讀到 7 是假越界）
     if (!q.subject) { issues.push({ severity: "critical", dimension: "structure", category: "缺 subject", message: "缺少 subject", questionId: q.id }); ok = false; }
     else if (!SUBJECTS.includes(q.subject as (typeof SUBJECTS)[number])) {
       issues.push({ severity: "error", dimension: "structure", category: "科目非標準值", message: `subject="${q.subject}"`, questionId: q.id, fix: "改為 數學／自然／社會／國語／英語" });
@@ -178,7 +282,7 @@ function dimStructure(rows: Row[], issues: Issue[]) {
       issues.push({ severity: "error", dimension: "structure", category: "difficulty 非法", message: `difficulty="${q.difficulty}"`, questionId: q.id });
       ok = false;
     }
-    if (!q.prompt) { issues.push({ severity: "error", dimension: "structure", category: "缺 prompt", message: "缺少 prompt", questionId: q.id }); ok = false; }
+    if (!stemOf(q).trim()) { issues.push({ severity: "error", dimension: "structure", category: "缺題幹", message: "缺少 prompt 與 title／instruction", questionId: q.id }); ok = false; }
 
     // 題型專屬
     if (t === "single-choice") {
@@ -327,7 +431,7 @@ function dimContent(rows: Row[], issues: Issue[]) {
 
   for (const q of rows) {
     const t = normalizeType(String(q._type));
-    const prompt = String(q.prompt ?? "");
+    const prompt = stemOf(q);
     promptLens.push(prompt.length);
     if (q.explanation) withExplanation++;
 
@@ -355,7 +459,7 @@ function dimContent(rows: Row[], issues: Issue[]) {
     for (const w of absolutes) if (`${prompt}${q.explanation ?? ""}`.includes(w)) { hasAbs = true; break; }
     if (hasAbs) absolute++;
 
-    const key = prompt.replace(/\s+/g, "").replace(/[，。！？、；：（）]/g, "");
+    const key = stemKeyOf(q).replace(/\s+/g, "").replace(/[，。！？、；：（）]/g, "");
     if (key) byPrompt.set(key, [...(byPrompt.get(key) ?? []), String(q.id ?? "?")]);
   }
 
@@ -414,7 +518,8 @@ function dimDiagnosis(rows: Row[], issues: Issue[]) {
   const insufficient = Object.values(tagCount).filter((c) => c < 3).length;
 
   const gradeCoverage: Record<number, number> = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 };
-  for (const q of diagnostic) if (q._grade !== null && q._grade >= 1 && q._grade <= 6) gradeCoverage[q._grade]++;
+  // 目前範圍題庫全無 knowledge、進不了 diagnostic，此守衛是防禦未來（E2f 同型）
+  for (const q of diagnostic) if (q._grade !== null && !q._gradeFromRange && q._grade >= 1 && q._grade <= 6) gradeCoverage[q._grade]++;
 
   let score = 100;
   const count = diagnostic.length;
@@ -449,7 +554,8 @@ function dimCoverage(rows: Row[], issues: Issue[]) {
   for (const q of rows) {
     const s = String(q.subject ?? "?");
     subjectCounts[s] = (subjectCounts[s] ?? 0) + 1;
-    if (q._grade !== null && q._grade >= 1 && q._grade <= 6) {
+    // 範圍標籤（"3-4年級"）不歸入單一年級格（E2f）；科目計數不受影響。
+    if (q._grade !== null && !q._gradeFromRange && q._grade >= 1 && q._grade <= 6) {
       gradeCounts[q._grade]++;
       if (matrix[s]) matrix[s][q._grade]++;
     }

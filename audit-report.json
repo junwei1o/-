@@ -1,44 +1,44 @@
 {
-  "scannedAt": "2026-09-30T13:33:43.601Z",
-  "totalQuestions": 3063,
+  "scannedAt": "2026-10-17T16:37:00.533Z",
+  "totalQuestions": 3343,
   "scores": {
-    "overall": 57,
+    "overall": 58,
     "overallGrade": "🔴",
     "dimensions": {
       "structure": {
-        "score": 97,
+        "score": 100,
         "grade": "🟢",
-        "summary": "2959/3063 題結構完整，0 個重複 id"
+        "summary": "3343/3343 題結構完整，0 個重複 id"
       },
       "knowledge": {
         "score": 0,
         "grade": "🔴",
-        "summary": "2228 個知識點｜單例 1629｜疑似同義 1786｜齊夫偏離 20%"
+        "summary": "2294 個知識點｜單例 1625｜疑似同義 1855｜齊夫偏離 17%"
       },
       "content": {
         "score": 68,
         "grade": "🟡",
-        "summary": "81 組重複題｜正解位置偏差 3%｜解析覆蓋 97%"
+        "summary": "84 組重複題｜正解位置偏差 4%｜解析覆蓋 97%"
       },
       "diagnosis": {
-        "score": 69,
+        "score": 70,
         "grade": "🟡",
-        "summary": "可診斷題 2919｜樣本充足知識點 76｜2 個年級無可診斷題"
+        "summary": "可診斷題 3199｜樣本充足知識點 101｜2 個年級無可診斷題"
       },
       "coverage": {
         "score": 92,
         "grade": "🟢",
-        "summary": "5/5 科目有題｜基礎題 36%"
+        "summary": "5/5 科目有題｜基礎題 35%"
       },
       "wiring": {
-        "score": 40,
-        "grade": "🔴",
-        "summary": "8 個題庫檔，其中 3 個未接線（死資料）"
+        "score": 100,
+        "grade": "🟢",
+        "summary": "8 個題庫檔，其中 0 個未接線（死資料）"
       }
     }
   },
   "byType": {
-    "single-choice": 2604,
+    "single-choice": 2884,
     "true-false": 339,
     "order": 16,
     "sort": 5,
@@ -46,9 +46,9 @@
     "matching": 96
   },
   "knowledge": {
-    "totalUnique": 2228,
-    "singletonCount": 1629,
-    "orphanCount": 1835,
+    "totalUnique": 2294,
+    "singletonCount": 1625,
+    "orphanCount": 1824,
     "singletons": [
       "事件順序",
       "時間詞辨識",
@@ -151,6 +151,11 @@
         "a": "近義詞辨識",
         "b": "近義詞",
         "reason": "包含關係"
+      },
+      {
+        "a": "近義詞辨識",
+        "b": "近義詞辨析",
+        "reason": "編輯距離 ≤ 1（皆 ≥3 字）"
       },
       {
         "a": "生活詞語語境判斷",
@@ -286,11 +291,6 @@
         "a": "記敘文主旨",
         "b": "記敘文",
         "reason": "包含關係"
-      },
-      {
-        "a": "事件順序與結局",
-        "b": "順序",
-        "reason": "包含關係"
       }
     ],
     "topTags": [
@@ -327,6 +327,10 @@
         23
       ],
       [
+        "周長計算",
+        22
+      ],
+      [
         "數字單字",
         22
       ],
@@ -337,6 +341,10 @@
       [
         "招呼用語",
         21
+      ],
+      [
+        "比例尺",
+        20
       ],
       [
         "最大公因數",
@@ -365,36 +373,28 @@
       [
         "貨幣與交易",
         18
-      ],
-      [
-        "動物單字",
-        18
-      ],
-      [
-        "除法運算",
-        17
       ]
     ],
-    "coverageRatio": 0.953,
+    "coverageRatio": 0.957,
     "primaryCoverage": 0,
-    "avgTagsPerQuestion": 1.65,
-    "zipfDeviation": 0.202,
+    "avgTagsPerQuestion": 1.74,
+    "zipfDeviation": 0.17,
     "sampleAdequacy": {
-      "sufficient": 76,
-      "marginal": 317,
-      "insufficient": 1835
+      "sufficient": 101,
+      "marginal": 369,
+      "insufficient": 1824
     }
   },
   "content": {
     "answerPositionDistribution": [
-      657,
-      646,
-      667,
-      634
+      728,
+      693,
+      743,
+      720
     ],
-    "answerPositionMaxDeviation": 0.026,
-    "answerIsLongestRatio": 0.233,
-    "absoluteWordingCount": 151,
+    "answerPositionMaxDeviation": 0.039,
+    "answerIsLongestRatio": 0.237,
+    "absoluteWordingCount": 202,
     "duplicateGroups": [
       [
         "q628",
@@ -483,28 +483,28 @@
         "gen-sci-0028"
       ]
     ],
-    "explanationCoverage": 0.966,
+    "explanationCoverage": 0.969,
     "promptLength": {
-      "min": 0,
-      "max": 131,
-      "avg": 28,
-      "median": 23
+      "min": 4,
+      "max": 162,
+      "avg": 30,
+      "median": 24
     }
   },
   "diagnosis": {
-    "diagnosticCount": 2919,
+    "diagnosticCount": 3199,
     "sampleAdequacy": {
-      "sufficient": 76,
-      "marginal": 317,
-      "insufficient": 1835
+      "sufficient": 101,
+      "marginal": 369,
+      "insufficient": 1824
     },
     "gradeCoverage": {
       "1": 0,
       "2": 0,
-      "3": 675,
-      "4": 755,
-      "5": 723,
-      "6": 766
+      "3": 678,
+      "4": 794,
+      "5": 817,
+      "6": 910
     },
     "guessRates": {
       "single-choice": 0.25,
@@ -515,73 +515,73 @@
   },
   "coverage": {
     "subjectCounts": {
-      "數學": 618,
-      "自然": 613,
-      "社會": 612,
-      "國語": 613,
-      "英語": 607
+      "數學": 673,
+      "自然": 682,
+      "社會": 667,
+      "國語": 670,
+      "英語": 651
     },
     "gradeCounts": {
       "1": 0,
       "2": 0,
-      "3": 735,
-      "4": 781,
-      "5": 765,
-      "6": 768
+      "3": 695,
+      "4": 808,
+      "5": 826,
+      "6": 910
     },
     "subjectGradeMatrix": {
       "數學": {
         "1": 0,
         "2": 0,
-        "3": 145,
-        "4": 157,
-        "5": 157,
-        "6": 157
+        "3": 139,
+        "4": 159,
+        "5": 170,
+        "6": 186
       },
       "自然": {
         "1": 0,
         "2": 0,
-        "3": 147,
-        "4": 162,
-        "5": 148,
-        "6": 153
+        "3": 142,
+        "4": 168,
+        "5": 169,
+        "6": 181
       },
       "社會": {
         "1": 0,
         "2": 0,
-        "3": 144,
-        "4": 157,
-        "5": 152,
-        "6": 156
+        "3": 135,
+        "4": 159,
+        "5": 163,
+        "6": 187
       },
       "國語": {
         "1": 0,
         "2": 0,
-        "3": 148,
-        "4": 159,
-        "5": 152,
-        "6": 151
+        "3": 136,
+        "4": 166,
+        "5": 167,
+        "6": 182
       },
       "英語": {
         "1": 0,
         "2": 0,
-        "3": 151,
-        "4": 146,
-        "5": 156,
-        "6": 151
+        "3": 143,
+        "4": 156,
+        "5": 157,
+        "6": 174
       }
     },
     "difficultyBalance": {
-      "基礎": 1116,
-      "標準": 1324,
-      "挑戰": 623
+      "基礎": 1164,
+      "標準": 1458,
+      "挑戰": 721
     }
   },
   "wiring": {
     "files": [
       {
         "file": "data/runtime_bank_elementary.json",
-        "count": 2895,
+        "count": 3175,
         "wired": true,
         "type": "single-choice"
       },
@@ -600,19 +600,19 @@
       {
         "file": "data/order_bank.json",
         "count": 16,
-        "wired": false,
+        "wired": true,
         "type": "order"
       },
       {
         "file": "data/sort_bank.json",
         "count": 5,
-        "wired": false,
+        "wired": true,
         "type": "sort"
       },
       {
         "file": "data/image_bank.json",
         "count": 3,
-        "wired": false,
+        "wired": true,
         "type": "image-matching"
       },
       {
@@ -631,832 +631,6 @@
   },
   "issues": [
     {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "sort-liangci"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "sort-units"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "sort-counties"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "sort-animal-homes"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "sort-english"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "img-taiwan-landmarks"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "img-world-landmarks"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "img-taiwan-animals"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "m-social-1"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "m-social-2"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "m-social-3"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "m-social-4"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "m-social-5"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "m-social-6"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "m-science-1"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "m-science-2"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "m-science-3"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "m-science-4"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "m-science-5"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "m-science-6"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "m-math-1"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "m-math-2"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "m-math-3"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "m-math-4"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "m-math-5"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "m-math-6"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "m-chinese-1"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "m-chinese-2"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "m-chinese-3"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "m-chinese-4"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "m-chinese-5"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "m-chinese-6"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "m-english-1"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "m-english-2"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "m-english-3"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "m-english-4"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "m-english-5"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "m-english-6"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "mx-math-1"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "mx-math-2"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "mx-math-3"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "mx-math-4"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "mx-math-5"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "mx-math-6"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "mx-math-7"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "mx-math-8"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "mx-math-9"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "mx-math-10"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "grade 越界",
-      "message": "grade=7",
-      "questionId": "mx-math-11"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "mx-math-11"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "grade 越界",
-      "message": "grade=7",
-      "questionId": "mx-math-12"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "mx-math-12"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "mx-sci-1"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "mx-sci-2"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "mx-sci-3"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "mx-sci-4"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "mx-sci-5"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "mx-sci-6"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "mx-sci-7"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "mx-sci-8"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "mx-sci-9"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "mx-sci-10"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "mx-sci-11"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "grade 越界",
-      "message": "grade=7",
-      "questionId": "mx-sci-12"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "mx-sci-12"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "grade 越界",
-      "message": "grade=7",
-      "questionId": "mx-sci-13"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "mx-sci-13"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "grade 越界",
-      "message": "grade=7",
-      "questionId": "mx-sci-14"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "mx-sci-14"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "mx-soc-1"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "mx-soc-2"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "mx-soc-3"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "mx-soc-4"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "mx-soc-5"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "mx-soc-6"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "mx-soc-7"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "mx-soc-8"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "mx-soc-9"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "mx-soc-10"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "mx-soc-11"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "grade 越界",
-      "message": "grade=7",
-      "questionId": "mx-soc-12"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "mx-soc-12"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "grade 越界",
-      "message": "grade=7",
-      "questionId": "mx-soc-13"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "mx-soc-13"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "grade 越界",
-      "message": "grade=7",
-      "questionId": "mx-soc-14"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "mx-soc-14"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "mx-chi-1"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "mx-chi-2"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "mx-chi-3"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "mx-chi-4"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "mx-chi-5"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "mx-chi-6"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "grade 越界",
-      "message": "grade=7",
-      "questionId": "mx-chi-7"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "mx-chi-7"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "grade 越界",
-      "message": "grade=7",
-      "questionId": "mx-chi-8"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "mx-chi-8"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "mx-chi-9"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "mx-chi-10"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "mx-chi-11"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "grade 越界",
-      "message": "grade=7",
-      "questionId": "mx-chi-12"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "mx-chi-12"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "mx-eng-1"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "mx-eng-2"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "mx-eng-3"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "mx-eng-4"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "mx-eng-5"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "mx-eng-6"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "mx-eng-7"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "mx-eng-8"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "mx-eng-9"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "mx-eng-10"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "mx-eng-11"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "grade 越界",
-      "message": "grade=7",
-      "questionId": "mx-eng-12"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "mx-eng-12"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "grade 越界",
-      "message": "grade=7",
-      "questionId": "mx-eng-13"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "mx-eng-13"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "grade 越界",
-      "message": "grade=7",
-      "questionId": "mx-eng-14"
-    },
-    {
-      "severity": "error",
-      "dimension": "structure",
-      "category": "缺 prompt",
-      "message": "缺少 prompt",
-      "questionId": "mx-eng-14"
-    },
-    {
       "severity": "critical",
       "dimension": "knowledge",
       "category": "缺 knowledge 標籤",
@@ -1467,14 +641,14 @@
       "severity": "warning",
       "dimension": "knowledge",
       "category": "單例標籤過多",
-      "message": "73% 的知識點只出現 1 次（1629/2228）",
+      "message": "71% 的知識點只出現 1 次（1625/2294）",
       "fix": "建立 docs/knowledge-taxonomy.md 合併同義詞並為孤兒標籤補題"
     },
     {
       "severity": "warning",
       "dimension": "knowledge",
       "category": "疑似同義標籤",
-      "message": "1786 組疑似同義",
+      "message": "1855 組疑似同義",
       "fix": "人工檢視後合併"
     },
     {
@@ -2171,20 +1345,55 @@
       "dimension": "content",
       "category": "題幹洩漏正解",
       "message": "題幹包含正解文字",
+      "questionId": "gen-國語-deep019"
+    },
+    {
+      "severity": "warning",
+      "dimension": "content",
+      "category": "題幹洩漏正解",
+      "message": "題幹包含正解文字",
+      "questionId": "gen-國語-deep023"
+    },
+    {
+      "severity": "warning",
+      "dimension": "content",
+      "category": "題幹洩漏正解",
+      "message": "題幹包含正解文字",
+      "questionId": "gen-英語-deep011"
+    },
+    {
+      "severity": "warning",
+      "dimension": "content",
+      "category": "題幹洩漏正解",
+      "message": "題幹包含正解文字",
+      "questionId": "gen-英語-deep031"
+    },
+    {
+      "severity": "warning",
+      "dimension": "content",
+      "category": "題幹洩漏正解",
+      "message": "題幹包含正解文字",
+      "questionId": "gen-英語-deep032"
+    },
+    {
+      "severity": "warning",
+      "dimension": "content",
+      "category": "題幹洩漏正解",
+      "message": "題幹包含正解文字",
       "questionId": "fill-so-01"
     },
     {
       "severity": "error",
       "dimension": "content",
       "category": "重複題目",
-      "message": "81 組題幹重複",
+      "message": "84 組題幹重複",
       "fix": "移除或改用 variant 機制"
     },
     {
       "severity": "warning",
       "dimension": "diagnosis",
       "category": "知識點樣本不足",
-      "message": "82% 的知識點樣本 < 3",
+      "message": "80% 的知識點樣本 < 3",
       "fix": "為孤兒知識點補題或合併"
     },
     {
@@ -2198,27 +1407,6 @@
       "dimension": "coverage",
       "category": "年級無題",
       "message": "2 年級尚無題目"
-    },
-    {
-      "severity": "warning",
-      "dimension": "wiring",
-      "category": "死題庫",
-      "message": "data/order_bank.json（16 筆，題型 order）沒有任何程式引用",
-      "fix": "接線到 UI，或標記為未使用以免後續 agent 誤以為已上線"
-    },
-    {
-      "severity": "warning",
-      "dimension": "wiring",
-      "category": "死題庫",
-      "message": "data/sort_bank.json（5 筆，題型 sort）沒有任何程式引用",
-      "fix": "接線到 UI，或標記為未使用以免後續 agent 誤以為已上線"
-    },
-    {
-      "severity": "warning",
-      "dimension": "wiring",
-      "category": "死題庫",
-      "message": "data/image_bank.json（3 筆，題型 image-matching）沒有任何程式引用",
-      "fix": "接線到 UI，或標記為未使用以免後續 agent 誤以為已上線"
     }
   ]
 }
