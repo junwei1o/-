@@ -35,13 +35,19 @@ type AdminShellProps = {
 };
 
 /**
- * 站長用戶名。
+ * ⚠️ 前端**不持有**站長用戶名（2026-10-18 修正）。
  *
- * ⚠️ 與 `server/_core/env.ts` 的 `ENV.adminUsername` **必須同步**。
- * 兩處不一致時，首頁入口會怎麼打都進不去。
- * 站長可以在部署環境設 `ADMIN_USERNAME` 換一個更難猜的值。
+ * 這裡原本有 `const ADMIN_USERNAME = "admin"`，並拿去當輸入框的 placeholder。那是**兩個錯誤**：
+ *   1. **洩漏**：placeholder 會渲染給每一位訪客看——等於把站長用戶名印在牆上。
+ *   2. **矛盾**：伺服器端已移除 `?? "admin"` 預設值（server/_core/env.ts 的 fail-fast），
+ *      改由部署環境的 `ADMIN_USERNAME` 決定。前端寫死的值既過期，又會誤導站長
+ *      「打 admin 就能進去」——實際上伺服器已經不接受它了。
+ *
+ * 正確架構（與 capabilities.tsx／CornerEntry.tsx 的說明一致）：
+ *   **前端不知道站長用戶名**。登入時把使用者輸入原樣送 `admin.login`，
+ *   由伺服器以 timingSafeEqual 比對 `ENV.adminUsername`。
+ *   站長改 `ADMIN_USERNAME` 只需改部署環境，**不必重新部署前端**。
  */
-const ADMIN_USERNAME = "admin";
 
 export function AdminShell({ isAdmin, onLogout }: AdminShellProps) {
   const [username, setUsername] = useState("");
@@ -95,7 +101,7 @@ export function AdminShell({ isAdmin, onLogout }: AdminShellProps) {
                 autoCapitalize="none"
                 autoCorrect="off"
                 spellCheck={false}
-                placeholder={ADMIN_USERNAME}
+                placeholder="輸入站長用戶名"
                 required
               />
               <button type="submit" className="admin-primary-button" disabled={login.isPending}>
