@@ -15176,7 +15176,12 @@
       "knowledge": [
         "最小公倍數",
         "倍數"
-      ]
+      ],
+      "variantOf": {
+        "role": "variant",
+        "anchor": "gen-math-0197",
+        "kind": "variant"
+      }
     },
     {
       "id": "q629",
@@ -17144,7 +17149,15 @@
       "knowledge": [
         "最大公因數",
         "因數"
-      ]
+      ],
+      "variantOf": {
+        "role": "anchor",
+        "groupSize": 2,
+        "members": [
+          "q950"
+        ],
+        "kind": "variant"
+      }
     },
     {
       "id": "q711",
@@ -22881,7 +22894,12 @@
       "knowledge": [
         "質數",
         "合數"
-      ]
+      ],
+      "variantOf": {
+        "role": "variant",
+        "anchor": "gen-math-0289",
+        "kind": "variant"
+      }
     },
     {
       "id": "q950",
@@ -22905,7 +22923,12 @@
       "explanation": "12 的因數有 1、2、3、4、6、12；18 的因數有 1、2、3、6、9、18。共同的因數中最大的是 6。",
       "knowledge": [
         "最大公因數"
-      ]
+      ],
+      "variantOf": {
+        "role": "variant",
+        "anchor": "q710",
+        "kind": "variant"
+      }
     },
     {
       "id": "q951",
@@ -22929,7 +22952,12 @@
       "explanation": "6 的倍數有 6、12、18、24、30…；8 的倍數有 8、16、24、32…。最小的共同倍數是 24。",
       "knowledge": [
         "最小公倍數"
-      ]
+      ],
+      "variantOf": {
+        "role": "variant",
+        "anchor": "gen-math-0197",
+        "kind": "variant"
+      }
     },
     {
       "id": "q952",
