@@ -149,10 +149,19 @@ for (const path of TARGETS) {
   });
 
   if (APPLY && changedQuestions > 0) {
-    // 保持原檔序列化風格（minified + 尾換行）
+    // ⚠️ 必須保留各檔的**原序列化格式**（2026-10-18 修正）。
+    //    首版一律用 JSON.stringify(bank)（無縮排）寫回，把
+    //    taiwan_curriculum_500.json 從 2 空格縮排（26241 行）壓成單行，
+    //    製造 -26252 行的假 diff（內容等價但格式崩壞 → review 災難）。
+    //    偵測法：原文若呈現 2 空格縮排，就用 2 空格縮排寫回。
     const raw = readFileSync(join(ROOT, path), "utf8");
     const trailing = raw.endsWith("\n") ? "\n" : "";
-    writeFileSync(join(ROOT, path), JSON.stringify(bank) + trailing, "utf8");
+    const isIndented = /\n\s{2}"/.test(raw);
+    const serialized = isIndented
+      ? JSON.stringify(bank, null, 2) + trailing
+      : JSON.stringify(bank) + trailing;
+    writeFileSync(join(ROOT, path), serialized, "utf8");
+    if (!JSON_OUT) console.log(`   ↳ 寫回 ${path}（格式：${isIndented ? "2 空格縮排" : "minified"}）`);
   }
 }
 
