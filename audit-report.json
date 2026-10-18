@@ -1,5 +1,5 @@
 {
-  "scannedAt": "2026-10-17T16:37:00.533Z",
+  "scannedAt": "2026-10-18T03:39:02.493Z",
   "totalQuestions": 3343,
   "scores": {
     "overall": 58,
@@ -398,7 +398,8 @@
     "duplicateGroups": [
       [
         "q628",
-        "q951"
+        "q951",
+        "gen-math-0197"
       ],
       [
         "q710",
@@ -652,592 +653,403 @@
       "fix": "人工檢視後合併"
     },
     {
-      "severity": "warning",
+      "severity": "info",
       "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
+      "category": "檢索型：答案在材料中（刻意設計）",
+      "message": "題幹含材料標記，且 2 個其他選項也出自材料——比對法無法唯一定位，屬命題本質",
       "questionId": "q007"
     },
     {
-      "severity": "warning",
+      "severity": "info",
       "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
+      "category": "洩漏但比對法失效",
+      "message": "正解與至少一個其他選項皆獨立出現於題幹",
       "questionId": "q021"
     },
     {
-      "severity": "warning",
+      "severity": "info",
       "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
+      "category": "檢索型：答案在材料中（刻意設計）",
+      "message": "題幹含材料標記，且 2 個其他選項也出自材料——比對法無法唯一定位，屬命題本質",
       "questionId": "q022"
     },
     {
-      "severity": "warning",
+      "severity": "info",
       "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
-      "questionId": "q026"
-    },
-    {
-      "severity": "warning",
-      "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
+      "category": "洩漏但比對法失效",
+      "message": "正解與至少一個其他選項皆獨立出現於題幹",
       "questionId": "q032"
     },
     {
-      "severity": "warning",
+      "severity": "info",
       "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
+      "category": "檢索型：答案在材料中（刻意設計）",
+      "message": "題幹含材料標記，且 2 個其他選項也出自材料——比對法無法唯一定位，屬命題本質",
       "questionId": "q052"
     },
     {
-      "severity": "warning",
+      "severity": "info",
       "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
+      "category": "洩漏但比對法失效",
+      "message": "正解與至少一個其他選項皆獨立出現於題幹",
       "questionId": "q056"
     },
     {
-      "severity": "warning",
+      "severity": "info",
       "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
+      "category": "檢索型：答案在材料中（刻意設計）",
+      "message": "題幹含材料標記，且 2 個其他選項也出自材料——比對法無法唯一定位，屬命題本質",
       "questionId": "q064"
     },
     {
-      "severity": "warning",
+      "severity": "info",
       "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
-      "questionId": "q116"
-    },
-    {
-      "severity": "warning",
-      "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
+      "category": "洩漏但比對法失效",
+      "message": "正解與至少一個其他選項皆獨立出現於題幹",
       "questionId": "q122"
     },
     {
-      "severity": "warning",
+      "severity": "info",
       "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
-      "questionId": "q127"
-    },
-    {
-      "severity": "warning",
-      "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
+      "category": "洩漏但比對法失效",
+      "message": "正解與至少一個其他選項皆獨立出現於題幹",
       "questionId": "q142"
     },
     {
-      "severity": "warning",
+      "severity": "info",
       "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
+      "category": "洩漏但比對法失效",
+      "message": "正解與至少一個其他選項皆獨立出現於題幹",
       "questionId": "q153"
     },
     {
-      "severity": "warning",
+      "severity": "info",
       "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
+      "category": "洩漏但比對法失效",
+      "message": "正解與至少一個其他選項皆獨立出現於題幹",
       "questionId": "q157"
     },
     {
-      "severity": "warning",
+      "severity": "info",
       "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
+      "category": "洩漏但比對法失效",
+      "message": "正解與至少一個其他選項皆獨立出現於題幹",
       "questionId": "q158"
     },
     {
-      "severity": "warning",
+      "severity": "info",
       "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
+      "category": "洩漏但比對法失效",
+      "message": "正解與至少一個其他選項皆獨立出現於題幹",
       "questionId": "q175"
     },
     {
-      "severity": "warning",
+      "severity": "info",
       "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
-      "questionId": "q181"
-    },
-    {
-      "severity": "warning",
-      "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
-      "questionId": "q184"
-    },
-    {
-      "severity": "warning",
-      "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
+      "category": "洩漏但比對法失效",
+      "message": "正解與至少一個其他選項皆獨立出現於題幹",
       "questionId": "q197"
     },
     {
-      "severity": "warning",
+      "severity": "info",
       "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
+      "category": "洩漏但比對法失效",
+      "message": "正解與至少一個其他選項皆獨立出現於題幹",
       "questionId": "q198"
     },
     {
-      "severity": "warning",
+      "severity": "info",
       "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
+      "category": "洩漏但比對法失效",
+      "message": "正解與至少一個其他選項皆獨立出現於題幹",
       "questionId": "q229"
     },
     {
-      "severity": "warning",
+      "severity": "info",
       "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
-      "questionId": "q263"
-    },
-    {
-      "severity": "warning",
-      "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
-      "questionId": "q264"
-    },
-    {
-      "severity": "warning",
-      "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
+      "category": "洩漏但比對法失效",
+      "message": "正解與至少一個其他選項皆獨立出現於題幹",
       "questionId": "q265"
     },
     {
-      "severity": "warning",
+      "severity": "info",
       "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
+      "category": "洩漏但比對法失效",
+      "message": "正解與至少一個其他選項皆獨立出現於題幹",
       "questionId": "q278"
     },
     {
-      "severity": "warning",
+      "severity": "info",
       "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
+      "category": "洩漏但比對法失效",
+      "message": "正解與至少一個其他選項皆獨立出現於題幹",
       "questionId": "q279"
     },
     {
-      "severity": "warning",
+      "severity": "info",
       "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
+      "category": "洩漏但比對法失效",
+      "message": "正解與至少一個其他選項皆獨立出現於題幹",
       "questionId": "q299"
     },
     {
-      "severity": "warning",
+      "severity": "info",
       "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
+      "category": "洩漏但比對法失效",
+      "message": "正解與至少一個其他選項皆獨立出現於題幹",
       "questionId": "q314"
     },
     {
-      "severity": "warning",
+      "severity": "info",
       "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
+      "category": "洩漏但比對法失效",
+      "message": "正解與至少一個其他選項皆獨立出現於題幹",
       "questionId": "q316"
     },
     {
-      "severity": "warning",
+      "severity": "info",
       "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
+      "category": "洩漏但比對法失效",
+      "message": "正解與至少一個其他選項皆獨立出現於題幹",
       "questionId": "q331"
     },
     {
-      "severity": "warning",
+      "severity": "info",
       "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
+      "category": "洩漏但比對法失效",
+      "message": "正解與至少一個其他選項皆獨立出現於題幹",
       "questionId": "q403"
     },
     {
-      "severity": "warning",
+      "severity": "info",
       "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
+      "category": "洩漏但比對法失效",
+      "message": "正解與至少一個其他選項皆獨立出現於題幹",
       "questionId": "q430"
     },
     {
-      "severity": "warning",
+      "severity": "info",
       "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
+      "category": "洩漏但比對法失效",
+      "message": "正解與至少一個其他選項皆獨立出現於題幹",
       "questionId": "q443"
     },
     {
-      "severity": "warning",
+      "severity": "info",
       "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
+      "category": "洩漏但比對法失效",
+      "message": "正解與至少一個其他選項皆獨立出現於題幹",
       "questionId": "q504"
     },
     {
-      "severity": "warning",
+      "severity": "info",
       "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
+      "category": "檢索型：干擾項全不在材料（比對法可答）",
+      "message": "雖為檢索型題，但其他選項皆不在材料中，字串比對即可命中——需人工判斷是「定位資訊」合法設計或弱命題",
       "questionId": "q506"
     },
     {
-      "severity": "warning",
+      "severity": "info",
       "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
+      "category": "檢索型：干擾項全不在材料（比對法可答）",
+      "message": "雖為檢索型題，但其他選項皆不在材料中，字串比對即可命中——需人工判斷是「定位資訊」合法設計或弱命題",
       "questionId": "q513"
     },
     {
-      "severity": "warning",
+      "severity": "info",
       "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
+      "category": "檢索型：答案在材料中（刻意設計）",
+      "message": "題幹含材料標記，且 1 個其他選項也出自材料——比對法無法唯一定位，屬命題本質",
       "questionId": "q514"
     },
     {
-      "severity": "warning",
+      "severity": "info",
       "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
+      "category": "檢索型：干擾項全不在材料（比對法可答）",
+      "message": "雖為檢索型題，但其他選項皆不在材料中，字串比對即可命中——需人工判斷是「定位資訊」合法設計或弱命題",
       "questionId": "q524"
     },
     {
-      "severity": "warning",
+      "severity": "info",
       "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
+      "category": "洩漏但比對法失效",
+      "message": "正解與至少一個其他選項皆獨立出現於題幹",
       "questionId": "q530"
     },
     {
-      "severity": "warning",
+      "severity": "info",
       "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
+      "category": "檢索型：干擾項全不在材料（比對法可答）",
+      "message": "雖為檢索型題，但其他選項皆不在材料中，字串比對即可命中——需人工判斷是「定位資訊」合法設計或弱命題",
       "questionId": "q542"
     },
     {
-      "severity": "warning",
+      "severity": "info",
       "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
+      "category": "檢索型：干擾項全不在材料（比對法可答）",
+      "message": "雖為檢索型題，但其他選項皆不在材料中，字串比對即可命中——需人工判斷是「定位資訊」合法設計或弱命題",
       "questionId": "q548"
     },
     {
-      "severity": "warning",
+      "severity": "info",
       "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
+      "category": "洩漏但比對法失效",
+      "message": "正解與至少一個其他選項皆獨立出現於題幹",
       "questionId": "q550"
     },
     {
-      "severity": "warning",
+      "severity": "info",
       "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
+      "category": "洩漏但比對法失效",
+      "message": "正解與至少一個其他選項皆獨立出現於題幹",
       "questionId": "q551"
     },
     {
-      "severity": "warning",
+      "severity": "info",
       "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
+      "category": "洩漏但比對法失效",
+      "message": "正解與至少一個其他選項皆獨立出現於題幹",
       "questionId": "q552"
     },
     {
-      "severity": "warning",
+      "severity": "info",
       "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
+      "category": "檢索型：干擾項全不在材料（比對法可答）",
+      "message": "雖為檢索型題，但其他選項皆不在材料中，字串比對即可命中——需人工判斷是「定位資訊」合法設計或弱命題",
       "questionId": "q553"
     },
     {
-      "severity": "warning",
+      "severity": "info",
       "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
+      "category": "檢索型：答案在材料中（刻意設計）",
+      "message": "題幹含材料標記，且 2 個其他選項也出自材料——比對法無法唯一定位，屬命題本質",
       "questionId": "q557"
     },
     {
-      "severity": "warning",
+      "severity": "info",
       "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
-      "questionId": "q600"
-    },
-    {
-      "severity": "warning",
-      "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
-      "questionId": "q627"
-    },
-    {
-      "severity": "warning",
-      "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
-      "questionId": "q658"
-    },
-    {
-      "severity": "warning",
-      "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
-      "questionId": "q668"
-    },
-    {
-      "severity": "warning",
-      "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
-      "questionId": "q674"
-    },
-    {
-      "severity": "warning",
-      "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
+      "category": "洩漏但比對法失效",
+      "message": "正解與至少一個其他選項皆獨立出現於題幹",
       "questionId": "q705"
     },
     {
-      "severity": "warning",
+      "severity": "info",
       "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
-      "questionId": "q741"
-    },
-    {
-      "severity": "warning",
-      "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
-      "questionId": "q745"
-    },
-    {
-      "severity": "warning",
-      "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
+      "category": "洩漏但比對法失效",
+      "message": "正解與至少一個其他選項皆獨立出現於題幹",
       "questionId": "q755"
     },
     {
-      "severity": "warning",
+      "severity": "info",
       "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
-      "questionId": "q756"
-    },
-    {
-      "severity": "warning",
-      "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
-      "questionId": "q757"
-    },
-    {
-      "severity": "warning",
-      "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
-      "questionId": "q758"
-    },
-    {
-      "severity": "warning",
-      "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
-      "questionId": "q759"
-    },
-    {
-      "severity": "warning",
-      "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
+      "category": "洩漏但比對法失效",
+      "message": "正解與至少一個其他選項皆獨立出現於題幹",
       "questionId": "q760"
     },
     {
-      "severity": "warning",
+      "severity": "info",
       "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
-      "questionId": "q781"
-    },
-    {
-      "severity": "warning",
-      "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
+      "category": "洩漏但比對法失效",
+      "message": "正解與至少一個其他選項皆獨立出現於題幹",
       "questionId": "q788"
     },
     {
-      "severity": "warning",
+      "severity": "info",
       "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
-      "questionId": "q794"
-    },
-    {
-      "severity": "warning",
-      "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
+      "category": "洩漏但比對法失效",
+      "message": "正解與至少一個其他選項皆獨立出現於題幹",
       "questionId": "q817"
     },
     {
-      "severity": "warning",
+      "severity": "info",
       "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
+      "category": "洩漏但比對法失效",
+      "message": "正解與至少一個其他選項皆獨立出現於題幹",
       "questionId": "q841"
     },
     {
-      "severity": "warning",
+      "severity": "info",
       "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
+      "category": "洩漏但比對法失效",
+      "message": "正解與至少一個其他選項皆獨立出現於題幹",
       "questionId": "q978"
     },
     {
-      "severity": "warning",
+      "severity": "info",
       "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
+      "category": "洩漏但比對法失效",
+      "message": "正解與至少一個其他選項皆獨立出現於題幹",
       "questionId": "q982"
     },
     {
-      "severity": "warning",
+      "severity": "info",
       "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
+      "category": "洩漏但比對法失效",
+      "message": "正解與至少一個其他選項皆獨立出現於題幹",
       "questionId": "q1069"
     },
     {
-      "severity": "warning",
+      "severity": "info",
       "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
+      "category": "洩漏但比對法失效",
+      "message": "正解與至少一個其他選項皆獨立出現於題幹",
       "questionId": "q1071"
     },
     {
-      "severity": "warning",
+      "severity": "info",
       "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
+      "category": "洩漏但比對法失效",
+      "message": "正解與至少一個其他選項皆獨立出現於題幹",
       "questionId": "q1080"
     },
     {
-      "severity": "warning",
+      "severity": "info",
       "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
-      "questionId": "gen-math-0136"
-    },
-    {
-      "severity": "warning",
-      "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
+      "category": "洩漏但比對法失效",
+      "message": "正解與至少一個其他選項皆獨立出現於題幹",
       "questionId": "gen-math-0155"
     },
     {
-      "severity": "warning",
+      "severity": "info",
       "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
+      "category": "洩漏但比對法失效",
+      "message": "正解與至少一個其他選項皆獨立出現於題幹",
       "questionId": "gen-math-0159"
     },
     {
-      "severity": "warning",
+      "severity": "info",
       "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
-      "questionId": "gen-math-0197"
-    },
-    {
-      "severity": "warning",
-      "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
+      "category": "洩漏但比對法失效",
+      "message": "正解與至少一個其他選項皆獨立出現於題幹",
       "questionId": "gen-math-0231"
     },
     {
-      "severity": "warning",
+      "severity": "info",
       "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
-      "questionId": "gen-math-0262"
-    },
-    {
-      "severity": "warning",
-      "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
+      "category": "洩漏但比對法失效",
+      "message": "正解與至少一個其他選項皆獨立出現於題幹",
       "questionId": "gen-math-0300"
     },
     {
-      "severity": "warning",
+      "severity": "info",
       "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
+      "category": "洩漏但比對法失效",
+      "message": "正解與至少一個其他選項皆獨立出現於題幹",
       "questionId": "gen-math-0305"
     },
     {
-      "severity": "warning",
+      "severity": "info",
       "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
-      "questionId": "gen-math-0342"
-    },
-    {
-      "severity": "warning",
-      "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
-      "questionId": "gen-math-0345"
-    },
-    {
-      "severity": "warning",
-      "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
-      "questionId": "gen-math-0437"
-    },
-    {
-      "severity": "warning",
-      "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
+      "category": "洩漏但比對法失效",
+      "message": "正解與至少一個其他選項皆獨立出現於題幹",
       "questionId": "gen-math-0442"
     },
     {
-      "severity": "warning",
+      "severity": "info",
       "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
+      "category": "洩漏但比對法失效",
+      "message": "正解與至少一個其他選項皆獨立出現於題幹",
       "questionId": "gen-math-0480"
-    },
-    {
-      "severity": "warning",
-      "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
-      "questionId": "gen-math-0494"
     },
     {
       "severity": "warning",
@@ -1304,17 +1116,17 @@
       "fix": "改寫為非絕對化陳述"
     },
     {
-      "severity": "warning",
+      "severity": "info",
       "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
+      "category": "檢索型：干擾項全不在材料（比對法可答）",
+      "message": "雖為檢索型題，但其他選項皆不在材料中，字串比對即可命中——需人工判斷是「定位資訊」合法設計或弱命題",
       "questionId": "gen-chi-0196"
     },
     {
-      "severity": "warning",
+      "severity": "info",
       "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
+      "category": "洩漏但比對法失效",
+      "message": "正解與至少一個其他選項皆獨立出現於題幹",
       "questionId": "gen-chi-0357"
     },
     {
@@ -1334,53 +1146,18 @@
       "fix": "改寫為非絕對化陳述"
     },
     {
-      "severity": "warning",
+      "severity": "info",
       "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
-      "questionId": "gen-eng-0757"
-    },
-    {
-      "severity": "warning",
-      "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
+      "category": "洩漏但比對法失效",
+      "message": "正解與至少一個其他選項皆獨立出現於題幹",
       "questionId": "gen-國語-deep019"
     },
     {
-      "severity": "warning",
+      "severity": "info",
       "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
+      "category": "洩漏但比對法失效",
+      "message": "正解與至少一個其他選項皆獨立出現於題幹",
       "questionId": "gen-國語-deep023"
-    },
-    {
-      "severity": "warning",
-      "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
-      "questionId": "gen-英語-deep011"
-    },
-    {
-      "severity": "warning",
-      "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
-      "questionId": "gen-英語-deep031"
-    },
-    {
-      "severity": "warning",
-      "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
-      "questionId": "gen-英語-deep032"
-    },
-    {
-      "severity": "warning",
-      "dimension": "content",
-      "category": "題幹洩漏正解",
-      "message": "題幹包含正解文字",
-      "questionId": "fill-so-01"
     },
     {
       "severity": "error",

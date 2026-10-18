@@ -257,6 +257,40 @@ function levenshtein(a: string, b: string): number {
   return prev[n];
 }
 
+/**
+ * 答案是否「獨立」出現在題幹（E2f 續）。
+ * 英文／數字答案要求前後邊界是非英數字——擋掉 "in"⊂"winter"、"6"⊂"56" 這類子字串偽洩漏。
+ * 中文無詞彙邊界，維持直接包含判定。
+ * 另外豁免「答案就是 A–D 單字母標號、且題幹自帶 A. B. C. 列舉」——
+ * 那是選項編號撞上題幹列舉字母（q116 實例），不是內容洩漏。
+ */
+function appearsIndependently(stem: string, answer: string): boolean {
+  const a = answer.trim();
+  if (!a) return false;
+  if (/^[A-D]$/.test(a) && /[A-D]\s*[.、]/.test(stem)) return false;
+  // 答案本身就是純標點（「？」、「。」）：題幹的疑問句式/句尾必含它，非內容洩漏。
+  if (!/[0-9A-Za-z\u4e00-\u9fff]/.test(a)) return false;
+  const esc = a.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  // 數字答案再加一條：前面是小數點／分數線時不算獨立出現
+  // （2.4 的「4」、2又1/2 的「1/2」是數值構件撞答案，不是文字洩漏）。
+  const pre = /^[0-9.\/]$/.test(a[0]) ? String.raw`(?<![0-9A-Za-z\.\/])` : String.raw`(?<![0-9A-Za-z])`;
+  const re = new RegExp(`${pre}${esc}(?![0-9A-Za-z])`);
+  return re.test(stem);
+}
+
+/**
+ * 檢索型閱讀題的題幹標記（E2f 續，2026-10-17）。
+ * 出現任一即視為「答案需從題幹材料中定位」的課綱題型：
+ * 此時答案字句在材料中是**設計必要**，不是洩漏。
+ * ⚠️ 刻意保守：只用「材料引導語」，不用「請問」這類泛用詞，
+ *    以免把「知識題＋答案剛好寫在題幹」（如 fill-so-01「台北 101 位於 ___ 市」）
+ *    一起豁免——那正是必須修的真瑕疵。
+ */
+const RETRIEVAL_MARKERS = [
+  "短文", "通知", "公告", "說明文", "日記", "這段文字",
+  "閱讀下面", "下面的段落", "中的「",
+];
+
 // ═══ 五維度 ═══
 
 function dimStructure(rows: Row[], issues: Issue[]) {
@@ -442,8 +476,29 @@ function dimContent(rows: Row[], issues: Issue[]) {
       const others = q.options.filter((_, i) => i !== q.answer).map((o) => o.length);
       if (others.length > 0 && ansLen > Math.max(...others)) answerLongest++;
       const ansText = q.options[q.answer];
-      if (ansText && prompt.includes(ansText)) {
-        issues.push({ severity: "warning", dimension: "content", category: "題幹洩漏正解", message: "題幹包含正解文字", questionId: q.id });
+      // E2f 續（2026-10-16～17）：原本只做 `prompt.includes(ansText)`，抓到一堆**子字串偽洩漏**
+      // （答案 "in" ⊂「winter」、"6" ⊂「56」、"4" ⊂「2.4」）。判準改為**獨立出現**：
+      // 答案前後必須是非英數字（中文本就無分界，直接含入）。
+      // 分級（逐題判讀 14 題後的結論）：
+      //   · 檢索型閱讀題（題幹引用短文／通知／公告）答案在材料中是**題型本質**。
+      //     但豁免有附加條件：至少一個「其他選項」也在材料中——此時比對法無法唯一定位，
+      //     學生真的需要理解（q007 主旨句型：3 個選項都出自材料）。
+      //   · 檢索型但「其他選項全不在材料」→ 退化為字串比對，**不自動豁免**，
+      //     另列 info 讓站長判斷（有可能是合法的「定位資訊」題，也可能是弱設計）。
+      //   · 非檢索、只有正解獨立出現＝不運算就能撿字作答 → warning（真瑕疵，要改資料）。
+      //   · 非檢索、但其他候選也在題幹＝比對法失效 → info。
+      if (ansText && appearsIndependently(prompt, ansText)) {
+        const retrieval = RETRIEVAL_MARKERS.some((m) => prompt.includes(m));
+        const distractorIn = q.options.filter((_, i) => i !== q.answer).filter((o) => appearsIndependently(prompt, String(o)));
+        if (retrieval && distractorIn.length > 0) {
+          issues.push({ severity: "info", dimension: "content", category: "檢索型：答案在材料中（刻意設計）", message: `題幹含材料標記，且 ${distractorIn.length} 個其他選項也出自材料——比對法無法唯一定位，屬命題本質`, questionId: q.id });
+        } else if (retrieval) {
+          issues.push({ severity: "info", dimension: "content", category: "檢索型：干擾項全不在材料（比對法可答）", message: "雖為檢索型題，但其他選項皆不在材料中，字串比對即可命中——需人工判斷是「定位資訊」合法設計或弱命題", questionId: q.id });
+        } else if (distractorIn.length > 0) {
+          issues.push({ severity: "info", dimension: "content", category: "洩漏但比對法失效", message: "正解與至少一個其他選項皆獨立出現於題幹", questionId: q.id });
+        } else {
+          issues.push({ severity: "warning", dimension: "content", category: "題幹洩漏正解", message: "正解是唯一獨立出現於題幹的選項（比對即可作答）", questionId: q.id });
+        }
       }
     }
 
