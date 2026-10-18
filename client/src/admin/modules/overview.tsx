@@ -143,7 +143,7 @@ function HealthModule() {
       id: "env",
       name: "必要設定",
       tone: optionalMissing.length > 0 ? "watch" : "ok",
-      value: optionalMissing.length > 0 ? `必要項齐全，另有 ${optionalMissing.length} 項選用未設` : "全部就緒",
+      value: optionalMissing.length > 0 ? `必要項齊全，另有 ${optionalMissing.length} 項選用未設` : "全部就緒",
       rule: "必要：DATABASE_URL、JWT_SECRET；其餘為選用（缺了會降級但不會壞）",
     });
   }

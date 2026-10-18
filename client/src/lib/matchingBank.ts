@@ -82,7 +82,7 @@ export function gradeRangeCeiling(label: string): number | null {
  * 本池的唯一真相過濾（2026-10-16，05 的 E2f）：產品定位為國小
  * （「內容等級上限六年級」見 `adaptiveLearning.ts` 的 `MAX_GRADE`），
  * 但 `matching_bank_extra` 有 14 組「7-9年級」的國中內容（國中代數／文言字義／世界史）。
- * 配對池过去完全不做年級過濾——所有消費端只按「有無圖片」「科目」篩——
+ * 配對池過去完全不做年級過濾——所有消費端只按「有無圖片」「科目」篩——
  * 低年級學生會在平常試卷與 /matching 抽到國中題。
  * 在源頭（MATCHING_SETS 常數）擋掉，而不是逐消費端補：
  * 消費端有 5 處（mixPaperMatching／mixPaperVariants／buildRelayRounds／
