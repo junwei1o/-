@@ -88,6 +88,17 @@ jobs:
           echo '── 孤兒 CSS（AdminConsole.css only）──'
           pnpm qc:orphan
 
+          echo '── S5 知識點標籤回歸檢查（數字後綴＋同義詞舊名）──'
+          pnpm qc:knowledge-regression
+
+          echo '── S5 變體家族回歸檢查（95 組 anchor 標註）──'
+          pnpm qc:variant-regression
+          echo '── S5 知識點標籤回歸檢查（數字後綴＋同義詞舊名）──'
+          pnpm qc:knowledge-regression
+          echo '── S5 變體家族回歸檢查（95 組 anchor 標註）──'
+          pnpm qc:variant-regression
+          pnpm qc:orphan
+
       # 在 CI 建置一次，讓「建置壞掉」在合併前就發現，而不是等 Render 部署失敗
       - name: Build
         run: pnpm build

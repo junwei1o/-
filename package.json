@@ -20,7 +20,9 @@
     "qc:orphan": "node scripts/qc-orphan-css.mjs",
     "qc:bundle": "node scripts/qc-bundle-size.mjs",
     "qc:bank-count": "node scripts/qc-bank-count.mjs",
-    "bank:verify-gen": "node scripts/verify-generator-determinism.mjs"
+    "bank:verify-gen": "node scripts/verify-generator-determinism.mjs",
+    "qc:knowledge-regression": "node scripts/qc-knowledge-regression.mjs",
+    "qc:variant-regression": "node scripts/qc-variant-regression.mjs"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.12",
