@@ -57,5 +57,15 @@ if (bad > 0) {
   process.exit(1);
 }
 
+// ⚠️ 2026-10-18 修正「假閘門」：原本掃到 0 個 CSS 檔時會印
+// 「✓ 0 個 CSS 檔結構正常」並 exit 0——目錄改名／建置產物缺失都會造成
+// 「沒檢查到任何東西卻回綠」。零檔一律視為失敗（同 qc-question-bank、
+// qc-answer-distribution 的同型修正；見 05 的 E2h）。
+if (files.length === 0) {
+  console.error("❌ 未掃到任何 CSS 檔（client/src 下沒有 *.css）——這是失敗，不是通過。");
+  console.error("   檢查 client/src 是否存在、是否含 CSS 檔。");
+  process.exit(1);
+}
+
 console.log(`  ✓ ${files.length} 個 CSS 檔結構正常（無空選擇器、花括號平衡）`);
 process.exit(0);
