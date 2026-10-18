@@ -372,6 +372,9 @@ const GENERATORS = [
       const correct = (function gcd(x, y) {
         return y === 0 ? x : gcd(y, x % y);
       })(a, b);
+      // E2c 同型防護（2026-10-17）：一數整除另一數時（如 6 和 12），gcd 恰等於
+      // 題幹寫出的那個數 → 比對即可作答，跳過這組配對。
+      if (correct === a || correct === b) return null;
       return {
         grade: 5,
         prompt: `${a} 和 ${b} 的最大公因數是多少？`,
@@ -394,6 +397,12 @@ const GENERATORS = [
         return y === 0 ? x : g(y, x % y);
       })(a, b);
       const correct = (a * b) / gcd;
+      // E2c 同型防護（2026-10-17）：一數整除另一數時（8 和 4、6 和 3），
+      // lcm 恰等於題幹寫出的那個數 → 正解「8」直接出現在「8 和 4…」，
+      // 比對即可作答。實測 gen-math-0197／0262 即此模式（資料已改，見 05 的 E2c；
+      // 現行腳本與 data/generated_bank.json 已脫鉤，見 E2g，
+      // 此防護是為「未來真的全量重生」準備，不是靠重跑修今天的資料）。
+      if (correct === a || correct === b) return null;
       return {
         grade: 5,
         prompt: `${a} 和 ${b} 的最小公倍數是多少？`,
@@ -478,6 +487,10 @@ const GENERATORS = [
       const total = pick(rng, [40, 60, 80, 100, 120, 150, 200, 240, 300]);
       const correct = (total * percent) / 100;
       if (!Number.isInteger(correct)) return null;
+      // E2c 同型防護（2026-10-17）：total＝100 時 correct 恰等於 percent，
+      // 正解「25」直接出現在題幹「100 的 25%…」→ 比對即可作答。
+      // 實測 gen-math-0342 即此模式（資料已改，見 05 的 E2c／E2g）。
+      if (correct === percent || correct === total) return null;
       return {
         grade: 6,
         prompt: `${total} 的 ${percent}% 是多少？`,

@@ -35,7 +35,16 @@ const TARGET_PER_SUBJECT = 1000;
 const SEED = 20260920;
 const GRADES = [3, 4, 5, 6];
 
-/** 課綱來源（不含自動產生的題目，這樣重跑才會得到同一份結果）。 */
+/**
+ * 課綱來源（不含自動產生的題目）。
+ * ⚠️ 2026-10-17 實測（05 的 E2g）：**本腳本已與 `data/generated_bank.json` 脫鉤**——
+ * 對目前 HEAD 重跑會得到 3886 題（現檔為 3966），其中 2498 題 HEAD 独有、
+ * 2418 題是新 id。原因：現檔是 2026-09-20 之後多次不同版本生成器累加的結果
+ * （旁證：腳本寫檔帶尾換行 `"\n"`，HEAD 檔尾卻是 `}]}` 無換行），
+ * 加上知識事實表／配額邏輯在後續 commit 改過。
+ * **不要「為修幾題而重跑本腳本」**——會整批換掉題庫。修個別題目請直接改資料檔
+ * （並同步記於 04 工作紀錄）；真要全量重生，得先把生成器還原到產生現檔的那個版本。
+ */
 const EXISTING_FILES = [
   "data/taiwan_curriculum_500.json",
   "data/taiwan_english_seed.json",
@@ -202,7 +211,7 @@ for (const q of all) {
 }
 
 const out = {
-  note: "由 scripts/expand-question-bank.mjs 自動產生的擴充題庫，勿手動編輯；重新執行會得到同一份結果（seed 固定）。",
+  note: "由 scripts/expand-question-bank.mjs 自動產生的擴充題庫。⚠️ 現行腳本已與本檔脫鉤（重跑得到不同結果，見 scripts/expand-question-bank.mjs 頂部註解與知識庫 05 的 E2g）：請勿拿「重跑」當作修題手段；修個別題目直接改本檔，並在 04 工作紀錄留痕。",
   generatedAt: new Date().toISOString(),
   questionCount: final.length,
   questions: final,
