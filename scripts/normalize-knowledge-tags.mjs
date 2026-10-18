@@ -30,11 +30,13 @@ const APPLY = process.argv.includes("--apply");
 const JSON_OUT = process.argv.includes("--json");
 
 /**
- * 掃描範圍：generated_bank 是**單一真相**（runtime_bank 是它的去重投影）。
- * 兩者都改會造成「改了源、投影卻過期」的不一致，故只動 generated_bank，
- * 之後由 build-runtime-bank.mjs 重新投影。
+ * 掃描範圍（2026-10-18 擴充）：
+ *   · generated_bank       —— 生成題的單一真相
+ *   · taiwan_curriculum_500 —— 課綱題的單一真相（第 2 層同義詞多來自此檔）
+ * runtime_bank 是這兩者的去重投影，**不改它**：改完源再跑 build-runtime-bank 重新投影，
+ * 避免「改了源、投影卻過期」的不一致。
  */
-const TARGETS = ["data/generated_bank.json"];
+const TARGETS = ["data/generated_bank.json", "data/taiwan_curriculum_500.json"];
 
 /**
  * 第 1 層映射表（由 docs/knowledge-taxonomy.md 抽出，程式內建以確保可重跑）。
@@ -70,6 +72,25 @@ const NEVER_MERGE = new Set([
   "現在式", "現在進行式",
 ]);
 
+/**
+ * 第 2 層：人工核可的同義詞映射（2026-10-18，站長裁示「現在一起做」）。
+ *
+ * ⚠️ 加入前已逐條機械驗證（見本檔說明）：每一對都在**同一份資料檔**內
+ *    各自存在、且**無任何一題同時標註兩者**（故合併不會誤刪知識邊界）。
+ *    實測：5 對中僅 `分數換小數`↔`分數找小數` 兩者都在 generated_bank；
+ *    其餘 4 對來自 taiwan_curriculum_500（故本檔掃描範圍已擴及該檔）。
+ */
+const SYNONYM_MAP = {
+  "中位數的概念": "中位數概念",
+  "倍數判斷": "倍數判別",
+  "分數換小數": "分數找小數",
+  "代詞指稱": "代詞指代",
+  "價格上漲": "價格上升",
+};
+
+/** 合併後的完整映射（第 1 層 ∪ 第 2 層），護欄優先。 */
+const FULL_MAP = { ...SUFFIX_MAP, ...SYNONYM_MAP };
+
 function loadBank(path) {
   return JSON.parse(readFileSync(join(ROOT, path), "utf8"));
 }
@@ -95,7 +116,7 @@ for (const path of TARGETS) {
 
     const mapped = [...new Set(ks.map((k) => {
       if (NEVER_MERGE.has(k)) return k;          // 護欄
-      return SUFFIX_MAP[k] ?? k;
+      return FULL_MAP[k] ?? k;
     }))];
 
     const changed = mapped.length !== ks.length || mapped.some((k, i) => k !== ks[i]);
@@ -103,9 +124,9 @@ for (const path of TARGETS) {
       changedQuestions += 1;
       if (mapped.length < ks.length) dedupedTags += ks.length - mapped.length;
       else renamedOnly += 1;
-      const renamed = ks.filter((k) => SUFFIX_MAP[k] && !NEVER_MERGE.has(k));
+      const renamed = ks.filter((k) => FULL_MAP[k] && !NEVER_MERGE.has(k));
       if (renamed.length && changes.length < 5) {
-        changes.push({ id: q.id, from: renamed, to: renamed.map((k) => SUFFIX_MAP[k]) });
+        changes.push({ id: q.id, from: renamed, to: renamed.map((k) => FULL_MAP[k]) });
       }
       if (APPLY) q.knowledge = mapped;
     }
@@ -119,7 +140,7 @@ for (const path of TARGETS) {
     path,
     questions: questions.length,
     tagsBefore: before.size,
-    tagsAfter: APPLY ? after.size : new Set([...before].map((k) => SUFFIX_MAP[k] ?? k)).size,
+    tagsAfter: APPLY ? after.size : new Set([...before].map((k) => FULL_MAP[k] ?? k)).size,
     changedQuestions,
     renamedOnly,
     dedupedTags,
@@ -138,7 +159,7 @@ for (const path of TARGETS) {
 if (JSON_OUT) {
   process.stdout.write(JSON.stringify({ apply: APPLY, totalChanged, report }, null, 2) + "\n");
 } else {
-  console.log("═══ 知識點標籤正規化（第 1 層：數字後綴）═══");
+  console.log("═══ 知識點標籤正規化（第 1 層數字後綴 ＋ 第 2 層同義詞）═══");
   console.log(`模式：${APPLY ? "✅ --apply（實際寫入）" : "🔍 dry-run（僅報告）"}\n`);
   for (const r of report) {
     console.log(`📄 ${r.path}`);
