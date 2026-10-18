@@ -40,6 +40,15 @@ const rows: Row[] = FILES.flatMap((file) => {
 
 console.log(`讀入 ${rows.length} 題\n`);
 
+// ⚠️ 2026-10-18 修正「假閘門」：讀入 0 題時原本會直接走到「沒有發現問題 ✅」並 exit 0——
+// 那是最危險的失效模式（題庫空了 CI 還是綠的）。零題一律視為失敗，與
+// qc-answer-distribution.mjs 的同型修正一致（見 05 的 E2h 教訓）。
+if (rows.length === 0) {
+  console.error("❌ 未讀入任何題目（檔案缺失或 questions 為空）——這是失敗，不是通過。");
+  console.error("   檢查 data/*.json 是否存在且內容非空。");
+  process.exit(1);
+}
+
 const problems: Array<{ type: string; detail: string }> = [];
 const add = (type: string, detail: string) => problems.push({ type, detail });
 
@@ -187,4 +196,10 @@ if (problems.length === 0) {
   }
   console.log("\n前 15 筆明細：");
   for (const p of problems.slice(0, 15)) console.log(`  [${p.type}] ${p.detail}`);
+  // ⚠️ 2026-10-18 修正「假閘門」：本檔原本**從不設定退出碼**，
+  //    無論找到幾個問題都 exit 0——CI 這道閘門形同虛設（永遠綠）。
+  //    實測：清空 runtime_bank 的 questions 後，明細照印（深思題不足、跨科題不足）
+  //    但 exit code 仍是 0。現在有問題即 exit 1。
+  console.error(`\n❌ 共 ${problems.length} 個問題——閘門失敗。`);
+  process.exit(1);
 }

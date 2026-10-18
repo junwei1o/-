@@ -10,7 +10,11 @@
 //   node scripts/qc-answer-distribution.mjs          # 人类可读表格
 //   node scripts/qc-answer-distribution.mjs --json   # 机器可读 JSON
 //
-// 退出码：有不合格组 -> 1；全部合格 -> 0；无可用数据 -> 0（仅警告，不误杀）。
+// 退出码：有不合格组 -> 1；全部合格 -> 0；
+// ⚠️ 2026-10-18：无可用数据 -> **1（失败）**。
+//    原本是 0（仅警告不误杀），那是**假闸门**：题库若整批消失（改名／部署漏带 data/），
+//    CI 会全绿通过，而「答案位置分布」其实从未被检查过。
+//    闸门的职责是「没检查到就说没检查到并失败」，不是静默回绿（见 05 的 E2h 教训）。
 //
 // 仅依赖 node:fs / node:url / node:path，无外部依赖。
 
@@ -134,7 +138,10 @@ function renderHuman(groups) {
 
   const total = list.length;
   if (total === 0) {
-    lines.push('（无可用题库数据，未执行任何检查）');
+    // ⚠️ 2026-10-18 修正「假闸门」：原本此处仅打印提示就 exit 0（绿）。
+    //    资料缺失=从未检查=失败，不是通过（见本档头注释）。
+    lines.push('❌ 无可用题库数据：未执行任何检查（ZERO_GROUPS=失败，不是通过）');
+    return { text: lines.join('\n'), total: 0, failCount: 1 };
   } else if (failCount > 0) {
     lines.push(`❌ ${failCount} 組不合格 / 共檢查 ${total} 組`);
   } else {
@@ -167,6 +174,16 @@ function renderJson(groups) {
       reason: pass ? null : reason,
       sources: [...g.files],
     });
+  }
+  // ⚠️ 2026-10-18 修正「假闸门」：零组别时必须算失败。
+  //    原本 totalGroups=0 → failCount=0 → pass=true → exitCode 0（绿），
+  //    等于「资料全缺也通过」。零组别一律 exitCode 1。
+  if (list.length === 0) {
+    out.summary.failCount = 1;
+    out.summary.pass = false;
+    out.summary.exitCode = 1;
+    out.summary.zeroGroups = true;
+    return out;
   }
   out.summary.pass = out.summary.failCount === 0;
   out.summary.exitCode = out.summary.pass ? 0 : 1;
