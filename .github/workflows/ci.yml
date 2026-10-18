@@ -30,6 +30,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        # 題庫規模守門（qc-bank-count）要與 HEAD~1 比對題數——需要前一個 commit。
+        # 預設 fetch-depth: 1 拿不到 HEAD~1，閘門會整體跳過（等於沒跑）。
+        with:
+          fetch-depth: 2
 
       # 版本由 package.json 的 "packageManager": "pnpm@10.4.1" 決定
       - name: Setup pnpm
@@ -53,8 +57,10 @@ jobs:
       - name: 單元測試（vitest run）
         run: pnpm test
 
-      # 以下七個閘門都是既有腳本，全部在本機實測為 PASS；第八道（qc:bundle）需要
-      # build 產物，放在下方 Build 之後的獨立步驟——閘門步驟先於建置時 dist 尚不存在，
+      # 閘門小計九道：qc:css／qc:onion／qc:bank／check-traditional／contrast-check／
+      # qc-answer-distribution／**qc-bank-count**（2026-10-18 新增）／qc:orphan，
+      # 全部在本機實測為 PASS；qc:bundle 需要 build 產物，
+      # 放在下方 Build 之後的獨立步驟——閘門步驟先於建置時 dist 尚不存在，
       # qc-bundle-size.mjs 會因找不到 index.html 直接 exit 1（2026-10-07 修正）。
       - name: 品質閘門
         run: |
@@ -75,6 +81,9 @@ jobs:
 
           echo '── 答案位置分布（防止正解又固定在同一格）──'
           node scripts/qc-answer-distribution.mjs
+
+          echo '── 題庫規模守門（題數不得低於上一個 commit；E2g 事故防止）──'
+          node scripts/qc-bank-count.mjs
 
           echo '── 孤兒 CSS（AdminConsole.css only）──'
           pnpm qc:orphan

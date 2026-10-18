@@ -28,6 +28,17 @@ if (isProduction && !process.env.ADMIN_PASSPHRASE) {
   );
 }
 
+// 站長用戶名（2026-10-18 收緊）：生產環境未設定時**拒絕啟動**。
+// 原本 `process.env.ADMIN_USERNAME ?? "admin"` 會在站長忘記設、或某次重新部署
+// 漏帶環境變數時，**悄悄退回 `admin`**——而 `admin` 是公開在註解、後台文案、
+// 甚至前端 placeholder 裡的_guessable_值，等於全站站長權限門戶洞開且無任何警告。
+// 寧可起不來（明確錯誤訊息指向解法），也不帶病上線。慣例同 JWT_SECRET。
+function failMissingAdminUsername(): never {
+  throw new Error(
+    "[env] ADMIN_USERNAME 未設定：生產環境拒絕退回預設用戶名（admin 是公開可猜值）。請在 Render Dashboard 的 Environment 頁設定 ADMIN_USERNAME 後重啟。",
+  );
+}
+
 export const ENV = {
   appId: process.env.VITE_APP_ID ?? "",
   cookieSecret: process.env.JWT_SECRET ?? "",
@@ -38,13 +49,17 @@ export const ENV = {
    *
    * ⚠️ 這是**安全性顯著下降**的取捨，決定權在站長：
    *   知道這個用戶名的人就能取得站長權限，沒有第二道因子。
-   *   維持 env 可設定，是為了日後想收緊時不必改程式——
-   *   設一個nobody 猜得到的值（例如 `ADMIN_USERNAME=<隨機長字串>`）。
    *
-   * ⚠️ 若改了這裡，前端 `CornerEntry.tsx` 的 `ADMIN_USERNAME` 也要一起改，
-   *    否則首頁入口會怎麼打都進不去。兩處的耦合在兩邊都有註解標示。
+   * ⚠️ 2026-10-18 收緊（E2h 後續）：**移除 `?? "admin"` 預設值**。
+   *   原本未設定時會悄悄退回 `admin`——等於「門沒鎖還假裝有鎖」。
+   *   現在生產環境未設 ADMIN_USERNAME 直接 fail-fast（對齊上方 JWT_SECRET 的慣例），
+   *   開發環境才允許用本地預設值啟動。
+   *   注意：**前端不讀這個值**（見 CornerEntry／AdminShell——前端不知道站長用戶名，
+   *   改了 ADMIN_USERNAME 只改部署環境即可，不必重新部署前端）。
    */
-  adminUsername: process.env.ADMIN_USERNAME ?? "admin",
+  adminUsername: isProduction
+    ? process.env.ADMIN_USERNAME || failMissingAdminUsername()
+    : (process.env.ADMIN_USERNAME ?? "admin"),
   /** 站長通關語（2026-10-01 引入、2026-10-02 停用）：保留欄位以相容舊環境變數。 */
   adminPassphrase: process.env.ADMIN_PASSPHRASE ?? "",
   databaseUrl: process.env.DATABASE_URL ?? "",
