@@ -9,6 +9,11 @@
  *  4. 同題幹但答案不同（互相矛盾的雙胞胎題）
  *  5. 題幹過長、選項過長
  *
+ * 退出碼（2026-10-18 E2i 修正）：
+ *  - 有問題 / 讀入 0 題 → exit 1
+ *  - 無問題且有資料 → exit 0
+ *  此前**從不呼叫 process.exit(1)**，故這道 CI 閘門形同虛設（E2i 詳述）。
+ *
  * 用法：node_modules/.bin/tsx scripts/qc-question-bank.mts
  */
 import { readFileSync } from "node:fs";
