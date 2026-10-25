@@ -1,6 +1,7 @@
 import { and, asc, count, desc, eq, gt, gte, inArray, lt, lte, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import mysql from "mysql2/promise";
+import { randomInt } from "node:crypto";
 import {
   aiUsage,
   assignmentSubmissions,
@@ -670,12 +671,19 @@ export async function listRecentExamRecords(limit = 50) {
 
 /* ---------- 教師端：班級與作業 ---------- */
 
-/** 產生 6 位班級碼（去掉容易看錯的 0/O/1/I）。 */
+/**
+ * 產生 6 位班級碼（去掉容易看錯的 0/O/1/I）。
+ *
+ * ⚠️ 班級碼同時是「教師覆寫班級聯絡檔」的憑證（cloud.upsertTeacherProfile
+ * 以它為唯一鑰匙），因此必須用 CSPRNG。Math.random() 是線性同餘、觀測
+ * 連續輸出可推算內部狀態，不適合當存取憑證——2026-10-25 全站掃描列为
+ * 真缺陷 #3。空間為 32^6 ≈ 1.07e9，搭配 IP 限流（300/min）足以阻擋猜碼。
+ */
 function generateClassCode(): string {
   const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
   let code = "";
   for (let i = 0; i < 6; i += 1) {
-    code += alphabet[Math.floor(Math.random() * alphabet.length)];
+    code += alphabet[randomInt(alphabet.length)];
   }
   return code;
 }

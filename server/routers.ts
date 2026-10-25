@@ -63,7 +63,7 @@ import {
   updateCloudSave,
   getDb
 } from "./db";
-import { timingSafeEqual } from "node:crypto";
+import { randomInt, timingSafeEqual } from "node:crypto";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { ADMIN_OPEN_ID, TEACHER_OPEN_ID } from "./_core/context";
 import { sdk } from "./_core/sdk";
@@ -724,7 +724,17 @@ export const appRouter = router({
         return { ok: true as const, profile: row.payload };
       }),
 
-    upsertTeacherProfile: publicProcedure
+    /**
+     * 寫入班級聯絡檔。2026-10-25 全站掃描後收緊：
+     * 原本 public —— 任何拿到班級碼的人（含學生、訪客）都能覆寫
+     * 老師的手機／LINE ID／公告（班級碼是寫入的唯一憑證）。
+     * 現改為 teacherProcedure：需教師以上 session。
+     * 教師流程不受影響：teacher.login 的 cookie 是全網域的，
+     * 教師從 /teacher 登入後回到 Home 仍帶有身分；
+     * 學生（無 session）按「同步到雲端」會看到明確的拒絕訊息。
+     * 讀取端 getTeacherProfile 維持 public（學生要看老師聯絡方式）。
+     */
+    upsertTeacherProfile: teacherProcedure
       .input(z.object({
         classCode: z.string().trim().min(4).max(8),
         teacherName: z.string().trim().min(1).max(24),
@@ -1032,12 +1042,9 @@ export const appRouter = router({
         return result;
       }),
     /** 維運：手動結算指定賽季（僅教師帳號可呼叫）。 */
-    settle: publicProcedure
-      .input(z.object({ seasonId: z.number().int().positive(), teacherName: z.string().trim().min(2).max(24) }))
+    settle: teacherProcedure
+      .input(z.object({ seasonId: z.number().int().positive() }))
       .mutation(async ({ input }) => {
-        if (!input.teacherName.startsWith("__teacher_")) {
-          throw new TRPCError({ code: "FORBIDDEN", message: "只有教師帳號可以手動結算賽季。" });
-        }
         const nextSeason = await settleLeagueSeason(input.seasonId);
         return {
           ok: true,
@@ -1061,7 +1068,8 @@ export const appRouter = router({
         const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
         for (let attempt = 0; attempt < 6; attempt += 1) {
           let code = "";
-          for (let i = 0; i < 6; i += 1) code += alphabet[Math.floor(Math.random() * alphabet.length)];
+          // 對戰碼同為存取憑證（知碼即可 join/submit）→ CSPRNG，同 db.ts generateClassCode 教訓
+          for (let i = 0; i < 6; i += 1) code += alphabet[randomInt(alphabet.length)];
           const existing = await getPkChallenge(code);
           if (existing) continue;
           const created = await createPkChallenge({ code, initiatorName: input.name, questionIds: input.questionIds });
@@ -1114,7 +1122,7 @@ export const appRouter = router({
      * serviceId／serviceName 用來確認請求真的打到你以為的那個 Render 服務
      * （env 設到別的服務上是最常見的烏龍，站點本身完全正常）。
      */
-    getBinding: publicProcedure
+    getBinding: teacherProcedure
       .query(async () => {
         const secretSet = Boolean(ENV.lineChannelSecret.trim());
         const tokenSet = Boolean(ENV.lineChannelAccessToken.trim());
@@ -1149,7 +1157,7 @@ export const appRouter = router({
       }),
 
     /** 送一封測試訊息到目前綁定的聊天室（驗證整條通道）。 */
-    sendTest: publicProcedure
+    sendTest: teacherProcedure
       .mutation(async () => {
         const token = ENV.lineChannelAccessToken.trim();
         if (!token) return { ok: false as const, reason: "line-token-not-set" as const };
@@ -1162,7 +1170,7 @@ export const appRouter = router({
       }),
 
     /** 解除綁定（清空接收對象；再傳訊息給機器人即可重新綁定）。 */
-    clearBinding: publicProcedure
+    clearBinding: teacherProcedure
       .mutation(async () => {
         const existing = await getCloudSave(LINE_RECIPIENT_KEY);
         if (!existing) return { ok: true as const };
@@ -1566,7 +1574,7 @@ export const appRouter = router({
      * 不碰網路、不回傳機密——部署後 curl 一次即可定位 synthesize 回
      * audio:null 的確切原因（缺 python／缺模組／僅熔斷中）。
      */
-    health: publicProcedure.query(() => probeEdgeTtsSupply()),
+    health: adminProcedure.query(() => probeEdgeTtsSupply()),
   }),
   /**
    * 全站資源監控（2026-10-01）：站長後台「全站資源監控」模組用。
