@@ -31,8 +31,15 @@
 2. **`--frozen-lockfile`**：`render.yaml` 用它，所以 `package.json` 與
    `pnpm-lock.yaml` 不同步會**直接讓部署失敗**。要無頭瀏覽器請用隔離的
    Playwright／`agent-browser`，**不要 `pnpm add` 進專案**。
-3. **每個 `.tsx` 都要 `import React`**：`tsconfig` 是 `jsx: preserve`，
-   走經典 JSX 轉換。漏了會 runtime 爆，但 tsc 不會報。
+3. **新 `.tsx` 請跟隨既有寫法**（保守慣例）：`tsconfig` 是 `jsx: preserve`，
+   但實際轉換由 vite 的 `react()` 插件以 **automatic runtime** 完成——
+   2026-10-25 實測：缺 `import React` 的 `.tsx`（如 `Badges.tsx`、`NotFound.tsx`）
+   編譯後自動注入 `react/jsx-runtime`，執行正常。
+   ⚠️ 此條從「漏了會 runtime 爆」**降級為風格慣例**；若哪天移除 `react()`
+   插件或改用經典轉換，它會重新變成致命地雷。自查法（實測可用）：
+   建一個不含 `import React` 的 `.tsx`，跑
+   `node_modules/.pnpm/@esbuild+darwin-arm64@*/.../esbuild <檔> --jsx=automatic --outfile=/tmp/x.js`，
+   產物首行应為 `import { jsx, jsxs } from "react/jsx-runtime"`。
 
 ## 驗證序列（改完照這個順序跑）
 
