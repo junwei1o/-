@@ -9,10 +9,10 @@
  * 兩處若各寫一份解析，改一處漏一處（審查協議型 4：語意/實作矛盾
  * 的實證——同一 bug 曾在同構的兩處以不同方式潛伏）。故抽成共用模組。
  *
- * 欄位形状（老實說，全部來源只有兩種）：
+ * 欄位形狀（老實說，全部來源只有兩種）：
  *   anchor 題：{ role:"anchor", kind:"variant", members:string[], groupSize:number, visibleSize?:number }
  *   variant 題：{ role:"variant", kind:"variant", anchor:string }
- * 其餘形状一律視為無家族（回傳空陣列）——髒資料不拋錯，優雅降級。
+ * 其餘形狀一律視為無家族（回傳空陣列）——髒資料不拋錯，優雅降級。
  */
 
 /**

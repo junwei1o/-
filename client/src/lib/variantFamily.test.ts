@@ -28,7 +28,7 @@ describe("familySiblingIds", () => {
     expect(familySiblingIds(byId.get("v1")!, byId)).toEqual(["a", "v2"]);
   });
 
-  it("無 variantOf / 髒形状 → 空陣列（優雅降級，不拋錯）", () => {
+  it("無 variantOf / 髒形狀 → 空陣列（優雅降級，不拋錯）", () => {
     const byId = bank([{ id: "x" }, { id: "y", variantOf: null }, { id: "z", variantOf: "字串不是物件" }, { id: "w", variantOf: { role: "未知角色" } }]);
     for (const id of ["x", "y", "z", "w"]) expect(familySiblingIds(byId.get(id)!, byId)).toEqual([]);
   });

@@ -676,7 +676,7 @@ export async function listRecentExamRecords(limit = 50) {
  *
  * ⚠️ 班級碼同時是「教師覆寫班級聯絡檔」的憑證（cloud.upsertTeacherProfile
  * 以它為唯一鑰匙），因此必須用 CSPRNG。Math.random() 是線性同餘、觀測
- * 連續輸出可推算內部狀態，不適合當存取憑證——2026-10-25 全站掃描列为
+ * 連續輸出可推算內部狀態，不適合當存取憑證——2026-10-25 全站掃描列為
  * 真缺陷 #3。空間為 32^6 ≈ 1.07e9，搭配 IP 限流（300/min）足以阻擋猜碼。
  */
 function generateClassCode(): string {

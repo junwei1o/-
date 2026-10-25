@@ -228,7 +228,7 @@ function topicKeyOf(question: { subject: string; learningTopic?: string }): stri
  * 鎖過的「同知識點、不同題幹」標記，題幹與解析都是人工級品質；
  * 層 1–3 是演算法生成／後端補庫的近似品。有正統變體可用時不該先吃替代品。
  * 主庫沒有 `variantOf` 的題（約 83%，含 server fallback 題庫全部）自動跳到
- * 層 1——優雅降級，路徑與改动前完全一致。
+ * 層 1——優雅降級，路徑與改動前完全一致。
  */
 export function createWrongReviewReplacement(
   questions: readonly PaperQuestion[],

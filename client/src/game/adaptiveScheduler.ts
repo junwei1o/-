@@ -49,7 +49,7 @@ export function difficultyRank(difficulty: string): number {
 }
 
 export type AdaptiveSignal = {
-  /** 剛答完這題的结果；呼叫前已 record 進 attempts 也無妨（函式不讀 attempts） */
+  /** 剛答完這題的結果；呼叫前已 record 進 attempts 也無妨（函式不讀 attempts） */
   correct: boolean;
   /**
    * 同一知識點**連續答對**次數（不含本題）。呼叫端由 attempts 尾部數出。
@@ -153,7 +153,7 @@ export function pickNextQuestion(
       const picked = shufflePick(retryPool, rng);
       if (picked) return { question: picked, policy: "variant-retry", candidates: retryPool.length };
     }
-    // 1b. 同知識點、同難度的新題（錯題本之外的即时補練）
+    // 1b. 同知識點、同難度的新題（錯題本之外的即時補練）
     const samePool = bank.filter(
       (q) => unseen(q) && sameGrade(q) && difficultyRank(q.difficulty) === rank &&
         (q.knowledge ?? []).some((k) => topics.includes(k)),

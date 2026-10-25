@@ -18,7 +18,7 @@ import type { CurriculumQuestionRow } from "@/lib/questionBank";
  * 1. 有 variantOf → 走家族重練（同概念換外皮）
  * 2. 無 variantOf（真實題庫 83% 的題）→ 必須無聲降級到 knowledge 路徑，
  *    不能回傳 null、不能拋錯（server fallback 題庫根本沒有 variantOf 欄位）
- * 3. 題目池耗盡 → 窮盡後仍要有題可出，永不断流
+ * 3. 題目池耗盡 → 窮盡後仍要有題可出，永不中斷
  */
 
 type Seed = {
