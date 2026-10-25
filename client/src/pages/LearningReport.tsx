@@ -3,7 +3,7 @@ import { BarChart3, Download, Target, TrendingUp } from "lucide-react";
 import "@/styles/learningReportInsights.css";
 import { useLocation } from "wouter";
 import { getAnalytics, getAnalyticsSummary, getLearningRecord, getWeeklyLearningGoal, saveWeeklyLearningGoal, type WeeklyLearningGoal } from "@/utils/storage";
-import { ALL_CURRICULUM_QUESTIONS } from "@/game/expeditionContent";
+import { getSeedCurriculumQuestions } from "@/game/expeditionContent";
 
 const SUBJECTS = ["國文", "數學", "英文", "自然"];
 const ANALYTICS_SUBJECT_LABELS: Record<string, string> = { chinese: "國文", math: "數學", english: "英文", science: "自然" };
@@ -45,7 +45,9 @@ export default function LearningReport() {
   const analytics = useMemo(() => getAnalytics(), [records]);
   const analyticsSummary = useMemo(() => getAnalyticsSummary(), [records]);
   const overallAccuracy = records.length ? Math.round((records.filter((record) => record.isCorrect).length / records.length) * 100) : 0;
-  const questionLookup = useMemo(() => new Map(ALL_CURRICULUM_QUESTIONS.map((question) => [question.id, question.prompt])), []);
+  // 卡關排行只需要 id→prompt；4→6 展開不改這兩個欄位，改用未展開版
+  // （0.1ms）等價取代，省下整段展開成本（原先此頁首載有 250ms 阻塞）。
+  const questionLookup = useMemo(() => new Map(getSeedCurriculumQuestions().map((question) => [question.id, question.prompt])), []);
   const stuckRanking = useMemo(() => Object.entries(analytics.subjectStats)
     .flatMap(([subject, stat]) => Object.entries(stat?.questionErrors ?? {}).map(([questionId, wrong]) => ({ subject: ANALYTICS_SUBJECT_LABELS[subject] ?? subject, questionId, wrong: Number(wrong), label: questionLookup.get(questionId) ?? questionId })))
     .sort((left, right) => right.wrong - left.wrong)

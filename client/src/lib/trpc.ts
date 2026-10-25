@@ -14,6 +14,25 @@ const configuredUrl = (
 export const API_URL = configuredUrl || "/api/trpc";
 
 /**
+ * 探針端點：system.health（既有的 tRPC 程序，不需新增任何東西）。
+ *
+ * 為什麼選它：原本探針打 `GET /api/trpc`（空路徑），tRPC 回 **404** +
+ * JSON —— 判讀可行，但每個新分頁都在瀏覽器 console 留一則紅字
+ * （實測 /answer-board、/teacher 每次都出現）。
+ *
+ * 換成 `system.health` 後回 200 + JSON，紅字消失。而判斷仍只看
+ * content-type（見下方 probeOnce 註解）是刻意的：
+ *   - 新後端 → 200 JSON → 有後端 ✓
+ *   - 舊後端（尚未有 system.health）→ **404 仍是 JSON** → 判為有後端 ✓
+ *   - 純靜態站 → SPA fallback 回 HTML → 判為無後端 ✓
+ * 也就是說版本落差不會產生「有後端卻誤判無後端」——那正是本模組
+ * 歷史教訓所警告的故障模式。
+ */
+const PROBE_URL = `${API_URL.replace(/\/$/, "")}/system.health?batch=1&input=${encodeURIComponent(
+  JSON.stringify({ "0": { json: { timestamp: 0 } } })
+)}`;
+
+/**
  * 後端 API 是否可用 —— 執行期自動偵測，不依賴「有沒有記得設定環境變數」。
  *
  * 背景：這個站點的部署方式可能因時間而改變。
@@ -60,9 +79,14 @@ function cacheProbe(result: boolean): void {
 /**
  * 打一次探針，確認 /api/trpc 背後是否真的有 tRPC router。
  *
- * 刻意用 GET + 不帶 body：tRPC 的 GET 會走「query」路徑，路徑為空時回
- * JSON 錯誤 —— 這正是我們要的訊號（代表有 router 在處理）。
+ * 刻意用 GET + 不帶 body：tRPC 的 GET 會走「query」路徑，
+ * 程序存在回 200 JSON、不存在回 404 JSON —— 兩者都是 JSON，
+ * 這正是我們要的訊號（代表有 router 在處理）。
  * 靜態站則會把這個請求 fallback 成 index.html（text/html）。
+ *
+ * ⚠️ 判斷**只看 content-type，不要改成看 `response.ok`**：
+ * 若把 404 也視為「無後端」，舊後端尚未有 system.health 時就會被誤判
+ * 成靜態站、學生拿不到後端題庫 —— 這正是上方歷史教訓的同一類故障。
  */
 function probeOnce(): Promise<boolean> {
   if (probePromise) return probePromise;
@@ -83,13 +107,13 @@ function probeOnce(): Promise<boolean> {
       const controller = typeof AbortController === "function" ? new AbortController() : null;
       // 探針不該讓學生等太久：後端在 free plan 冷啟動時可能要數秒。
       const timer = controller ? setTimeout(() => controller.abort(), 5000) : null;
-      const response = await fetch(API_URL, {
+      const response = await fetch(PROBE_URL, {
         method: "GET",
         credentials: "include",
         signal: controller?.signal,
       });
       if (timer) clearTimeout(timer);
-      // tRPC router 一定回 JSON；SPA fallback 一定回 text/html。
+      // tRPC router 一定回 JSON（含不存在的程序）；SPA fallback 一定回 text/html。
       const contentType = response.headers.get("content-type") ?? "";
       available = contentType.includes("json");
     } catch {
@@ -100,6 +124,20 @@ function probeOnce(): Promise<boolean> {
     return available;
   })();
   return probePromise;
+}
+
+/**
+ * 提前啟動探針（module 載入即起飛）。
+ *
+ * `guardedFetch` 仍會 `await` 探針（契約不變：純靜態站不能空跑請求，
+ * 那是本模組的歷史教訓）。差別在於探針很早就出發，其 RTT 與首屏資源
+ * 下載、React 渲染重疊；等第一個真正的 tRPC 呼叫時通常已完成——
+ * 實測這樣能拿回原先串接在每個 API 前的 83-150ms。
+ *
+ * 若探針尚未完成，行為與舊版完全一致（等待它），不會更差。
+ */
+export function startApiProbeInBackground(): void {
+  void probeOnce();
 }
 
 /** 後端可用性（同步讀取已完成的探針結果；未完成時為 null）。 */
@@ -121,6 +159,12 @@ export function ensureApiProbe(): Promise<boolean> {
  * - 純靜態 → 不發請求，直接以「Failed to fetch」失敗。語意等同網路不可達，
  *   元件本來就有本地兜底，且 isExpectedOfflineError 已涵蓋這個錯誤訊息，
  *   不會在 console 留下紅字。
+ *
+ * ⚠️ 這裡必須 await 探針，不能改成「探針未完成就先發請求」：
+ * 那會讓純靜態站的每個查詢都真的打出去、等一次 HTML 往返再拋錯
+ * （4G 實測單次 2 秒，首頁多個查詢疊成好幾秒白畫面）——
+ * 正是本模組歷史教訓所描述的故障。要省那段 RTT 應該從「探針提前起飛」
+ * 下手（見 startApiProbeInBackground），而不是跳過這個檢查。
  */
 export async function guardedFetch(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
   const available = await probeOnce();

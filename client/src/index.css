@@ -1527,6 +1527,15 @@ nav { display:grid; gap:7px; }
 .trend-description { margin:-8px 0 10px; color:#617778; font-size: var(--type-micro); line-height:1.65; }
 .trend-chart { width:100%; min-height:220px; }
 .trend-empty { display:grid; place-items:center; min-height:220px; margin:0; color:#6D8284; font-size:12px; }
+/* P2 修復：CSS 長條取代 recharts（消除 1000 筆資料時的 324ms 渲染長任務） */
+.trend-bars { display:grid; gap:9px; margin:0; padding:0; list-style:none; }
+.trend-bar-row { display:grid; grid-template-columns:3.4em 1fr auto; align-items:center; gap:9px; }
+.trend-bar-label { color:#617778; font-size:var(--type-micro); white-space:nowrap; }
+.trend-bar-track { position:relative; height:12px; border-radius:999px; background:rgba(11,110,142,.10); overflow:hidden; }
+.trend-bar-fill { display:block; height:100%; border-radius:999px; transition:width .45s cubic-bezier(.22,1,.36,1); }
+.trend-bars[data-tone="warm"] .trend-bar-fill { background:linear-gradient(90deg,#E8A87C,#D88462); }
+.trend-bars[data-tone="cool"] .trend-bar-fill { background:linear-gradient(90deg,#2E7D8C,#0B6E8E); }
+.trend-bar-value { color:var(--tidal); font-size:var(--type-micro); font-weight:700; font-variant-numeric:tabular-nums; }
 .progress-summary-card { margin-bottom:18px; background:linear-gradient(135deg,var(--white) 0%,#F1F6EC 100%); }
 .progress-summary-card .learning-insights-card-head { margin-bottom:12px; }
 .progress-summary-copy { display:grid; gap:10px; }

@@ -1,4 +1,4 @@
-import { staticSafeLink, trpc } from "@/lib/trpc";
+import { startApiProbeInBackground, staticSafeLink, trpc } from "@/lib/trpc";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createRoot } from "react-dom/client";
 import superjson from "superjson";
@@ -90,6 +90,11 @@ queryClient.getMutationCache().subscribe(event => {
 const trpcClient = trpc.createClient({
   links: [staticSafeLink(superjson)],
 });
+
+// 讓後端存活探針「提前起飛」：不排在第一個 API 之前，而是與它並行。
+// 過去 guardedFetch 會 await 探針，等於每個 API 都先吃一次 RTT
+// （實測線上 83-150ms，這筆時間純粹浪費在「確認後端在不在」）。
+startApiProbeInBackground();
 
 createRoot(document.getElementById("root")!).render(
   <trpc.Provider client={trpcClient} queryClient={queryClient}>

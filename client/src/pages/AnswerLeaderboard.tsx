@@ -50,6 +50,18 @@ function accuracyRate(row: BoardRecord): number {
   return row.totalQuestions > 0 ? row.correctCount / row.totalQuestions : 0;
 }
 
+/**
+ * 載入答題榜；失敗時自動重試一次。
+ *
+ * 為什麼要重試：Render 免費層閒置後會休眠，回訪的第一個 DB 查詢要
+ * 重建連線（實測最壞 10 秒後才失敗，見 perf-audit/PERF-REPORT.md P3）。
+ * 第一次失敗時學生只會看到「榜單目前連不上」並得自己按重新整理，
+ * 但實際上此時連線往往已經建立好了 —— 自動補一次就能拿到資料。
+ *
+ * 只重試一次、間隔短暫：避免在後端真的故障時變成請求風暴。
+ */
+const RETRY_DELAY_MS = 1_200;
+
 export default function AnswerLeaderboard() {
   const [, setLocation] = useLocation();
   const [records, setRecords] = useState<BoardRecord[] | null>(null);
@@ -61,14 +73,38 @@ export default function AnswerLeaderboard() {
 
   const load = useCallback(() => {
     setFailed(false);
-    cloudApi
-      .examLeaderboard({ limit: 100 })
-      .then((data) => setRecords(data.records as BoardRecord[]))
-      .catch(() => setFailed(true));
+    let cancelled = false;
+    let retryTimer: number | undefined;
+    let attempt = 0;
+
+    const attemptLoad = () => {
+      attempt += 1;
+      cloudApi
+        .examLeaderboard({ limit: 100 })
+        .then((data) => {
+          if (!cancelled) setRecords(data.records as BoardRecord[]);
+        })
+        .catch(() => {
+          if (cancelled) return;
+          if (attempt === 1) {
+            // 冷啟動後第一次失敗多半是連線尚未建立，稍候再試一次。
+            retryTimer = window.setTimeout(attemptLoad, RETRY_DELAY_MS);
+            return;
+          }
+          setFailed(true);
+        });
+    };
+
+    attemptLoad();
+    return () => {
+      cancelled = true;
+      if (retryTimer !== undefined) window.clearTimeout(retryTimer);
+    };
   }, []);
 
   useEffect(() => {
-    load();
+    const cancel = load();
+    return cancel;
   }, [load]);
 
   const rows = useMemo(() => {

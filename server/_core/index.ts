@@ -8,7 +8,7 @@ import { registerOAuthRoutes } from "./oauth";
 import { registerStorageProxy } from "./storageProxy";
 import { registerBackupRoute } from "./backupRoute";
 import { appRouter } from "../routers";
-import { ensureQuestionBankReady } from "../db";
+import { ensureQuestionBankReady, warmDbConnection } from "../db";
 import { createContext } from "./context";
 import { handleLineWebhook } from "./lineWebhook";
 import { serveStatic, setupVite } from "./vite";
@@ -100,8 +100,18 @@ async function startServer() {
   // 慣例同上），brotli 優先、gzip 退路；CSS 實測 572KB→97KB。
   // 必須掛在所有路由之前（含靜態與 tRPC），安全頭之後即可。
   app.use(httpCompression);
-  // 背景自動佈建題庫（建表＋匯入內建 500 題）；不阻擋開機，失敗也不影響服務。
-  void ensureQuestionBankReady();
+  // 先預熱一條 DB 連線，再跑題庫佈建（後者本來就會用到 DB）。
+  // Render 休眠後喚醒時 process 是新的、連線池是空的，若不預熱，
+  // 第一位使用者會承擔 TLS 交握 + 建連成本（實測 1.5-10 秒，見
+  // perf-audit/PERF-REPORT.md P3）。兩者都不阻擋開機，失敗只記錄。
+  void warmDbConnection()
+    .then((warmed) => {
+      if (warmed) console.log("[Database] 連線預熱完成");
+      return ensureQuestionBankReady();
+    })
+    .catch((err) => {
+      console.warn("[Database] 啟動預熱流程異常（不影響服務）：", (err as Error)?.message ?? err);
+    });
   // LINE webhook：必須在 express.json 之前用 raw parser，才能拿原文驗簽章。
   app.use(
     "/api/line/webhook",
@@ -159,6 +169,9 @@ async function startServer() {
   //
   // LINE webhook 掛在 /api/line/webhook，不走這個 guard，且它以
   // X-Line-Signature 驗簽章，本來就不依賴 cookie。
+  // 前端 lib/trpc.ts 的後端探針直接打 tRPC 的 system.health（既有的
+  // publicProcedure）——程序存在回 200 JSON、不存在回 404 JSON，兩者都
+  // 足以判定「有 router」，因此不需另外加端點。
   app.use(
     "/api/trpc",
     createCsrfOriginGuard(),

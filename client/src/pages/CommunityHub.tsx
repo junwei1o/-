@@ -1,17 +1,47 @@
 import React, { useEffect, useState } from "react";
 import { Compass, Trophy } from "lucide-react";
 import { useLocation, useSearch } from "wouter";
-import { ALL_CURRICULUM_QUESTIONS } from "@/game/expeditionContent";
+import { getSeedCurriculumQuestions, type CurriculumQuestion } from "@/game/expeditionContent";
+import { expandQuestions as expandInWorker } from "@/lib/optionExpandScheduler";
 import { shuffleQuestionOptions } from "@/lib/optionRandomizer";
 import { getSelfChallengeBest, saveSelfChallengeBest } from "@/utils/storage";
 
-type ChallengeQuestion = (typeof ALL_CURRICULUM_QUESTIONS)[number];
+type ChallengeQuestion = CurriculumQuestion;
 const CHALLENGE_LENGTH = 10;
 const TIMED_CHALLENGE_SECONDS = 60;
 
+/**
+ * 題庫：先用未展開版（0.1ms）立即出題，展開成 6 選後再升級。
+ *
+ * 展開（4→6）是 57-88ms 的同步運算（Node 實測），原本寫在模組初始化，
+ * 讓本頁每次首載都卡 250ms（4x 降速）。改丟進既有的 Web Worker：
+ * 主執行緒不等結果，先讓學生用 4 選題開始答，展開完成後自動升級為 6 選。
+ */
+let challengeBank: ChallengeQuestion[] | null = null;
+let upgradePromise: Promise<ChallengeQuestion[]> | null = null;
+
+function loadChallengeBank(): ChallengeQuestion[] {
+  if (!challengeBank) challengeBank = getSeedCurriculumQuestions();
+  return challengeBank;
+}
+
+function upgradeChallengeBank(): Promise<ChallengeQuestion[]> {
+  if (!upgradePromise) {
+    const seed = loadChallengeBank();
+    // 已是 6 選就不再排作業（展開對 6 選題是 no-op）。
+    const needsExpand = seed.some((question) => question.options.length < 6);
+    upgradePromise = needsExpand
+      ? expandInWorker(seed).then((rows) => rows as ChallengeQuestion[])
+      : Promise.resolve(seed);
+    upgradePromise.then((rows) => { challengeBank = rows; }).catch(() => { /* 保留未展開版，功能不受影響 */ });
+  }
+  return upgradePromise;
+}
+
 /** 每次出題都重新洗牌選項順序，正確答案位置每次不同。 */
 function pickChallengeQuestion(index: number): ChallengeQuestion | null {
-  const question = ALL_CURRICULUM_QUESTIONS[index % ALL_CURRICULUM_QUESTIONS.length] ?? null;
+  const bank = loadChallengeBank();
+  const question = bank[index % bank.length] ?? null;
   return question ? shuffleQuestionOptions(question) : null;
 }
 
@@ -26,6 +56,27 @@ export default function CommunityHub() {
   const [best, setBest] = useState(() => getSelfChallengeBest());
   const [secondsLeft, setSecondsLeft] = useState(TIMED_CHALLENGE_SECONDS);
   const [challengeEnded, setChallengeEnded] = useState(false);
+  // 展開完成（升級為 6 選）後，把當前題目換成同一題的升級版。
+  // 只換題目、不動 challengeCount／correctCount，學生不會被「吃掉一題」。
+  const [bankUpgraded, setBankUpgraded] = useState(false);
+  // 當前題目是第幾題（用來在升級後取回同一題）。
+  const currentIndexRef = React.useRef(0);
+
+  useEffect(() => {
+    let alive = true;
+    upgradeChallengeBank().then(() => {
+      if (!alive) return;
+      setBankUpgraded(true);
+    });
+    return () => { alive = false; };
+  }, []);
+
+  useEffect(() => {
+    if (!bankUpgraded) return;
+    // 回合已結束就不要再換題（畫面已進結算態）。
+    if (challengeEnded) return;
+    setCurrentQuestion(pickChallengeQuestion(currentIndexRef.current));
+  }, [bankUpgraded, challengeEnded]);
 
   useEffect(() => {
     if (!isTimedChallenge || challengeEnded || challengeCount >= CHALLENGE_LENGTH) return;
@@ -54,12 +105,14 @@ export default function CommunityHub() {
       setChallengeEnded(true);
       return;
     }
+    currentIndexRef.current = completed * 7;
     setCurrentQuestion(pickChallengeQuestion(completed * 7));
   }
 
   function restartChallenge() {
     setChallengeCount(0);
     setCorrectCount(0);
+    currentIndexRef.current = 0;
     setCurrentQuestion(pickChallengeQuestion(0));
     setSecondsLeft(TIMED_CHALLENGE_SECONDS);
     setChallengeEnded(false);

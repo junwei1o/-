@@ -1872,5 +1872,66 @@ const seeds: Record<SubjectKey, Array<{ topic: string; prompt: string; options: 
 };
 
 function expandQuestions(subject: SubjectKey): CurriculumQuestion[] { const variants = ["請先找出題幹的核心線索。", "請把這個概念套用到新的學習情境。", "請比較各選項後再作答。", "請說明你選擇答案時最重要的判斷依據。"] as const; return seeds[subject].flatMap((seed, seedIndex) => variants.map((variant, variantIndex) => ({ id: `${subject}-expedition-${String(seedIndex * 4 + variantIndex + 1).padStart(3, "0")}`, subject, topic: seed.topic, difficulty: (variantIndex === 0 ? 1 : variantIndex === 1 ? 2 : variantIndex === 2 ? 2 : 3) as 1 | 2 | 3, prompt: `${seed.prompt} ${variant}`, options: seed.options, answer: seed.answer, explanation: seed.explanation, errorTag: seed.errorTag }))); }
-export const CURRICULUM_QUESTIONS: Record<SubjectKey, CurriculumQuestion[]> = { chinese: expandQuestionBankToSix(expandQuestions("chinese")), math: expandQuestionBankToSix(expandQuestions("math")), english: expandQuestionBankToSix(expandQuestions("english")), science: expandQuestionBankToSix(expandQuestions("science")), social: expandQuestionBankToSix(expandQuestions("social")) };
-export const ALL_CURRICULUM_QUESTIONS = Object.values(CURRICULUM_QUESTIONS).flat();
+/* ─── 惰性題庫（效能）────────────────────────────────────
+ * 本模組唯一的重計算是 4→6 選項展開（expandQuestionBankToSix）：
+ * Node 實測 57-88ms、佔模組初始化成本 99.8%（其餘 seeds literal 僅 8ms）。
+ *
+ * 原本寫在 export const 的初始化式，import 即同步執行 —— 導致只用
+ * getRareMonsters 的頁面（/badges、/settings）也白白吃下這段主執行緒
+ * 阻塞：4x 降速實測 250-262ms、1x 亦有 60ms，且每份文件第一次載入
+ * 該 chunk 必中（證據見 perf-audit/PERF-REPORT.md P1，20 個測量點全數重現）。
+ *
+ * 改為「首次存取才計算、其後記憶體快取」。資料內容、計算次數與對外 API
+ * （Object.keys／索引存取）皆與原先一致，僅計算時點後移。
+ */
+
+/** 科目固定順序：與舊版 Object.values(CURRICULUM_QUESTIONS) 的枚舉順序一致。 */
+const SUBJECT_ORDER: SubjectKey[] = ["chinese", "math", "english", "science", "social"];
+
+/** 已展開（4→6 選）的題庫快取；null 表示尚未算過。 */
+let curriculumCache: Record<SubjectKey, CurriculumQuestion[]> | null = null;
+
+function curriculum(): Record<SubjectKey, CurriculumQuestion[]> {
+  if (!curriculumCache) {
+    curriculumCache = {
+      chinese: expandQuestionBankToSix(expandQuestions("chinese")),
+      math: expandQuestionBankToSix(expandQuestions("math")),
+      english: expandQuestionBankToSix(expandQuestions("english")),
+      science: expandQuestionBankToSix(expandQuestions("science")),
+      social: expandQuestionBankToSix(expandQuestions("social")),
+    };
+  }
+  return curriculumCache;
+}
+
+/**
+ * 各科 100 題（首次存取才展開成 6 選）。
+ * 以 getter 定義，Object.keys()／索引存取行為與一般物件完全相同，
+ * 既有測試與 expeditionPaperAdapter 不需修改。
+ */
+export const CURRICULUM_QUESTIONS: Record<SubjectKey, CurriculumQuestion[]> = {
+  get chinese() { return curriculum().chinese; },
+  get math() { return curriculum().math; },
+  get english() { return curriculum().english; },
+  get science() { return curriculum().science; },
+  get social() { return curriculum().social; },
+};
+
+/**
+ * 合併後的 500 題（已展開）。
+ * 由模組常數改為函式：常數會在 import 時就逼出展開成本，
+ * 讓社區挑戰／學習報告兩頁還沒渲染就先卡住。
+ */
+export function getAllCurriculumQuestions(): CurriculumQuestion[] {
+  return SUBJECT_ORDER.flatMap((subject) => curriculum()[subject]);
+}
+
+/**
+ * 未展開的 500 題（只做 4 個變體展開、不借干擾項，實測 0.1ms）。
+ * 4→6 展開只會**增加 options**，不改 id／prompt／explanation ——
+ * 因此只用 id→prompt 對照的頁面（學習報告的卡關排行）改用這份，
+ * 結果與展開版等價，但省下整段展開成本。
+ */
+export function getSeedCurriculumQuestions(): CurriculumQuestion[] {
+  return SUBJECT_ORDER.flatMap((subject) => expandQuestions(subject));
+}

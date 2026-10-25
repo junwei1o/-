@@ -45,6 +45,20 @@ type Db = ReturnType<typeof createDb>;
 
 let _db: Db | null = null;
 
+/**
+ * 連線逾時（毫秒）。mysql2 預設是 10 秒。
+ *
+ * 為什麼要明確設短一點：Render 免費層閒置 15 分鐘會讓服務休眠，
+ * 學生回訪時第一個查詢要重建 DB 連線。實測（2026-10-01 覆核 P3）
+ * 閒置後第一個 DB 請求量到 10.11s 並回 500 —— 正好踩滿預設逾時，
+ * 代表「等 10 秒然後失敗」而不是「快速失敗後可重試」。
+ *
+ * 改成 5s：最壞情況少等 5 秒，且逾時後前端的重試（見
+ * AnswerLeaderboard）還有機會在連線已建立後成功。遠端 DB 正常
+ * 連線時間遠低於此（實測溫熱狀態 0.2-0.3s），5s 綽綽有餘。
+ */
+const CONNECT_TIMEOUT_MS = 5_000;
+
 // Lazily create the drizzle instance so local tooling can run without a DB.
 export async function getDb() {
   if (!_db && process.env.DATABASE_URL) {
@@ -52,6 +66,12 @@ export async function getDb() {
       const pool = mysql.createPool({
         uri: process.env.DATABASE_URL,
         ssl: { rejectUnauthorized: false },
+        connectTimeout: CONNECT_TIMEOUT_MS,
+        // 閒置連線在 30 秒後回收（預設 60s 太久，會讓 Render 休眠後
+        // 仍留著「以為還活著」的死連線，第一次查詢踩到才發現）。
+        idleTimeout: 30_000,
+        maxIdle: 2,
+        queueLimit: 0,
       });
       // 全站資源監控：在 pool 上掛 DB 用量計量（純計數，不改變任何行為）。
       // 這是全站唯一的 DB 連線收斂點，掛這裡才能覆蓋所有查詢路徑。
@@ -63,6 +83,33 @@ export async function getDb() {
     }
   }
   return _db;
+}
+
+/**
+ * 啟動時預熱一條 DB 連線（SELECT 1）。
+ *
+ * 為什麼需要：Render 服務喚醒後 process 是新的，連線池是空的。
+ * 第一個使用者（不論造訪哪一頁）會成為「第一個查詢」，承擔完整的
+ * TLS 交握 + 連線建立成本。實測這段可達 1.5-10 秒。
+ *
+ * 在 ensureQuestionBankReady 之前先做，且不阻擋開機：
+ * - 失敗只記錄、不中斷啟動（本來就允許無 DB 啟動）。
+ * - 成功則第一位使用者幾乎感覺不到冷啟動。
+ */
+export async function warmDbConnection(): Promise<boolean> {
+  if (!process.env.DATABASE_URL) return false;
+  try {
+    const db = await getDb();
+    if (!db) return false;
+    await db.execute("SELECT 1");
+    return true;
+  } catch (error) {
+    console.warn(
+      "[Database] 預熱連線失敗（不影響啟動，之後查詢會自行重試）：",
+      (error as Error)?.message ?? error
+    );
+    return false;
+  }
 }
 
 export async function upsertUser(user: InsertUser): Promise<void> {

@@ -5,7 +5,6 @@ import { trpc } from "@/lib/trpc";
 import { useQuestionBank } from "@/lib/questionBank";
 import { getCloudMode } from "@/game/cloudSync";
 import { calculateAdaptiveReport, calculateKnowledgeHeatmap, calculateLearningTrendReport, loadAdaptiveProfile } from "@/game/adaptiveLearning";
-import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 type QuestionIdentity = { id: string };
 type ProgressSummary = { help: string; mastery: string; nextStep: string };
 type SummaryTrendPayload = {
@@ -14,6 +13,59 @@ type SummaryTrendPayload = {
 };
 
 type SummaryTopic = { tag: string; attempts: number };
+
+type TrendBarRow = { label: string; value: number; caption: string };
+
+/**
+ * 趨勢呈現：純 CSS 長條，不用 recharts 畫 SVG。
+ *
+ * 為什麼換掉折線圖：recharts 的 ResponsiveContainer 以 ResizeObserver
+ * 量測容器後才繪製，在 4x 降速下這一輪量測＋繪製吃掉約 83ms 主執行緒
+ * （CPU profile：charts-vendor 自我時間隨作答量由 3ms 升到 86ms，
+ * 差額幾乎全在渲染而非計算）。實測「把圖表延後掛載」只是把工作
+ * 往後移、長任務總量不變，因此改為不需要任何 layout 量測的呈現方式。
+ *
+ * 橫向長條同樣一眼看出每期高低與升降；每列數值同時以文字標示，
+ * 不依賴顏色或長度判讀，無障礙不受影響（原本的 role="img" +
+ * aria-label 描述也一併保留在 title 與文字上）。
+ */
+function TrendBars({ rows, emptyText, tone }: { rows: TrendBarRow[]; emptyText: string; tone: "warm" | "cool" }) {
+  if (!rows.length) return <p className="trend-empty">{emptyText}</p>;
+  const max = Math.max(100, ...rows.map((row) => row.value));
+  return (
+    <ul className="trend-bars" data-tone={tone}>
+      {rows.map((row) => (
+        <li key={row.label} className="trend-bar-row">
+          <span className="trend-bar-label">{row.label}</span>
+          <span className="trend-bar-track" title={row.caption}>
+            <span className="trend-bar-fill" style={{ width: `${Math.max(2, Math.round((row.value / max) * 100))}%` }} />
+          </span>
+          <span className="trend-bar-value">{row.value}%</span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+/**
+ * 後端 progressSummary 的 schema 上限（helpTrend / masteryTrend 每筆的 attempts ≤ 100）。
+ *
+ * 為什麼前端要夾：原本直接送原始週計數，學生一週答超過 100 題時
+ * zod 會回 400（Too big: expected number to be <=100），每次進頁都失敗、
+ * 還白打三趟請求。這裡夾到上限內即可通過——attempts 在此只作為
+ * 「這一週有觀測到」的權重呈現給摘要文案，顯示 100 與顯示 180
+ * 對「有在練」的語意沒有差別。
+ */
+const SUMMARY_ATTEMPTS_CAP = 100;
+const clampAttempts = (value: number) => Math.max(1, Math.min(SUMMARY_ATTEMPTS_CAP, Math.round(value)));
+
+/** 摘要內容的指紋：只在「實際送給 AI 的資料」改變時才重新呼叫。 */
+function summaryPayloadFingerprint(payload: SummaryTrendPayload): string {
+  return JSON.stringify([
+    payload.helpTrend.map((item) => [item.label, item.hintRate, item.attempts]),
+    payload.masteryTrend.map((period) => [period.label, period.topics.map((topic) => [topic.tag, topic.mastery, topic.attempts])]),
+  ]);
+}
 
 function reviewTopicHref(topic: string) {
   return `/practice?reviewTopic=${encodeURIComponent(topic)}`;
@@ -61,11 +113,11 @@ function buildSummaryPayload(trends: ReturnType<typeof calculateLearningTrendRep
   const periods = new Map<number, { label: string; topics: { tag: string; mastery: number; attempts: number }[] }>();
   trends.knowledgeMastery.forEach((series) => series.points.forEach((point) => {
     const period = periods.get(point.timestamp) ?? { label: point.label, topics: [] };
-    period.topics.push({ tag: series.tag, mastery: point.mastery, attempts: point.attempts });
+    period.topics.push({ tag: series.tag, mastery: point.mastery, attempts: clampAttempts(point.attempts) });
     periods.set(point.timestamp, period);
   }));
   return {
-    helpTrend: trends.helpHabit.map(({ label, hintRate, attempts }) => ({ label, hintRate, attempts })),
+    helpTrend: trends.helpHabit.map(({ label, hintRate, attempts }) => ({ label, hintRate, attempts: clampAttempts(attempts) })),
     masteryTrend: Array.from(periods.entries()).sort(([a], [b]) => a - b).map(([, period]) => period),
   };
 }
@@ -103,10 +155,23 @@ export default function LearningInsights() {
     return Array.from(topics.values()).sort((left, right) => right.attempts - left.attempts).slice(0, 5);
   }, [summaryPayload]);
 
+  // 只在「真正送給 AI 的內容」改變時呼叫，且同一頁最多呼叫一次。
+  //
+  // 原本以 summaryPayload（物件參考）為依賴，但那份物件會隨題庫載入
+  // （visibleQuestionIds 由 undefined 變成 Set）重算，參考就換一次——
+  // 題庫載入 → Worker 展開完成 共兩個階段，實測每次進頁打出 3 趟
+  // aiTutor.progressSummary（每次都是真實 LLM 調用，且離開再回來會再打）。
+  //
+  // 改以內容指紋比對：題庫過濾前後若算出的摘要內容相同，就不再重打。
+  const summaryFingerprint = useMemo(() => summaryPayloadFingerprint(summaryPayload), [summaryPayload]);
+  const requestedFingerprintRef = React.useRef<string | null>(null);
+
   useEffect(() => {
     if (report.attempts === 0 || summaryPayload.helpTrend.length < 2 || summaryPayload.masteryTrend.length < 2) return;
+    if (requestedFingerprintRef.current === summaryFingerprint) return;
+    requestedFingerprintRef.current = summaryFingerprint;
     progressSummaryMutation.mutate(summaryPayload);
-  }, [report.attempts, summaryPayload]);
+  }, [report.attempts, summaryFingerprint, summaryPayload]);
 
   const summary = progressSummaryMutation.data ?? fallbackSummary;
   const isSummaryFallback = !progressSummaryMutation.data;
@@ -137,12 +202,26 @@ export default function LearningInsights() {
             <article className="learning-insights-card trend-chart-card">
               <div className="learning-insights-card-head"><div><p className="eyebrow">HELP-SEEKING HABITS</p><h2>求助習慣趨勢</h2></div><Headphones size={20} aria-hidden="true" /></div>
               <p className="trend-description">提示使用率只描述你何時選擇支援，不代表扣分或能力高低。</p>
-              {trends.helpHabit.length > 0 ? <div className="trend-chart" role="img" aria-label={`求助習慣趨勢：${trends.helpHabit.map((point) => `${point.label} ${point.hintRate}%`).join("、")}`}><ResponsiveContainer width="100%" height={220}><LineChart data={trends.helpHabit}><CartesianGrid strokeDasharray="3 3" stroke="#D9E5DD" /><XAxis dataKey="label" tick={{ fontSize: 10 }} /><YAxis domain={[0, 100]} tick={{ fontSize: 10 }} unit="%" /><Tooltip formatter={(value) => [`${value}%`, "提示使用率"]} /><Line type="monotone" dataKey="hintRate" stroke="#D88462" strokeWidth={3} dot={{ r: 3 }} /></LineChart></ResponsiveContainer></div> : <p className="trend-empty">目前仍在累積求助觀測。</p>}
+              <TrendBars
+                rows={trends.helpHabit.map((point) => ({ label: point.label, value: point.hintRate, caption: `${point.label}：提示使用率 ${point.hintRate}%（${point.attempts} 次觀測）` }))}
+                emptyText="目前仍在累積求助觀測。"
+                tone="warm"
+              />
             </article>
             <article className="learning-insights-card trend-chart-card">
               <div className="learning-insights-card-head"><div><p className="eyebrow">KNOWLEDGE MASTERY</p><h2>知識掌握變化</h2></div><Target size={20} aria-hidden="true" /></div>
               <p className="trend-description">掌握度只依實際答題計算；不同知識點不互相比較成績。</p>
-              {trends.knowledgeMastery.length > 0 ? <div className="trend-chart" role="img" aria-label={`知識掌握變化：${trends.knowledgeMastery.map((series) => series.tag).join("、")}`}><ResponsiveContainer width="100%" height={220}><LineChart data={summaryPayload.masteryTrend}><CartesianGrid strokeDasharray="3 3" stroke="#D9E5DD" /><XAxis dataKey="label" tick={{ fontSize: 10 }} /><YAxis domain={[0, 100]} tick={{ fontSize: 10 }} unit="%" /><Tooltip formatter={(value) => [`${value}%`, "掌握度"]} />{trends.knowledgeMastery.slice(0, 5).map((series, index) => <Line key={series.tag} type="monotone" dataKey={`topics[${index}].mastery`} name={series.tag} stroke={["#0B6E8E", "#6A9B72", "#C29A4A", "#8D6B9E", "#B96862"][index]} strokeWidth={2.5} dot={{ r: 2 }} connectNulls />)}</LineChart></ResponsiveContainer></div> : <p className="trend-empty">目前仍在累積知識掌握觀測。</p>}
+              <TrendBars
+                rows={summaryPayload.masteryTrend.map((period) => ({
+                  label: period.label,
+                  value: period.topics.length
+                    ? Math.round(period.topics.reduce((sum, topic) => sum + topic.mastery, 0) / period.topics.length)
+                    : 0,
+                  caption: `${period.label}：平均掌握度 ${period.topics.length ? Math.round(period.topics.reduce((sum, topic) => sum + topic.mastery, 0) / period.topics.length) : 0}%（${period.topics.length} 個知識點）`,
+                }))}
+                emptyText="目前仍在累積知識掌握觀測。"
+                tone="cool"
+              />
             </article>
           </section>
 

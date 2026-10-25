@@ -55,4 +55,27 @@ describe("apiCacheControl：tRPC 快取標頭白名單", () => {
     expect(run("GET", "/auth.me").nextCalled).toBe(true);
     expect(run("POST", "/teacher.login").nextCalled).toBe(true);
   });
+
+  describe("答題榜（cloud.examLeaderboard）：可共享但 TTL 極短", () => {
+    it("GET → 只進 CDN 邊緣（s-maxage=30）、不進瀏覽器（max-age=0）", () => {
+      expect(run("GET", "/cloud.examLeaderboard").cache).toBe(
+        "public, max-age=0, s-maxage=30"
+      );
+    });
+
+    it("mutation 仍是 no-store（不能只靠 path 白名單放行寫入）", () => {
+      expect(run("POST", "/cloud.examLeaderboard").cache).toBe("no-store");
+    });
+
+    it("與 session 端點同批時整批 no-store（防止 A 的榜單回應被發給 B 的請求）", () => {
+      expect(run("GET", "/cloud.examLeaderboard,auth.me").cache).toBe("no-store");
+      expect(run("GET", "/cloud.examLeaderboard,cloud.load").cache).toBe("no-store");
+    });
+
+    it("與其他白名單混批時整批 no-store（不因搭便車而放寬 TTL）", () => {
+      // 保守做法：只有「整批都是同一類白名單」才放行。榜單與靜態題庫
+      // TTL 不同，混批時不投機取較寬的那個，直接 no-store 最安全。
+      expect(run("GET", "/cloud.examLeaderboard,questionBank.list").cache).toBe("no-store");
+    });
+  });
 });
