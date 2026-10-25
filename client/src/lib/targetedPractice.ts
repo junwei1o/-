@@ -20,6 +20,7 @@ import { createTRPCClient, httpBatchLink } from "@trpc/client";
 import superjson from "superjson";
 import type { AppRouter } from "../../../server/routers";
 import { buildVariant } from "@/game/questionVariant";
+import { familySiblingIds, type VariantLike } from "./variantFamily";
 import type { PaperQuestion } from "./paperExam";
 
 /** 錯題重練的替換函數簽名：給定 source 錯題 + 已用 ID 集合，返回頂替題目（無則 null） */
@@ -214,6 +215,20 @@ function topicKeyOf(question: { subject: string; learningTopic?: string }): stri
 /**
  * 建立「錯題重練的頂替策略」。回傳的函式只依賴已載入的快取與本機紀錄，
  * 所以可以直接在測試裡餵題目驗證每個層級的優先順序。
+ *
+ * 層級（由優先到低）：
+ *   層 0  主庫 variantOf 家族（2026-10-25 新增）——同概念換外皮的**正統變體題**
+ *   層 1  後端備用庫明確標記為該題變體者（variantOf === source.id）
+ *   層 2  後端備用庫同 learningTopic 替補
+ *   層 3  執行期可安全變體（buildVariant，僅純減法／整除）
+ *   層 4  主庫同學習主題輪替
+ *   層 5  維持原題（回傳 null）
+ *
+ * 層 0 為甚麼要排最前面：`variantOf` 家族是 S5 用 qc:variant-regression
+ * 鎖過的「同知識點、不同題幹」標記，題幹與解析都是人工級品質；
+ * 層 1–3 是演算法生成／後端補庫的近似品。有正統變體可用時不該先吃替代品。
+ * 主庫沒有 `variantOf` 的題（約 83%，含 server fallback 題庫全部）自動跳到
+ * 層 1——優雅降級，路徑與改动前完全一致。
  */
 export function createWrongReviewReplacement(
   questions: readonly PaperQuestion[],
@@ -226,9 +241,66 @@ export function createWrongReviewReplacement(
     else byTopic.set(key, [question]);
   }
 
+  /**
+   * 層 0 的家族查詢＝**直接解析 ＋ 反向索引**聯集（惰性建一次；
+   * 多數題庫沒有 variantOf 時完全不花錢）。
+   *
+   * 兩者缺一不可：
+   * - 直接解析 `familySiblingIds(source)`：source 自己宣告的家族
+   *   （anchor→members、variant→anchor+兄弟）。
+   * - 反向索引：別的題把 source 當家族成員，但 source 自己沒標記
+   *   （資料只寫了一半的情境）。
+   * 只寫反向索引會漏掉「anchor 被 members 單方面指向、無人回指」的題——
+   * 這是測試抓到的實作缺陷，不是測試寫錯。
+   */
+  const byIdMap = new Map<string, VariantLike>();
+  const bankById = new Map<string, PaperQuestion>();
+  for (const question of questions) {
+    byIdMap.set(question.id, question as VariantLike);
+    bankById.set(question.id, question);
+  }
+  let familyIndex: Map<string, string[]> | null = null;
+  const familyOf = (source: PaperQuestion): PaperQuestion[] => {
+    const directIds = familySiblingIds(source as VariantLike, byIdMap);
+    if (!familyIndex) {
+      familyIndex = new Map();
+      for (const candidate of questions) {
+        for (const siblingId of familySiblingIds(candidate as VariantLike, byIdMap)) {
+          const list = familyIndex.get(siblingId);
+          if (list) {
+            if (!list.includes(candidate.id)) list.push(candidate.id);
+          } else familyIndex.set(siblingId, [candidate.id]);
+        }
+      }
+    }
+    const merged = [...directIds];
+    for (const id of familyIndex.get(source.id) ?? []) if (!merged.includes(id)) merged.push(id);
+    return merged
+      .filter((id) => id !== source.id)
+      .map((id) => bankById.get(id))
+      .filter((candidate): candidate is PaperQuestion => Boolean(candidate));
+  };
+
   return ({ source, usedIds }) => {
     // 記憶類錯誤刻意出原題：需要的是同一條記憶線索，換題幫不上忙。
     if (readSelfReportedReason(source.id) === "memory") return null;
+
+    // ── 層 0：主庫 variantOf 家族 ──
+    // 科目相符是防呆：本頁的主庫混入填空／排序題，萬一源頭標記跨了科目，
+    // 寧可降到層 1 也不要把「國語的變體」當成「數學錯題的解答」。
+    // 同年級優先（與層 2 同理由）；跨年級變體仍優於無關的題，放最後。
+    const family = familyOf(source);
+    if (family.length > 0) {
+      const available = family.filter(
+        (candidate) =>
+          candidate.id !== source.id &&
+          candidate.subject === source.subject &&
+          !usedIds.has(candidate.id),
+      );
+      const sameGrade = available.find((candidate) => candidate.grade === source.grade);
+      if (sameGrade) return sameGrade;
+      if (available.length > 0) return available[0];
+    }
 
     const items = getTargetedPracticeItems();
 

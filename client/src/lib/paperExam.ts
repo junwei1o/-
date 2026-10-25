@@ -2,6 +2,7 @@ import { loadUserPreferences, getTargetDifficultiesFromPrefs, filterQuestionsByG
 import { shuffleQuestionOptions } from "./optionRandomizer";
 import { MATCHING_SETS, shuffleArray, sliceMatchingSet, type MatchingSet } from "./matchingBank";
 import { FILL_QUESTIONS, ORDER_QUESTIONS, fillToPaper, orderToPaper } from "./classroomBank";
+import type { VariantMarker } from "./variantFamily";
 export type PaperSubject = "數學" | "自然" | "社會" | "國語" | "英語";
 
 export type PaperQuestion = {
@@ -17,6 +18,12 @@ export type PaperQuestion = {
   explanation: string;
   /** Optional verified distractor feedback from the formal question bank. */
   strongDistractor?: { optionIndex: number; note: string };
+  /**
+   * 變體家族標記（2026-10-25 起前端精簡題庫帶有）。型別用 variantFamily
+   * 的 VariantMarker；解析一律走 `familySiblingIds` 防呆函式，
+   * 消費端不自己拆欄位（髒形狀優雅降級為「無家族」）。
+   */
+  variantOf?: VariantMarker;
   /** 配對題專用：試卷內嵌的迷你配對盤（4 對＋1 干擾）。成績獨立計星，不影響選擇/是非分數。 */
   matchingSet?: MatchingSet;
     /** 排序題專用：由前到後的正確順序，作答時元件打亂呈現；答對寫 answer(=0)、答錯寫 -1。 */

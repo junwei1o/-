@@ -27,6 +27,12 @@ const KEEP = [
   "answer",
   "explanation",
   "knowledge",
+    // 變體家族標記（S5 的 qc:variant-regression 鎖住其完整性）。
+    // 2026-10-25 加進白名單：前端自適應出題要用「同知識點 → 同家族換variant」
+    // 做錯題變體重練。anchor 題帶 members 清單、variant 題帶錨點 id；
+    // 無此欄的題（約 76%）走一般 knowledge 路徑，不影響出題。
+    // 體積影響：+86KB → runtime_bank 約 1.93MB，qc:bundle B 閘門（2.2MB）內。
+    "variantOf",
     // 跨學科結合題的科目組合（三科／五科）——前端要顯示「這題結合了哪幾科」時需要。
     "subjectCombination",
     // 深思題的作答上限秒數（未帶此欄＝使用預設 30 秒）。
@@ -101,6 +107,53 @@ for (const source of SOURCES) {
     if (!out.questionType) out.questionType = out.options?.length === 2 ? "是非題" : "選擇題";
     return out;
   });
+
+  /**
+   * variantOf 引用完整性清洗（2026-10-25）。
+   *
+   * 為什麼不能直接把源頭的 variantOf 放行：源頭 `generated_bank.json` 的家族
+   * 可能橫跨國小／國中。本檔只收 `grade <= 6`，錨點題若被分流到國中檔，
+   * 留在本檔的變體題就指向**庫中不存在的 id**（實測 220 個 variant、
+   * 241 個 members 懸空）。前端自適應出題照著它找「同家族另一題」會拿到
+   * 查不到的 id → 靜默降級或出錯，屬型 5（環境假設未驗證）。
+   *
+   * 策略：**剝除壞引用、絕不刪題**。
+   * - variant 題的 anchor 不在庫內 → 去掉 variantOf（變回普通題，照常可出）。
+   * - anchor 題的 members 部分不在庫內 → 只留庫內的；全空則去掉 variantOf。
+   * - anchor 題的 groupSize 保持原值（語意是「原始家族大小」，供後台分析），
+   *   前端一律以 members 為準；members 已被裁剪，故额外記 visibleSize。
+   */
+  const ids = new Set(slim.map((q) => q.id));
+  let strippedVariant = 0;
+  let trimmedMembers = 0;
+  for (const q of slim) {
+    const v = q.variantOf;
+    if (!v || typeof v !== "object") continue;
+    if (v.role === "variant") {
+      if (typeof v.anchor !== "string" || !ids.has(v.anchor)) {
+        delete q.variantOf;
+        strippedVariant += 1;
+      }
+    } else if (v.role === "anchor") {
+      const members = Array.isArray(v.members) ? v.members.filter((m) => ids.has(m)) : [];
+      if (members.length === 0) {
+        delete q.variantOf;
+        strippedVariant += 1;
+      } else {
+        if (members.length !== (v.members?.length ?? 0)) trimmedMembers += 1;
+        q.variantOf = { ...v, members, visibleSize: members.length + 1 };
+      }
+    } else {
+      delete q.variantOf;
+      strippedVariant += 1;
+    }
+  }
+  const keptFamilies = slim.filter((q) => q.variantOf).length;
+  if (strippedVariant || trimmedMembers) {
+    console.log(
+      `  ↳ variantOf 清洗：保留 ${keptFamilies} 題／剝除懸空引用 ${strippedVariant} 題／裁剪 members ${trimmedMembers} 題（跨年級分流所致，題目本身不刪）`,
+    );
+  }
   const out = {
     note: `由 ${from.join("、")} 與 data/generated_bank.json 自動產生的前端精簡題庫，請勿手動編輯；執行 node scripts/build-runtime-bank.mjs 重新產生。`,
     questions: slim,

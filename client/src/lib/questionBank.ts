@@ -20,6 +20,7 @@ import { trpc } from "@/lib/trpc";
 import englishSeed from "../../../data/taiwan_english_seed.json";
 import { expandQuestions } from "./optionExpandScheduler";
 import { shuffleQuestionOptions } from "./optionRandomizer";
+import type { VariantMarker } from "./variantFamily";
 
 /** shuffleQuestionOptions 快取（同一題只洗一次，展開完成後不再重洗）。 */
 const shuffleCache = new WeakMap<object, typeof NO_SERVER_QUESTIONS[0]>();
@@ -42,6 +43,12 @@ export type CurriculumQuestionRow = {
   answer: number;
   explanation: string;
   knowledge: string[];
+  /**
+   * 變體家族標記（2026-10-25 起 build-runtime-bank 白名單放行＋引用清洗）。
+   * 約 17% 的題帶此欄；其餘為 undefined。解析一律走 lib/variantFamily
+   * 的防呆函式，消費端不自己拆欄位（髒形狀優雅降級為「無家族」）。
+   */
+  variantOf?: VariantMarker;
   area?: string | null;
   /**
    * 跨學科結合題的科目組合（三科或五科）；一般單科題沒有這一欄。
