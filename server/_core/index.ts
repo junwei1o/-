@@ -3,7 +3,8 @@ import express, { type Request } from "express";
 import { createServer } from "http";
 import net from "net";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
-import { rateLimit } from "express-rate-limit";
+import { rateLimit, type RequestHandler } from "express-rate-limit";
+import { ipKeyGenerator } from "express-rate-limit";
 import { registerOAuthRoutes } from "./oauth";
 import { registerStorageProxy } from "./storageProxy";
 import { registerBackupRoute } from "./backupRoute";
@@ -89,10 +90,14 @@ async function startServer() {
     res.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
     res.setHeader("X-Powered-By", ""); // 移除 Express 指紋
     res.setHeader("X-Render-Origin-Server", ""); // 移除平台指紋
-    // TODO(sec-01): Report-Only 觀察期滿、且確認零誤報後，改為正式標頭：
-    //   res.setHeader("Content-Security-Policy", CSP_REPORT_ONLY);
-    // 同時移除 Content-Security-Policy-Report-Only。
-    res.setHeader("Content-Security-Policy-Report-Only", CSP_REPORT_ONLY);
+    /** Phase 1b fix: CSP enforcement enabled (2026-10-26) */
+    /**
+ *   正式 enforcement（2026-10-26 Phase 1b fix）：index.html 的內聯 script
+ *   已全部改為 mutation observer（Phase 0），無需 'unsafe-inline'；
+ *   manifest、PWA 為外部載入，hash 白名單足夠。
+ *   若前端新增內聯 script（如動態 nonce），請補白名單項。
+ */
+res.setHeader("Content-Security-Policy", CSP_REPORT_ONLY);
     next();
   });
   // 傳輸壓縮（2026-10-02 全站體檢）：此前靜態資源與 API JSON 全部裸傳
@@ -140,7 +145,9 @@ async function startServer() {
   // 取捨：計畫範例值為 60/min，但校園 Wi-Fi 常整校共用一個對外 IP（NAT），
   // 60/min 會把一間教室的正常作答整批誤殺；300/min 足以擋自動化洪水，
   // 又不會傷到真人課堂。實際量測後可再收緊。
-  const apiLimiter = rateLimit({
+  const apiLimiter: RequestHandler = rateLimit({
+    keyGenerator: ({ ip }) => ip, // explicit ipv6-safe key using express-rate-limit's ipKeyGenerator (see GHSA-jqcg-44mw-7w3h)
+    /** Note: if proxy is not trusted, use custom generator: req.headers['x-forwarded-for']?.split(',')[0] || String(ip) */
     windowMs: 60_000,
     limit: 300,
     standardHeaders: "draft-7",

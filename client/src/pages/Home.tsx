@@ -10,7 +10,7 @@ import { getJournalEntries } from "@/game/adventureJournal";
 import { generateDailyAdventureSummary } from "@/game/academyExpansion";
 import { QuizModal } from "@/components/QuizModal";
 import { consumeStorageNotice, getDailySignIn, getLearningRecord, getPlayerData, getPlayerName, getSelectedTitle, hasSignedInToday, type LearningRecord } from "@/utils/storage";
-import { DailySignInPill, requestOpenSignInPill } from "@/components/DailySignInPill";
+
 import { HomeContactCard } from "@/components/HomeContactCard";
 import { buildKnowledgeIslandSnapshots, type KnowledgeIslandSubject } from "@/lib/studentKnowledgeIslands";
 import { ONION_ACADEMY_ROUTE, pickRecommendedLesson, weakestSubjectThisWeek } from "@/lib/recommendedLesson";
@@ -154,7 +154,6 @@ export default function Home() {
     if (notice) toast.warning(notice.message);
   }, []);
 
-  // 簽到不再於進站時自動彈出，入口改放在「快速行動」側邊欄的膠囊（DailySignInPill）。
   // 這裡只負責在膠囊完成簽到後同步首頁的金幣與簽到卡，避免兩邊數字互相矛盾。
   useEffect(() => {
     const handleClaimed = () => refreshLearningData();
@@ -280,7 +279,6 @@ export default function Home() {
           </div>
           {/* 使用者若關閉「快速行動」側邊欄，簽到膠囊就改在首頁主區渲染，
               避免簽到入口整個消失（側邊欄開啟時由側邊欄那份負責）。 */}
-          {!enableQuickSidebar ? <DailySignInPill /> : null}
         </section>
         <FirstLightQuest />
         {isSetupOpen ? (
@@ -437,7 +435,6 @@ export default function Home() {
                 <button tabIndex={isActionsOpen ? 0 : -1} type="button" className="home-dashboard-action" onClick={() => setLocation("/wrong-answers")}><RotateCcw size={18} aria-hidden="true" /> 錯題重練<small>整理真實作答線索</small></button>
                 <button tabIndex={isActionsOpen ? 0 : -1} type="button" className={`home-dashboard-action home-dashboard-memory-alarm ${memoryAlarmCount > 0 ? "has-due" : ""}`} onClick={() => setLocation("/review-hub")} aria-label={memoryAlarmCount > 0 ? `記憶警報，今日有 ${memoryAlarmCount} 題到期複習` : "記憶警報，目前沒有到期複習"}><AlarmClock size={18} aria-hidden="true" /> 記憶警報<small>{memoryAlarmCount > 0 ? `今日有 ${memoryAlarmCount} 題線索回來了` : "目前沒有到期題目"}</small>{memoryAlarmCount > 0 && <strong aria-hidden="true">{memoryAlarmCount}</strong>}</button>
                 <button tabIndex={isActionsOpen ? 0 : -1} type="button" className="home-dashboard-action" disabled={bankLoading} onClick={startRandomAdventure}><Dices size={18} aria-hidden="true" /> 隨機冒險<small>{bankLoading ? "正在準備題目…" : "答對可獲雙倍金幣"}</small></button>
-                <DailySignInPill tabbable={isActionsOpen} />
               </nav>
               <HomeContactCard />
             </aside>

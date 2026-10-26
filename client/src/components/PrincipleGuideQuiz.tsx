@@ -1,6 +1,5 @@
 import React, { useMemo, useState } from "react";
 import { ArrowRight, BookOpen, Bookmark, BookmarkCheck, Check, ChevronDown, CircleAlert, CircleDot, CircleHelp, Lightbulb, ListTree, MapPinned, Orbit, RotateCcw, ScanSearch, ShieldCheck, Tags } from "lucide-react";
-import { QuestionTransition } from "@/components/QuestionTransition";
 import { SpeechReadButton } from "@/components/SpeechReadButton";
 import { Button } from "@/components/ui/button";
 import {

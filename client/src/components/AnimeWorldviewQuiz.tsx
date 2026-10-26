@@ -1,7 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { ArrowLeft, CheckCircle2, RotateCcw, Sparkles } from "lucide-react";
 import { SpeechReadableText } from "@/components/SpeechReadableText";
-import { QuestionTransition } from "@/components/QuestionTransition";
 import { Button } from "@/components/ui/button";
 import {
   getAnimeWorldviewQuestions,

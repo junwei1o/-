@@ -11,7 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { SpeechReadButton } from "@/components/SpeechReadButton";
 import { AiReviewPlanCard } from "@/components/AiReviewPlanCard";
 import { QuestionTransition } from "@/components/QuestionTransition";
-import { AnswerCombo } from "@/components/AnswerCombo";
+
 import MatchingGame from "@/components/MatchingGame";
 import FillBlank from "@/components/classroom/FillBlank";
 import OrderSteps from "@/components/classroom/OrderSteps";

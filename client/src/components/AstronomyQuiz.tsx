@@ -1,6 +1,5 @@
 import React, { useMemo, useState } from "react";
 import { ArrowLeft, Check, ChevronRight, Orbit, RadioTower, Rocket, RotateCcw, Telescope, X } from "lucide-react";
-import { QuestionTransition } from "@/components/QuestionTransition";
 import { Button } from "@/components/ui/button";
 import {
   ASTRONOMY_QUIZ_TIERS,
