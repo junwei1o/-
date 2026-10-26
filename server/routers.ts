@@ -63,6 +63,12 @@ import {
   updateCloudSave,
   getDb
 } from "./db";
+import {
+  computeStudentMastery,
+  readExamTopicRows,
+  routeTaskType,
+  summarizeExamTopics,
+} from "./insights";
 import { randomInt, timingSafeEqual } from "node:crypto";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { ADMIN_OPEN_ID, TEACHER_OPEN_ID } from "./_core/context";
@@ -759,6 +765,137 @@ export const appRouter = router({
           await createCloudSave({ name, payload: profile, coins: 0, totalAnswers: 0, badges: 0 });
         }
         return { ok: true as const };
+      }),
+  }),
+  /**
+   * 學習診斷（2026-10-26 Phase 1）。
+   *
+   * 為什麼在這裡而不是新建資料表：`exam_records.detail.topics` 早已寫入逐題
+   * 明細（PaperExam 每次交卷都帶 `{subject, topic, grade, correct, errorType}`），
+   * `computeStudentMastery()` 也早就實作完成——缺的只是「接線」。
+   * 本 router 把它接上，因此**不需要 student_knowledge_stats 物化表**
+   * （雙寫一致性、歷史回填、與 detail 語意重複，三個成本都不值得）。
+   *
+   * 掌握度口徑（2026-10-26 裁示）：**題目數加權**（答 20 對 18 = 90%），
+   * 但樣本數 < MIN_SUBJECT_SAMPLES 時回 `null` 而非 0——
+   * 顯示「—（資料不足）」而不是「0%」，避免把「沒學過」誤讀成「全錯」。
+   */
+  insights: router({
+    /**
+     * 學習控制台主資料：各科掌握度 + 薄弱點 Top 3 + 下一步建議。
+     * 學生以船名識別（與 cloud.* 同一命名空間，不含個資）。
+     */
+    dashboard: publicProcedure
+      .input(
+        z.object({
+          name: cloudNameSchema,
+          /** 取最近幾份試卷計算；預設 30 份（兩個學生的量級足夠，且查詢走新索引） */
+          limit: z.number().int().min(1).max(50).optional(),
+        }),
+      )
+      .query(async ({ input }) => {
+        /**
+         * 無資料庫時優雅降級（2026-10-26）。
+         *
+         * `listExamRecords` 在沒有 DATABASE_URL 時會 throw，tRPC 就回 500，
+         * 前端只能顯示「無法取得資料」——但那句話把「後端沒接 DB」與
+         * 「你的資料出錯」混為一談。這裡先判環境，回一個**明確的空狀態**：
+         * 前端顯示「尚未有雲端紀錄」，學生仍可用本機題庫作答。
+         */
+        if (!process.env.DATABASE_URL) {
+          return {
+            ok: true as const,
+            totalQuestions: 0,
+            subjects: ["數學", "國語", "自然", "社會", "英語"].map((subject) => ({
+              subject,
+              rate: null,
+              answered: 0,
+              correct: 0,
+            })),
+            weakTopics: [],
+            route: { taskType: "single" as const, subject: null, reason: "尚未連線雲端紀錄，先用本機題庫練習。" },
+            recent: null,
+            /** 前端可據此顯示「雲端未啟用」而非一般空狀態 */
+            cloudAvailable: false,
+          };
+        }
+        const records = await listExamRecords(input.name, input.limit ?? 30);
+        const mastery = computeStudentMastery(records);
+
+        /** 樣本門檻：低於此的科目一律視為「資料不足」，回 null 讓前端顯示 —。 */
+        const MIN_SUBJECT_SAMPLES = 5;
+        const subjects = ["數學", "國語", "自然", "社會", "英語"].map((subject) => {
+          const agg = mastery.bySubject[subject];
+          const total = agg ? agg.correct + agg.wrong : 0;
+          const enough = total >= MIN_SUBJECT_SAMPLES;
+          return {
+            subject,
+            /** null = 資料不足（前端顯示 —，不可顯示 0%） */
+            rate: enough ? Math.round((agg!.correct / total) * 100) : null,
+            answered: total,
+            correct: agg?.correct ?? 0,
+          };
+        });
+
+        // 薄弱點：把 rate 轉成百分比並標記樣本，前端才能顯示「33%」而不誤導
+        const weakTopics = mastery.weakTopics.map((item) => ({
+          subject: item.subject,
+          topic: item.topic,
+          rate: Math.round(item.correctRate * 100),
+        }));
+
+        const route = routeTaskType(mastery);
+
+        // 「繼續上次」：最近一份有逐題明細的試卷，帶出年級/科目/知識點
+        const last = records[0];
+        const lastTopics = last ? readExamTopicRows(last.detail) : [];
+        const lastTopicNames = Array.from(
+          new Set(lastTopics.map((row) => (row.topic ?? "").trim()).filter(Boolean)),
+        ).slice(0, 4);
+
+        return {
+          ok: true as const,
+          cloudAvailable: true,
+          /** 總樣本題數：前端據此判斷「有沒有資料」以顯示空狀態 */
+          totalQuestions: mastery.totalQuestions,
+          subjects,
+          weakTopics,
+          route,
+          recent: last
+            ? {
+                subject: last.subject,
+                grade: last.grade,
+                difficulty: last.difficulty,
+                correctCount: last.correctCount,
+                totalQuestions: last.totalQuestions,
+                createdAt: last.createdAt.getTime(),
+                topics: lastTopicNames,
+              }
+            : null,
+        };
+      }),
+
+    /**
+     * 單一試卷的知識點級洞察（錯題本「知識關聯」用）。
+     * 回傳該場試卷的薄弱知識點、錯誤型態分布與速度摘要。
+     */
+    examDetail: publicProcedure
+      .input(z.object({ name: cloudNameSchema, recordId: z.number().int().positive() }))
+      .query(async ({ input }) => {
+        const records = await listExamRecords(input.name, 50);
+        const record = records.find((row) => row.id === input.recordId);
+        if (!record) return { ok: false as const, reason: "notFound" as const };
+        const rows = readExamTopicRows(record.detail);
+        const summary = summarizeExamTopics(rows, record.subject);
+        return {
+          ok: true as const,
+          recordId: record.id,
+          subject: record.subject,
+          correctCount: record.correctCount,
+          totalQuestions: record.totalQuestions,
+          createdAt: record.createdAt.getTime(),
+          summary,
+        };
       }),
   }),
   /**

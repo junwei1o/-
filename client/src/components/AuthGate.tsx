@@ -41,13 +41,15 @@ export default function AuthGate({ children }: AuthGateProps) {
   const handleLoggedIn = useCallback(
     (name: string, role: UserRole, cloudSynced: boolean) => {
       setAuthed(true);
-      // 登入後還原上次路徑
+      /**
+       * 登入後去哪裡（2026-10-26 裁示）：「/ 首頁作為登入入口，
+       * 登入後立刻跳轉到學習控制台」。
+       * - 有 lastPath 且不是入口頁 → 回上次位置（延續既有行為）
+       * - 否則 → /dashboard（控制台），而不是停在 / 的入口頁
+       */
       const lastPath = getLastPath();
-      if (lastPath && lastPath !== "/") {
-        setRestoringPath(lastPath);
-      } else {
-        setRestoringPath("/");
-      }
+      const isEntry = !lastPath || lastPath === "/" || lastPath === "/login";
+      setRestoringPath(isEntry ? "/dashboard" : lastPath);
       // 如果有雲端同步，需要 reload 讓各 store 重讀 localStorage
       if (cloudSynced) {
         window.setTimeout(() => window.location.reload(), 300);

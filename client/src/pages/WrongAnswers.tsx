@@ -7,6 +7,7 @@ import {
 } from "@/game/adaptiveLearning";
 import { useQuestionLookup } from "@/lib/questionLookup";
 import { collectWrongBookGroups } from "@/lib/wrongBook";
+import WrongQuestionRelation from "@/components/WrongQuestionRelation";
 import "./HomeDashboard.css";
 
 export default function WrongAnswers() {
@@ -71,15 +72,13 @@ export default function WrongAnswers() {
               <article className="wrong-book-item" key={item.questionId}>
                 <div className="wrong-book-item-main">
                   <p className="wrong-book-prompt">{item.prompt}</p>
-                  {item.knowledge.length > 0 && (
-                    <div className="wrong-book-tags">
-                      {item.knowledge.slice(0, 3).map((point) => (
-                        <span className="wrong-book-tag" key={point}>
-                          {point}
-                        </span>
-                      ))}
-                    </div>
-                  )}
+                  {/* 知識關聯（2026-10-26 Phase 1）：知識點／為什麼錯／同知識點鞏固題。
+                      內部全部優雅降級——沒有 variantOf 或 strongDistractor 就不渲染該區塊。 */}
+                  <WrongQuestionRelation
+                    questionId={item.questionId}
+                    knowledge={item.knowledge}
+                    subject={group.subject}
+                  />
                 </div>
 
                 <div

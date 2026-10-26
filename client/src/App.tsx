@@ -17,6 +17,7 @@ import { isAdminSurface } from "@/lib/routeSurface";
 // ⚠️ 勿把 Home 改回靜態 import：AuthGate 未登入只渲染 LoginPage，
 //    靜態 import 會讓題庫 chunk（344KB gzip）進登入頁首包。
 const Home = React.lazy(() => import("@/pages/Home"));
+const LearningConsole = React.lazy(() => import("@/pages/LearningConsole"));
 /** 新首頁：選擇下一段學習航線（原首頁已副頁化為 /dashboard）。 */
 const RouteDeck = React.lazy(() => import("@/pages/RouteDeck"));
 const PaperExam = React.lazy(() => import("./pages/PaperExam"));
@@ -95,7 +96,7 @@ function Router() {
         {/* 副頁「航海儀表板」：原首頁內容。
             新首頁上線前 / 與 /dashboard 指向同一個 Home；新首頁接手 / 之後，
             本路由即為原首頁的唯一去處（見 homepage-redesign-proposal.md）。 */}
-        <Route path={"/dashboard"} component={Home} />
+        <Route path={"/dashboard"} component={LearningConsole} />
         <Route path={"/quiz-room"} component={QuizRoom} />
         <Route path={"/classroom/:gameId"} component={ClassroomPlay} />
         <Route path={"/weekly-quiz"} component={WeeklyQuizPage} />

@@ -1,0 +1,87 @@
+/* 錯題知識關聯（2026-10-26 Phase 1）— 零裝飾，1px 實線分區 */
+.wqr-root {
+  margin-top: 12px;
+  display: grid;
+  gap: 0;
+}
+.wqr-block {
+  padding: 10px 0;
+  border-top: 1px solid color-mix(in srgb, currentColor 16%, transparent);
+}
+.wqr-block:first-child { border-top: 1px solid color-mix(in srgb, currentColor 28%, transparent); }
+
+.wqr-label {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 0 0 8px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+.wqr-label-note {
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+  opacity: 0.8;
+}
+
+.wqr-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.wqr-tag {
+  padding: 2px 7px;
+  border: 1px solid currentColor;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.wqr-tag--meta { opacity: 0.5; }
+
+.wqr-muted {
+  margin: 0;
+  font-size: 12px;
+  opacity: 0.55;
+  line-height: 1.6;
+}
+.wqr-explain {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.wqr-related-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0;
+}
+.wqr-related-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 0;
+  border-bottom: 1px dotted color-mix(in srgb, currentColor 20%, transparent);
+}
+.wqr-related-row:last-child { border-bottom: none; }
+.wqr-related-prompt {
+  font-size: 12px;
+  line-height: 1.55;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+.wqr-related-btn {
+  min-height: 26px;
+  padding: 0 10px;
+  border: 1px solid currentColor;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 11px;
+  cursor: pointer;
+  white-space: nowrap;
+}

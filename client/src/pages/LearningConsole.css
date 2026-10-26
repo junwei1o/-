@@ -1,0 +1,257 @@
+/* ═══════════════════════════════════════════════════════════════════
+   學習控制台（2026-10-26 Phase 1）
+   ─────────────────────────────────────────────────────────────────
+   設計原則（承接 Phase 0 去裝飾 + Swiss 對齊）：
+   - 零圓角、零陰影、零漸變（Phase 0 的 global override 已強制歸零）
+   - 層級只用 1px 實線邊框與留白表達
+   - 掌握度用「軌道 + 實心填充」表達，不用圓角膠囊
+   - 資料不足顯示 —，永不畫 0% 的空進度條
+   對齊：8px 基準間距；內容單欄居中，最大寬 880px（控制台不需要全寬）
+   ═══════════════════════════════════════════════════════════════════ */
+
+.lc-page {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 32px 24px 96px;
+  color: var(--ink);
+}
+
+/* ── 標題區 ── */
+.lc-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid currentColor;
+  margin-bottom: 32px;
+}
+.lc-eyebrow {
+  margin: 0 0 6px;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.55;
+}
+.lc-title {
+  margin: 0;
+  font-size: 28px;
+  line-height: 1.15;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.lc-header-actions { flex: 0 0 auto; }
+
+/* ── 區塊 ── */
+.lc-section {
+  margin: 0 0 32px;
+  padding: 20px 0 0;
+  border-top: 1px solid currentColor;
+}
+.lc-section:first-of-type { border-top: none; padding-top: 0; }
+.lc-section-title {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 0 0 16px;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+.lc-section-note {
+  font-size: 11px;
+  font-weight: 400;
+  opacity: 0.55;
+  letter-spacing: 0;
+}
+
+/* ── 掌握度列 ── */
+.lc-mastery-list {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.lc-mastery-row {
+  display: grid;
+  grid-template-columns: 3.5em minmax(0, 1fr) 3.6em 4em;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 0;
+  border-bottom: 1px solid color-mix(in srgb, currentColor 18%, transparent);
+}
+.lc-mastery-row:last-child { border-bottom: none; }
+
+.lc-mastery-subject { font-size: 14px; font-weight: 500; }
+
+/* 軌道：極細邊框 + 內部實心填充 */
+.lc-mastery-track {
+  position: relative;
+  display: block;
+  height: 14px;
+  border: 1px solid currentColor;
+  overflow: hidden;
+}
+.lc-mastery-fill {
+  display: block;
+  height: 100%;
+  background: currentColor;
+  transition: none; /* Phase 0 已全域停用轉場，這裡明示意圖 */
+}
+
+/* 分級只改填充濃度，不引入新色相 */
+.lc-mastery-row.is-strong .lc-mastery-fill { background: currentColor; }
+.lc-mastery-row.is-ok .lc-mastery-fill { background: color-mix(in srgb, currentColor 62%, transparent); }
+.lc-mastery-row.is-weak .lc-mastery-fill { background: color-mix(in srgb, currentColor 38%, transparent); }
+.lc-mastery-row.is-unknown .lc-mastery-track { border-style: dashed; opacity: 0.45; }
+
+.lc-mastery-rate {
+  font-size: 15px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+.lc-mastery-row.is-unknown .lc-mastery-rate { opacity: 0.45; font-weight: 400; }
+.lc-mastery-answered {
+  font-size: 11px;
+  opacity: 0.55;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── 薄弱點 ── */
+.lc-weak-list {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: none;
+}
+.lc-weak-row {
+  display: grid;
+  grid-template-columns: 1.6em minmax(0, 1fr) 4em auto;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid color-mix(in srgb, currentColor 18%, transparent);
+}
+.lc-weak-row:last-child { border-bottom: none; }
+.lc-weak-index {
+  font-size: 12px;
+  opacity: 0.45;
+  font-variant-numeric: tabular-nums;
+}
+.lc-weak-topic {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+.lc-weak-subject {
+  margin-left: 8px;
+  font-size: 11px;
+  font-weight: 400;
+  opacity: 0.5;
+}
+.lc-weak-rate {
+  font-size: 14px;
+  font-weight: 700;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── 繼續上次 ── */
+.lc-continue { display: grid; gap: 10px; }
+.lc-continue-meta {
+  margin: 0;
+  font-size: 14px;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.lc-continue-score {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.lc-continue-topics {
+  margin: 0;
+  font-size: 12px;
+  opacity: 0.65;
+}
+
+/* ── 下一步 ── */
+.lc-next-reason {
+  margin: 0 0 14px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* ── 按鈕（零圓角、1px 實線）── */
+.lc-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 0 16px;
+  border: 1px solid currentColor;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.lc-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.lc-btn--primary {
+  background: currentColor;
+  color: var(--paper, #fff);
+}
+.lc-btn--ghost { background: transparent; }
+.lc-btn--sm { min-height: 32px; padding: 0 12px; font-size: 12px; }
+
+/* ── 狀態與提示 ── */
+.lc-empty {
+  margin: 0 0 16px;
+  font-size: 14px;
+  line-height: 1.7;
+  opacity: 0.7;
+}
+.lc-loading {
+  margin: 0;
+  font-size: 13px;
+  opacity: 0.6;
+}
+.lc-hint {
+  margin: 12px 0 0;
+  font-size: 11px;
+  opacity: 0.55;
+  line-height: 1.6;
+}
+.lc-notice {
+  margin: 0 0 24px;
+  padding: 12px 14px;
+  border: 1px solid currentColor;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.lc-notice--warn {
+  border-left-width: 4px;
+}
+
+/* ── 窄螢幕：掌握度列改成兩行，避免擠壓 ── */
+@media (max-width: 560px) {
+  .lc-page { padding: 20px 16px 80px; }
+  .lc-title { font-size: 22px; }
+  .lc-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .lc-mastery-row {
+    grid-template-columns: 3.5em minmax(0, 1fr) 3.4em;
+    row-gap: 4px;
+  }
+  .lc-mastery-answered { grid-column: 2 / -1; text-align: left; }
+  .lc-weak-row { grid-template-columns: 1.6em minmax(0, 1fr) 3.6em; row-gap: 8px; }
+  .lc-weak-row .lc-btn { grid-column: 2 / -1; justify-self: start; }
+}

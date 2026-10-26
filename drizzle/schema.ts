@@ -92,6 +92,18 @@ export const examRecords = mysqlTable("exam_records", {
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 }, (table) => ({
   nameIdx: index("exam_records_name_idx").on(table.name),
+  /**
+   * 學生歷史查詢的主力索引（2026-10-26 Phase 1）。
+   *
+   * 用途一：`listExamRecords(name)` 取「某學生最近 N 筆」算掌握度——
+   * 只有 nameIdx 時仍要掃該學生全部列再排序，隨答題量線性變慢。
+   * 用途二：週榜/賽榜按 createdAt 過濾 + ORDER BY createdAt，
+   * 原本是全表掃描（2026-10-25 審計 P1）。
+   * 複合鍵順序（name, createdAt）符合「先等值過濾、再範圍排序」的查詢形狀。
+   */
+  nameCreatedIdx: index("exam_records_name_created_idx").on(table.name, table.createdAt),
+  /** 跨學生按時間排序（排行榜、賽季結算、AI 用量趨勢）用的單欄索引。 */
+  createdIdx: index("exam_records_created_idx").on(table.createdAt),
 }));
 
 export type ExamRecord = typeof examRecords.$inferSelect;
