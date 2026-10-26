@@ -16,6 +16,7 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useLocation } from "wouter";
 import LoginPage from "@/pages/LoginPage";
 import "@/pages/LoginPage.css";
+import { isAdminSurface } from "@/lib/routeSurface";
 import {
   isLoggedIn,
   getSession,
@@ -81,7 +82,18 @@ export default function AuthGate({ children }: AuthGateProps) {
     setLocation("/");
   }, [setLocation]);
 
-  if (!authed) {
+  /**
+   * 管理面路由不得被學生船名閘攔截（2026-10-25 審計 P0 修復，詳見 lib/routeSurface）。
+   *
+   * `AuthGate` 包在 `<Router />` 外面，原本等於**所有**路由都要先輸入學生船名：
+   * 站長在乾淨環境訪 /admin 只會看到「輸入你的船長名字」，AdminShell 自己的
+   * `admin.login` 根本還沒機會渲染；且任何知道一個船名的人都能抵達管理入口。
+   *
+   * 放行後由各元件自己驗身分：/admin → AdminShell 的 admin.login；
+   * /teacher、/learning-summary → AdminOnlyRoute + 後端 teacherProcedure。
+   * 學生動線（其餘所有路由）行為完全不變。
+   */
+  if (!authed && !isAdminSurface(location)) {
     return <LoginPage onLoggedIn={handleLoggedIn} />;
   }
 

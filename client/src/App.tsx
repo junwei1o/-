@@ -12,6 +12,7 @@ import AuthGate from "@/components/AuthGate";
 import { initGameData } from "@/utils/storage";
 import { OfflineBanner } from "@/components/OfflineBanner";
 import AdminOnlyRoute from "@/components/AdminOnlyRoute";
+import { isAdminSurface } from "@/lib/routeSurface";
 
 // ⚠️ 勿把 Home 改回靜態 import：AuthGate 未登入只渲染 LoginPage，
 //    靜態 import 會讓題庫 chunk（344KB gzip）進登入頁首包。
@@ -158,6 +159,8 @@ function Router() {
 // - If you want to make theme switchable, pass `switchable` ThemeProvider and use `useTheme` hook
 
 function App() {
+  const [location] = useLocation();
+
   useEffect(() => {
     initGameData();
   }, []);
@@ -172,11 +175,17 @@ function App() {
           <TooltipProvider>
             <Toaster />
             <OfflineBanner />
-            <BxEnhance />
-            <CloudModePrompt />
+            {/* 管理面不渲染學生端的裝飾層（隱私彈窗、獎勵動畫等）：
+                BxEnhance 會掛「航海前的隱私約定」與 bx 激勵層，那是給學生看的，
+                出現在 /admin 上既干擾又誤導（2026-10-25 審計 P0 配套）。 */}
+            {isAdminSurface(location) ? null : <BxEnhance />}
+            {isAdminSurface(location) ? null : <CloudModePrompt />}
             <a className="skip-link" href="#main-content">跳到主要內容</a>
             <div className="app-route-shell">
-              <TopNavigation />
+              {/* 管理面（/admin、/teacher、/learning-summary）不渲染學生導覽列：
+                  未登入時它會顯示「未登入」帳號與學生麵包屑，對管理入口是誤導
+                  （2026-10-25 審計 P0 配套）。學生動線不受影響。 */}
+              {isAdminSurface(location) ? null : <TopNavigation />}
               <Router />
             </div>
           </TooltipProvider>

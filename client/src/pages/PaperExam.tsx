@@ -194,6 +194,16 @@ export default function PaperExam() {
   }
 
   const current = deck[currentIndex];
+  /**
+   * 長題幹折疊（2026-10-25，純 UI，不改題庫資料）。
+   * 題庫 p95 題幹 70 字、最長 162 字；在手機（390px）上一段 162 字的題幹會
+   * 佔掉 6-8 行，把選項擠出首屏。門檻取 60 字（約 3 行），超過就只顯示首行
+   * 並提供「展開完整題幹」——多數題（中位 25 字、p75 38 字）完全不受影響。
+   */
+  const PROMPT_CLAMP_CHARS = 60;
+  const rawPrompt = current?.prompt ?? "";
+  const longPrompt = rawPrompt.length > PROMPT_CLAMP_CHARS;
+  const firstLine = rawPrompt.slice(0, PROMPT_CLAMP_CHARS);
   // 即時鏡像，讓倒數 interval 的閉包永遠讀到最新作答狀態。
   answersRef.current = answers;
   timeoutsRef.current = timeouts;
@@ -1487,7 +1497,24 @@ function pickPoolWithCooldown(nextScope: PaperScope): PaperQuestion[] {
             </>
           ) : (
             <>
-          <div className="paper-question-heading"><div><p className="paper-question-meta">{current.grade} 年級 · {current.difficulty}</p><SpeechReadableText as="h2" text={current.prompt} label="題目" className="paper-question-prompt" compact={false} /></div></div>
+          <div className="paper-question-heading"><div>
+            <p className="paper-question-meta">{current.grade} 年級 · {current.difficulty}
+              {/* 知識點標籤（2026-10-25）：題庫有 35% 的題共用同一個題幹模板
+                  （如 31 題都是「下列四句英語的敘述中…」），連續作答時感知上會
+                  像「題庫很水」。用知識點把「這題在考什麼」前置，讓重複模板也能
+                  被辨識為不同概念的練習——純 UI，不改題庫 JSON。 */}
+              {current.learningTopic ? <span className="paper-question-topic">{current.learningTopic}</span> : null}
+            </p>
+            <SpeechReadableText as="h2" text={longPrompt ? firstLine + "…" : current.prompt} label="題目" className={`paper-question-prompt${longPrompt ? " is-clamped" : ""}`} compact={false} />
+            {/* 長題幹只顯示首行（>60 字），避免整段文字牆壓縮選項區的呼吸空間。
+                完整題幹仍在 DOM 的 aria/title 內，讀屏與點擊展開都拿得到。 */}
+            {longPrompt ? (
+              <details className="paper-prompt-more">
+                <summary>展開完整題幹</summary>
+                <p>{current.prompt}</p>
+              </details>
+            ) : null}
+          </div></div>
           <div className="paper-options" role="radiogroup" aria-label="答案選項">
             {current.options.map((option, index) => {
               const isSelected = currentAnswer === index;

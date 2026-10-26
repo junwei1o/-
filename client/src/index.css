@@ -3,6 +3,36 @@
 @import "tw-animate-css";
 @custom-variant dark (&:is(.dark *));
 
+/* ═══════════════════════════════════════════════════════════════════
+   Phase 0：暴力去裝飾（2026-10-25 審計後執行）
+   ─────────────────────────────────────────────────────────────────
+   目標：把全站 269 處 box-shadow、174 處 gradient、所有圓角與轉場
+   一次性歸零，讓「層級」只能靠 1px 實線邊框與留白表達（Swiss 原則）。
+
+   為什麼用 !important 一刀切而不是逐頁改：
+   3,256 行手寫 CSS 分散在 37 個檔案，逐頁改是 L 級工作量且容易漏。
+   先用 global override 看「哪些頁面失去陰影後層級崩塌」，再針對性補邊框
+   ——這是可逆的兩段式做法；Phase 1 重寫時會逐條移除本區塊。
+
+   ⚠️ 已知副作用（刻意接受）：打卡卡片、金幣 HUD、Toast 等靠陰影浮起的
+   元件會變平。若影響可讀性，在該元件的 CSS 裡補 border: 1px solid。
+   ═══════════════════════════════════════════════════════════════════ */
+@layer base {
+  *, *::before, *::after {
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    background-image: none !important;
+    transition-duration: 0ms !important;
+    animation-duration: 0ms !important;
+    animation-iteration-count: 1 !important;
+  }
+  /* 保留可讀性底線：輸入框與按鈕若原本只靠陰影+圓角區分，改用 1px 實線。 */
+  input, textarea, select {
+    border: 1px solid currentColor !important;
+    outline-offset: 2px;
+  }
+}
+
 @theme inline { --radius-sm: 8px; --radius-md: 12px; --radius-lg: 18px; --radius-xl: 24px; --color-background: var(--paper); --color-foreground: var(--ink); --color-card: var(--paper); --color-card-foreground: var(--ink); --color-primary: var(--tidal); --color-primary-foreground: var(--white); --color-border: var(--line); --color-input: var(--line); --color-ring: var(--coral); }
 
 /* ═══════════════════════════════════════════════════════════════════

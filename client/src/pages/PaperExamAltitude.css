@@ -1237,3 +1237,65 @@
     font-size: 1rem !important;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   Phase 0：選項等高 + 題幹標籤（2026-10-25，純 UI，不改題庫資料）
+   ─────────────────────────────────────────────────────────────────
+   兩個問題各自對應一段：
+   1. 視覺洩題：題庫有 5.8% 的題目選項長度落差 ≥12 字，最長項在視覺上
+      過於突出，學生可能不看內容就「選最長的那個」。這裡用固定高度 +
+      等寬行高讓所有選項佔相同視覺重量，正確答案不再靠長度露餡。
+   2. 感知重複：35% 的題共用同一題幹模板，用知識點標籤把「在考什麼」前置。
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* 選項等高：統一最小高度與行高，長選項換行但不撐高版面 */
+.paper-option {
+  min-height: 3.75rem;
+  align-items: center;
+  line-height: 1.45;
+}
+
+/* 選項文字區塊：限制行數，超出以省略號收尾（完整內容仍在 DOM，讀屏可讀） */
+.paper-option-copy {
+  display: block;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+/* 知識點標籤：置於 meta 行右側，低對比不搶焦點 */
+.paper-question-topic {
+  margin-left: 0.6rem;
+  padding: 0.05rem 0.45rem;
+  border: 1px solid currentColor;
+  font-size: 0.72em;
+  letter-spacing: 0.02em;
+  opacity: 0.72;
+  white-space: nowrap;
+}
+
+/* 長題幹首行樣式：單行截斷 */
+.paper-question-prompt.is-clamped {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* 「展開完整題幹」：極簡文字連結，不搶主答案流程 */
+.paper-prompt-more {
+  margin-top: 0.4rem;
+  font-size: 0.82rem;
+}
+.paper-prompt-more > summary {
+  cursor: pointer;
+  opacity: 0.7;
+  list-style: none;
+}
+.paper-prompt-more > summary::-webkit-details-marker { display: none; }
+.paper-prompt-more > summary::before { content: "▸ "; }
+.paper-prompt-more[open] > summary::before { content: "▾ "; }
+.paper-prompt-more > p {
+  margin: 0.5rem 0 0;
+  line-height: 1.65;
+}

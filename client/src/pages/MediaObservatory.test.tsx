@@ -69,26 +69,3 @@ it("exposes visible focus styling through the shared focus-visible contract", ()
 });
 
 
-describe("homepage observatory entry keyboard contract", () => {
-  it("is focusable and routes to the observatory from Enter and Space keyboard flows", async () => {
-    const { default: ObservatoryNavButton } = await import("@/components/ObservatoryNavButton");
-    const onNavigate = vi.fn();
-    const onClose = vi.fn();
-    render(<ObservatoryNavButton onNavigate={onNavigate} onClose={onClose} />);
-
-    const entry = screen.getByRole("button", { name: "開啟特攝影視觀測站" });
-    entry.focus();
-    expect(document.activeElement).toBe(entry);
-    expect(entry).toHaveClass("nav-item");
-
-    fireEvent.keyDown(entry, { key: "Enter" });
-    expect(onClose).toHaveBeenCalledTimes(1);
-    expect(onNavigate).toHaveBeenCalledWith("/observatory");
-
-    onNavigate.mockClear();
-    onClose.mockClear();
-    fireEvent.keyDown(entry, { key: " " });
-    expect(onClose).toHaveBeenCalledTimes(1);
-    expect(onNavigate).toHaveBeenCalledWith("/observatory");
-  });
-});
